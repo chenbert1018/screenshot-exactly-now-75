@@ -218,8 +218,14 @@ function YearsAgo() {
 
 function HomePage() {
   const { idols, ready } = useIdols();
+  const { events } = useEvents();
   const main = idols[0];
   const others = idols.slice(1);
+
+  // NEXT D-DAY 優先使用最近的 Event（找不到對應偶像時仍以主要偶像呈現）
+  const upcomingEvent = nextEvent(events);
+  const heroIdol =
+    (upcomingEvent ? idols.find((i) => i.id === upcomingEvent.idolId) : undefined) ?? main;
 
   return (
     <AppShell>
@@ -230,9 +236,10 @@ function HomePage() {
 
       {!ready ? (
         <div className="h-72 rounded-3xl border border-border/60 bg-surface/40" aria-hidden />
-      ) : main ? (
+      ) : main && heroIdol ? (
         <>
-          <CountdownHero idol={main} />
+          <CountdownHero idol={heroIdol} event={upcomingEvent} />
+
           <Divider />
           <Companionship idol={main} />
           <Divider />
