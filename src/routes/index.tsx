@@ -3,7 +3,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Heart, ImageIcon, Plus } from "lucide-react";
 import { AppShell, Section, EmptyState, SoftCard } from "@/components/AppShell";
 import { useIdols, type Idol } from "@/lib/idols";
+import { eventCountdown, eventTypeMeta, nextEvent, useEvents, type IdolEvent } from "@/lib/events";
 import { daysSince, nextAnniversary, primaryDay, parseLocalDate } from "@/lib/dates";
+
 import {
   dailyMessage,
   formatDotDate,
@@ -79,7 +81,7 @@ function CountdownHero({ idol, event }: { idol: Idol; event?: IdolEvent | undefi
         )}
       </Link>
 
-      {day && anniversary ? (
+      {next ? (
         <>
           <p className="mt-8 text-[11px] tracking-[0.34em] text-muted-foreground uppercase">
             Next D-Day
@@ -92,7 +94,7 @@ function CountdownHero({ idol, event }: { idol: Idol; event?: IdolEvent | undefi
           ) : (
             <>
               <p className="mt-2 font-display text-[92px] leading-[0.95] font-semibold text-primary">
-                {day.daysUntil}
+                {next.days}
               </p>
               <p className="mt-2 text-[11px] tracking-[0.34em] text-muted-foreground uppercase">
                 Days
@@ -100,16 +102,15 @@ function CountdownHero({ idol, event }: { idol: Idol; event?: IdolEvent | undefi
             </>
           )}
 
-          <p className="mt-6 text-[17px]">
-            {day.kind === "birthday" ? "🎂" : "✨"} {idol.name} 的{day.title}
-          </p>
+          <p className="mt-6 text-[17px]">{next.titleLabel}</p>
           <p className="mt-1.5 text-sm text-muted-foreground">
-            {formatDotDate(anniversary.nextDate)}・{day.ddayLabel}
+            {next.dateLabel}・{next.ddayLabel}
           </p>
           {isToday ? (
             <p className="mt-3 text-[15px] text-primary">今天就是值得期待的日子。</p>
           ) : null}
         </>
+
       ) : (
         <>
           <h2 className="mt-7 text-xl font-semibold">
