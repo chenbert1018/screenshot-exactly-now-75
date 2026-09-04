@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Heart, ImageIcon, Plus } from "lucide-react";
-import { AppShell, Section, EmptyState, SoftCard } from "@/components/AppShell";
+import { AppShell, Section, EmptyState } from "@/components/AppShell";
 import { useIdols, type Idol } from "@/lib/idols";
 import { daysSince, primaryDay } from "@/lib/dates";
 
@@ -170,5 +170,3 @@ function MiniIdol({ idol }: { idol: Idol }) {
     </Link>
   );
 }
-
-export { SoftCard };
