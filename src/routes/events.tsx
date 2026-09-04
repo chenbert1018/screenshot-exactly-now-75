@@ -19,6 +19,13 @@ import {
   type IdolEvent,
 } from "@/lib/events";
 import { useIdols, type Idol } from "@/lib/idols";
+import { ReminderSheet } from "@/components/ReminderSheet";
+import {
+  deleteReminders,
+  formatReminderSummary,
+  saveReminders,
+  useReminders,
+} from "@/lib/reminders";
 
 export const Route = createFileRoute("/events")({
   head: () => ({
@@ -92,6 +99,9 @@ function EventsPage() {
   const [editing, setEditing] = useState<IdolEvent | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [reminderOpen, setReminderOpen] = useState(false);
+  const { remindersFor } = useReminders();
+
 
   const { upcoming, past } = useMemo(() => sortEvents(events), [events]);
   const detail = events.find((e) => e.id === detailId) ?? null;
@@ -230,6 +240,21 @@ function EventsPage() {
                 <p className="mt-1 text-[15px] leading-relaxed">{detail.note}</p>
               ) : null}
 
+              <div className="mt-2 rounded-2xl bg-surface/60 px-4 py-3 text-left">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs tracking-wide text-muted-foreground">🔔 提醒</p>
+                  <button
+                    type="button"
+                    onClick={() => setReminderOpen(true)}
+                    className="text-xs text-primary underline underline-offset-4"
+                  >
+                    設定提醒
+                  </button>
+                </div>
+                <p className="mt-1 text-sm">{formatReminderSummary(remindersFor(detail.id))}</p>
+              </div>
+
+
               {confirmDelete ? (
                 <div className="mt-3">
                   <p className="text-sm">確定要刪除這個日子嗎？</p>
@@ -244,6 +269,7 @@ function EventsPage() {
                     <button
                       type="button"
                       onClick={() => {
+                        deleteReminders(detail.id);
                         removeEvent(detail.id);
                         setConfirmDelete(false);
                         setDetailId(null);
@@ -280,6 +306,21 @@ function EventsPage() {
           ) : null}
         </DialogContent>
       </Dialog>
+
+      {detail ? (
+        <ReminderSheet
+          open={reminderOpen}
+          onOpenChange={setReminderOpen}
+          eventLabel={`${eventTypeMeta(detail.type).emoji} ${idolLabel(idolOf(detail.idolId))}`}
+          eventTitle={detail.title}
+          eventDate={eventCountdown(detail.date)?.dotDate ?? detail.date}
+          initialOffsets={remindersFor(detail.id).filter((r) => r.enabled).map((r) => r.offset)}
+          onSave={(offsets) => {
+            saveReminders(detail.id, offsets);
+            setReminderOpen(false);
+          }}
+        />
+      ) : null}
     </AppShell>
   );
 }

@@ -20,6 +20,7 @@ import {
 } from "@/lib/events";
 import { useIdols, type Idol } from "@/lib/idols";
 import { parseLocalDate, today } from "@/lib/dates";
+import { deleteReminders } from "@/lib/reminders";
 
 export const Route = createFileRoute("/calendar")({
   head: () => ({
@@ -383,6 +384,7 @@ function CalendarPage() {
                     <button
                       type="button"
                       onClick={() => {
+                        deleteReminders(detail.id);
                         removeEvent(detail.id);
                         setConfirmDelete(false);
                         setDetailId(null);
