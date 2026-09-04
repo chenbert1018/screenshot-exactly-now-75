@@ -19,6 +19,13 @@ import {
   type IdolEvent,
 } from "@/lib/events";
 import { useIdols, type Idol } from "@/lib/idols";
+import { ReminderSheet } from "@/components/ReminderSheet";
+import {
+  deleteReminders,
+  formatReminderSummary,
+  saveReminders,
+  useReminders,
+} from "@/lib/reminders";
 
 export const Route = createFileRoute("/events")({
   head: () => ({
