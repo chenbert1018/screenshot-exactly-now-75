@@ -1,13 +1,15 @@
 import { Link } from "@tanstack/react-router";
-import { Home, Sparkles, Search, CalendarDays, User } from "lucide-react";
+import { Home, Sparkles, CalendarHeart, Search, CalendarDays, User } from "lucide-react";
 
 const items = [
   { to: "/", label: "首頁", Icon: Home },
   { to: "/idols", label: "偶像", Icon: Sparkles },
+  { to: "/events", label: "日子", Icon: CalendarHeart },
   { to: "/archaeology", label: "考古", Icon: Search },
   { to: "/calendar", label: "行事曆", Icon: CalendarDays },
   { to: "/profile", label: "我的", Icon: User },
 ] as const;
+
 
 export function BottomNav() {
   return (
