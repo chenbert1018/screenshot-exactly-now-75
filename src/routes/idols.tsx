@@ -1,53 +1,99 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Plus, UserRound } from "lucide-react";
-import { AppShell, PageHeader, EmptyState, Section } from "@/components/AppShell";
+import { createFileRoute, Outlet, useMatches } from "@tanstack/react-router";
+import { useState } from "react";
+import { Heart, Plus } from "lucide-react";
+import { AppShell, PageHeader, EmptyState } from "@/components/AppShell";
+import { IdolCard, EmptySlot } from "@/components/IdolCard";
+import { IdolFormSheet } from "@/components/IdolFormSheet";
+import { MAX_IDOLS, useIdols, type IdolDraft } from "@/lib/idols";
 
 export const Route = createFileRoute("/idols")({
   head: () => ({
     meta: [
       { title: "我的偶像｜IdolDays" },
-      { name: "description", content: "收藏你喜歡的偶像，記錄屬於你們的重要日子。" },
+      { name: "description", content: "收藏那些讓你心動的名字，記錄屬於你們的重要日子。" },
       { property: "og:title", content: "我的偶像｜IdolDays" },
-      { property: "og:description", content: "收藏你喜歡的偶像，記錄屬於你們的重要日子。" },
+      { property: "og:description", content: "收藏那些讓你心動的名字，記錄屬於你們的重要日子。" },
     ],
   }),
-  component: IdolsPage,
+  component: IdolsLayout,
 });
 
+function IdolsLayout() {
+  const matches = useMatches();
+  const isChild = matches.some((m) => m.routeId === "/idols/$idolId");
+  if (isChild) return <Outlet />;
+  return <IdolsPage />;
+}
+
 function IdolsPage() {
+  const { idols, ready, addIdol } = useIdols();
+  const [open, setOpen] = useState(false);
+
+  const canAdd = idols.length < MAX_IDOLS;
+  const slots = Math.max(0, MAX_IDOLS - idols.length);
+
+  function handleCreate(draft: IdolDraft) {
+    addIdol(draft);
+    setOpen(false);
+  }
+
   return (
     <AppShell>
       <PageHeader
         title="我的偶像"
-        subtitle="一本只屬於你的收藏冊"
+        subtitle="收藏那些讓你心動的名字"
         action={
-          <button
-            type="button"
-            className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
-          >
-            <Plus className="size-4" strokeWidth={2} />
-            新增偶像
-          </button>
+          canAdd ? (
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+            >
+              <Plus className="size-4" strokeWidth={2} />
+              新增偶像
+            </button>
+          ) : null
         }
       />
 
-      <EmptyState
-        icon={<UserRound className="size-5" strokeWidth={1.6} />}
-        title="還沒有加入你的第一位偶像"
-        description="開始收藏屬於你的追星日子吧"
-      />
-
-      <Section title="收藏區" hint="即將開放">
+      {ready && idols.length === 0 ? (
+        <EmptyState
+          icon={<Heart className="size-5" strokeWidth={1.6} />}
+          title="還沒有加入你的第一位偶像"
+          description="從一個名字開始，收藏屬於你的追星日子。"
+          action={
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+            >
+              <Plus className="size-4" strokeWidth={2} />
+              加入第一位偶像
+            </button>
+          }
+        />
+      ) : (
         <div className="grid grid-cols-2 gap-4">
-          {[0, 1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="aspect-[3/4] rounded-2xl border border-dashed border-border bg-surface/60"
-              aria-hidden
-            />
+          {idols.map((idol) => (
+            <IdolCard key={idol.id} idol={idol} />
+          ))}
+          {Array.from({ length: slots }).map((_, i) => (
+            <EmptySlot key={`slot-${i}`} onClick={() => setOpen(true)} />
           ))}
         </div>
-      </Section>
+      )}
+
+      <p className="mt-6 text-center text-xs text-muted-foreground">
+        最多 5 位偶像
+      </p>
+
+      <IdolFormSheet
+        open={open}
+        onOpenChange={setOpen}
+        title="新增偶像"
+        submitLabel="建立偶像"
+        onSubmit={handleCreate}
+      />
     </AppShell>
   );
 }
