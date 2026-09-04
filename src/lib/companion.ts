@@ -2,10 +2,10 @@ import { daysSince, nextAnniversary, primaryDay, today } from "./dates";
 
 const MESSAGES = [
   "今天也一起度過吧。",
-  "今天，也有一個人值得你想起。",
-  "喜歡一個人的日子，也值得被記住。",
-  "今天也把喜歡，好好收藏起來。",
-  "又一起走過一天了。",
+  "今天也來看看他吧。",
+  "今天的日子，也值得被記住。",
+  "慢慢喜歡，慢慢收藏。",
+  "今天也有一個喜歡的人，在你的世界裡。",
   "今天也在喜歡你的路上。",
 ] as const;
 
@@ -15,11 +15,29 @@ export function dailyMessage(base: Date = today()) {
   return MESSAGES[seed % MESSAGES.length];
 }
 
+const WEEK = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+
 /** 「9 月 4 日・星期五」 */
 export function todayLabel(base: Date = today()) {
-  const week = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"][base.getDay()];
-  return `${base.getMonth() + 1} 月 ${base.getDate()} 日・${week}`;
+  return `${base.getMonth() + 1} 月 ${base.getDate()} 日・${WEEK[base.getDay()]}`;
 }
+
+/** 「2026年9月4日」 */
+export function todayFullLabel(base: Date = today()) {
+  return `${base.getFullYear()}年${base.getMonth() + 1}月${base.getDate()}日`;
+}
+
+/** 「星期五」 */
+export function todayWeekday(base: Date = today()) {
+  return WEEK[base.getDay()];
+}
+
+/** 「2026.09.04」 */
+export function formatDotDate(date: Date) {
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}.${p(date.getMonth() + 1)}.${p(date.getDate())}`;
+}
+
 
 /** 今天的小提醒（僅前端提示，無通知系統） */
 export function dailyReminder(
