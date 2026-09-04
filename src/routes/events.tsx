@@ -99,6 +99,9 @@ function EventsPage() {
   const [editing, setEditing] = useState<IdolEvent | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [reminderOpen, setReminderOpen] = useState(false);
+  const { remindersFor } = useReminders();
+
 
   const { upcoming, past } = useMemo(() => sortEvents(events), [events]);
   const detail = events.find((e) => e.id === detailId) ?? null;
