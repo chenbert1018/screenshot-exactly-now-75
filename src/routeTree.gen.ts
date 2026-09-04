@@ -15,6 +15,7 @@ import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as IdolsRouteImport } from './routes/idols'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as IdolsIdolIdRouteImport } from './routes/idols.$idolId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -46,22 +47,29 @@ const ProfileRoute = ProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
+const IdolsIdolIdRoute = IdolsIdolIdRouteImport.update({
+  id: '/$idolId',
+  path: '/$idolId',
+  getParentRoute: () => IdolsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/archaeology': typeof ArchaeologyRoute
   '/calendar': typeof CalendarRoute
   '/home': typeof HomeRoute
-  '/idols': typeof IdolsRoute
+  '/idols': typeof IdolsRouteWithChildren
   '/profile': typeof ProfileRoute
+  '/idols/$idolId': typeof IdolsIdolIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/archaeology': typeof ArchaeologyRoute
   '/calendar': typeof CalendarRoute
   '/home': typeof HomeRoute
-  '/idols': typeof IdolsRoute
+  '/idols': typeof IdolsRouteWithChildren
   '/profile': typeof ProfileRoute
+  '/idols/$idolId': typeof IdolsIdolIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -69,15 +77,29 @@ export interface FileRoutesById {
   '/archaeology': typeof ArchaeologyRoute
   '/calendar': typeof CalendarRoute
   '/home': typeof HomeRoute
-  '/idols': typeof IdolsRoute
+  '/idols': typeof IdolsRouteWithChildren
   '/profile': typeof ProfileRoute
+  '/idols/$idolId': typeof IdolsIdolIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/archaeology' | '/calendar' | '/home' | '/idols' | '/profile'
+    | '/'
+    | '/archaeology'
+    | '/calendar'
+    | '/home'
+    | '/idols'
+    | '/profile'
+    | '/idols/$idolId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/archaeology' | '/calendar' | '/home' | '/idols' | '/profile'
+  to:
+    | '/'
+    | '/archaeology'
+    | '/calendar'
+    | '/home'
+    | '/idols'
+    | '/profile'
+    | '/idols/$idolId'
   id:
     | '__root__'
     | '/'
@@ -86,6 +108,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/idols'
     | '/profile'
+    | '/idols/$idolId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -93,7 +116,7 @@ export interface RootRouteChildren {
   ArchaeologyRoute: typeof ArchaeologyRoute
   CalendarRoute: typeof CalendarRoute
   HomeRoute: typeof HomeRoute
-  IdolsRoute: typeof IdolsRoute
+  IdolsRoute: typeof IdolsRouteWithChildren
   ProfileRoute: typeof ProfileRoute
 }
 
@@ -141,15 +164,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/idols/$idolId': {
+      id: '/idols/$idolId'
+      path: '/$idolId'
+      fullPath: '/idols/$idolId'
+      preLoaderRoute: typeof IdolsIdolIdRouteImport
+      parentRoute: typeof IdolsRoute
+    }
   }
 }
+
+interface IdolsRouteChildren {
+  IdolsIdolIdRoute: typeof IdolsIdolIdRoute
+}
+
+const IdolsRouteChildren: IdolsRouteChildren = {
+  IdolsIdolIdRoute: IdolsIdolIdRoute,
+}
+
+const IdolsRouteWithChildren = IdolsRoute._addFileChildren(IdolsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ArchaeologyRoute: ArchaeologyRoute,
   CalendarRoute: CalendarRoute,
   HomeRoute: HomeRoute,
-  IdolsRoute: IdolsRoute,
+  IdolsRoute: IdolsRouteWithChildren,
   ProfileRoute: ProfileRoute,
 }
 export const routeTree = rootRouteImport
