@@ -1,14 +1,38 @@
+import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { CalendarDays } from "lucide-react";
-import { AppShell, PageHeader, Section, SoftCard, EmptyState } from "@/components/AppShell";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { AppShell, PageHeader, SoftCard } from "@/components/AppShell";
+import { EventFormSheet } from "@/components/EventFormSheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
+  eventCountdown,
+  eventTypeMeta,
+  useEvents,
+  type EventDraft,
+  type EventType,
+  type IdolEvent,
+} from "@/lib/events";
+import { useIdols, type Idol } from "@/lib/idols";
+import { parseLocalDate, today } from "@/lib/dates";
 
 export const Route = createFileRoute("/calendar")({
   head: () => ({
     meta: [
       { title: "行事曆｜IdolDays" },
-      { name: "description", content: "生日、出道日、演唱會，你的重要日子都在這裡。" },
+      {
+        name: "description",
+        content: "用一個月的視角，看看生日、演唱會與回歸，這個月有哪些值得期待的日子。",
+      },
       { property: "og:title", content: "行事曆｜IdolDays" },
-      { property: "og:description", content: "生日、出道日、演唱會，你的重要日子都在這裡。" },
+      { property: "og:description", content: "這個月有好多值得期待的日子。" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: CalendarPage,
@@ -16,53 +40,402 @@ export const Route = createFileRoute("/calendar")({
 
 const weekdays = ["日", "一", "二", "三", "四", "五", "六"];
 
+/** Calendar 專用的小型 indicator（不修改 Event 資料結構） */
+const INDICATOR: Record<EventType, string> = {
+  BIRTHDAY: "🎂",
+  CONCERT: "🎤",
+  COMEBACK: "✨",
+  TICKETING: "🎫",
+  VOTING: "🗳️",
+  MERCH: "🛍️",
+  FAN_MEETING: "💗",
+  TRAVEL: "✈️",
+  SUPPORT: "🎁",
+  CUSTOM: "♡",
+};
+
+const pad = (n: number) => String(n).padStart(2, "0");
+const toKey = (y: number, m: number, d: number) => `${y}-${pad(m)}-${pad(d)}`;
+
+function idolLabel(idol?: Idol) {
+  if (!idol) return "已刪除的偶像";
+  return idol.groupName ? `${idol.groupName} · ${idol.name}` : idol.name;
+}
+
 function CalendarPage() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const base = today();
+  const { idols } = useIdols();
+  const { events, addEvent, updateEvent, removeEvent } = useEvents();
+
+  const [cursor, setCursor] = useState({ y: base.getFullYear(), m: base.getMonth() + 1 });
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [detailId, setDetailId] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [formOpen, setFormOpen] = useState(false);
+  const [editing, setEditing] = useState<IdolEvent | null>(null);
+  const [prefillDate, setPrefillDate] = useState("");
+
+  const byDate = useMemo(() => {
+    const map = new Map<string, IdolEvent[]>();
+    for (const e of events) {
+      const list = map.get(e.date) ?? [];
+      list.push(e);
+      map.set(e.date, list);
+    }
+    for (const list of map.values()) list.sort((a, b) => a.createdAt - b.createdAt);
+    return map;
+  }, [events]);
+
+  const monthEvents = useMemo(() => {
+    const prefix = `${cursor.y}-${pad(cursor.m)}-`;
+    return events
+      .filter((e) => e.date.startsWith(prefix))
+      .sort((a, b) => (a.date === b.date ? a.createdAt - b.createdAt : a.date < b.date ? -1 : 1));
+  }, [events, cursor]);
+
+  const firstDay = new Date(cursor.y, cursor.m - 1, 1).getDay();
+  const daysInMonth = new Date(cursor.y, cursor.m, 0).getDate();
   const cells = [
     ...Array.from({ length: firstDay }, () => null),
     ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
   ];
 
+  const todayKey = toKey(base.getFullYear(), base.getMonth() + 1, base.getDate());
+
+  function shiftMonth(delta: number) {
+    setCursor((c) => {
+      const next = new Date(c.y, c.m - 1 + delta, 1);
+      return { y: next.getFullYear(), m: next.getMonth() + 1 };
+    });
+  }
+
+  const idolOf = (id: string) => idols.find((i) => i.id === id);
+  const selectedEvents = selectedDate ? (byDate.get(selectedDate) ?? []) : [];
+  const detail = events.find((e) => e.id === detailId) ?? null;
+  const detailCountdown = detail ? eventCountdown(detail.date, base) : null;
+
+  function openDate(dateKey: string) {
+    const list = byDate.get(dateKey) ?? [];
+    if (list.length === 1 && list[0]) {
+      setDetailId(list[0].id);
+      return;
+    }
+    setSelectedDate(dateKey);
+  }
+
+  function openCreate(dateKey: string) {
+    setSelectedDate(null);
+    setEditing(null);
+    setPrefillDate(dateKey);
+    setFormOpen(true);
+  }
+
+  const initial: EventDraft | undefined = editing
+    ? {
+        idolId: editing.idolId,
+        title: editing.title,
+        type: editing.type,
+        date: editing.date,
+        note: editing.note,
+      }
+    : prefillDate
+      ? { idolId: "", title: "", type: "CONCERT", date: prefillDate, note: "" }
+      : undefined;
+
+  function handleSubmit(draft: EventDraft) {
+    if (editing) updateEvent(editing.id, draft);
+    else addEvent(draft);
+    setFormOpen(false);
+    setEditing(null);
+    setPrefillDate("");
+  }
+
+  function selectedLabel(dateKey: string) {
+    const p = parseLocalDate(dateKey);
+    return p ? `${p.m} 月 ${p.d} 日` : dateKey;
+  }
+
   return (
     <AppShell>
-      <PageHeader title="行事曆" subtitle={`${year} 年 ${month + 1} 月`} />
+      <PageHeader title="行事曆" subtitle="這個月有好多值得期待的日子。" />
 
-      <SoftCard className="mb-8 px-4 py-5">
-        <div className="grid grid-cols-7 gap-y-2 text-center">
+      <div className="mb-4 flex items-center justify-between">
+        <button
+          type="button"
+          aria-label="上一個月"
+          onClick={() => shiftMonth(-1)}
+          className="flex size-9 items-center justify-center rounded-full border border-border/70 text-muted-foreground transition-transform duration-300 active:scale-90"
+        >
+          <ChevronLeft className="size-4" strokeWidth={1.8} />
+        </button>
+        <p className="font-display text-[19px] font-semibold">
+          {cursor.y} 年 {cursor.m} 月
+        </p>
+        <button
+          type="button"
+          aria-label="下一個月"
+          onClick={() => shiftMonth(1)}
+          className="flex size-9 items-center justify-center rounded-full border border-border/70 text-muted-foreground transition-transform duration-300 active:scale-90"
+        >
+          <ChevronRight className="size-4" strokeWidth={1.8} />
+        </button>
+      </div>
+
+      <SoftCard className="mb-8 px-3 py-5">
+        <div className="grid grid-cols-7 gap-y-1 text-center">
           {weekdays.map((w) => (
-            <span key={w} className="text-[11px] text-muted-foreground">
+            <span key={w} className="pb-1 text-[11px] text-muted-foreground">
               {w}
             </span>
           ))}
-          {cells.map((d, i) => (
-            <div key={i} className="flex h-10 items-center justify-center">
-              {d ? (
+          {cells.map((d, i) => {
+            if (!d) return <div key={`e${i}`} className="h-12" />;
+            const key = toKey(cursor.y, cursor.m, d);
+            const list = byDate.get(key) ?? [];
+            const isToday = key === todayKey;
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={() => openDate(key)}
+                className="flex h-12 flex-col items-center justify-center gap-0.5 rounded-xl transition-transform duration-300 active:scale-90"
+              >
                 <span
-                  className={`flex size-8 items-center justify-center rounded-full text-sm ${
-                    d === now.getDate()
+                  className={`flex size-7 items-center justify-center rounded-full text-sm ${
+                    isToday
                       ? "bg-primary font-medium text-primary-foreground"
                       : "text-foreground/80"
                   }`}
                 >
                   {d}
                 </span>
-              ) : null}
-            </div>
-          ))}
+                <span className="flex h-3 items-center gap-px text-[9px] leading-none">
+                  {list.slice(0, 2).map((e) => (
+                    <span key={e.id}>{INDICATOR[e.type] ?? "♡"}</span>
+                  ))}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </SoftCard>
 
-      <Section title="未來事件">
-        <EmptyState
-          icon={<CalendarDays className="size-5" strokeWidth={1.6} />}
-          title="你的重要日子會出現在這裡"
-          description="之後可以加入生日、出道日與演唱會"
-        />
-      </Section>
+      <section className="mb-8">
+        <h2 className="mb-3 text-[15px] font-medium tracking-wide">本月值得期待</h2>
+
+        {monthEvents.length === 0 ? (
+          <SoftCard className="px-6 py-10 text-center">
+            <p className="text-[15px]">這個月還沒有值得倒數的日子。</p>
+            <button
+              type="button"
+              onClick={() => openCreate(toKey(cursor.y, cursor.m, 1))}
+              className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+            >
+              <Plus className="size-4" strokeWidth={2} />
+              新增日子
+            </button>
+          </SoftCard>
+        ) : (
+          <div className="space-y-3">
+            {monthEvents.map((e) => {
+              const c = eventCountdown(e.date, base);
+              const done = c?.status === "COMPLETED";
+              const meta = eventTypeMeta(e.type);
+              const p = parseLocalDate(e.date);
+              return (
+                <button
+                  key={e.id}
+                  type="button"
+                  onClick={() => setDetailId(e.id)}
+                  className={`w-full text-left transition-transform duration-300 active:scale-[0.99] ${
+                    done ? "opacity-55" : ""
+                  }`}
+                >
+                  <SoftCard className="flex items-center gap-4 px-5 py-4">
+                    <span className="w-12 shrink-0 text-sm text-muted-foreground">
+                      {p ? `${pad(p.m)}/${pad(p.d)}` : e.date}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-xs text-muted-foreground">
+                        {meta.emoji} {idolLabel(idolOf(e.idolId))}
+                      </span>
+                      <span className="block truncate text-[15px]">{e.title}</span>
+                    </span>
+                    <span
+                      className={`shrink-0 font-display text-[17px] leading-none font-semibold ${
+                        done ? "text-muted-foreground" : "text-primary"
+                      }`}
+                    >
+                      {c?.ddayLabel ?? "—"}
+                    </span>
+                  </SoftCard>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      {/* 日期 Dialog：多個事件或沒有事件 */}
+      <Dialog
+        open={Boolean(selectedDate)}
+        onOpenChange={(o) => {
+          if (!o) setSelectedDate(null);
+        }}
+      >
+        <DialogContent className="max-w-[22rem] rounded-3xl border-border/60 bg-card">
+          {selectedDate ? (
+            <>
+              <DialogHeader className="items-center text-center">
+                <DialogTitle className="text-[19px]">{selectedLabel(selectedDate)}</DialogTitle>
+                <DialogDescription className="text-xs">
+                  {selectedEvents.length > 0 ? "這一天的日子" : "這一天還沒有安排日子。"}
+                </DialogDescription>
+              </DialogHeader>
+
+              {selectedEvents.length > 0 ? (
+                <div className="space-y-2">
+                  {selectedEvents.map((e) => {
+                    const c = eventCountdown(e.date, base);
+                    return (
+                      <button
+                        key={e.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedDate(null);
+                          setDetailId(e.id);
+                        }}
+                        className="flex w-full items-center gap-3 rounded-2xl bg-surface/60 px-4 py-3 text-left"
+                      >
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-xs text-muted-foreground">
+                            {eventTypeMeta(e.type).emoji} {idolLabel(idolOf(e.idolId))}
+                          </span>
+                          <span className="block truncate text-[15px]">{e.title}</span>
+                        </span>
+                        <span
+                          className={`font-display text-[15px] font-semibold ${
+                            c?.status === "COMPLETED" ? "text-muted-foreground" : "text-primary"
+                          }`}
+                        >
+                          {c?.ddayLabel ?? "—"}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : null}
+
+              <button
+                type="button"
+                onClick={() => openCreate(selectedDate)}
+                className="mt-1 inline-flex items-center justify-center gap-1.5 rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+              >
+                <Plus className="size-4" strokeWidth={2} />
+                新增日子
+              </button>
+            </>
+          ) : null}
+        </DialogContent>
+      </Dialog>
+
+      {/* Event Detail */}
+      <Dialog
+        open={Boolean(detail)}
+        onOpenChange={(o) => {
+          if (!o) {
+            setDetailId(null);
+            setConfirmDelete(false);
+          }
+        }}
+      >
+        <DialogContent className="max-w-[22rem] rounded-3xl border-border/60 bg-card text-center">
+          {detail ? (
+            <>
+              <DialogHeader className="items-center">
+                <DialogDescription className="text-xs tracking-wide">
+                  {idolLabel(idolOf(detail.idolId))}
+                </DialogDescription>
+                <DialogTitle className="text-[19px]">{detail.title}</DialogTitle>
+              </DialogHeader>
+
+              <p className="font-display text-[52px] leading-none font-semibold text-primary">
+                {detailCountdown?.ddayLabel ?? "—"}
+              </p>
+              <p className="text-sm text-muted-foreground">{detailCountdown?.fullDate}</p>
+              <p className="text-[11px] tracking-wide text-muted-foreground">
+                {eventTypeMeta(detail.type).emoji} {eventTypeMeta(detail.type).label}
+              </p>
+
+              {detail.note ? <p className="mt-1 text-[15px] leading-relaxed">{detail.note}</p> : null}
+
+              {confirmDelete ? (
+                <div className="mt-3">
+                  <p className="text-sm">確定要刪除這個日子嗎？</p>
+                  <div className="mt-4 flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setConfirmDelete(false)}
+                      className="flex-1 rounded-full border border-border/70 py-2.5 text-sm"
+                    >
+                      取消
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        removeEvent(detail.id);
+                        setConfirmDelete(false);
+                        setDetailId(null);
+                      }}
+                      className="flex-1 rounded-full bg-destructive py-2.5 text-sm text-destructive-foreground"
+                    >
+                      刪除
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-3 flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditing(detail);
+                      setDetailId(null);
+                      setPrefillDate("");
+                      setFormOpen(true);
+                    }}
+                    className="flex-1 rounded-full border border-border/70 py-2.5 text-sm transition-transform duration-300 active:scale-95"
+                  >
+                    編輯
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setConfirmDelete(true)}
+                    className="flex-1 rounded-full border border-border/70 py-2.5 text-sm text-destructive transition-transform duration-300 active:scale-95"
+                  >
+                    刪除
+                  </button>
+                </div>
+              )}
+            </>
+          ) : null}
+        </DialogContent>
+      </Dialog>
+
+      <EventFormSheet
+        open={formOpen}
+        onOpenChange={(o) => {
+          setFormOpen(o);
+          if (!o) {
+            setEditing(null);
+            setPrefillDate("");
+          }
+        }}
+        idols={idols}
+        initial={initial}
+        title={editing ? "編輯日子" : "新增日子"}
+        submitLabel="儲存日子"
+        onSubmit={handleSubmit}
+      />
     </AppShell>
   );
 }
