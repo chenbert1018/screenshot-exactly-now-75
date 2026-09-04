@@ -14,6 +14,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useIdols, type IdolDraft } from "@/lib/idols";
+import { daysSince, primaryDay, nextAnniversary } from "@/lib/dates";
 
 export const Route = createFileRoute("/idols/$idolId")({
   head: () => ({
@@ -82,6 +83,9 @@ function IdolDetailPage() {
   }
 
   const { id: _id, ...draft } = idol;
+  const day = primaryDay(idol);
+  const since = daysSince(idol.sinceDate);
+  const debut = nextAnniversary(idol.debutDate);
 
   return (
     <AppShell>
@@ -124,18 +128,35 @@ function IdolDetailPage() {
 
       <div className="mt-5 grid grid-cols-2 gap-4">
         <SoftCard className="px-4 py-5 text-center">
-          <p className="text-xs text-muted-foreground">D-Day</p>
-          <p className="mt-2 text-[15px]">即將開放</p>
+          <p className="text-xs text-muted-foreground">{day ? day.title : "D-Day"}</p>
+          <p className="mt-2 text-2xl font-semibold text-primary">
+            {day ? day.ddayLabel : "—"}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {day ? day.humanLabel : "設定一個重要日子"}
+          </p>
         </SoftCard>
         <SoftCard className="px-4 py-5 text-center">
-          <p className="text-xs text-muted-foreground">喜歡你 × X 天</p>
-          <p className="mt-2 text-[15px]">即將開放</p>
+          <p className="text-xs text-muted-foreground">陪伴的日子</p>
+          <p className="mt-2 text-2xl font-semibold text-primary">
+            {since ? since.ddayLabel : "—"}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {since ? since.humanLabel : "設定喜歡他的日期"}
+          </p>
         </SoftCard>
       </div>
 
       <SoftCard className="mt-5 px-5 py-2">
         <Row label="生日" value={idol.birthday} />
-        <Row label="出道日期" value={idol.debutDate} />
+        <Row
+          label="出道日期"
+          value={
+            idol.debutDate
+              ? `${idol.debutDate}（${debut?.daysUntil === 0 ? "今天是出道紀念日" : `出道紀念日 ${debut?.ddayLabel}`}）`
+              : ""
+          }
+        />
         <Row label="粉絲名稱" value={idol.fanName} />
         <Row label="我喜歡他的日期" value={idol.sinceDate} />
       </SoftCard>
