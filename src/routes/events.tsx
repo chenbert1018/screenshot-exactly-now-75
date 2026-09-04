@@ -48,7 +48,7 @@ function EventCard({
   onOpen,
 }: {
   event: IdolEvent;
-  idol?: Idol;
+  idol?: Idol | undefined;
   onOpen: () => void;
 }) {
   const c = eventCountdown(event.date);

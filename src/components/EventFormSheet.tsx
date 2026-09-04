@@ -25,7 +25,7 @@ export function EventFormSheet({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   idols: Idol[];
-  initial?: EventDraft;
+  initial?: EventDraft | undefined;
   title: string;
   submitLabel: string;
   onSubmit: (draft: EventDraft) => void;

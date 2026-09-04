@@ -18,8 +18,10 @@ export const EVENT_TYPES = [
 
 export type EventType = (typeof EVENT_TYPES)[number]["value"];
 
-export function eventTypeMeta(type: EventType) {
-  return EVENT_TYPES.find((t) => t.value === type) ?? EVENT_TYPES[EVENT_TYPES.length - 1];
+const FALLBACK_TYPE = { value: "CUSTOM", label: "自訂", emoji: "✨" } as const;
+
+export function eventTypeMeta(type: EventType): { value: string; label: string; emoji: string } {
+  return EVENT_TYPES.find((t) => t.value === type) ?? FALLBACK_TYPE;
 }
 
 export type IdolEvent = {
