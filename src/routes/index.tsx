@@ -35,11 +35,32 @@ function Divider() {
   return <div className="mx-auto my-9 h-px w-16 bg-border/70" />;
 }
 
-function CountdownHero({ idol }: { idol: Idol }) {
+function CountdownHero({ idol, event }: { idol: Idol; event?: IdolEvent | undefined }) {
   const day = primaryDay(idol);
   const source = day?.kind === "birthday" ? idol.birthday : idol.debutDate;
   const anniversary = nextAnniversary(source);
-  const isToday = day?.daysUntil === 0;
+  const countdown = event ? eventCountdown(event.date) : null;
+
+  // 優先使用最近的 Event；沒有 Event 時沿用生日／出道紀念日
+  const next =
+    event && countdown
+      ? {
+          days: countdown.daysUntil ?? 0,
+          ddayLabel: countdown.ddayLabel,
+          dateLabel: countdown.dotDate,
+          titleLabel: `${eventTypeMeta(event.type).emoji} ${idol.name} 的${event.title}`,
+        }
+      : day && anniversary
+        ? {
+            days: day.daysUntil,
+            ddayLabel: day.ddayLabel,
+            dateLabel: formatDotDate(anniversary.nextDate),
+            titleLabel: `${day.kind === "birthday" ? "🎂" : "✨"} ${idol.name} 的${day.title}`,
+          }
+        : null;
+
+  const isToday = next?.days === 0;
+
 
   return (
     <section className="text-center">
