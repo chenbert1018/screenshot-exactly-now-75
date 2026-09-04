@@ -65,12 +65,12 @@ function CountdownHero({ idol }: { idol: Idol }) {
           </p>
 
           {isToday ? (
-            <p className="mt-3 font-serif text-[64px] leading-none font-semibold text-primary">
+            <p className="mt-3 font-display text-[64px] leading-none font-semibold text-primary">
               TODAY
             </p>
           ) : (
             <>
-              <p className="mt-2 font-serif text-[92px] leading-[0.95] font-semibold text-primary">
+              <p className="mt-2 font-display text-[92px] leading-[0.95] font-semibold text-primary">
                 {day.daysUntil}
               </p>
               <p className="mt-2 text-[11px] tracking-[0.34em] text-muted-foreground uppercase">
@@ -130,7 +130,7 @@ function Companionship({ idol }: { idol: Idol }) {
   return (
     <section className="text-center">
       <p className="text-sm text-muted-foreground">已經一起走過</p>
-      <p className="mt-2 font-serif text-[40px] leading-none font-semibold">
+      <p className="mt-2 font-display text-[40px] leading-none font-semibold">
         {since.days}
         <span className="ml-2 align-middle text-[11px] tracking-[0.3em] text-muted-foreground uppercase">
           Days
