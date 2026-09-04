@@ -269,6 +269,7 @@ function EventsPage() {
                     <button
                       type="button"
                       onClick={() => {
+                        deleteReminders(detail.id);
                         removeEvent(detail.id);
                         setConfirmDelete(false);
                         setDetailId(null);
