@@ -10,11 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ArchaeologyRouteImport } from './routes/archaeology'
 import { Route as IdolsRouteImport } from './routes/idols'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArchaeologyRoute = ArchaeologyRouteImport.update({
+  id: '/archaeology',
+  path: '/archaeology',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IdolsRoute = IdolsRouteImport.update({
@@ -25,27 +31,31 @@ const IdolsRoute = IdolsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/archaeology': typeof ArchaeologyRoute
   '/idols': typeof IdolsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/archaeology': typeof ArchaeologyRoute
   '/idols': typeof IdolsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/archaeology': typeof ArchaeologyRoute
   '/idols': typeof IdolsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/idols'
+  fullPaths: '/' | '/archaeology' | '/idols'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/idols'
-  id: '__root__' | '/' | '/idols'
+  to: '/' | '/archaeology' | '/idols'
+  id: '__root__' | '/' | '/archaeology' | '/idols'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ArchaeologyRoute: typeof ArchaeologyRoute
   IdolsRoute: typeof IdolsRoute
 }
 
@@ -56,6 +66,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/archaeology': {
+      id: '/archaeology'
+      path: '/archaeology'
+      fullPath: '/archaeology'
+      preLoaderRoute: typeof ArchaeologyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/idols': {
@@ -70,6 +87,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ArchaeologyRoute: ArchaeologyRoute,
   IdolsRoute: IdolsRoute,
 }
 export const routeTree = rootRouteImport
