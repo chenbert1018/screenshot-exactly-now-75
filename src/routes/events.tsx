@@ -306,6 +306,21 @@ function EventsPage() {
           ) : null}
         </DialogContent>
       </Dialog>
+
+      {detail ? (
+        <ReminderSheet
+          open={reminderOpen}
+          onOpenChange={setReminderOpen}
+          eventLabel={`${eventTypeMeta(detail.type).emoji} ${idolLabel(idolOf(detail.idolId))}`}
+          eventTitle={detail.title}
+          eventDate={eventCountdown(detail.date)?.dotDate ?? detail.date}
+          initialOffsets={remindersFor(detail.id).filter((r) => r.enabled).map((r) => r.offset)}
+          onSave={(offsets) => {
+            saveReminders(detail.id, offsets);
+            setReminderOpen(false);
+          }}
+        />
+      ) : null}
     </AppShell>
   );
 }
