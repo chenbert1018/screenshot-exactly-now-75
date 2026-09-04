@@ -3,7 +3,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Heart, ImageIcon, Plus } from "lucide-react";
 import { AppShell, Section, EmptyState, SoftCard } from "@/components/AppShell";
 import { useIdols, type Idol } from "@/lib/idols";
+import { eventCountdown, eventTypeMeta, nextEvent, useEvents, type IdolEvent } from "@/lib/events";
 import { daysSince, nextAnniversary, primaryDay, parseLocalDate } from "@/lib/dates";
+
 import {
   dailyMessage,
   formatDotDate,
@@ -35,11 +37,32 @@ function Divider() {
   return <div className="mx-auto my-9 h-px w-16 bg-border/70" />;
 }
 
-function CountdownHero({ idol }: { idol: Idol }) {
+function CountdownHero({ idol, event }: { idol: Idol; event?: IdolEvent | undefined }) {
   const day = primaryDay(idol);
   const source = day?.kind === "birthday" ? idol.birthday : idol.debutDate;
   const anniversary = nextAnniversary(source);
-  const isToday = day?.daysUntil === 0;
+  const countdown = event ? eventCountdown(event.date) : null;
+
+  // 優先使用最近的 Event；沒有 Event 時沿用生日／出道紀念日
+  const next =
+    event && countdown
+      ? {
+          days: countdown.daysUntil ?? 0,
+          ddayLabel: countdown.ddayLabel,
+          dateLabel: countdown.dotDate,
+          titleLabel: `${eventTypeMeta(event.type).emoji} ${idol.name} 的${event.title}`,
+        }
+      : day && anniversary
+        ? {
+            days: day.daysUntil,
+            ddayLabel: day.ddayLabel,
+            dateLabel: formatDotDate(anniversary.nextDate),
+            titleLabel: `${day.kind === "birthday" ? "🎂" : "✨"} ${idol.name} 的${day.title}`,
+          }
+        : null;
+
+  const isToday = next?.days === 0;
+
 
   return (
     <section className="text-center">
@@ -58,7 +81,7 @@ function CountdownHero({ idol }: { idol: Idol }) {
         )}
       </Link>
 
-      {day && anniversary ? (
+      {next ? (
         <>
           <p className="mt-8 text-[11px] tracking-[0.34em] text-muted-foreground uppercase">
             Next D-Day
@@ -71,7 +94,7 @@ function CountdownHero({ idol }: { idol: Idol }) {
           ) : (
             <>
               <p className="mt-2 font-display text-[92px] leading-[0.95] font-semibold text-primary">
-                {day.daysUntil}
+                {next.days}
               </p>
               <p className="mt-2 text-[11px] tracking-[0.34em] text-muted-foreground uppercase">
                 Days
@@ -79,16 +102,15 @@ function CountdownHero({ idol }: { idol: Idol }) {
             </>
           )}
 
-          <p className="mt-6 text-[17px]">
-            {day.kind === "birthday" ? "🎂" : "✨"} {idol.name} 的{day.title}
-          </p>
+          <p className="mt-6 text-[17px]">{next.titleLabel}</p>
           <p className="mt-1.5 text-sm text-muted-foreground">
-            {formatDotDate(anniversary.nextDate)}・{day.ddayLabel}
+            {next.dateLabel}・{next.ddayLabel}
           </p>
           {isToday ? (
             <p className="mt-3 text-[15px] text-primary">今天就是值得期待的日子。</p>
           ) : null}
         </>
+
       ) : (
         <>
           <h2 className="mt-7 text-xl font-semibold">
@@ -196,8 +218,14 @@ function YearsAgo() {
 
 function HomePage() {
   const { idols, ready } = useIdols();
+  const { events } = useEvents();
   const main = idols[0];
   const others = idols.slice(1);
+
+  // NEXT D-DAY 優先使用最近的 Event（找不到對應偶像時仍以主要偶像呈現）
+  const upcomingEvent = nextEvent(events);
+  const heroIdol =
+    (upcomingEvent ? idols.find((i) => i.id === upcomingEvent.idolId) : undefined) ?? main;
 
   return (
     <AppShell>
@@ -208,9 +236,10 @@ function HomePage() {
 
       {!ready ? (
         <div className="h-72 rounded-3xl border border-border/60 bg-surface/40" aria-hidden />
-      ) : main ? (
+      ) : main && heroIdol ? (
         <>
-          <CountdownHero idol={main} />
+          <CountdownHero idol={heroIdol} event={upcomingEvent} />
+
           <Divider />
           <Companionship idol={main} />
           <Divider />
