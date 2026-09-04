@@ -240,6 +240,21 @@ function EventsPage() {
                 <p className="mt-1 text-[15px] leading-relaxed">{detail.note}</p>
               ) : null}
 
+              <div className="mt-2 rounded-2xl bg-surface/60 px-4 py-3 text-left">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs tracking-wide text-muted-foreground">🔔 提醒</p>
+                  <button
+                    type="button"
+                    onClick={() => setReminderOpen(true)}
+                    className="text-xs text-primary underline underline-offset-4"
+                  >
+                    設定提醒
+                  </button>
+                </div>
+                <p className="mt-1 text-sm">{formatReminderSummary(remindersFor(detail.id))}</p>
+              </div>
+
+
               {confirmDelete ? (
                 <div className="mt-3">
                   <p className="text-sm">確定要刪除這個日子嗎？</p>
