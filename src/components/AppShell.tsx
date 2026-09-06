@@ -3,8 +3,27 @@ import { BottomNav } from "./BottomNav";
 
 export function AppShell({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto min-h-screen w-full max-w-md px-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-28">
+    <div className="dreamy-bg paper-grain relative min-h-screen overflow-x-hidden bg-background">
+      {/* 極克制的手帳裝飾 */}
+      <span
+        aria-hidden
+        className="twinkle pointer-events-none absolute top-24 left-4 text-lg text-primary/40 select-none"
+      >
+        ✦
+      </span>
+      <span
+        aria-hidden
+        className="twinkle pointer-events-none absolute top-56 right-6 text-sm text-lavender select-none"
+      >
+        ☆
+      </span>
+      <span
+        aria-hidden
+        className="twinkle pointer-events-none absolute top-[38rem] left-8 text-sm text-accent select-none"
+      >
+        ♡
+      </span>
+      <div className="relative mx-auto min-h-screen w-full max-w-md px-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-32">
         <main className="page-enter">{children}</main>
       </div>
       <BottomNav />
