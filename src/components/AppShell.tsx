@@ -67,7 +67,7 @@ export function Section({
   return (
     <section className="mb-8">
       <div className="mb-3 flex items-baseline justify-between">
-        <h2 className="text-[15px] font-medium tracking-wide">{title}</h2>
+        <h2 className="font-display text-[15px] font-medium tracking-[0.08em]">{title}</h2>
         {hint ? <span className="text-xs text-muted-foreground">{hint}</span> : null}
       </div>
       {children}
