@@ -20,6 +20,8 @@ import {
 } from "@/lib/events";
 import { useIdols, type Idol } from "@/lib/idols";
 import { ReminderSheet } from "@/components/ReminderSheet";
+import { EventDetailSheet } from "@/components/EventDetailSheet";
+import { deleteMilestonesForEvent } from "@/lib/milestones";
 import {
   deleteReminders,
   formatReminderSummary,
