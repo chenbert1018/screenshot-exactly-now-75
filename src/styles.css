@@ -5,8 +5,9 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * IdolDays design system — quiet, emotional, collection-like.
- * Warm paper background, dusty rose accent, soft shadows, rounded cards.
+ * IdolDays design system — K-POP soft pastel diary.
+ * Cream background, rose pink accent, lavender / peach hints,
+ * deep cocoa text, polaroid & scrapbook surfaces.
  */
 
 @theme inline {
@@ -41,58 +42,68 @@
   --color-ring: var(--ring);
   --color-surface: var(--surface);
   --color-surface-foreground: var(--surface-foreground);
+  --color-lavender: var(--lavender);
+  --color-peach: var(--peach);
+  --color-softblue: var(--softblue);
 
-  --shadow-soft: 0 1px 2px oklch(0.55 0.05 40 / 0.05), 0 8px 24px oklch(0.55 0.05 40 / 0.07);
-  --shadow-lift: 0 2px 4px oklch(0.55 0.05 40 / 0.06), 0 18px 40px oklch(0.55 0.05 40 / 0.1);
+  --shadow-soft: 0 1px 2px rgb(214 160 180 / 0.08), 0 10px 28px rgb(214 160 180 / 0.12);
+  --shadow-lift: 0 2px 6px rgb(214 160 180 / 0.1), 0 20px 46px rgb(214 160 180 / 0.16);
+  --shadow-polaroid: 0 2px 3px rgb(93 75 82 / 0.05), 0 14px 34px rgb(214 160 180 / 0.18);
 }
 
 :root {
-  --radius: 1.125rem;
-  --background: oklch(0.977 0.008 80);
-  --foreground: oklch(0.28 0.02 40);
-  --card: oklch(0.995 0.004 85);
-  --card-foreground: oklch(0.28 0.02 40);
-  --popover: oklch(0.995 0.004 85);
-  --popover-foreground: oklch(0.28 0.02 40);
-  --primary: oklch(0.62 0.09 20);
-  --primary-foreground: oklch(0.99 0.005 80);
-  --secondary: oklch(0.94 0.015 60);
-  --secondary-foreground: oklch(0.35 0.02 40);
-  --muted: oklch(0.95 0.01 70);
-  --muted-foreground: oklch(0.56 0.02 45);
-  --accent: oklch(0.9 0.035 25);
-  --accent-foreground: oklch(0.35 0.04 25);
-  --destructive: oklch(0.577 0.18 27);
-  --destructive-foreground: oklch(0.99 0.005 80);
-  --border: oklch(0.91 0.012 65);
-  --input: oklch(0.91 0.012 65);
-  --ring: oklch(0.72 0.06 25);
-  --surface: oklch(0.955 0.014 70);
-  --surface-foreground: oklch(0.32 0.02 40);
+  --radius: 1.25rem;
+  --background: #fff9f8;
+  --foreground: #5d4b52;
+  --card: #fffdfd;
+  --card-foreground: #5d4b52;
+  --popover: #fffdfd;
+  --popover-foreground: #5d4b52;
+  --primary: #e98baa;
+  --primary-foreground: #fffaf9;
+  --secondary: #fdf1f5;
+  --secondary-foreground: #6b5760;
+  --muted: #f9eef2;
+  --muted-foreground: #9a858d;
+  --accent: #f7c7d7;
+  --accent-foreground: #6d4a58;
+  --destructive: #d9748a;
+  --destructive-foreground: #fffaf9;
+  --border: #eedfe5;
+  --input: #eedfe5;
+  --ring: #e98baa;
+  --surface: #fdf3f6;
+  --surface-foreground: #5d4b52;
+  --lavender: #dccfea;
+  --peach: #f6ddd2;
+  --softblue: #dce6ef;
 }
 
 .dark {
-  --background: oklch(0.2 0.012 40);
-  --foreground: oklch(0.95 0.008 70);
-  --card: oklch(0.25 0.014 40);
-  --card-foreground: oklch(0.95 0.008 70);
-  --popover: oklch(0.25 0.014 40);
-  --popover-foreground: oklch(0.95 0.008 70);
-  --primary: oklch(0.74 0.08 22);
-  --primary-foreground: oklch(0.2 0.012 40);
-  --secondary: oklch(0.3 0.016 40);
-  --secondary-foreground: oklch(0.95 0.008 70);
-  --muted: oklch(0.3 0.014 40);
-  --muted-foreground: oklch(0.72 0.015 60);
-  --accent: oklch(0.36 0.03 25);
-  --accent-foreground: oklch(0.95 0.008 70);
-  --destructive: oklch(0.65 0.17 27);
-  --destructive-foreground: oklch(0.98 0.005 80);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 14%);
-  --ring: oklch(0.6 0.05 25);
-  --surface: oklch(0.27 0.014 40);
-  --surface-foreground: oklch(0.95 0.008 70);
+  --background: #211a1e;
+  --foreground: #f6ebef;
+  --card: #2a2126;
+  --card-foreground: #f6ebef;
+  --popover: #2a2126;
+  --popover-foreground: #f6ebef;
+  --primary: #f0a4bd;
+  --primary-foreground: #2a2126;
+  --secondary: #342930;
+  --secondary-foreground: #f6ebef;
+  --muted: #342930;
+  --muted-foreground: #c0a9b2;
+  --accent: #4a3641;
+  --accent-foreground: #f6ebef;
+  --destructive: #e0899c;
+  --destructive-foreground: #2a2126;
+  --border: rgb(255 255 255 / 12%);
+  --input: rgb(255 255 255 / 14%);
+  --ring: #f0a4bd;
+  --surface: #302530;
+  --surface-foreground: #f6ebef;
+  --lavender: #4b3f5c;
+  --peach: #4a3a34;
+  --softblue: #33404c;
 }
 
 @layer base {
@@ -105,6 +116,7 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
 
   h1,
@@ -112,7 +124,47 @@
   h3 {
     font-family: var(--font-display);
     letter-spacing: 0.01em;
+    font-weight: 500;
   }
+}
+
+/* Dreamy cream + pink/lavender wash behind everything. */
+@utility dreamy-bg {
+  background-image:
+    radial-gradient(120% 60% at 12% -6%, color-mix(in srgb, var(--accent) 55%, transparent), transparent 60%),
+    radial-gradient(100% 55% at 92% 4%, color-mix(in srgb, var(--lavender) 55%, transparent), transparent 62%),
+    radial-gradient(90% 45% at 50% 108%, color-mix(in srgb, var(--peach) 45%, transparent), transparent 65%);
+  background-attachment: fixed;
+}
+
+/* Very restrained paper grain. */
+@utility paper-grain {
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    background-image: radial-gradient(circle at 1px 1px, rgb(93 75 82 / 0.05) 1px, transparent 0);
+    background-size: 5px 5px;
+  }
+}
+
+/* Cream, translucent card — the default IdolDays surface. */
+@utility cream-card {
+  background-color: color-mix(in srgb, var(--card) 82%, transparent);
+  backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Polaroid photo frame. */
+@utility polaroid {
+  background-color: var(--card);
+  border-radius: 1rem;
+  padding: 0.5rem 0.5rem 1.75rem;
+  box-shadow: var(--shadow-polaroid);
 }
 
 @utility page-enter {
@@ -127,5 +179,19 @@
   to {
     opacity: 1;
     transform: none;
+  }
+}
+
+@utility twinkle {
+  animation: twinkle 4.5s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.6;
   }
 }
