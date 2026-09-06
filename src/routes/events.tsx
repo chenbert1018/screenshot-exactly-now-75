@@ -4,13 +4,6 @@ import { CalendarHeart, Plus } from "lucide-react";
 import { AppShell, EmptyState, PageHeader, SoftCard } from "@/components/AppShell";
 import { EventFormSheet } from "@/components/EventFormSheet";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import {
   eventCountdown,
   eventTypeMeta,
   sortEvents,
@@ -20,6 +13,8 @@ import {
 } from "@/lib/events";
 import { useIdols, type Idol } from "@/lib/idols";
 import { ReminderSheet } from "@/components/ReminderSheet";
+import { EventDetailSheet } from "@/components/EventDetailSheet";
+import { deleteMilestonesForEvent } from "@/lib/milestones";
 import {
   deleteReminders,
   formatReminderSummary,
@@ -209,103 +204,31 @@ function EventsPage() {
         onSubmit={handleSubmit}
       />
 
-      <Dialog
+      <EventDetailSheet
+        event={detail}
+        idol={detail ? idolOf(detail.idolId) : undefined}
+        idolLabel={detail ? idolLabel(idolOf(detail.idolId)) : ""}
         open={Boolean(detail)}
-        onOpenChange={(o) => {
-          if (!o) {
-            setDetailId(null);
-            setConfirmDelete(false);
-          }
+        onOpenChange={(o: boolean) => {
+          if (!o) setDetailId(null);
         }}
-      >
-        <DialogContent className="max-w-[22rem] rounded-3xl border-border/60 bg-card text-center">
-          {detail ? (
-            <>
-              <DialogHeader className="items-center">
-                <DialogDescription className="text-xs tracking-wide">
-                  {idolLabel(idolOf(detail.idolId))}
-                </DialogDescription>
-                <DialogTitle className="text-[19px]">{detail.title}</DialogTitle>
-              </DialogHeader>
+        onEdit={() => {
+          if (!detail) return;
+          setEditing(detail);
+          setDetailId(null);
+          setFormOpen(true);
+        }}
+        onDelete={() => {
+          if (!detail) return;
+          deleteReminders(detail.id);
+          deleteMilestonesForEvent(detail.id);
+          removeEvent(detail.id);
+          setDetailId(null);
+        }}
+        reminderSummary={detail ? formatReminderSummary(remindersFor(detail.id)) : ""}
+        onOpenReminder={() => setReminderOpen(true)}
+      />
 
-              <p className="font-display text-[52px] leading-none font-semibold text-primary">
-                {detailCountdown?.ddayLabel ?? "—"}
-              </p>
-              <p className="text-sm text-muted-foreground">{detailCountdown?.fullDate}</p>
-              <p className="text-[11px] tracking-wide text-muted-foreground">
-                {eventTypeMeta(detail.type).emoji} {eventTypeMeta(detail.type).label}
-              </p>
-
-              {detail.note ? (
-                <p className="mt-1 text-[15px] leading-relaxed">{detail.note}</p>
-              ) : null}
-
-              <div className="mt-2 rounded-2xl bg-surface/60 px-4 py-3 text-left">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-xs tracking-wide text-muted-foreground">🔔 提醒</p>
-                  <button
-                    type="button"
-                    onClick={() => setReminderOpen(true)}
-                    className="text-xs text-primary underline underline-offset-4"
-                  >
-                    設定提醒
-                  </button>
-                </div>
-                <p className="mt-1 text-sm">{formatReminderSummary(remindersFor(detail.id))}</p>
-              </div>
-
-
-              {confirmDelete ? (
-                <div className="mt-3">
-                  <p className="text-sm">確定要刪除這個日子嗎？</p>
-                  <div className="mt-4 flex gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setConfirmDelete(false)}
-                      className="flex-1 rounded-full border border-border/70 py-2.5 text-sm"
-                    >
-                      取消
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        deleteReminders(detail.id);
-                        removeEvent(detail.id);
-                        setConfirmDelete(false);
-                        setDetailId(null);
-                      }}
-                      className="flex-1 rounded-full bg-destructive py-2.5 text-sm text-destructive-foreground"
-                    >
-                      刪除
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="mt-3 flex gap-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEditing(detail);
-                      setDetailId(null);
-                      setFormOpen(true);
-                    }}
-                    className="flex-1 rounded-full border border-border/70 py-2.5 text-sm transition-transform duration-300 active:scale-95"
-                  >
-                    編輯
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setConfirmDelete(true)}
-                    className="flex-1 rounded-full border border-border/70 py-2.5 text-sm text-destructive transition-transform duration-300 active:scale-95"
-                  >
-                    刪除
-                  </button>
-                </div>
-              )}
-            </>
-          ) : null}
-        </DialogContent>
-      </Dialog>
 
       {detail ? (
         <ReminderSheet
