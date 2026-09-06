@@ -4,13 +4,6 @@ import { CalendarHeart, Plus } from "lucide-react";
 import { AppShell, EmptyState, PageHeader, SoftCard } from "@/components/AppShell";
 import { EventFormSheet } from "@/components/EventFormSheet";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import {
   eventCountdown,
   eventTypeMeta,
   sortEvents,
@@ -216,7 +209,7 @@ function EventsPage() {
         idol={detail ? idolOf(detail.idolId) : undefined}
         idolLabel={detail ? idolLabel(idolOf(detail.idolId)) : ""}
         open={Boolean(detail)}
-        onOpenChange={(o) => {
+        onOpenChange={(o: boolean) => {
           if (!o) setDetailId(null);
         }}
         onEdit={() => {
