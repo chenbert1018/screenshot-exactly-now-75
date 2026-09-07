@@ -30,13 +30,16 @@ export const Route = createFileRoute("/profile")({
   component: ProfilePage,
 });
 
-const settings = [
-  { label: "一般設定", Icon: Settings },
-  { label: "提醒通知", Icon: Bell },
-  { label: "外觀主題", Icon: Palette },
+type SettingKey = "general" | "notification" | "theme";
+
+const settings: { key: SettingKey; label: string; Icon: typeof Settings }[] = [
+  { key: "general", label: "一般設定", Icon: Settings },
+  { key: "notification", label: "提醒通知", Icon: Bell },
+  { key: "theme", label: "外觀主題", Icon: Palette },
 ];
 
 function ProfilePage() {
+  const [openSheet, setOpenSheet] = useState<SettingKey | null>(null);
   const { reminders } = useReminders();
   const { idols } = useIdols();
   const { events } = useEvents();
