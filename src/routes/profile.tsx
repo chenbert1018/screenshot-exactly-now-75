@@ -120,10 +120,11 @@ function ProfilePage() {
 
       <Section title="設定">
         <SoftCard className="divide-y divide-border/60">
-          {settings.map(({ label, Icon }) => (
+          {settings.map(({ key, label, Icon }) => (
             <button
-              key={label}
+              key={key}
               type="button"
+              onClick={() => setOpenSheet(key)}
               className="flex w-full items-center gap-3 px-5 py-4 text-left transition-colors active:bg-surface/70"
             >
               <Icon className="size-[18px] text-muted-foreground" strokeWidth={1.6} />
