@@ -21,7 +21,9 @@ import type { Idol } from "@/lib/idols";
 import { useIdolSource } from "@/lib/idols.source";
 import { useEventSource } from "@/lib/events.source";
 import { parseLocalDate, today } from "@/lib/dates";
-import { deleteReminders } from "@/lib/reminders";
+import { deleteReminders, formatDaysBefore, DEFAULT_DAYS_BEFORE } from "@/lib/reminders";
+import { useReminderSource } from "@/lib/reminders.source";
+import { ReminderSheet } from "@/components/ReminderSheet";
 import { deleteMilestonesForEvent } from "@/lib/milestones";
 
 export const Route = createFileRoute("/calendar")({
@@ -65,8 +67,26 @@ function idolLabel(idol?: Idol) {
   return idol.groupName ? `${idol.groupName} · ${idol.name}` : idol.name;
 }
 
-/** Calendar 衍生資料：偶像生日（不寫入 Event，也不改任何資料結構） */
-type BirthdayItem = { key: string; idol: Idol; day: number };
+/** Calendar 衍生資料：偶像生日／出道紀念日（不寫入 Event，也不改任何資料結構） */
+type AnnKind = "birthday" | "debut";
+type AnnItem = {
+  id: string;
+  kind: AnnKind;
+  key: string;
+  idol: Idol;
+  day: number;
+  /** 出道週年，無法計算時為 null */
+  years: number | null;
+};
+
+const annEmoji = (kind: AnnKind) => (kind === "birthday" ? "🎂" : "✨");
+
+function annTitle(item: AnnItem) {
+  if (item.kind === "birthday") return `🎂 ${item.idol.name} 生日`;
+  return item.years && item.years > 0
+    ? `✨ ${item.idol.name} 出道 ${item.years} 週年`
+    : `✨ ${item.idol.name} 出道紀念日`;
+}
 
 function CalendarPage() {
   const base = today();
