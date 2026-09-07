@@ -103,6 +103,107 @@ export type Database = {
         }
         Relationships: []
       }
+      memories: {
+        Row: {
+          created_at: string
+          date: string | null
+          folder_id: string
+          id: string
+          idol_id: string | null
+          note: string
+          photo: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string | null
+          folder_id: string
+          id?: string
+          idol_id?: string | null
+          note?: string
+          photo?: string
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string | null
+          folder_id?: string
+          id?: string
+          idol_id?: string | null
+          note?: string
+          photo?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "memories_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "memory_folders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "memories_idol_id_fkey"
+            columns: ["idol_id"]
+            isOneToOne: false
+            referencedRelation: "idols"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      memory_folders: {
+        Row: {
+          cover_photo: string
+          created_at: string
+          description: string
+          end_date: string | null
+          id: string
+          idol_id: string | null
+          start_date: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cover_photo?: string
+          created_at?: string
+          description?: string
+          end_date?: string | null
+          id?: string
+          idol_id?: string | null
+          start_date?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cover_photo?: string
+          created_at?: string
+          description?: string
+          end_date?: string | null
+          id?: string
+          idol_id?: string | null
+          start_date?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "memory_folders_idol_id_fkey"
+            columns: ["idol_id"]
+            isOneToOne: false
+            referencedRelation: "idols"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       milestones: {
         Row: {
           completed: boolean
