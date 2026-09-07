@@ -148,6 +148,19 @@ function ProfilePage() {
       </Section>
 
       <p className="mt-10 text-center text-xs text-muted-foreground">版本 0.1.0（S0 Foundation）</p>
+
+      <GeneralSettingsSheet
+        open={openSheet === "general"}
+        onOpenChange={(v) => setOpenSheet(v ? "general" : null)}
+      />
+      <NotificationSettingsSheet
+        open={openSheet === "notification"}
+        onOpenChange={(v) => setOpenSheet(v ? "notification" : null)}
+      />
+      <ThemeSettingsSheet
+        open={openSheet === "theme"}
+        onOpenChange={(v) => setOpenSheet(v ? "theme" : null)}
+      />
     </AppShell>
   );
 }
