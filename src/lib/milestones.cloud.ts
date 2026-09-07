@@ -91,3 +91,13 @@ export async function deleteCloudMilestone(id: string): Promise<void> {
   const { error } = await supabase.from("milestones").delete().eq("id", id);
   if (error) throw error;
 }
+
+/** 讀取目前使用者的所有里程碑（僅供 migration 的重複判斷使用） */
+export async function listAllCloudMilestones(): Promise<Milestone[]> {
+  const { data, error } = await supabase
+    .from("milestones")
+    .select(COLUMNS)
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  return (data ?? []).map((r) => toMilestone(r as Row));
+}

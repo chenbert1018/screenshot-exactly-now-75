@@ -13,12 +13,13 @@ import {
 import {
   eventCountdown,
   eventTypeMeta,
-  useEvents,
   type EventDraft,
   type EventType,
   type IdolEvent,
 } from "@/lib/events";
-import { useIdols, type Idol } from "@/lib/idols";
+import type { Idol } from "@/lib/idols";
+import { useIdolSource } from "@/lib/idols.source";
+import { useEventSource } from "@/lib/events.source";
 import { parseLocalDate, today } from "@/lib/dates";
 import { deleteReminders } from "@/lib/reminders";
 import { deleteMilestonesForEvent } from "@/lib/milestones";
@@ -66,8 +67,8 @@ function idolLabel(idol?: Idol) {
 
 function CalendarPage() {
   const base = today();
-  const { idols } = useIdols();
-  const { events, addEvent, updateEvent, removeEvent } = useEvents();
+  const { idols, findIdol } = useIdolSource();
+  const { events, addEvent, updateEvent, removeEvent } = useEventSource();
 
   const [cursor, setCursor] = useState({ y: base.getFullYear(), m: base.getMonth() + 1 });
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -111,7 +112,7 @@ function CalendarPage() {
     });
   }
 
-  const idolOf = (id: string) => idols.find((i) => i.id === id);
+  const idolOf = (id: string) => findIdol(id);
   const selectedEvents = selectedDate ? (byDate.get(selectedDate) ?? []) : [];
   const detail = events.find((e) => e.id === detailId) ?? null;
   const detailCountdown = detail ? eventCountdown(detail.date, base) : null;
@@ -144,9 +145,9 @@ function CalendarPage() {
       ? { idolId: "", title: "", type: "CONCERT", date: prefillDate, note: "" }
       : undefined;
 
-  function handleSubmit(draft: EventDraft) {
-    if (editing) updateEvent(editing.id, draft);
-    else addEvent(draft);
+  async function handleSubmit(draft: EventDraft) {
+    if (editing) await updateEvent(editing.id, draft);
+    else await addEvent(draft);
     setFormOpen(false);
     setEditing(null);
     setPrefillDate("");
@@ -387,7 +388,7 @@ function CalendarPage() {
                       onClick={() => {
                         deleteReminders(detail.id);
                         deleteMilestonesForEvent(detail.id);
-                        removeEvent(detail.id);
+                        void removeEvent(detail.id);
                         setConfirmDelete(false);
                         setDetailId(null);
                       }}

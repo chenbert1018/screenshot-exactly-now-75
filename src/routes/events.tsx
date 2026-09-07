@@ -7,11 +7,12 @@ import {
   eventCountdown,
   eventTypeMeta,
   sortEvents,
-  useEvents,
   type EventDraft,
   type IdolEvent,
 } from "@/lib/events";
-import { useIdols, type Idol } from "@/lib/idols";
+import type { Idol } from "@/lib/idols";
+import { useIdolSource } from "@/lib/idols.source";
+import { useEventSource } from "@/lib/events.source";
 import { ReminderSheet } from "@/components/ReminderSheet";
 import { EventDetailSheet } from "@/components/EventDetailSheet";
 import { deleteMilestonesForEvent } from "@/lib/milestones";
@@ -89,8 +90,8 @@ function EventCard({
 }
 
 function EventsPage() {
-  const { idols } = useIdols();
-  const { events, ready, addEvent, updateEvent, removeEvent } = useEvents();
+  const { idols, findIdol } = useIdolSource();
+  const { events, ready, addEvent, updateEvent, removeEvent, error } = useEventSource();
 
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<IdolEvent | null>(null);
@@ -102,7 +103,7 @@ function EventsPage() {
 
   const { upcoming, past } = useMemo(() => sortEvents(events), [events]);
   const detail = events.find((e) => e.id === detailId) ?? null;
-  const idolOf = (id: string) => idols.find((i) => i.id === id);
+  const idolOf = (id: string) => findIdol(id);
 
   const initial: EventDraft | undefined = editing
     ? {
@@ -119,9 +120,9 @@ function EventsPage() {
     setFormOpen(true);
   }
 
-  function handleSubmit(draft: EventDraft) {
-    if (editing) updateEvent(editing.id, draft);
-    else addEvent(draft);
+  async function handleSubmit(draft: EventDraft) {
+    if (editing) await updateEvent(editing.id, draft);
+    else await addEvent(draft);
     setFormOpen(false);
     setEditing(null);
   }
@@ -144,6 +145,12 @@ function EventsPage() {
           </button>
         }
       />
+
+      {error ? (
+        <p className="mb-4 rounded-2xl border border-border/60 bg-surface/50 px-4 py-3 text-center text-xs text-muted-foreground">
+          目前連不上雲端資料，你的日子沒有遺失，請稍後再試。
+        </p>
+      ) : null}
 
       {!ready ? (
         <div className="h-40 rounded-2xl border border-border/60 bg-surface/40" aria-hidden />
@@ -220,11 +227,11 @@ function EventsPage() {
           setDetailId(null);
           setFormOpen(true);
         }}
-        onDelete={() => {
+        onDelete={async () => {
           if (!detail) return;
           deleteReminders(detail.id);
           deleteMilestonesForEvent(detail.id);
-          removeEvent(detail.id);
+          await removeEvent(detail.id);
           setDetailId(null);
         }}
         reminderSummary={detail ? formatReminderSummary(remindersFor(detail.id)) : ""}
