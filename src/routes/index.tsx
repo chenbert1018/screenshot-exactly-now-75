@@ -1,3 +1,4 @@
+import { StoredImage } from "@/components/StoredImage";
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Heart, ImageIcon, Plus } from "lucide-react";
@@ -16,7 +17,6 @@ import {
 } from "@/lib/companion";
 import { addHeartItem } from "@/lib/heart";
 import { HeartFormSheet } from "@/components/HeartFormSheet";
-import { StoredImage } from "@/components/StoredImage";
 
 export const Route = createFileRoute("/")({
   head: () => ({

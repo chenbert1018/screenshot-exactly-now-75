@@ -1,3 +1,4 @@
+import { StoredImage } from "@/components/StoredImage";
 import { useEffect, useRef, useState } from "react";
 import { ImagePlus, X } from "lucide-react";
 import {
@@ -12,7 +13,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { emptyHeartDraft, HEART_TYPES, type HeartDraft } from "@/lib/heart";
 import type { Idol } from "@/lib/idols";
-import { StoredImage } from "@/components/StoredImage";
 
 function todayValue() {
   const n = new Date();

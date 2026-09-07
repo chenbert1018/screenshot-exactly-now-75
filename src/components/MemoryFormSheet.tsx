@@ -1,3 +1,4 @@
+import { StoredImage } from "@/components/StoredImage";
 import { useEffect, useRef, useState } from "react";
 import { ImagePlus, X } from "lucide-react";
 import {
@@ -11,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { emptyMemoryDraft, type MemoryDraft } from "@/lib/memories";
-import { StoredImage } from "@/components/StoredImage";
 
 function todayValue() {
   const n = new Date();

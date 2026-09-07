@@ -1,3 +1,4 @@
+import { StoredImage } from "@/components/StoredImage";
 import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ChevronLeft, Plus, MoreHorizontal, Images } from "lucide-react";
@@ -29,7 +30,6 @@ import {
 import { useMemorySource } from "@/lib/memories.source";
 import { useIdolSource } from "@/lib/idols.source";
 import { parseLocalDate } from "@/lib/dates";
-import { StoredImage } from "@/components/StoredImage";
 
 export const Route = createFileRoute("/memories/$folderId")({
   head: () => ({

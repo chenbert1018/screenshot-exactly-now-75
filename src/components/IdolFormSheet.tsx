@@ -1,10 +1,10 @@
+import { StoredImage } from "@/components/StoredImage";
 import { useEffect, useRef, useState } from "react";
 import { ImagePlus, X } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { emptyDraft, type IdolDraft } from "@/lib/idols";
-import { StoredImage } from "@/components/StoredImage";
 
 const fields: { key: keyof IdolDraft; label: string; type?: string }[] = [
   { key: "name", label: "偶像名稱" },

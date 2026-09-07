@@ -1,3 +1,4 @@
+import { StoredImage } from "@/components/StoredImage";
 import { useEffect, useRef, useState } from "react";
 import { ImagePlus, X } from "lucide-react";
 import {
@@ -11,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { emptyFolderDraft, type MemoryFolderDraft } from "@/lib/memory-folders";
 import { useIdols } from "@/lib/idols";
-import { StoredImage } from "@/components/StoredImage";
 
 export function MemoryFolderFormSheet({
   open,

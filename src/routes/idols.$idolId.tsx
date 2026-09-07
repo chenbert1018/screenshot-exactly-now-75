@@ -1,3 +1,4 @@
+import { StoredImage } from "@/components/StoredImage";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { ChevronLeft, ImageIcon, Pencil } from "lucide-react";
@@ -20,7 +21,6 @@ import { DEFAULT_DAYS_BEFORE, formatDaysBefore, type ReminderType } from "@/lib/
 import { useReminderSource } from "@/lib/reminders.source";
 import { Bell } from "lucide-react";
 import { daysSince, primaryDay, nextAnniversary } from "@/lib/dates";
-import { StoredImage } from "@/components/StoredImage";
 
 export const Route = createFileRoute("/idols/$idolId")({
   head: () => ({

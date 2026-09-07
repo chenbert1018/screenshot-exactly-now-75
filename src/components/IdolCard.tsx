@@ -1,8 +1,8 @@
+import { StoredImage } from "@/components/StoredImage";
 import { Link } from "@tanstack/react-router";
 import { ImageIcon, Plus } from "lucide-react";
 import type { Idol } from "@/lib/idols";
 import { daysSince, primaryDay } from "@/lib/dates";
-import { StoredImage } from "@/components/StoredImage";
 
 export function IdolCard({ idol }: { idol: Idol }) {
   const day = primaryDay(idol);

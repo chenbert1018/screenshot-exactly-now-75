@@ -1,3 +1,4 @@
+import { StoredImage } from "@/components/StoredImage";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ImageIcon, Plus } from "lucide-react";
 import { AppShell, PageHeader, EmptyState, SoftCard } from "@/components/AppShell";
@@ -5,7 +6,6 @@ import { useIdolSource } from "@/lib/idols.source";
 import { useEventSource } from "@/lib/events.source";
 import { useWidgetPreferenceSource } from "@/lib/widget-preferences.source";
 import {
-import { StoredImage } from "@/components/StoredImage";
   getWidgetCompanionContent,
   WIDGET_CONTENT_TYPES,
   type WidgetContentType,
