@@ -83,9 +83,7 @@ export function SoftCard({
   className?: string;
 }) {
   return (
-    <div
-      className={`rounded-2xl border border-border/60 bg-card shadow-soft transition-shadow duration-300 ${className}`}
-    >
+    <div className={`cream-card transition-shadow duration-300 ${className}`}>
       {children}
     </div>
   );
