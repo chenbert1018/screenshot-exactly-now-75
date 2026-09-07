@@ -19,7 +19,6 @@ import {
   birthdayDdayLine,
   debutDdayLine,
   eventDdayLine,
-  sugarLine,
   yearsAgoLine,
 } from "@/lib/fanCopy";
 import { dailySugarPick, type HeartItem } from "@/lib/heart";
