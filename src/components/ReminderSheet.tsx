@@ -7,7 +7,7 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
-import { REMINDER_OFFSETS } from "@/lib/reminders";
+import { DAYS_BEFORE_OPTIONS, reminderPreview } from "@/lib/reminders";
 
 export function ReminderSheet({
   open,
@@ -15,7 +15,7 @@ export function ReminderSheet({
   eventLabel,
   eventTitle,
   eventDate,
-  initialOffsets,
+  initialDaysBefore,
   onSave,
 }: {
   open: boolean;
@@ -23,19 +23,21 @@ export function ReminderSheet({
   eventLabel: string;
   eventTitle: string;
   eventDate: string;
-  initialOffsets: number[];
-  onSave: (offsets: number[]) => void;
+  /** null 代表不提醒 */
+  initialDaysBefore: number | null;
+  onSave: (daysBefore: number | null) => void;
 }) {
-  const [selected, setSelected] = useState<number[]>(initialOffsets);
+  const [selected, setSelected] = useState<number | null>(initialDaysBefore);
 
   useEffect(() => {
-    if (open) setSelected(initialOffsets);
+    if (open) setSelected(initialDaysBefore);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  function toggle(value: number) {
-    setSelected((s) => (s.includes(value) ? s.filter((v) => v !== value) : [...s, value]));
-  }
+  const options: { value: number | null; label: string }[] = [
+    { value: null, label: "不提醒" },
+    ...DAYS_BEFORE_OPTIONS.map((o) => ({ value: o.value as number | null, label: o.label })),
+  ];
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -51,19 +53,21 @@ export function ReminderSheet({
         <div className="rounded-2xl bg-surface/60 px-4 py-3">
           <p className="text-xs text-muted-foreground">{eventLabel}</p>
           <p className="mt-0.5 text-[15px]">{eventTitle}</p>
-          <p className="mt-0.5 text-sm text-muted-foreground">{eventDate}</p>
+          {eventDate ? (
+            <p className="mt-0.5 text-sm text-muted-foreground">{eventDate}</p>
+          ) : null}
         </div>
 
         <p className="pt-4 pb-1 text-[15px] font-medium">提醒我</p>
         <ul className="space-y-2">
-          {REMINDER_OFFSETS.map((o) => {
-            const active = selected.includes(o.value);
+          {options.map((o) => {
+            const active = selected === o.value;
             return (
-              <li key={o.value}>
+              <li key={String(o.value)}>
                 <button
                   type="button"
                   aria-pressed={active}
-                  onClick={() => toggle(o.value)}
+                  onClick={() => setSelected(o.value)}
                   className={`flex w-full items-center justify-between rounded-2xl border px-4 py-3.5 text-left text-[15px] transition-colors ${
                     active
                       ? "border-primary/50 bg-primary/10 text-foreground"
@@ -83,6 +87,12 @@ export function ReminderSheet({
             );
           })}
         </ul>
+
+        {selected !== null ? (
+          <p className="mt-4 rounded-2xl bg-accent/40 px-4 py-3 text-sm text-muted-foreground">
+            {reminderPreview(eventTitle || "這個日子", selected)}
+          </p>
+        ) : null}
 
         <div className="flex gap-3 pt-5">
           <button

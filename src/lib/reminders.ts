@@ -2,64 +2,40 @@ import { useCallback, useEffect, useState } from "react";
 
 const STORAGE_KEY = "idoldays.reminders.v1";
 
-/** 固定的提醒時間（分鐘） */
-export const REMINDER_OFFSETS = [
-  { value: 43200, label: "30 天前" },
-  { value: 10080, label: "7 天前" },
-  { value: 1440, label: "1 天前" },
-  { value: 180, label: "3 小時前" },
-  { value: 60, label: "1 小時前" },
-  { value: 10, label: "10 分鐘前" },
-] as const;
-
-export type ReminderOffset = (typeof REMINDER_OFFSETS)[number]["value"];
+export type ReminderType = "EVENT" | "BIRTHDAY" | "ANNIVERSARY";
 
 export type Reminder = {
   id: string;
-  eventId: string;
-  /** 事件前幾分鐘提醒 */
-  offset: number;
+  eventId?: string;
+  idolId?: string;
+  type: ReminderType;
+  /** 提前幾天提醒，0 = 當天 */
+  daysBefore: number;
   enabled: boolean;
-  /** ISO 字串，方便未來給 Backend / Notification Scheduler 使用 */
   createdAt: string;
 };
 
-export function formatReminderOffset(offset: number): string {
-  return REMINDER_OFFSETS.find((o) => o.value === offset)?.label ?? `${offset} 分鐘前`;
+/** 可選的提醒時機 */
+export const DAYS_BEFORE_OPTIONS = [
+  { value: 0, label: "當天" },
+  { value: 1, label: "1 天前" },
+  { value: 3, label: "3 天前" },
+  { value: 7, label: "7 天前" },
+] as const;
+
+/** 新提醒的預設值 */
+export const DEFAULT_DAYS_BEFORE = 3;
+
+export function formatDaysBefore(daysBefore: number): string {
+  if (daysBefore <= 0) return "當天";
+  return `${daysBefore} 天前`;
 }
 
-/** 依時間由遠到近排序後組成「7 天前 · 1 天前」 */
-export function formatReminderSummary(list: Reminder[]): string {
-  const active = list.filter((r) => r.enabled).sort((a, b) => b.offset - a.offset);
-  if (active.length === 0) return "尚未設定提醒";
-  return active.map((r) => formatReminderOffset(r.offset)).join(" · ");
-}
-
-function read(): Reminder[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? (parsed as Reminder[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-function write(list: Reminder[]) {
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-  } catch {
-    /* quota or unavailable storage */
-  }
-}
-
-const listeners = new Set<(list: Reminder[]) => void>();
-
-function emit(list: Reminder[]) {
-  write(list);
-  listeners.forEach((fn) => fn(list));
+/** 提醒文案預覽（只是文字，不會真的發送通知） */
+export function reminderPreview(title: string, daysBefore: number): string {
+  if (daysBefore <= 0) return `今天就是${title}，記得一起收藏這一天 ♡`;
+  if (daysBefore === 1) return `再一下下，距離${title}只剩 1 天了 ♡`;
+  return `距離${title}還有 ${daysBefore} 天 ♡`;
 }
 
 function newId() {
@@ -67,39 +43,132 @@ function newId() {
   return `reminder_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
-/** 取得某個 Event 的提醒 */
+type LegacyReminder = Reminder & { offset?: number };
+
+function normalize(raw: unknown): Reminder[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((item) => {
+      const r = item as LegacyReminder;
+      if (!r || typeof r !== "object") return null;
+      const daysBefore =
+        typeof r.daysBefore === "number"
+          ? r.daysBefore
+          : typeof r.offset === "number"
+            ? Math.max(0, Math.round(r.offset / 1440))
+            : DEFAULT_DAYS_BEFORE;
+      return {
+        id: r.id ?? newId(),
+        eventId: r.eventId,
+        idolId: r.idolId,
+        type: r.type ?? "EVENT",
+        daysBefore,
+        enabled: r.enabled !== false,
+        createdAt: r.createdAt ?? new Date().toISOString(),
+      } satisfies Reminder;
+    })
+    .filter((r): r is Reminder => Boolean(r));
+}
+
+export function loadReminders(): Reminder[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    return normalize(JSON.parse(raw));
+  } catch {
+    return [];
+  }
+}
+
+const listeners = new Set<(list: Reminder[]) => void>();
+
+export function saveReminders(list: Reminder[]) {
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  } catch {
+    /* quota or unavailable storage */
+  }
+  listeners.forEach((fn) => fn(list));
+}
+
+export function addReminder(input: Omit<Reminder, "id" | "createdAt">): Reminder {
+  const reminder: Reminder = { ...input, id: newId(), createdAt: new Date().toISOString() };
+  saveReminders([...loadReminders(), reminder]);
+  return reminder;
+}
+
+export function updateReminder(id: string, patch: Partial<Omit<Reminder, "id">>) {
+  saveReminders(loadReminders().map((r) => (r.id === id ? { ...r, ...patch } : r)));
+}
+
+export function deleteReminder(id: string) {
+  saveReminders(loadReminders().filter((r) => r.id !== id));
+}
+
+export type ReminderTarget = { type: ReminderType; eventId?: string; idolId?: string };
+
+function matches(r: Reminder, target: ReminderTarget) {
+  if (r.type !== target.type) return false;
+  if (target.eventId) return r.eventId === target.eventId;
+  if (target.idolId) return r.idolId === target.idolId;
+  return false;
+}
+
+export function findReminder(list: Reminder[], target: ReminderTarget): Reminder | undefined {
+  return list.find((r) => matches(r, target));
+}
+
+/** 設定（或清除）某個目標的提醒。daysBefore 為 null 代表「不提醒」 */
+export function setReminderFor(target: ReminderTarget, daysBefore: number | null) {
+  const list = loadReminders();
+  const existing = list.find((r) => matches(r, target));
+  if (daysBefore === null) {
+    if (existing) saveReminders(list.filter((r) => r.id !== existing.id));
+    return;
+  }
+  if (existing) {
+    saveReminders(
+      list.map((r) => (r.id === existing.id ? { ...r, daysBefore, enabled: true } : r)),
+    );
+    return;
+  }
+  saveReminders([
+    ...list,
+    {
+      id: newId(),
+      ...target,
+      daysBefore,
+      enabled: true,
+      createdAt: new Date().toISOString(),
+    },
+  ]);
+}
+
+/** 取得某個 Event 的提醒（事件刪除時使用） */
 export function getReminders(eventId: string): Reminder[] {
-  return read().filter((r) => r.eventId === eventId);
+  return loadReminders().filter((r) => r.eventId === eventId);
 }
 
-/** 以勾選的 offsets 覆寫某 Event 的提醒（不產生重複資料） */
-export function saveReminders(eventId: string, offsets: number[]): Reminder[] {
-  const all = read();
-  const existing = all.filter((r) => r.eventId === eventId);
-  const others = all.filter((r) => r.eventId !== eventId);
-  const unique = Array.from(new Set(offsets)).sort((a, b) => b - a);
-
-  const next = unique.map((offset) => {
-    const prev = existing.find((r) => r.offset === offset);
-    return prev
-      ? { ...prev, enabled: true }
-      : { id: newId(), eventId, offset, enabled: true, createdAt: new Date().toISOString() };
-  });
-
-  emit([...others, ...next]);
-  return next;
-}
-
-/** 刪除某 Event 的所有提醒 */
 export function deleteReminders(eventId: string) {
-  emit(read().filter((r) => r.eventId !== eventId));
+  saveReminders(loadReminders().filter((r) => r.eventId !== eventId));
+}
+
+export function deleteRemindersForIdol(idolId: string) {
+  saveReminders(loadReminders().filter((r) => r.idolId !== idolId));
+}
+
+export function formatReminderSummary(list: Reminder[]): string {
+  const active = list.filter((r) => r.enabled);
+  if (active.length === 0) return "不提醒";
+  return active.map((r) => formatDaysBefore(r.daysBefore)).join(" · ");
 }
 
 export function useReminders() {
   const [reminders, setReminders] = useState<Reminder[]>([]);
 
   useEffect(() => {
-    setReminders(read());
+    setReminders(loadReminders());
     const fn = (list: Reminder[]) => setReminders(list);
     listeners.add(fn);
     return () => {
@@ -112,5 +181,10 @@ export function useReminders() {
     [reminders],
   );
 
-  return { reminders, remindersFor, saveReminders, deleteReminders, getReminders };
+  const reminderFor = useCallback(
+    (target: ReminderTarget) => findReminder(reminders, target),
+    [reminders],
+  );
+
+  return { reminders, remindersFor, reminderFor };
 }
