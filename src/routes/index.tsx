@@ -124,9 +124,11 @@ function CountdownHero({ idol, event }: { idol: Idol; event?: IdolEvent | undefi
           <p className="mt-1.5 text-sm text-muted-foreground">
             {next.dateLabel}・{next.ddayLabel}
           </p>
-          {isToday ? (
-            <p className="mt-3 text-[15px] text-primary">今天就是值得期待的日子。</p>
-          ) : null}
+          <p
+            className={`mt-3 text-[15px] leading-relaxed ${isToday ? "text-primary" : "text-muted-foreground"}`}
+          >
+            {next.line}
+          </p>
         </>
 
       ) : (
