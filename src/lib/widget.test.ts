@@ -102,6 +102,18 @@ import {
 
 const monday = new Date(2026, 8, 7); // 2026-09-07 星期一
 
+// 測試環境的最小 localStorage stub（不影響瀏覽器行為）
+const store = new Map<string, string>();
+(globalThis as unknown as { window: unknown }).window = {
+  localStorage: {
+    getItem: (k: string) => store.get(k) ?? null,
+    setItem: (k: string, v: string) => void store.set(k, v),
+    removeItem: (k: string) => void store.delete(k),
+  },
+};
+const localStorage = (globalThis as unknown as { window: { localStorage: Storage } }).window
+  .localStorage;
+
 function contentWith(over: { date?: Date; enabled?: WidgetContentType[]; idolId?: string } = {}) {
   return getWidgetCompanionContent({
     idols: [idol],
@@ -160,7 +172,7 @@ describe("Widget V2 content engine", () => {
     const b = contentWith({ date: new Date(2026, 8, 8) });
     expect(a.generatedFor).toBe("2026-09-07");
     expect(b.generatedFor).toBe("2026-09-08");
-    expect(a.mood.label).not.toBe(b.mood.label);
+    expect(a.mood.label === b.mood.label).toBe(false);
   });
 
   test("星期一 mood", () => {
