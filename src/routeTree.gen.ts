@@ -21,6 +21,7 @@ import { Route as IdolsRouteImport } from './routes/idols'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as WidgetRouteImport } from './routes/widget'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as IdolsIdolIdRouteImport } from './routes/idols.$idolId'
 import { Route as MemoriesIndexRouteImport } from './routes/memories.index'
 import { Route as MemoriesFolderIdRouteImport } from './routes/memories.$folderId'
@@ -85,6 +86,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
 const IdolsIdolIdRoute = IdolsIdolIdRouteImport.update({
   id: '/$idolId',
   path: '/$idolId',
@@ -113,6 +119,7 @@ export interface FileRoutesByFullPath {
   '/idols': typeof IdolsRouteWithChildren
   '/profile': typeof ProfileRoute
   '/widget': typeof WidgetRoute
+  '/admin/users': typeof AdminUsersRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
   '/memories/$folderId': typeof MemoriesFolderIdRoute
   '/admin/': typeof AdminIndexRoute
@@ -129,6 +136,7 @@ export interface FileRoutesByTo {
   '/idols': typeof IdolsRouteWithChildren
   '/profile': typeof ProfileRoute
   '/widget': typeof WidgetRoute
+  '/admin/users': typeof AdminUsersRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
   '/memories/$folderId': typeof MemoriesFolderIdRoute
   '/admin': typeof AdminIndexRoute
@@ -147,6 +155,7 @@ export interface FileRoutesById {
   '/idols': typeof IdolsRouteWithChildren
   '/profile': typeof ProfileRoute
   '/widget': typeof WidgetRoute
+  '/admin/users': typeof AdminUsersRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
   '/memories/$folderId': typeof MemoriesFolderIdRoute
   '/admin/': typeof AdminIndexRoute
@@ -166,6 +175,7 @@ export interface FileRouteTypes {
     | '/idols'
     | '/profile'
     | '/widget'
+    | '/admin/users'
     | '/idols/$idolId'
     | '/memories/$folderId'
     | '/admin/'
@@ -182,6 +192,7 @@ export interface FileRouteTypes {
     | '/idols'
     | '/profile'
     | '/widget'
+    | '/admin/users'
     | '/idols/$idolId'
     | '/memories/$folderId'
     | '/admin'
@@ -199,6 +210,7 @@ export interface FileRouteTypes {
     | '/idols'
     | '/profile'
     | '/widget'
+    | '/admin/users'
     | '/idols/$idolId'
     | '/memories/$folderId'
     | '/admin/'
@@ -307,6 +319,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/idols/$idolId': {
       id: '/idols/$idolId'
       path: '/$idolId'
@@ -332,10 +351,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminUsersRoute: typeof AdminUsersRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminUsersRoute: AdminUsersRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 
