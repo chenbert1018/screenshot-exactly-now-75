@@ -4,7 +4,7 @@ import {
   Sparkles,
   CalendarHeart,
   FolderHeart,
-  Search,
+  Heart as HeartIcon,
   CalendarDays,
   User,
 } from "lucide-react";
@@ -14,7 +14,7 @@ const items = [
   { to: "/idols", label: "偶像", Icon: Sparkles },
   { to: "/events", label: "日子", Icon: CalendarHeart },
   { to: "/memories", label: "回憶", Icon: FolderHeart },
-  { to: "/archaeology", label: "考古", Icon: Search },
+  { to: "/heart", label: "心動", Icon: HeartIcon },
   { to: "/calendar", label: "行事曆", Icon: CalendarDays },
   { to: "/profile", label: "我的", Icon: User },
 ] as const;

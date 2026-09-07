@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ArchaeologyRouteImport } from './routes/archaeology'
 import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as EventsRouteImport } from './routes/events'
+import { Route as HeartRouteImport } from './routes/heart'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as IdolsRouteImport } from './routes/idols'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -38,6 +39,11 @@ const CalendarRoute = CalendarRouteImport.update({
 const EventsRoute = EventsRouteImport.update({
   id: '/events',
   path: '/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HeartRoute = HeartRouteImport.update({
+  id: '/heart',
+  path: '/heart',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HomeRoute = HomeRouteImport.update({
@@ -76,6 +82,7 @@ export interface FileRoutesByFullPath {
   '/archaeology': typeof ArchaeologyRoute
   '/calendar': typeof CalendarRoute
   '/events': typeof EventsRoute
+  '/heart': typeof HeartRoute
   '/home': typeof HomeRoute
   '/idols': typeof IdolsRouteWithChildren
   '/profile': typeof ProfileRoute
@@ -88,6 +95,7 @@ export interface FileRoutesByTo {
   '/archaeology': typeof ArchaeologyRoute
   '/calendar': typeof CalendarRoute
   '/events': typeof EventsRoute
+  '/heart': typeof HeartRoute
   '/home': typeof HomeRoute
   '/idols': typeof IdolsRouteWithChildren
   '/profile': typeof ProfileRoute
@@ -101,6 +109,7 @@ export interface FileRoutesById {
   '/archaeology': typeof ArchaeologyRoute
   '/calendar': typeof CalendarRoute
   '/events': typeof EventsRoute
+  '/heart': typeof HeartRoute
   '/home': typeof HomeRoute
   '/idols': typeof IdolsRouteWithChildren
   '/profile': typeof ProfileRoute
@@ -115,6 +124,7 @@ export interface FileRouteTypes {
     | '/archaeology'
     | '/calendar'
     | '/events'
+    | '/heart'
     | '/home'
     | '/idols'
     | '/profile'
@@ -127,6 +137,7 @@ export interface FileRouteTypes {
     | '/archaeology'
     | '/calendar'
     | '/events'
+    | '/heart'
     | '/home'
     | '/idols'
     | '/profile'
@@ -139,6 +150,7 @@ export interface FileRouteTypes {
     | '/archaeology'
     | '/calendar'
     | '/events'
+    | '/heart'
     | '/home'
     | '/idols'
     | '/profile'
@@ -152,6 +164,7 @@ export interface RootRouteChildren {
   ArchaeologyRoute: typeof ArchaeologyRoute
   CalendarRoute: typeof CalendarRoute
   EventsRoute: typeof EventsRoute
+  HeartRoute: typeof HeartRoute
   HomeRoute: typeof HomeRoute
   IdolsRoute: typeof IdolsRouteWithChildren
   ProfileRoute: typeof ProfileRoute
@@ -187,6 +200,13 @@ declare module '@tanstack/react-router' {
       path: '/events'
       fullPath: '/events'
       preLoaderRoute: typeof EventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/heart': {
+      id: '/heart'
+      path: '/heart'
+      fullPath: '/heart'
+      preLoaderRoute: typeof HeartRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/home': {
@@ -249,6 +269,7 @@ const rootRouteChildren: RootRouteChildren = {
   ArchaeologyRoute: ArchaeologyRoute,
   CalendarRoute: CalendarRoute,
   EventsRoute: EventsRoute,
+  HeartRoute: HeartRoute,
   HomeRoute: HomeRoute,
   IdolsRoute: IdolsRouteWithChildren,
   ProfileRoute: ProfileRoute,
