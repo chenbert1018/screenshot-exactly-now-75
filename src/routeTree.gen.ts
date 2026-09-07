@@ -66,9 +66,9 @@ const MemoriesIndexRoute = MemoriesIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const MemoriesFolderIdRoute = MemoriesFolderIdRouteImport.update({
-  id: '/$folderId',
-  path: '/$folderId',
-  getParentRoute: () => MemoriesRoute,
+  id: '/memories/$folderId',
+  path: '/memories/$folderId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -155,6 +155,7 @@ export interface RootRouteChildren {
   HomeRoute: typeof HomeRoute
   IdolsRoute: typeof IdolsRouteWithChildren
   ProfileRoute: typeof ProfileRoute
+  MemoriesFolderIdRoute: typeof MemoriesFolderIdRoute
   MemoriesIndexRoute: typeof MemoriesIndexRoute
 }
 
@@ -225,10 +226,10 @@ declare module '@tanstack/react-router' {
     }
     '/memories/$folderId': {
       id: '/memories/$folderId'
-      path: '/$folderId'
+      path: '/memories/$folderId'
       fullPath: '/memories/$folderId'
       preLoaderRoute: typeof MemoriesFolderIdRouteImport
-      parentRoute: typeof MemoriesRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -251,6 +252,7 @@ const rootRouteChildren: RootRouteChildren = {
   HomeRoute: HomeRoute,
   IdolsRoute: IdolsRouteWithChildren,
   ProfileRoute: ProfileRoute,
+  MemoriesFolderIdRoute: MemoriesFolderIdRoute,
   MemoriesIndexRoute: MemoriesIndexRoute,
 }
 export const routeTree = rootRouteImport
