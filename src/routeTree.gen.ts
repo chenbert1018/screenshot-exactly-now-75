@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ArchaeologyRouteImport } from './routes/archaeology'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as HeartRouteImport } from './routes/heart'
@@ -30,6 +31,11 @@ const IndexRoute = IndexRouteImport.update({
 const ArchaeologyRoute = ArchaeologyRouteImport.update({
   id: '/archaeology',
   path: '/archaeology',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CalendarRoute = CalendarRouteImport.update({
@@ -86,6 +92,7 @@ const MemoriesFolderIdRoute = MemoriesFolderIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/archaeology': typeof ArchaeologyRoute
+  '/auth': typeof AuthRoute
   '/calendar': typeof CalendarRoute
   '/events': typeof EventsRoute
   '/heart': typeof HeartRoute
@@ -100,6 +107,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/archaeology': typeof ArchaeologyRoute
+  '/auth': typeof AuthRoute
   '/calendar': typeof CalendarRoute
   '/events': typeof EventsRoute
   '/heart': typeof HeartRoute
@@ -115,6 +123,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/archaeology': typeof ArchaeologyRoute
+  '/auth': typeof AuthRoute
   '/calendar': typeof CalendarRoute
   '/events': typeof EventsRoute
   '/heart': typeof HeartRoute
@@ -131,6 +140,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/archaeology'
+    | '/auth'
     | '/calendar'
     | '/events'
     | '/heart'
@@ -145,6 +155,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/archaeology'
+    | '/auth'
     | '/calendar'
     | '/events'
     | '/heart'
@@ -159,6 +170,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/archaeology'
+    | '/auth'
     | '/calendar'
     | '/events'
     | '/heart'
@@ -174,6 +186,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ArchaeologyRoute: typeof ArchaeologyRoute
+  AuthRoute: typeof AuthRoute
   CalendarRoute: typeof CalendarRoute
   EventsRoute: typeof EventsRoute
   HeartRoute: typeof HeartRoute
@@ -199,6 +212,13 @@ declare module '@tanstack/react-router' {
       path: '/archaeology'
       fullPath: '/archaeology'
       preLoaderRoute: typeof ArchaeologyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/calendar': {
@@ -287,6 +307,7 @@ const IdolsRouteWithChildren = IdolsRoute._addFileChildren(IdolsRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ArchaeologyRoute: ArchaeologyRoute,
+  AuthRoute: AuthRoute,
   CalendarRoute: CalendarRoute,
   EventsRoute: EventsRoute,
   HeartRoute: HeartRoute,

@@ -78,6 +78,20 @@ function ProfilePage() {
         </div>
       </SoftCard>
 
+      <Section title="雲端帳號">
+        <SoftCard className="divide-y divide-border/60">
+          <Link
+            to="/auth"
+            className="flex w-full items-center gap-3 px-5 py-4 text-left transition-colors active:bg-surface/70"
+          >
+            <Cloud className="size-[18px] text-muted-foreground" strokeWidth={1.6} />
+            <span className="flex-1 text-sm">登入／註冊雲端帳號</span>
+            <ChevronRight className="size-4 text-muted-foreground" strokeWidth={1.6} />
+          </Link>
+        </SoftCard>
+      </Section>
+
+
       <Section title="提醒設定">
         <SoftCard className="px-5 py-5">
           <p className="flex items-center gap-2 text-[15px] font-medium">🔔 重要日子提醒</p>
