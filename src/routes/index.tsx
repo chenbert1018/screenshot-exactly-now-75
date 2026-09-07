@@ -238,18 +238,60 @@ function KeepToday({ idol }: { idol?: Idol }) {
   );
 }
 
-function HeartPrompt({ onOpen }: { onOpen: () => void }) {
+/** 首頁糖區：只回顧已收藏的糖，不會產生任何新資料 */
+function SugarSection({
+  pick,
+  idolName,
+  onOpen,
+  onCreate,
+}: {
+  pick: HeartItem | null;
+  idolName: string;
+  onOpen: () => void;
+  onCreate: () => void;
+}) {
   return (
-    <div className="mt-9 flex items-center justify-between gap-3 rounded-3xl border border-border/60 bg-card/70 px-5 py-4 shadow-soft">
-      <span className="min-w-0 text-sm">{sugarLine()}</span>
-      <button
-        type="button"
-        onClick={onOpen}
-        className="shrink-0 rounded-full bg-primary px-4 py-2 text-xs font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
-      >
-        收藏這顆糖 ♡
-      </button>
-    </div>
+    <section className="mt-9">
+      <h2 className="font-display text-[17px]">🍬 今天也有一顆糖嗎？</h2>
+      {pick ? (
+        <>
+          <p className="mt-1.5 text-sm text-muted-foreground">這顆我可以嗑很久 👀</p>
+          <SoftCard className="mt-3 overflow-hidden p-0">
+            {pick.image ? (
+              <StoredImage
+                src={pick.image}
+                alt={pick.title}
+                className="aspect-[4/3] w-full object-cover"
+              />
+            ) : null}
+            <div className="px-5 py-4">
+              <p className="font-display text-[16px] leading-snug">{pick.title}</p>
+              <p className="mt-1.5 text-xs text-muted-foreground">
+                {dotDate(pick.date)}・{idolName}
+              </p>
+              <button
+                type="button"
+                onClick={onOpen}
+                className="mt-4 inline-flex rounded-full bg-primary px-5 py-2 text-xs font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+              >
+                去嗑這顆 →
+              </button>
+            </div>
+          </SoftCard>
+        </>
+      ) : (
+        <div className="mt-3 rounded-3xl border border-border/60 bg-card/70 px-5 py-5 shadow-soft">
+          <p className="text-sm text-muted-foreground">還沒有收藏的糖，先去存一顆吧 ♡</p>
+          <button
+            type="button"
+            onClick={onCreate}
+            className="mt-4 inline-flex rounded-full bg-primary px-5 py-2 text-xs font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+          >
+            去收藏第一顆糖 →
+          </button>
+        </div>
+      )}
+    </section>
   );
 }
 
