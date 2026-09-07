@@ -307,6 +307,14 @@ function YearsAgo() {
 function HomePage() {
   const { idols, ready, findIdol, mainIdol } = useIdolSource();
   const [heartOpen, setHeartOpen] = useState(false);
+  const { items: sugarItems, add: addSugar, update: updateSugar, remove: removeSugar } =
+    useSugarSource();
+  const [sugarDetail, setSugarDetail] = useState<HeartItem | null>(null);
+  const [sugarEditing, setSugarEditing] = useState<HeartItem | null>(null);
+  const [sugarPendingDelete, setSugarPendingDelete] = useState<HeartItem | null>(null);
+  // 每天固定挑一顆「已收藏」的糖回顧，不會建立任何新資料
+  const dailySugar = useMemo(() => dailySugarPick(sugarItems), [sugarItems]);
+  const sugarIdolName = (id: string) => idols.find((i) => i.id === id)?.name || "已刪除的偶像";
   const { events } = useEventSource();
   const main = mainIdol;
   const others = idols.filter((i) => i.id !== main?.id);
