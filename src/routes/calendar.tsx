@@ -246,6 +246,11 @@ function CalendarPage() {
             if (!d) return <div key={`e${i}`} className="h-12" />;
             const key = toKey(cursor.y, cursor.m, d);
             const list = byDate.get(key) ?? [];
+            const births = birthdaysByDate.get(key) ?? [];
+            const marks = [
+              ...births.map((b) => ({ id: `b-${b.idol.id}`, emoji: "🎂" })),
+              ...list.map((e) => ({ id: e.id, emoji: INDICATOR[e.type] ?? "♡" })),
+            ];
             const isToday = key === todayKey;
             return (
               <button
@@ -264,8 +269,8 @@ function CalendarPage() {
                   {d}
                 </span>
                 <span className="flex h-3 items-center gap-px text-[9px] leading-none">
-                  {list.slice(0, 2).map((e) => (
-                    <span key={e.id}>{INDICATOR[e.type] ?? "♡"}</span>
+                  {marks.slice(0, 2).map((m) => (
+                    <span key={m.id}>{m.emoji}</span>
                   ))}
                 </span>
               </button>
@@ -277,7 +282,7 @@ function CalendarPage() {
       <section className="mb-8">
         <h2 className="mb-3 text-[15px] font-medium tracking-wide">本月值得期待</h2>
 
-        {monthEvents.length === 0 ? (
+        {monthItems.length === 0 ? (
           <SoftCard className="px-6 py-10 text-center">
             <p className="text-[15px]">這個月還沒有值得倒數的日子。</p>
             <button
@@ -291,7 +296,34 @@ function CalendarPage() {
           </SoftCard>
         ) : (
           <div className="space-y-3">
-            {monthEvents.map((e) => {
+            {monthItems.map((item) => {
+              if (item.kind === "birthday") {
+                const b = item.birthday;
+                return (
+                  <button
+                    key={`birthday-${b.idol.id}`}
+                    type="button"
+                    onClick={() => setBirthdayIdolId(b.idol.id)}
+                    className="w-full text-left transition-transform duration-300 active:scale-[0.99]"
+                  >
+                    <SoftCard className="flex items-center gap-4 px-5 py-4">
+                      <span className="w-12 shrink-0 text-sm text-muted-foreground">
+                        {pad(cursor.m)}/{pad(b.day)}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-xs text-muted-foreground">
+                          🎂 {idolLabel(b.idol)}
+                        </span>
+                        <span className="block truncate text-[15px]">🎂 {b.idol.name} 生日</span>
+                      </span>
+                      <span className="shrink-0 font-display text-[17px] leading-none font-semibold text-primary">
+                        ♡
+                      </span>
+                    </SoftCard>
+                  </button>
+                );
+              }
+              const e = item.event;
               const c = eventCountdown(e.date, base);
               const done = c?.status === "COMPLETED";
               const meta = eventTypeMeta(e.type);
@@ -329,6 +361,7 @@ function CalendarPage() {
           </div>
         )}
       </section>
+
 
       {/* 日期 Dialog：多個事件或沒有事件 */}
       <Dialog
