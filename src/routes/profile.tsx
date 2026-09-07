@@ -1,5 +1,11 @@
+import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { UserRound, Settings, Bell, Palette, Sparkles, ChevronRight } from "lucide-react";
+import {
+  GeneralSettingsSheet,
+  NotificationSettingsSheet,
+  ThemeSettingsSheet,
+} from "@/components/SettingsSheets";
 import { AppShell, PageHeader, Section, SoftCard } from "@/components/AppShell";
 import { Trash2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";

@@ -54,7 +54,7 @@ function OptionRow({
   onSelect,
 }: {
   label: string;
-  hint?: string;
+  hint?: string | undefined;
   selected: boolean;
   onSelect: () => void;
 }) {
