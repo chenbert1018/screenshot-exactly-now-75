@@ -15,6 +15,13 @@ import {
   todayFullLabel,
   todayWeekday,
 } from "@/lib/companion";
+import {
+  birthdayDdayLine,
+  debutDdayLine,
+  eventDdayLine,
+  sugarLine,
+  yearsAgoLine,
+} from "@/lib/fanCopy";
 import { addHeartItem } from "@/lib/heart";
 import { HeartFormSheet } from "@/components/HeartFormSheet";
 
