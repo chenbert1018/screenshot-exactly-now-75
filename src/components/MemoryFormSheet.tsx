@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { emptyMemoryDraft, type MemoryDraft } from "@/lib/memories";
+import { StoredImage } from "@/components/StoredImage";
 
 function todayValue() {
   const n = new Date();
@@ -75,7 +76,7 @@ export function MemoryFormSheet({
             <p className="mb-2 text-sm font-medium">照片</p>
             {draft.photo ? (
               <div className="relative overflow-hidden rounded-2xl border border-border/60">
-                <img src={draft.photo} alt="回憶照片預覽" className="aspect-[4/3] w-full object-cover" />
+                <StoredImage src={draft.photo} alt="回憶照片預覽" className="aspect-[4/3] w-full object-cover" />
                 <div className="absolute right-3 bottom-3 flex gap-2">
                   <button
                     type="button"

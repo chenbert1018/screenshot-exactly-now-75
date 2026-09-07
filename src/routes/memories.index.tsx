@@ -8,6 +8,7 @@ import { useMemoryFolderSource } from "@/lib/memory-folders.source";
 import { useMemorySource } from "@/lib/memories.source";
 import { useIdolSource } from "@/lib/idols.source";
 import { parseLocalDate } from "@/lib/dates";
+import { StoredImage } from "@/components/StoredImage";
 
 export const Route = createFileRoute("/memories/")({
   head: () => ({
@@ -104,7 +105,7 @@ function MemoriesPage() {
               >
                 <SoftCard className="overflow-hidden p-0">
                   {f.coverPhoto ? (
-                    <img src={f.coverPhoto} alt={f.title} className="aspect-[16/9] w-full object-cover" />
+                    <StoredImage src={f.coverPhoto} alt={f.title} className="aspect-[16/9] w-full object-cover" />
                   ) : (
                     <div className="flex aspect-[16/9] w-full items-center justify-center bg-accent/25 text-primary/50">
                       <Images className="size-7" strokeWidth={1.3} />

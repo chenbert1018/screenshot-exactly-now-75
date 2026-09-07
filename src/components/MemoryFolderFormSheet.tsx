@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { emptyFolderDraft, type MemoryFolderDraft } from "@/lib/memory-folders";
 import { useIdols } from "@/lib/idols";
+import { StoredImage } from "@/components/StoredImage";
 
 export function MemoryFolderFormSheet({
   open,
@@ -69,7 +70,7 @@ export function MemoryFolderFormSheet({
             <p className="mb-2 text-sm font-medium">封面照片</p>
             {draft.coverPhoto ? (
               <div className="relative overflow-hidden rounded-2xl border border-border/60">
-                <img src={draft.coverPhoto} alt="封面預覽" className="aspect-[4/3] w-full object-cover" />
+                <StoredImage src={draft.coverPhoto} alt="封面預覽" className="aspect-[4/3] w-full object-cover" />
                 <div className="absolute right-3 bottom-3 flex gap-2">
                   <button
                     type="button"

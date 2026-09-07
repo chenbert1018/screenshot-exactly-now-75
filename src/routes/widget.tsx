@@ -5,6 +5,7 @@ import { useIdolSource } from "@/lib/idols.source";
 import { useEventSource } from "@/lib/events.source";
 import { useWidgetPreferenceSource } from "@/lib/widget-preferences.source";
 import {
+import { StoredImage } from "@/components/StoredImage";
   getWidgetCompanionContent,
   WIDGET_CONTENT_TYPES,
   type WidgetContentType,
@@ -101,7 +102,7 @@ function WidgetPage() {
         {on("IDOL") ? (
           <div className="mx-auto mb-5 size-24 overflow-hidden rounded-full border border-border/60 bg-surface">
             {content.idol?.image ? (
-              <img
+              <StoredImage
                 src={content.idol.image}
                 alt={`${content.idol.name} 的照片`}
                 className="size-full object-cover"

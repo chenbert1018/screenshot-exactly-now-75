@@ -33,6 +33,7 @@ import { type Idol } from "@/lib/idols";
 import { useIdolSource } from "@/lib/idols.source";
 import { useSugarSource } from "@/lib/sugar.source";
 import { parseLocalDate } from "@/lib/dates";
+import { StoredImage } from "@/components/StoredImage";
 
 export const Route = createFileRoute("/heart")({
   head: () => ({
@@ -102,7 +103,7 @@ function HeartCard({
     <button type="button" onClick={onOpen} className="w-full text-left">
       <SoftCard className="overflow-hidden p-0 transition-transform duration-300 active:scale-[0.98]">
         {item.image ? (
-          <img src={item.image} alt={item.title} className="aspect-[4/3] w-full object-cover" />
+          <StoredImage src={item.image} alt={item.title} className="aspect-[4/3] w-full object-cover" />
         ) : (
           <Placeholder item={item} name={idolName} />
         )}
@@ -151,7 +152,7 @@ function HeartDetailSheet({
 
             <div className="overflow-hidden rounded-2xl border border-border/60">
               {item.image ? (
-                <img src={item.image} alt={item.title} className="aspect-[4/3] w-full object-cover" />
+                <StoredImage src={item.image} alt={item.title} className="aspect-[4/3] w-full object-cover" />
               ) : (
                 <Placeholder item={item} name={idolName} />
               )}

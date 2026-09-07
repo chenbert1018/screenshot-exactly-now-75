@@ -4,6 +4,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { emptyDraft, type IdolDraft } from "@/lib/idols";
+import { StoredImage } from "@/components/StoredImage";
 
 const fields: { key: keyof IdolDraft; label: string; type?: string }[] = [
   { key: "name", label: "偶像名稱" },
@@ -74,7 +75,7 @@ export function IdolFormSheet({
             <p className="mb-2 text-sm font-medium">上傳偶像照片</p>
             {draft.photo ? (
               <div className="relative overflow-hidden rounded-2xl border border-border/60">
-                <img src={draft.photo} alt="偶像照片預覽" className="aspect-[3/4] w-full object-cover" />
+                <StoredImage src={draft.photo} alt="偶像照片預覽" className="aspect-[3/4] w-full object-cover" />
                 <div className="absolute right-3 bottom-3 flex gap-2">
                   <button
                     type="button"

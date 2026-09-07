@@ -20,6 +20,7 @@ import { DEFAULT_DAYS_BEFORE, formatDaysBefore, type ReminderType } from "@/lib/
 import { useReminderSource } from "@/lib/reminders.source";
 import { Bell } from "lucide-react";
 import { daysSince, primaryDay, nextAnniversary } from "@/lib/dates";
+import { StoredImage } from "@/components/StoredImage";
 
 export const Route = createFileRoute("/idols/$idolId")({
   head: () => ({
@@ -122,7 +123,7 @@ function IdolDetailPage() {
       <div className="overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft">
         <div className="aspect-[4/5] w-full bg-surface">
           {idol.photo ? (
-            <img src={idol.photo} alt={`${idol.name} 的照片`} className="size-full object-cover" />
+            <StoredImage src={idol.photo} alt={`${idol.name} 的照片`} className="size-full object-cover" />
           ) : (
             <div className="flex size-full flex-col items-center justify-center gap-2 text-muted-foreground">
               <ImageIcon className="size-7" strokeWidth={1.3} />

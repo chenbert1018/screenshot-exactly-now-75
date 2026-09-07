@@ -29,6 +29,7 @@ import {
 import { useMemorySource } from "@/lib/memories.source";
 import { useIdolSource } from "@/lib/idols.source";
 import { parseLocalDate } from "@/lib/dates";
+import { StoredImage } from "@/components/StoredImage";
 
 export const Route = createFileRoute("/memories/$folderId")({
   head: () => ({
@@ -131,7 +132,7 @@ function FolderDetailPage() {
       {folder ? (
         <header className="mb-8">
           {folder.coverPhoto ? (
-            <img
+            <StoredImage
               src={folder.coverPhoto}
               alt={folder.title}
               className="mb-4 aspect-[16/9] w-full rounded-3xl object-cover shadow-soft"
@@ -210,7 +211,7 @@ function FolderDetailPage() {
                   {g.items.map((m) => (
                     <SoftCard key={m.id} className="overflow-hidden p-0">
                       {m.photo ? (
-                        <img src={m.photo} alt={m.title} className="aspect-[4/3] w-full object-cover" />
+                        <StoredImage src={m.photo} alt={m.title} className="aspect-[4/3] w-full object-cover" />
                       ) : (
                         <div className="flex aspect-[16/7] w-full items-center justify-center bg-accent/20 text-primary/40">
                           <span className="text-lg select-none">♡</span>

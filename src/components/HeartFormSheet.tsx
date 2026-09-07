@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { emptyHeartDraft, HEART_TYPES, type HeartDraft } from "@/lib/heart";
 import type { Idol } from "@/lib/idols";
+import { StoredImage } from "@/components/StoredImage";
 
 function todayValue() {
   const n = new Date();
@@ -111,7 +112,7 @@ export function HeartFormSheet({
             <p className="mb-2 text-sm font-medium">照片</p>
             {draft.image ? (
               <div className="relative overflow-hidden rounded-2xl border border-border/60">
-                <img src={draft.image} alt="嗑糖照片預覽" className="aspect-[4/3] w-full object-cover" />
+                <StoredImage src={draft.image} alt="嗑糖照片預覽" className="aspect-[4/3] w-full object-cover" />
                 <div className="absolute right-3 bottom-3 flex gap-2">
                   <button
                     type="button"

@@ -13,6 +13,7 @@ import type { Idol } from "@/lib/idols";
 import { daysSince, parseLocalDate, today } from "@/lib/dates";
 import { type Milestone, type MilestoneDraft } from "@/lib/milestones";
 import { useMilestoneSource } from "@/lib/milestones.source";
+import { StoredImage } from "@/components/StoredImage";
 
 /** 依倒數狀態選擇陪伴文案（App 的口吻，不是偶像本人發言） */
 function companionLine(status: string, daysUntil: number | null) {
@@ -40,7 +41,7 @@ function shortDate(date: string) {
 function IdolVisual({ idol }: { idol?: Idol | undefined }) {
   if (idol?.photo) {
     return (
-      <img
+      <StoredImage
         src={idol.photo}
         alt={idol.name}
         className="size-28 rounded-full object-cover shadow-soft"
