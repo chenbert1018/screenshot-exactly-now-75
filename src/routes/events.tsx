@@ -98,7 +98,12 @@ function EventsPage() {
   const [detailId, setDetailId] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [reminderOpen, setReminderOpen] = useState(false);
-  const { reminders, remindersFor } = useReminders();
+  const {
+    remindersFor,
+    reminderFor,
+    setReminderFor,
+    removeRemindersForEvent,
+  } = useReminderSource();
 
 
   const { upcoming, past } = useMemo(() => sortEvents(events), [events]);
@@ -229,7 +234,7 @@ function EventsPage() {
         }}
         onDelete={async () => {
           if (!detail) return;
-          deleteReminders(detail.id);
+          await removeRemindersForEvent(detail.id);
           deleteMilestonesForEvent(detail.id);
           await removeEvent(detail.id);
           setDetailId(null);
@@ -247,10 +252,10 @@ function EventsPage() {
           eventTitle={detail.title}
           eventDate={eventCountdown(detail.date)?.dotDate ?? detail.date}
           initialDaysBefore={
-            findReminder(reminders, { type: "EVENT", eventId: detail.id })?.daysBefore ?? DEFAULT_DAYS_BEFORE
+            reminderFor({ type: "EVENT", eventId: detail.id })?.daysBefore ?? DEFAULT_DAYS_BEFORE
           }
           onSave={(daysBefore) => {
-            setReminderFor({ type: "EVENT", eventId: detail.id }, daysBefore);
+            void setReminderFor({ type: "EVENT", eventId: detail.id }, daysBefore);
             setReminderOpen(false);
           }}
         />

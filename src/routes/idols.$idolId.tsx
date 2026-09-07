@@ -56,7 +56,7 @@ function IdolDetailPage() {
   const [editing, setEditing] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [reminderKind, setReminderKind] = useState<ReminderType | null>(null);
-  const { reminders } = useReminders();
+  const { reminderFor, setReminderFor, removeRemindersForIdol } = useReminderSource();
 
   const idol = findIdol(idolId);
 
@@ -92,7 +92,7 @@ function IdolDetailPage() {
 
   async function handleDelete() {
     if (!idol) return;
-    deleteRemindersForIdol(idolId);
+    await removeRemindersForIdol(idolId);
     await removeIdol(idol.id);
     setConfirming(false);
     setEditing(false);
@@ -103,8 +103,8 @@ function IdolDetailPage() {
   const day = primaryDay(idol);
   const since = daysSince(idol.sinceDate);
   const debut = nextAnniversary(idol.debutDate);
-  const birthdayReminder = findReminder(reminders, { type: "BIRTHDAY", idolId });
-  const debutReminder = findReminder(reminders, { type: "ANNIVERSARY", idolId });
+  const birthdayReminder = reminderFor({ type: "BIRTHDAY", idolId });
+  const debutReminder = reminderFor({ type: "ANNIVERSARY", idolId });
 
   return (
     <AppShell>
@@ -226,7 +226,7 @@ function IdolDetailPage() {
         }
         onSave={(daysBefore) => {
           if (!reminderKind) return;
-          setReminderFor({ type: reminderKind, idolId }, daysBefore);
+          void setReminderFor({ type: reminderKind, idolId }, daysBefore);
           setReminderKind(null);
         }}
       />

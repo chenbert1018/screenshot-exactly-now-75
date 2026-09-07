@@ -9,14 +9,11 @@ import {
 import { AppShell, PageHeader, Section, SoftCard } from "@/components/AppShell";
 import { Trash2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import {
-  deleteReminder,
-  formatDaysBefore,
-  updateReminder,
-  useReminders,
-} from "@/lib/reminders";
-import { useIdols } from "@/lib/idols";
-import { useEvents, eventTypeMeta } from "@/lib/events";
+import { formatDaysBefore } from "@/lib/reminders";
+import { useReminderSource } from "@/lib/reminders.source";
+import { useIdolSource } from "@/lib/idols.source";
+import { eventTypeMeta } from "@/lib/events";
+import { useEventSource } from "@/lib/events.source";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -40,9 +37,9 @@ const settings: { key: SettingKey; label: string; Icon: typeof Settings }[] = [
 
 function ProfilePage() {
   const [openSheet, setOpenSheet] = useState<SettingKey | null>(null);
-  const { reminders } = useReminders();
-  const { idols } = useIdols();
-  const { events } = useEvents();
+  const { reminders, updateReminder, removeReminder } = useReminderSource();
+  const { idols } = useIdolSource();
+  const { events } = useEventSource();
 
   const reminderRows = reminders.map((r) => {
     const event = r.eventId ? events.find((e) => e.id === r.eventId) : undefined;
@@ -115,12 +112,12 @@ function ProfilePage() {
                   <Switch
                     checked={row.enabled}
                     aria-label={`${row.title} 提醒開關`}
-                    onCheckedChange={(v) => updateReminder(row.id, { enabled: v })}
+                    onCheckedChange={(v) => void updateReminder(row.id, { enabled: v })}
                   />
                   <button
                     type="button"
                     aria-label={`刪除 ${row.title} 提醒`}
-                    onClick={() => deleteReminder(row.id)}
+                    onClick={() => void removeReminder(row.id)}
                     className="rounded-full p-2 text-muted-foreground transition-transform duration-300 active:scale-90"
                   >
                     <Trash2 className="size-4" strokeWidth={1.6} />

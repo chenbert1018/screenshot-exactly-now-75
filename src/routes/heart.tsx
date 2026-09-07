@@ -29,7 +29,9 @@ import {
   type HeartItem,
   type HeartItemType,
 } from "@/lib/heart";
-import { useIdols, type Idol } from "@/lib/idols";
+import { type Idol } from "@/lib/idols";
+import { useIdolSource } from "@/lib/idols.source";
+import { useSugarSource } from "@/lib/sugar.source";
 import { parseLocalDate } from "@/lib/dates";
 
 export const Route = createFileRoute("/heart")({
@@ -204,8 +206,8 @@ function HeartDetailSheet({
 }
 
 function HeartPage() {
-  const { idols, ready: idolsReady } = useIdols();
-  const { items, ready, add, update, remove } = useHeartItems();
+  const { idols, ready: idolsReady } = useIdolSource();
+  const { items, ready, add, update, remove, error } = useSugarSource();
 
   const [idolFilter, setIdolFilter] = useState<string>("ALL");
   const [typeFilter, setTypeFilter] = useState<"ALL" | HeartItemType>("ALL");
@@ -255,8 +257,8 @@ function HeartPage() {
   }
 
   function submit(draft: HeartDraft) {
-    if (editing) update(editing.id, draft);
-    else add(draft);
+    if (editing) void update(editing.id, draft);
+    else void add(draft);
     setFormOpen(false);
     setEditing(null);
     setDetail(null);
@@ -470,7 +472,7 @@ function HeartPage() {
             <AlertDialogAction
               className="rounded-full bg-destructive text-destructive-foreground"
               onClick={() => {
-                if (pendingDelete) remove(pendingDelete.id);
+                if (pendingDelete) void remove(pendingDelete.id);
                 setPendingDelete(null);
                 setDetail(null);
               }}
