@@ -58,10 +58,12 @@ export function EmptySlot({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="flex aspect-[3/4] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-surface/50 text-muted-foreground transition-transform duration-300 active:scale-[0.98]"
+      className="flex aspect-[4/5] w-full flex-col items-center justify-center gap-2 rounded-[1rem] border border-dashed border-primary/30 bg-surface/40 text-muted-foreground transition-transform duration-300 active:scale-[0.98]"
     >
-      <Plus className="size-5" strokeWidth={1.6} />
-      <span className="text-xs">加入偶像</span>
+      <span className="flex size-9 items-center justify-center rounded-full bg-accent/40 text-primary">
+        <Plus className="size-4" strokeWidth={1.8} />
+      </span>
+      <span className="text-[11px]">加入本命 ♡</span>
     </button>
   );
 }
