@@ -5,8 +5,6 @@ import {
   CalendarHeart,
   FolderHeart,
   Heart as HeartIcon,
-  CalendarDays,
-  User,
 } from "lucide-react";
 
 const items = [
@@ -15,8 +13,6 @@ const items = [
   { to: "/events", label: "日子", Icon: CalendarHeart },
   { to: "/memories", label: "回憶", Icon: FolderHeart },
   { to: "/heart", label: "嗑糖", Icon: HeartIcon },
-  { to: "/calendar", label: "行事曆", Icon: CalendarDays },
-  { to: "/profile", label: "我的", Icon: User },
 ] as const;
 
 
@@ -27,7 +23,8 @@ export function BottomNav() {
       aria-label="主要導覽"
       className="fixed inset-x-0 bottom-0 z-40 border-t border-border/50 bg-card/70 backdrop-blur-xl"
     >
-      <ul className="mx-auto flex max-w-md items-stretch justify-between px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+      <ul className="mx-auto flex max-w-md items-stretch justify-between px-4 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+
         {items.map(({ to, label, Icon }) => (
           <li key={to} className="flex-1">
             <Link
@@ -42,7 +39,8 @@ export function BottomNav() {
                   strokeWidth={1.5}
                 />
               </span>
-              <span className="text-[10.5px] tracking-wide">{label}</span>
+              <span className="text-[11px] tracking-wide">{label}</span>
+
             </Link>
           </li>
         ))}

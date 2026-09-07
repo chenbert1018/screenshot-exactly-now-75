@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
+import { Link } from "@tanstack/react-router";
+import { User } from "lucide-react";
 import { BottomNav } from "./BottomNav";
+
 
 export function AppShell({ children }: { children: ReactNode }) {
   return (
@@ -24,8 +27,19 @@ export function AppShell({ children }: { children: ReactNode }) {
         ♡
       </span>
       <div className="relative mx-auto min-h-screen w-full max-w-md px-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-32">
+        <div className="mb-3 flex justify-end">
+          <Link
+            to="/profile"
+            aria-label="我的"
+            className="flex size-9 items-center justify-center rounded-full border border-border/60 bg-card/70 text-muted-foreground backdrop-blur transition-transform duration-300 active:scale-95"
+            activeProps={{ className: "text-primary" }}
+          >
+            <User className="size-4" strokeWidth={1.6} />
+          </Link>
+        </div>
         <main className="page-enter">{children}</main>
       </div>
+
       <BottomNav />
     </div>
   );
