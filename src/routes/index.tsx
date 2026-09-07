@@ -290,7 +290,7 @@ function HomePage() {
           <Divider />
           <Companionship idol={main} />
           <Divider />
-          <TodaySection />
+          <TodaySection name={main.name} />
           <div className="mt-9">
             <KeepToday idol={main} />
           </div>
