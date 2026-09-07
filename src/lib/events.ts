@@ -51,7 +51,7 @@ export type EventCountdown = {
   status: EventStatus;
   /** 未來事件的剩餘天數，已結束為 null */
   daysUntil: number | null;
-  /** 「D-18」／「D-DAY」／「已結束」 */
+  /** 「D-18」／「D-DAY」／「見過啦 🥹」 */
   ddayLabel: string;
   /** 「2026.09.22」 */
   dotDate: string;
@@ -74,7 +74,14 @@ export function eventCountdown(date: string, base: Date = today()): EventCountdo
   if (delta === 0) {
     return { status: "TODAY", daysUntil: 0, ddayLabel: "D-DAY", dotDate, fullDate };
   }
-  return { status: "COMPLETED", daysUntil: null, ddayLabel: "已結束", dotDate, fullDate };
+  return { status: "COMPLETED", daysUntil: null, ddayLabel: "見過啦 🥹", dotDate, fullDate };
+}
+
+/** 見面型活動用「見面完成 ☑️」，其他用「這一天已經發生了 ♡」 */
+const MEETING_TYPES: EventType[] = ["CONCERT", "FAN_MEETING", "TRAVEL", "SUPPORT"];
+
+export function completedLine(type: EventType) {
+  return MEETING_TYPES.includes(type) ? "見面完成 ☑️" : "這一天已經發生了 ♡";
 }
 
 /** 即將到來（含今天）由近到遠，已結束的放最後（由近到遠回推） */
