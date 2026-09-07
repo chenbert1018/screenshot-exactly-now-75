@@ -38,8 +38,16 @@ function toReminder(row: Row): Reminder {
   };
 }
 
-function toRow(input: Partial<ReminderCloudInput>) {
-  const row: Record<string, unknown> = {};
+type ReminderRowPatch = {
+  type?: string;
+  days_before?: number;
+  enabled?: boolean;
+  event_id?: string | null;
+  idol_id?: string | null;
+};
+
+function toRow(input: Partial<ReminderCloudInput>): ReminderRowPatch {
+  const row: ReminderRowPatch = {};
   if (input.type !== undefined) row.type = input.type;
   if (input.daysBefore !== undefined) row.days_before = input.daysBefore;
   if (input.enabled !== undefined) row.enabled = input.enabled;

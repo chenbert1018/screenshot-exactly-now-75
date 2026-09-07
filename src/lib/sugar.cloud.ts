@@ -45,8 +45,18 @@ function toItem(row: Row): HeartItem {
   };
 }
 
-function toRow(input: Partial<SugarItemInput>) {
-  const row: Record<string, unknown> = {};
+type SugarRowPatch = {
+  idol_id?: string | null;
+  title?: string;
+  date?: string | null;
+  type?: string;
+  note?: string;
+  image?: string;
+  link?: string;
+};
+
+function toRow(input: Partial<SugarItemInput>): SugarRowPatch {
+  const row: SugarRowPatch = {};
   if (input.idolId !== undefined) row.idol_id = input.idolId || null;
   if (input.title !== undefined) row.title = input.title;
   if (input.date !== undefined) row.date = input.date || null;

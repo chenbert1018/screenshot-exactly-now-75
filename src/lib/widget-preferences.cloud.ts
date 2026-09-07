@@ -29,10 +29,12 @@ function toPreferences(row: Row): WidgetPreferences {
   };
 }
 
-function toRow(prefs: Partial<WidgetPreferences>) {
-  const row: Record<string, unknown> = {};
+type WidgetRowPatch = { idol_id?: string | null; enabled_contents?: string[] };
+
+function toRow(prefs: Partial<WidgetPreferences>): WidgetRowPatch {
+  const row: WidgetRowPatch = {};
   if (prefs.idolId !== undefined) row.idol_id = prefs.idolId || null;
-  if (prefs.enabledContents !== undefined) row.enabled_contents = prefs.enabledContents;
+  if (prefs.enabledContents !== undefined) row.enabled_contents = [...prefs.enabledContents];
   return row;
 }
 
