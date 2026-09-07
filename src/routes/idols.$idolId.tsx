@@ -1,3 +1,4 @@
+import { StoredImage } from "@/components/StoredImage";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { ChevronLeft, ImageIcon, Pencil } from "lucide-react";
@@ -122,7 +123,7 @@ function IdolDetailPage() {
       <div className="overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft">
         <div className="aspect-[4/5] w-full bg-surface">
           {idol.photo ? (
-            <img src={idol.photo} alt={`${idol.name} 的照片`} className="size-full object-cover" />
+            <StoredImage src={idol.photo} alt={`${idol.name} 的照片`} className="size-full object-cover" />
           ) : (
             <div className="flex size-full flex-col items-center justify-center gap-2 text-muted-foreground">
               <ImageIcon className="size-7" strokeWidth={1.3} />

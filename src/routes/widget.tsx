@@ -1,3 +1,4 @@
+import { StoredImage } from "@/components/StoredImage";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ImageIcon, Plus } from "lucide-react";
 import { AppShell, PageHeader, EmptyState, SoftCard } from "@/components/AppShell";
@@ -101,7 +102,7 @@ function WidgetPage() {
         {on("IDOL") ? (
           <div className="mx-auto mb-5 size-24 overflow-hidden rounded-full border border-border/60 bg-surface">
             {content.idol?.image ? (
-              <img
+              <StoredImage
                 src={content.idol.image}
                 alt={`${content.idol.name} 的照片`}
                 className="size-full object-cover"

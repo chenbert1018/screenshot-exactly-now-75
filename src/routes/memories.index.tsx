@@ -1,3 +1,4 @@
+import { StoredImage } from "@/components/StoredImage";
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { FolderHeart, Plus, Images } from "lucide-react";
@@ -104,7 +105,7 @@ function MemoriesPage() {
               >
                 <SoftCard className="overflow-hidden p-0">
                   {f.coverPhoto ? (
-                    <img src={f.coverPhoto} alt={f.title} className="aspect-[16/9] w-full object-cover" />
+                    <StoredImage src={f.coverPhoto} alt={f.title} className="aspect-[16/9] w-full object-cover" />
                   ) : (
                     <div className="flex aspect-[16/9] w-full items-center justify-center bg-accent/25 text-primary/50">
                       <Images className="size-7" strokeWidth={1.3} />

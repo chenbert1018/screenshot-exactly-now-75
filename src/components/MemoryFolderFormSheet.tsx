@@ -1,3 +1,4 @@
+import { StoredImage } from "@/components/StoredImage";
 import { useEffect, useRef, useState } from "react";
 import { ImagePlus, X } from "lucide-react";
 import {
@@ -69,7 +70,7 @@ export function MemoryFolderFormSheet({
             <p className="mb-2 text-sm font-medium">封面照片</p>
             {draft.coverPhoto ? (
               <div className="relative overflow-hidden rounded-2xl border border-border/60">
-                <img src={draft.coverPhoto} alt="封面預覽" className="aspect-[4/3] w-full object-cover" />
+                <StoredImage src={draft.coverPhoto} alt="封面預覽" className="aspect-[4/3] w-full object-cover" />
                 <div className="absolute right-3 bottom-3 flex gap-2">
                   <button
                     type="button"

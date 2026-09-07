@@ -1,3 +1,4 @@
+import { StoredImage } from "@/components/StoredImage";
 import { useState } from "react";
 import { MoreHorizontal, Plus } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
@@ -40,7 +41,7 @@ function shortDate(date: string) {
 function IdolVisual({ idol }: { idol?: Idol | undefined }) {
   if (idol?.photo) {
     return (
-      <img
+      <StoredImage
         src={idol.photo}
         alt={idol.name}
         className="size-28 rounded-full object-cover shadow-soft"

@@ -1,3 +1,4 @@
+import { StoredImage } from "@/components/StoredImage";
 import { Link } from "@tanstack/react-router";
 import { ImageIcon, Plus } from "lucide-react";
 import type { Idol } from "@/lib/idols";
@@ -15,7 +16,7 @@ export function IdolCard({ idol }: { idol: Idol }) {
     >
       <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[0.6rem] bg-surface">
         {idol.photo ? (
-          <img
+          <StoredImage
             src={idol.photo}
             alt={`${idol.name} 的照片`}
             loading="lazy"

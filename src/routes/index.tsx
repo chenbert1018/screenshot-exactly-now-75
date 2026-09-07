@@ -1,3 +1,4 @@
+import { StoredImage } from "@/components/StoredImage";
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Heart, ImageIcon, Plus } from "lucide-react";
@@ -128,7 +129,7 @@ function CountdownHero({ idol, event }: { idol: Idol; event?: IdolEvent | undefi
         className="mx-auto mt-10 block size-40 overflow-hidden rounded-full border border-border/60 bg-surface shadow-soft transition-transform duration-300 active:scale-[0.98]"
       >
         {idol.photo ? (
-          <img src={idol.photo} alt={`${idol.name} 的照片`} className="size-full object-cover" />
+          <StoredImage src={idol.photo} alt={`${idol.name} 的照片`} className="size-full object-cover" />
         ) : (
           <div className="flex size-full flex-col items-center justify-center gap-1.5 text-muted-foreground">
             <ImageIcon className="size-6" strokeWidth={1.3} />
@@ -356,7 +357,7 @@ function MiniIdol({ idol }: { idol: Idol }) {
     >
       <div className="aspect-[3/4] w-full bg-surface">
         {idol.photo ? (
-          <img
+          <StoredImage
             src={idol.photo}
             alt={`${idol.name} 的照片`}
             loading="lazy"
