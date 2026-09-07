@@ -13,7 +13,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useIdols, type IdolDraft } from "@/lib/idols";
+import type { IdolDraft } from "@/lib/idols";
+import { useIdolSource } from "@/lib/idols.source";
 import { ReminderSheet } from "@/components/ReminderSheet";
 import {
   DEFAULT_DAYS_BEFORE,
@@ -51,13 +52,13 @@ function Row({ label, value }: { label: string; value?: string }) {
 function IdolDetailPage() {
   const { idolId } = Route.useParams();
   const navigate = useNavigate();
-  const { idols, ready, updateIdol, removeIdol } = useIdols();
+  const { ready, updateIdol, removeIdol, findIdol } = useIdolSource();
   const [editing, setEditing] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [reminderKind, setReminderKind] = useState<ReminderType | null>(null);
   const { reminders } = useReminders();
 
-  const idol = idols.find((i) => i.id === idolId);
+  const idol = findIdol(idolId);
 
   if (!ready) {
     return (
@@ -83,14 +84,16 @@ function IdolDetailPage() {
     );
   }
 
-  function handleSave(draft: IdolDraft) {
-    updateIdol(idolId, draft);
+  async function handleSave(draft: IdolDraft) {
+    if (!idol) return;
+    await updateIdol(idol.id, draft);
     setEditing(false);
   }
 
-  function handleDelete() {
+  async function handleDelete() {
+    if (!idol) return;
     deleteRemindersForIdol(idolId);
-    removeIdol(idolId);
+    await removeIdol(idol.id);
     setConfirming(false);
     setEditing(false);
     navigate({ to: "/idols" });

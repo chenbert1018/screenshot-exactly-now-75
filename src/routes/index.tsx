@@ -2,7 +2,8 @@ import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Heart, ImageIcon, Plus } from "lucide-react";
 import { AppShell, Section, EmptyState, SoftCard } from "@/components/AppShell";
-import { useIdols, type Idol } from "@/lib/idols";
+import type { Idol } from "@/lib/idols";
+import { useIdolSource } from "@/lib/idols.source";
 import { eventCountdown, eventTypeMeta, nextEvent, useEvents, type IdolEvent } from "@/lib/events";
 import { daysSince, nextAnniversary, primaryDay, parseLocalDate } from "@/lib/dates";
 
@@ -240,16 +241,16 @@ function YearsAgo() {
 }
 
 function HomePage() {
-  const { idols, ready } = useIdols();
+  const { idols, ready, findIdol, mainIdol } = useIdolSource();
   const [heartOpen, setHeartOpen] = useState(false);
   const { events } = useEvents();
-  const main = idols[0];
-  const others = idols.slice(1);
+  const main = mainIdol;
+  const others = idols.filter((i) => i.id !== main?.id);
 
   // NEXT D-DAY 優先使用最近的 Event（找不到對應偶像時仍以主要偶像呈現）
   const upcomingEvent = nextEvent(events);
   const heroIdol =
-    (upcomingEvent ? idols.find((i) => i.id === upcomingEvent.idolId) : undefined) ?? main;
+    (upcomingEvent ? findIdol(upcomingEvent.idolId) : undefined) ?? main;
 
   return (
     <AppShell>

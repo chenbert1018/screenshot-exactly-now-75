@@ -4,7 +4,8 @@ import { Heart, Plus } from "lucide-react";
 import { AppShell, PageHeader, EmptyState } from "@/components/AppShell";
 import { IdolCard, EmptySlot } from "@/components/IdolCard";
 import { IdolFormSheet } from "@/components/IdolFormSheet";
-import { MAX_IDOLS, useIdols, type IdolDraft } from "@/lib/idols";
+import { MAX_IDOLS, type IdolDraft } from "@/lib/idols";
+import { useIdolSource } from "@/lib/idols.source";
 
 export const Route = createFileRoute("/idols")({
   head: () => ({
@@ -26,14 +27,14 @@ function IdolsLayout() {
 }
 
 function IdolsPage() {
-  const { idols, ready, addIdol } = useIdols();
+  const { idols, ready, addIdol, error } = useIdolSource();
   const [open, setOpen] = useState(false);
 
   const canAdd = idols.length < MAX_IDOLS;
   const slots = Math.max(0, MAX_IDOLS - idols.length);
 
-  function handleCreate(draft: IdolDraft) {
-    addIdol(draft);
+  async function handleCreate(draft: IdolDraft) {
+    await addIdol(draft);
     setOpen(false);
   }
 
@@ -55,6 +56,12 @@ function IdolsPage() {
           ) : null
         }
       />
+
+      {error ? (
+        <p className="mb-4 rounded-2xl border border-border/60 bg-surface/50 px-4 py-3 text-center text-xs text-muted-foreground">
+          目前連不上雲端資料，你的資料沒有遺失，請稍後再試。
+        </p>
+      ) : null}
 
       {ready && idols.length === 0 ? (
         <EmptyState
