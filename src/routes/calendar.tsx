@@ -21,7 +21,7 @@ import type { Idol } from "@/lib/idols";
 import { useIdolSource } from "@/lib/idols.source";
 import { useEventSource } from "@/lib/events.source";
 import { parseLocalDate, today } from "@/lib/dates";
-import { deleteReminders, formatDaysBefore, DEFAULT_DAYS_BEFORE } from "@/lib/reminders";
+import { deleteReminders, formatDaysBefore } from "@/lib/reminders";
 import { useReminderSource } from "@/lib/reminders.source";
 import { ReminderSheet } from "@/components/ReminderSheet";
 import { deleteMilestonesForEvent } from "@/lib/milestones";
