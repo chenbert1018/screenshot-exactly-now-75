@@ -5,10 +5,10 @@ const STORAGE_KEY = "idoldays.heart.v1";
 export type HeartItemType = "PHOTO" | "MOMENT" | "STAGE" | "SWEET" | "CUSTOM";
 
 export const HEART_TYPES: { value: HeartItemType; label: string; emoji: string }[] = [
-  { value: "PHOTO", label: "照片", emoji: "📷" },
+  { value: "STAGE", label: "舞台糖", emoji: "🎤" },
+  { value: "SWEET", label: "互動糖", emoji: "🍬" },
+  { value: "PHOTO", label: "圖片糖", emoji: "📷" },
   { value: "MOMENT", label: "名場面", emoji: "✦" },
-  { value: "STAGE", label: "舞台", emoji: "🎤" },
-  { value: "SWEET", label: "撒糖", emoji: "🍬" },
   { value: "CUSTOM", label: "其他", emoji: "♡" },
 ];
 
