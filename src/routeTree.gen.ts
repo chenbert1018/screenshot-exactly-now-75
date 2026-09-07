@@ -24,6 +24,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminEventsRouteImport } from './routes/admin.events'
 import { Route as AdminIdolsRouteImport } from './routes/admin.idols'
 import { Route as AdminMemoriesRouteImport } from './routes/admin.memories'
+import { Route as AdminSugarRouteImport } from './routes/admin.sugar'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as IdolsIdolIdRouteImport } from './routes/idols.$idolId'
 import { Route as MemoriesIndexRouteImport } from './routes/memories.index'
@@ -104,6 +105,11 @@ const AdminMemoriesRoute = AdminMemoriesRouteImport.update({
   path: '/memories',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminSugarRoute = AdminSugarRouteImport.update({
+  id: '/sugar',
+  path: '/sugar',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -140,6 +146,7 @@ export interface FileRoutesByFullPath {
   '/admin/events': typeof AdminEventsRoute
   '/admin/idols': typeof AdminIdolsRoute
   '/admin/memories': typeof AdminMemoriesRoute
+  '/admin/sugar': typeof AdminSugarRoute
   '/admin/users': typeof AdminUsersRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
   '/memories/$folderId': typeof MemoriesFolderIdRoute
@@ -160,6 +167,7 @@ export interface FileRoutesByTo {
   '/admin/events': typeof AdminEventsRoute
   '/admin/idols': typeof AdminIdolsRoute
   '/admin/memories': typeof AdminMemoriesRoute
+  '/admin/sugar': typeof AdminSugarRoute
   '/admin/users': typeof AdminUsersRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
   '/memories/$folderId': typeof MemoriesFolderIdRoute
@@ -182,6 +190,7 @@ export interface FileRoutesById {
   '/admin/events': typeof AdminEventsRoute
   '/admin/idols': typeof AdminIdolsRoute
   '/admin/memories': typeof AdminMemoriesRoute
+  '/admin/sugar': typeof AdminSugarRoute
   '/admin/users': typeof AdminUsersRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
   '/memories/$folderId': typeof MemoriesFolderIdRoute
@@ -205,6 +214,7 @@ export interface FileRouteTypes {
     | '/admin/events'
     | '/admin/idols'
     | '/admin/memories'
+    | '/admin/sugar'
     | '/admin/users'
     | '/idols/$idolId'
     | '/memories/$folderId'
@@ -225,6 +235,7 @@ export interface FileRouteTypes {
     | '/admin/events'
     | '/admin/idols'
     | '/admin/memories'
+    | '/admin/sugar'
     | '/admin/users'
     | '/idols/$idolId'
     | '/memories/$folderId'
@@ -246,6 +257,7 @@ export interface FileRouteTypes {
     | '/admin/events'
     | '/admin/idols'
     | '/admin/memories'
+    | '/admin/sugar'
     | '/admin/users'
     | '/idols/$idolId'
     | '/memories/$folderId'
@@ -376,6 +388,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMemoriesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/sugar': {
+      id: '/admin/sugar'
+      path: '/sugar'
+      fullPath: '/admin/sugar'
+      preLoaderRoute: typeof AdminSugarRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/users': {
       id: '/admin/users'
       path: '/users'
@@ -411,6 +430,7 @@ interface AdminRouteChildren {
   AdminEventsRoute: typeof AdminEventsRoute
   AdminIdolsRoute: typeof AdminIdolsRoute
   AdminMemoriesRoute: typeof AdminMemoriesRoute
+  AdminSugarRoute: typeof AdminSugarRoute
   AdminUsersRoute: typeof AdminUsersRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
@@ -419,6 +439,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminEventsRoute: AdminEventsRoute,
   AdminIdolsRoute: AdminIdolsRoute,
   AdminMemoriesRoute: AdminMemoriesRoute,
+  AdminSugarRoute: AdminSugarRoute,
   AdminUsersRoute: AdminUsersRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
