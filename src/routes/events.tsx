@@ -156,8 +156,8 @@ function EventsPage() {
       ) : events.length === 0 ? (
         <EmptyState
           icon={<CalendarHeart className="size-5" strokeWidth={1.6} />}
-          title="還沒有值得倒數的日子"
-          description="把下一個期待的日子放進來吧。"
+          title="還沒有在倒數的日子 👀"
+          description="把下一個期待的日子先放進來吧。"
           action={
             <button
               type="button"

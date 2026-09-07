@@ -17,11 +17,11 @@ import { useMilestoneSource } from "@/lib/milestones.source";
 
 /** 依倒數狀態選擇陪伴文案（App 的口吻，不是偶像本人發言） */
 function companionLine(status: string, daysUntil: number | null) {
-  if (status === "COMPLETED") return "好好收藏這份期待。";
-  if (status === "TODAY") return "就是今天了 ♡";
-  if (daysUntil !== null && daysUntil <= 3) return "再一下下，就要見面了 ♡";
-  if (daysUntil !== null && daysUntil <= 30) return "距離那一天，又近了一點。";
-  return "這一天正在慢慢靠近。";
+  if (status === "COMPLETED") return "已經見過啦 🥹 這一天先好好收藏起來 ♡";
+  if (status === "TODAY") return "今天見！！！！😭";
+  if (daysUntil !== null && daysUntil <= 3) return "救命，剩沒幾天了ㅠㅠ";
+  if (daysUntil !== null && daysUntil <= 30) return "又更近了一點，開始期待了 🥹";
+  return "還有一段路，但我等得起 👀";
 }
 
 function dotDate(date: string) {
@@ -197,7 +197,7 @@ export function EventDetailSheet({
             </p>
             {c?.status === "COMPLETED" ? (
               <p className="mt-3 font-display text-[40px] leading-none font-semibold text-muted-foreground">
-                已結束
+                見面完成 ☑️
               </p>
             ) : c?.status === "TODAY" ? (
               <p className="mt-3 font-display text-[56px] leading-none font-semibold text-primary">
@@ -252,7 +252,7 @@ export function EventDetailSheet({
                   onClick={onOpenReminder}
                   className="shrink-0 text-xs text-primary underline underline-offset-4"
                 >
-                  設定提醒
+                  幫我記住 ♡
                 </button>
               ) : null}
             </div>
@@ -265,7 +265,7 @@ export function EventDetailSheet({
 
             {milestones.length === 0 ? (
               <div className="mt-6 text-center">
-                <p className="text-[15px]">還沒有里程碑</p>
+                <p className="text-[15px]">這天還沒留下什麼紀錄 👀</p>
                 <p className="mt-1.5 text-sm text-muted-foreground">
                   把準備這一天的每一個小瞬間留下來。
                 </p>
