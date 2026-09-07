@@ -11,9 +11,9 @@ export function IdolCard({ idol }: { idol: Idol }) {
     <Link
       to="/idols/$idolId"
       params={{ idolId: idol.id }}
-      className="group block overflow-hidden rounded-2xl border border-border/60 bg-card shadow-soft transition-all duration-300 active:scale-[0.98] hover:shadow-lift"
+      className="group polaroid block transition-all duration-300 active:scale-[0.98] hover:shadow-lift"
     >
-      <div className="relative aspect-[3/4] w-full overflow-hidden bg-surface">
+      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[0.6rem] bg-surface">
         {idol.photo ? (
           <img
             src={idol.photo}
@@ -28,21 +28,25 @@ export function IdolCard({ idol }: { idol: Idol }) {
           </div>
         )}
         {day ? (
-          <span className="absolute top-2.5 left-2.5 rounded-full bg-card/90 px-2.5 py-1 text-[11px] font-medium text-primary shadow-soft backdrop-blur">
+          <span className="font-display absolute top-2.5 left-2.5 rounded-full bg-card/90 px-2.5 py-1 text-[11px] text-primary shadow-soft backdrop-blur">
             {day.ddayLabel}
           </span>
         ) : null}
+        <span
+          aria-hidden
+          className="absolute top-2 right-2.5 text-[13px] text-primary/70 select-none"
+        >
+          ♡
+        </span>
       </div>
-      <div className="px-3.5 pt-3 pb-3.5">
-        <p className="truncate text-[15px] font-medium">{idol.name}</p>
-        <p className="mt-0.5 truncate text-xs text-muted-foreground">{idol.groupName || "　"}</p>
-        <div className="mt-3 space-y-1 border-t border-border/60 pt-2.5 text-[11px] text-muted-foreground">
-          <p className="truncate">
-            {day ? `${day.title}・${day.humanLabel}` : "設定一個重要日子"}
-          </p>
-          <p className="truncate">
-            {since ? since.humanLabel : "設定喜歡他的日期"}
-          </p>
+      <div className="px-1.5 pt-2.5">
+        <p className="font-display truncate text-[15px]">{idol.name}</p>
+        <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
+          {idol.groupName || "　"}
+        </p>
+        <div className="mt-2 space-y-0.5 text-[10.5px] text-muted-foreground">
+          <p className="truncate">{day ? `${day.title}・${day.humanLabel}` : "設定一個重要日子"}</p>
+          <p className="truncate">{since ? since.humanLabel : "設定喜歡他的日期"}</p>
         </div>
       </div>
     </Link>
@@ -54,10 +58,12 @@ export function EmptySlot({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="flex aspect-[3/4] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-surface/50 text-muted-foreground transition-transform duration-300 active:scale-[0.98]"
+      className="flex aspect-[4/5] w-full flex-col items-center justify-center gap-2 rounded-[1rem] border border-dashed border-primary/30 bg-surface/40 text-muted-foreground transition-transform duration-300 active:scale-[0.98]"
     >
-      <Plus className="size-5" strokeWidth={1.6} />
-      <span className="text-xs">加入偶像</span>
+      <span className="flex size-9 items-center justify-center rounded-full bg-accent/40 text-primary">
+        <Plus className="size-4" strokeWidth={1.8} />
+      </span>
+      <span className="text-[11px]">加入本命 ♡</span>
     </button>
   );
 }
