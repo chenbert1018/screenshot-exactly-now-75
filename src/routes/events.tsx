@@ -16,14 +16,8 @@ import { useEventSource } from "@/lib/events.source";
 import { ReminderSheet } from "@/components/ReminderSheet";
 import { EventDetailSheet } from "@/components/EventDetailSheet";
 import { deleteMilestonesForEvent } from "@/lib/milestones";
-import {
-  DEFAULT_DAYS_BEFORE,
-  deleteReminders,
-  findReminder,
-  formatReminderSummary,
-  setReminderFor,
-  useReminders,
-} from "@/lib/reminders";
+import { DEFAULT_DAYS_BEFORE, formatReminderSummary } from "@/lib/reminders";
+import { useReminderSource } from "@/lib/reminders.source";
 
 export const Route = createFileRoute("/events")({
   head: () => ({
@@ -98,7 +92,12 @@ function EventsPage() {
   const [detailId, setDetailId] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [reminderOpen, setReminderOpen] = useState(false);
-  const { reminders, remindersFor } = useReminders();
+  const {
+    remindersFor,
+    reminderFor,
+    setReminderFor,
+    removeRemindersForEvent,
+  } = useReminderSource();
 
 
   const { upcoming, past } = useMemo(() => sortEvents(events), [events]);
@@ -229,7 +228,7 @@ function EventsPage() {
         }}
         onDelete={async () => {
           if (!detail) return;
-          deleteReminders(detail.id);
+          await removeRemindersForEvent(detail.id);
           deleteMilestonesForEvent(detail.id);
           await removeEvent(detail.id);
           setDetailId(null);
@@ -247,10 +246,10 @@ function EventsPage() {
           eventTitle={detail.title}
           eventDate={eventCountdown(detail.date)?.dotDate ?? detail.date}
           initialDaysBefore={
-            findReminder(reminders, { type: "EVENT", eventId: detail.id })?.daysBefore ?? DEFAULT_DAYS_BEFORE
+            reminderFor({ type: "EVENT", eventId: detail.id })?.daysBefore ?? DEFAULT_DAYS_BEFORE
           }
           onSave={(daysBefore) => {
-            setReminderFor({ type: "EVENT", eventId: detail.id }, daysBefore);
+            void setReminderFor({ type: "EVENT", eventId: detail.id }, daysBefore);
             setReminderOpen(false);
           }}
         />

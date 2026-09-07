@@ -1,16 +1,13 @@
-import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ImageIcon, Plus } from "lucide-react";
 import { AppShell, PageHeader, EmptyState, SoftCard } from "@/components/AppShell";
-import { useIdols } from "@/lib/idols";
-import { useEvents } from "@/lib/events";
+import { useIdolSource } from "@/lib/idols.source";
+import { useEventSource } from "@/lib/events.source";
+import { useWidgetPreferenceSource } from "@/lib/widget-preferences.source";
 import {
   getWidgetCompanionContent,
-  loadWidgetPreferences,
-  updateWidgetPreferences,
   WIDGET_CONTENT_TYPES,
   type WidgetContentType,
-  type WidgetPreferences,
 } from "@/lib/widget";
 
 export const Route = createFileRoute("/widget")({
@@ -36,13 +33,9 @@ const CONTENT_LABELS: Record<WidgetContentType, string> = {
 };
 
 function WidgetPage() {
-  const { idols, ready } = useIdols();
-  const { events } = useEvents();
-  const [prefs, setPrefs] = useState<WidgetPreferences | null>(null);
-
-  useEffect(() => {
-    setPrefs(loadWidgetPreferences());
-  }, []);
+  const { idols, ready } = useIdolSource();
+  const { events } = useEventSource();
+  const { prefs, update: updatePrefs } = useWidgetPreferenceSource();
 
   if (!ready || !prefs) {
     return (
@@ -81,11 +74,11 @@ function WidgetPage() {
   function toggle(t: WidgetContentType) {
     const current = prefs?.enabledContents ?? [];
     const next = current.includes(t) ? current.filter((x) => x !== t) : [...current, t];
-    setPrefs(updateWidgetPreferences({ enabledContents: next }));
+    void updatePrefs({ enabledContents: next });
   }
 
   function chooseIdol(id: string) {
-    setPrefs(updateWidgetPreferences({ idolId: id }));
+    void updatePrefs({ idolId: id });
   }
 
   const selectedId = content.idol?.id ?? "";

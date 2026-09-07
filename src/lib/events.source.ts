@@ -7,7 +7,7 @@ import {
   listCloudEvents,
   updateCloudEvent,
 } from "./events.cloud";
-import { getMigrationRecord, migrateLocalIdols } from "./idols.source";
+import { ensureIdolMigration } from "./idols.source";
 import {
   getMilestoneMigrationRecord,
   migrateLocalMilestones,
@@ -169,6 +169,44 @@ export async function migrateLocalEvents(
   return { created, skipped, warnings, map };
 }
 
+/* ------------------------- migration orchestration ------------------------- */
+
+/** 同一次瀏覽中避免多個畫面同時搬移（造成重複資料） */
+const inflight = new Map<
+  string,
+  Promise<{ idolMap: Record<string, string>; eventMap: Record<string, string> }>
+>();
+
+/**
+ * 依序完成 偶像 → 日子 → 里程碑 migration，回傳偶像與日子的對照表。
+ * 可安全重跑，且同一時間只會執行一次。
+ */
+export function ensureEventMigration(userId: string) {
+  const running = inflight.get(userId);
+  if (running) return running;
+  const task = runEventMigration(userId).finally(() => inflight.delete(userId));
+  inflight.set(userId, task);
+  return task;
+}
+
+async function runEventMigration(userId: string) {
+  // 1. 先確認偶像 migration 完成，取得 local idol → cloud idol 對照
+  const idolMap = await ensureIdolMigration(userId);
+
+  // 2. 再搬日子（可安全重跑），完成後才寫入 migration 標記
+  const eventRecord = getEventMigrationRecord(userId);
+  const eventMap = eventRecord.done
+    ? eventRecord.map
+    : (await migrateLocalEvents(userId, idolMap)).map;
+
+  // 3. 日子對照完成後才搬里程碑
+  if (!getMilestoneMigrationRecord(userId).done) {
+    await migrateLocalMilestones(userId, eventMap);
+  }
+
+  return { idolMap, eventMap };
+}
+
 /* --------------------------- data source hook --------------------------- */
 
 export type EventSource = {
@@ -204,21 +242,7 @@ export function useEventSource(): EventSource {
     let active = true;
     (async () => {
       try {
-        // 1. 先確認偶像 migration 完成，取得 local idol → cloud idol 對照
-        const idolRecord = getMigrationRecord(userId);
-        if (!idolRecord.done) await migrateLocalIdols(userId);
-        const idolMap = getMigrationRecord(userId).map;
-
-        // 2. 再搬日子（可安全重跑），完成後才寫入 migration 標記
-        const eventRecord = getEventMigrationRecord(userId);
-        const eventMap = eventRecord.done
-          ? eventRecord.map
-          : (await migrateLocalEvents(userId, idolMap)).map;
-
-        // 3. 日子對照完成後才搬里程碑
-        if (!getMilestoneMigrationRecord(userId).done) {
-          await migrateLocalMilestones(userId, eventMap);
-        }
+        await ensureEventMigration(userId);
 
         const list = await listCloudEvents();
         if (!active) return;
