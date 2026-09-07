@@ -14,7 +14,95 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      idols: {
+        Row: {
+          birthday: string | null
+          created_at: string
+          debut_date: string | null
+          fan_name: string
+          favorite_color: string
+          group_name: string
+          id: string
+          name: string
+          photo: string
+          since_date: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          birthday?: string | null
+          created_at?: string
+          debut_date?: string | null
+          fan_name?: string
+          favorite_color?: string
+          group_name?: string
+          id?: string
+          name: string
+          photo?: string
+          since_date?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          birthday?: string | null
+          created_at?: string
+          debut_date?: string | null
+          fan_name?: string
+          favorite_color?: string
+          group_name?: string
+          id?: string
+          name?: string
+          photo?: string
+          since_date?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          date_format: string
+          display_name: string
+          id: string
+          language: string
+          main_idol_id: string | null
+          theme: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date_format?: string
+          display_name?: string
+          id?: string
+          language?: string
+          main_idol_id?: string | null
+          theme?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date_format?: string
+          display_name?: string
+          id?: string
+          language?: string
+          main_idol_id?: string | null
+          theme?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_main_idol_id_fkey"
+            columns: ["main_idol_id"]
+            isOneToOne: false
+            referencedRelation: "idols"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
