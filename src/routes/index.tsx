@@ -200,13 +200,13 @@ function Companionship({ idol }: { idol: Idol }) {
   );
 }
 
-function TodaySection() {
+function TodaySection({ name }: { name?: string }) {
   return (
     <section className="text-center">
       <p className="text-[11px] tracking-[0.34em] text-muted-foreground uppercase">Today</p>
       <p className="mt-3 text-[17px]">{todayFullLabel()}</p>
       <p className="mt-1 text-sm text-muted-foreground">{todayWeekday()}</p>
-      <p className="mt-5 text-[15px] leading-relaxed">{dailyMessage()}</p>
+      <p className="mt-5 text-[15px] leading-relaxed">{dailyMessage(name)}</p>
     </section>
   );
 }
@@ -216,15 +216,15 @@ function KeepToday({ idol }: { idol?: Idol }) {
   const since = idol ? daysSince(idol.sinceDate) : null;
   const text =
     idol && since && !since.isFuture
-      ? `你和 ${idol.name} 已經一起走過 ${since.days} 天。`
-      : "今天也留給自己一點喜歡的時間。";
+      ? `已經喜歡 ${idol.name} ${since.days} 天了，怎麼還是每天都在被電 🥹`
+      : "今天也留給自己一點追星時間啦。";
 
   return (
     <SoftCard className="px-6 py-7 text-center">
-      <p className="text-xs tracking-wide text-muted-foreground">今天值得收藏</p>
+      <p className="text-xs tracking-wide text-muted-foreground">今天也想記一下</p>
       <p className="mt-3 text-[15px] leading-relaxed">{text}</p>
       {kept ? (
-        <p className="mt-5 text-sm text-primary">已把今天留在心裡 ♡</p>
+        <p className="mt-5 text-sm text-primary">好啦，今天先收起來 ♡</p>
       ) : (
         <button
           type="button"
@@ -241,7 +241,7 @@ function KeepToday({ idol }: { idol?: Idol }) {
 function HeartPrompt({ onOpen }: { onOpen: () => void }) {
   return (
     <div className="mt-9 flex items-center justify-between gap-3 rounded-3xl border border-border/60 bg-card/70 px-5 py-4 shadow-soft">
-      <span className="text-sm">今天，也有一顆糖嗎？</span>
+      <span className="min-w-0 text-sm">{sugarLine()}</span>
       <button
         type="button"
         onClick={onOpen}
@@ -257,9 +257,7 @@ function YearsAgo() {
   return (
     <section className="text-center">
       <p className="text-xs tracking-wide text-muted-foreground">幾年前的今天</p>
-      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-        這一天還沒有留下回憶。
-      </p>
+      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{yearsAgoLine()}</p>
     </section>
   );
 }
