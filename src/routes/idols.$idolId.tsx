@@ -16,15 +16,8 @@ import {
 import type { IdolDraft } from "@/lib/idols";
 import { useIdolSource } from "@/lib/idols.source";
 import { ReminderSheet } from "@/components/ReminderSheet";
-import {
-  DEFAULT_DAYS_BEFORE,
-  deleteRemindersForIdol,
-  findReminder,
-  formatDaysBefore,
-  setReminderFor,
-  useReminders,
-  type ReminderType,
-} from "@/lib/reminders";
+import { DEFAULT_DAYS_BEFORE, formatDaysBefore, type ReminderType } from "@/lib/reminders";
+import { useReminderSource } from "@/lib/reminders.source";
 import { Bell } from "lucide-react";
 import { daysSince, primaryDay, nextAnniversary } from "@/lib/dates";
 

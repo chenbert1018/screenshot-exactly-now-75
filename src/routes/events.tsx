@@ -16,14 +16,8 @@ import { useEventSource } from "@/lib/events.source";
 import { ReminderSheet } from "@/components/ReminderSheet";
 import { EventDetailSheet } from "@/components/EventDetailSheet";
 import { deleteMilestonesForEvent } from "@/lib/milestones";
-import {
-  DEFAULT_DAYS_BEFORE,
-  deleteReminders,
-  findReminder,
-  formatReminderSummary,
-  setReminderFor,
-  useReminders,
-} from "@/lib/reminders";
+import { DEFAULT_DAYS_BEFORE, formatReminderSummary } from "@/lib/reminders";
+import { useReminderSource } from "@/lib/reminders.source";
 
 export const Route = createFileRoute("/events")({
   head: () => ({
