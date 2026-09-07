@@ -180,8 +180,19 @@ export async function migrateLocalMemoryFolders(
   return { created, skipped, warnings, map };
 }
 
+/** 同一次瀏覽中避免多個畫面同時搬移（造成重複資料夾） */
+const inflight = new Map<string, Promise<{ idolMap: Record<string, string>; folderMap: Record<string, string> }>>();
+
 /** 依序完成 偶像 → 資料夾 migration，回傳兩份對照表（可安全重跑） */
-export async function ensureFolderMigration(userId: string) {
+export function ensureFolderMigration(userId: string) {
+  const running = inflight.get(userId);
+  if (running) return running;
+  const task = runFolderMigration(userId).finally(() => inflight.delete(userId));
+  inflight.set(userId, task);
+  return task;
+}
+
+async function runFolderMigration(userId: string) {
   const idolRecord = getMigrationRecord(userId);
   if (!idolRecord.done) await migrateLocalIdols(userId);
   const idolMap = getMigrationRecord(userId).map;

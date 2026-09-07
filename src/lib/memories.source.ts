@@ -163,6 +163,23 @@ export async function migrateLocalMemories(
   return { created, skipped, warnings, map };
 }
 
+/** 同一次瀏覽中避免多個畫面同時搬移（造成重複回憶） */
+const inflight = new Map<string, Promise<void>>();
+
+export function ensureMemoryMigration(userId: string) {
+  const running = inflight.get(userId);
+  if (running) return running;
+  const task = (async () => {
+    // 1. 偶像 → 2. 資料夾 對照完成後，才搬回憶
+    const { idolMap, folderMap } = await ensureFolderMigration(userId);
+    if (!getMemoryMigrationRecord(userId).done) {
+      await migrateLocalMemories(userId, folderMap, idolMap);
+    }
+  })().finally(() => inflight.delete(userId));
+  inflight.set(userId, task);
+  return task;
+}
+
 /* --------------------------- data source hook --------------------------- */
 
 export type MemorySource = {
@@ -200,10 +217,7 @@ export function useMemorySource(folderId?: string): MemorySource {
     (async () => {
       try {
         // 1. 偶像 → 2. 資料夾 對照完成後，才搬回憶
-        const { idolMap, folderMap } = await ensureFolderMigration(userId);
-        if (!getMemoryMigrationRecord(userId).done) {
-          await migrateLocalMemories(userId, folderMap, idolMap);
-        }
+        await ensureMemoryMigration(userId);
 
         const list = await listMemories();
         if (!active) return;
