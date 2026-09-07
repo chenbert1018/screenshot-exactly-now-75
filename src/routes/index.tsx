@@ -4,7 +4,8 @@ import { Heart, ImageIcon, Plus } from "lucide-react";
 import { AppShell, Section, EmptyState, SoftCard } from "@/components/AppShell";
 import type { Idol } from "@/lib/idols";
 import { useIdolSource } from "@/lib/idols.source";
-import { eventCountdown, eventTypeMeta, nextEvent, useEvents, type IdolEvent } from "@/lib/events";
+import { eventCountdown, eventTypeMeta, nextEvent, type IdolEvent } from "@/lib/events";
+import { useEventSource } from "@/lib/events.source";
 import { daysSince, nextAnniversary, primaryDay, parseLocalDate } from "@/lib/dates";
 
 import {
@@ -243,7 +244,7 @@ function YearsAgo() {
 function HomePage() {
   const { idols, ready, findIdol, mainIdol } = useIdolSource();
   const [heartOpen, setHeartOpen] = useState(false);
-  const { events } = useEvents();
+  const { events } = useEventSource();
   const main = mainIdol;
   const others = idols.filter((i) => i.id !== main?.id);
 

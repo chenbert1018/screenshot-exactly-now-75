@@ -11,7 +11,8 @@ import { MilestoneFormSheet } from "@/components/MilestoneFormSheet";
 import { eventCountdown, eventTypeMeta, type IdolEvent } from "@/lib/events";
 import type { Idol } from "@/lib/idols";
 import { daysSince, parseLocalDate, today } from "@/lib/dates";
-import { useMilestones, type Milestone, type MilestoneDraft } from "@/lib/milestones";
+import { type Milestone, type MilestoneDraft } from "@/lib/milestones";
+import { useMilestoneSource } from "@/lib/milestones.source";
 
 /** 依倒數狀態選擇陪伴文案（App 的口吻，不是偶像本人發言） */
 function companionLine(status: string, daysUntil: number | null) {
@@ -128,7 +129,7 @@ export function EventDetailSheet({
 }) {
   const base = today();
   const { milestones, addMilestone, updateMilestone, toggleMilestone, removeMilestone } =
-    useMilestones(event?.id);
+    useMilestoneSource(event?.id);
   const [formOpen, setFormOpen] = useState(false);
   const [editingMilestone, setEditingMilestone] = useState<Milestone | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -141,8 +142,8 @@ export function EventDetailSheet({
 
   function submitMilestone(draft: MilestoneDraft) {
     if (!event) return;
-    if (editingMilestone) updateMilestone(editingMilestone.id, draft);
-    else addMilestone(event.id, draft);
+    if (editingMilestone) void updateMilestone(editingMilestone.id, draft);
+    else void addMilestone(event.id, draft);
     setFormOpen(false);
     setEditingMilestone(null);
   }
@@ -287,12 +288,12 @@ export function EventDetailSheet({
                       key={m.id}
                       milestone={m}
                       last={i === milestones.length - 1}
-                      onToggle={() => toggleMilestone(m.id)}
+                      onToggle={() => void toggleMilestone(m.id)}
                       onEdit={() => {
                         setEditingMilestone(m);
                         setFormOpen(true);
                       }}
-                      onDelete={() => removeMilestone(m.id)}
+                      onDelete={() => void removeMilestone(m.id)}
                     />
                   ))}
                 </ul>
