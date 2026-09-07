@@ -17,6 +17,7 @@ import { Route as HeartRouteImport } from './routes/heart'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as IdolsRouteImport } from './routes/idols'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as WidgetRouteImport } from './routes/widget'
 import { Route as IdolsIdolIdRouteImport } from './routes/idols.$idolId'
 import { Route as MemoriesIndexRouteImport } from './routes/memories.index'
 import { Route as MemoriesFolderIdRouteImport } from './routes/memories.$folderId'
@@ -61,6 +62,11 @@ const ProfileRoute = ProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WidgetRoute = WidgetRouteImport.update({
+  id: '/widget',
+  path: '/widget',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IdolsIdolIdRoute = IdolsIdolIdRouteImport.update({
   id: '/$idolId',
   path: '/$idolId',
@@ -86,6 +92,7 @@ export interface FileRoutesByFullPath {
   '/home': typeof HomeRoute
   '/idols': typeof IdolsRouteWithChildren
   '/profile': typeof ProfileRoute
+  '/widget': typeof WidgetRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
   '/memories/$folderId': typeof MemoriesFolderIdRoute
   '/memories/': typeof MemoriesIndexRoute
@@ -99,6 +106,7 @@ export interface FileRoutesByTo {
   '/home': typeof HomeRoute
   '/idols': typeof IdolsRouteWithChildren
   '/profile': typeof ProfileRoute
+  '/widget': typeof WidgetRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
   '/memories/$folderId': typeof MemoriesFolderIdRoute
   '/memories': typeof MemoriesIndexRoute
@@ -113,6 +121,7 @@ export interface FileRoutesById {
   '/home': typeof HomeRoute
   '/idols': typeof IdolsRouteWithChildren
   '/profile': typeof ProfileRoute
+  '/widget': typeof WidgetRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
   '/memories/$folderId': typeof MemoriesFolderIdRoute
   '/memories/': typeof MemoriesIndexRoute
@@ -128,6 +137,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/idols'
     | '/profile'
+    | '/widget'
     | '/idols/$idolId'
     | '/memories/$folderId'
     | '/memories/'
@@ -141,6 +151,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/idols'
     | '/profile'
+    | '/widget'
     | '/idols/$idolId'
     | '/memories/$folderId'
     | '/memories'
@@ -154,6 +165,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/idols'
     | '/profile'
+    | '/widget'
     | '/idols/$idolId'
     | '/memories/$folderId'
     | '/memories/'
@@ -168,6 +180,7 @@ export interface RootRouteChildren {
   HomeRoute: typeof HomeRoute
   IdolsRoute: typeof IdolsRouteWithChildren
   ProfileRoute: typeof ProfileRoute
+  WidgetRoute: typeof WidgetRoute
   MemoriesFolderIdRoute: typeof MemoriesFolderIdRoute
   MemoriesIndexRoute: typeof MemoriesIndexRoute
 }
@@ -230,6 +243,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/widget': {
+      id: '/widget'
+      path: '/widget'
+      fullPath: '/widget'
+      preLoaderRoute: typeof WidgetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/idols/$idolId': {
       id: '/idols/$idolId'
       path: '/$idolId'
@@ -273,6 +293,7 @@ const rootRouteChildren: RootRouteChildren = {
   HomeRoute: HomeRoute,
   IdolsRoute: IdolsRouteWithChildren,
   ProfileRoute: ProfileRoute,
+  WidgetRoute: WidgetRoute,
   MemoriesFolderIdRoute: MemoriesFolderIdRoute,
   MemoriesIndexRoute: MemoriesIndexRoute,
 }
