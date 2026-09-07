@@ -8,7 +8,7 @@ import { useMemories } from "@/lib/memories";
 import { useIdols } from "@/lib/idols";
 import { parseLocalDate } from "@/lib/dates";
 
-export const Route = createFileRoute("/memories")({
+export const Route = createFileRoute("/memories/")({
   head: () => ({
     meta: [
       { title: "我的追星回憶｜IdolDays" },
