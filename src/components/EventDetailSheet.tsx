@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MilestoneFormSheet } from "@/components/MilestoneFormSheet";
-import { eventCountdown, eventTypeMeta, type IdolEvent } from "@/lib/events";
+import { completedLine, eventCountdown, eventTypeMeta, type IdolEvent } from "@/lib/events";
 import type { Idol } from "@/lib/idols";
 import { daysSince, parseLocalDate, today } from "@/lib/dates";
 import { type Milestone, type MilestoneDraft } from "@/lib/milestones";
@@ -115,6 +115,7 @@ export function EventDetailSheet({
   onOpenChange,
   onEdit,
   onDelete,
+  onRestore,
   reminderSummary,
   onOpenReminder,
 }: {
@@ -125,6 +126,7 @@ export function EventDetailSheet({
   onOpenChange: (open: boolean) => void;
   onEdit: () => void;
   onDelete: () => void;
+  onRestore?: (date: string) => void;
   reminderSummary?: string;
   onOpenReminder?: () => void;
 }) {
@@ -134,6 +136,8 @@ export function EventDetailSheet({
   const [formOpen, setFormOpen] = useState(false);
   const [editingMilestone, setEditingMilestone] = useState<Milestone | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [confirmRestore, setConfirmRestore] = useState(false);
+  const [restoreDate, setRestoreDate] = useState("");
 
   if (!event) return null;
 
@@ -171,6 +175,16 @@ export function EventDetailSheet({
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="rounded-2xl">
                 <DropdownMenuItem onSelect={onEdit}>編輯日子</DropdownMenuItem>
+                {c?.status === "COMPLETED" && onRestore ? (
+                  <DropdownMenuItem
+                    onSelect={() => {
+                      setRestoreDate("");
+                      setConfirmRestore(true);
+                    }}
+                  >
+                    ↩️ 移回進行中
+                  </DropdownMenuItem>
+                ) : null}
                 <DropdownMenuItem
                   onSelect={() => setConfirmDelete(true)}
                   className="text-destructive"
@@ -196,8 +210,8 @@ export function EventDetailSheet({
               {c?.status === "COMPLETED" ? "那一天是" : `距離 ${c?.dotDate ?? event.date}`}
             </p>
             {c?.status === "COMPLETED" ? (
-              <p className="mt-3 font-display text-[40px] leading-none font-semibold text-muted-foreground">
-                見面完成 ☑️
+              <p className="mt-3 font-display text-[32px] leading-none font-semibold text-muted-foreground">
+                {completedLine(event.type)}
               </p>
             ) : c?.status === "TODAY" ? (
               <p className="mt-3 font-display text-[56px] leading-none font-semibold text-primary">
@@ -312,6 +326,44 @@ export function EventDetailSheet({
               </>
             )}
           </div>
+
+          {confirmRestore && onRestore ? (
+            <div className="mt-10 rounded-2xl bg-surface/60 px-5 py-5">
+              <p className="text-center text-sm">要把這一天重新放回倒數嗎？</p>
+              <p className="mt-1.5 text-center text-xs text-muted-foreground">
+                移回去之後，它會再次出現在進行中的日子裡。
+              </p>
+              <label className="mt-4 block text-xs text-muted-foreground">
+                想把它重新倒數到哪一天？
+                <input
+                  type="date"
+                  value={restoreDate}
+                  onChange={(e) => setRestoreDate(e.target.value)}
+                  className="mt-1.5 w-full rounded-2xl border border-border/70 bg-background px-4 py-2.5 text-sm text-foreground"
+                />
+              </label>
+              <div className="mt-4 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setConfirmRestore(false)}
+                  className="flex-1 rounded-full border border-border/70 py-2.5 text-sm"
+                >
+                  先不要
+                </button>
+                <button
+                  type="button"
+                  disabled={!restoreDate}
+                  onClick={() => {
+                    setConfirmRestore(false);
+                    onRestore(restoreDate);
+                  }}
+                  className="flex-1 rounded-full bg-primary py-2.5 text-sm text-primary-foreground disabled:opacity-50"
+                >
+                  移回進行中
+                </button>
+              </div>
+            </div>
+          ) : null}
 
           {confirmDelete ? (
             <div className="mt-10 rounded-2xl bg-surface/60 px-5 py-5 text-center">

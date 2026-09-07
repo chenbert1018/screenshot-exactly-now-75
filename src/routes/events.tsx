@@ -4,6 +4,7 @@ import { CalendarHeart, Plus } from "lucide-react";
 import { AppShell, EmptyState, PageHeader, SoftCard } from "@/components/AppShell";
 import { EventFormSheet } from "@/components/EventFormSheet";
 import {
+  completedLine,
   eventCountdown,
   eventTypeMeta,
   sortEvents,
@@ -177,7 +178,7 @@ function EventsPage() {
 
           {past.length > 0 ? (
             <>
-              <p className="pt-4 pb-1 text-xs tracking-wide text-muted-foreground">已經走過的日子</p>
+              <p className="pt-4 pb-1 text-xs tracking-wide text-muted-foreground">已經見過啦 🥹</p>
               {past.map((e) => (
                 <EventCard
                   key={e.id}
@@ -225,6 +226,17 @@ function EventsPage() {
           setEditing(detail);
           setDetailId(null);
           setFormOpen(true);
+        }}
+        onRestore={async (date: string) => {
+          if (!detail) return;
+          await updateEvent(detail.id, {
+            idolId: detail.idolId,
+            title: detail.title,
+            type: detail.type,
+            date,
+            note: detail.note,
+          });
+          setDetailId(null);
         }}
         onDelete={async () => {
           if (!detail) return;
