@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { UserRound, Settings, Bell, Palette, Sparkles, ChevronRight } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { UserRound, Settings, Bell, Palette, Sparkles, ChevronRight, Cloud } from "lucide-react";
 import {
   GeneralSettingsSheet,
   NotificationSettingsSheet,
