@@ -1,16 +1,15 @@
 import { StoredImage } from "@/components/StoredImage";
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Heart, Plus, ExternalLink, Pencil, Trash2 } from "lucide-react";
+import { Heart, Plus } from "lucide-react";
+import { toast } from "sonner";
 import { AppShell, EmptyState, SoftCard } from "@/components/AppShell";
 import { HeartFormSheet } from "@/components/HeartFormSheet";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
+  HeartDetailSheet,
+  SugarPlaceholder,
+  dotDate,
+} from "@/components/HeartDetailSheet";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,7 +24,7 @@ import {
   heartTypeLabel,
   heartWhisper,
   HEART_TYPES,
-  useHeartItems,
+  sortHeartItemsByCollected,
   type HeartDraft,
   type HeartItem,
   type HeartItemType,
@@ -33,37 +32,20 @@ import {
 import { type Idol } from "@/lib/idols";
 import { useIdolSource } from "@/lib/idols.source";
 import { useSugarSource } from "@/lib/sugar.source";
-import { parseLocalDate } from "@/lib/dates";
 
 export const Route = createFileRoute("/heart")({
   head: () => ({
     meta: [
-      { title: "嗑糖考古｜IdolDays" },
-      { name: "description", content: "把那些讓你嗑到的瞬間，一一收藏起來。" },
-      { property: "og:title", content: "嗑糖考古｜IdolDays" },
-      { property: "og:description", content: "收藏那些讓我嗑到的瞬間 🍬" },
+      { title: "嗑糖｜IdolDays" },
+      { name: "description", content: "收藏那些讓我忍不住嘴角上揚的瞬間。" },
+      { property: "og:title", content: "嗑糖｜IdolDays" },
+      { property: "og:description", content: "收藏那些讓我忍不住嘴角上揚的瞬間 🍬" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
   }),
   component: HeartPage,
 });
-
-const pad = (n: number) => String(n).padStart(2, "0");
-
-/** 2026.09.04 */
-function dotDate(value: string) {
-  const p = parseLocalDate(value);
-  if (!p) return "";
-  return `${p.y}.${pad(p.m)}.${pad(p.d)}`;
-}
-
-/** 09.04 */
-function shortDate(value: string) {
-  const p = parseLocalDate(value);
-  if (!p) return "";
-  return `${pad(p.m)}.${pad(p.d)}`;
-}
 
 function toDraft(item: HeartItem): HeartDraft {
   return {
@@ -75,19 +57,6 @@ function toDraft(item: HeartItem): HeartDraft {
     image: item.image ?? "",
     link: item.link ?? "",
   };
-}
-
-function Placeholder({ item, name }: { item: HeartItem; name: string }) {
-  return (
-    <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 bg-surface/60">
-      <span className="flex size-12 items-center justify-center rounded-full bg-accent/50 font-display text-lg text-primary">
-        {name.slice(0, 1) || "♡"}
-      </span>
-      <span className="text-xs tracking-[0.2em] text-muted-foreground">
-        {heartTypeLabel(item.type)}
-      </span>
-    </div>
-  );
 }
 
 function HeartCard({
@@ -103,106 +72,25 @@ function HeartCard({
     <button type="button" onClick={onOpen} className="w-full text-left">
       <SoftCard className="overflow-hidden p-0 transition-transform duration-300 active:scale-[0.98]">
         {item.image ? (
-          <StoredImage src={item.image} alt={item.title} className="aspect-[4/3] w-full object-cover" />
+          <StoredImage
+            src={item.image}
+            alt={item.title}
+            className="aspect-[4/3] w-full object-cover"
+          />
         ) : (
-          <Placeholder item={item} name={idolName} />
+          <SugarPlaceholder item={item} name={idolName} />
         )}
         <div className="px-4 py-4">
-          <p className="text-primary" aria-hidden>
-            ♡
-          </p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {idolName}・{dotDate(item.date)}
-          </p>
-          <span className="mt-2 inline-flex rounded-full bg-surface px-2.5 py-1 text-[11px] text-muted-foreground">
+          <span className="inline-flex rounded-full bg-surface px-2.5 py-1 text-[11px] text-muted-foreground">
             {heartTypeLabel(item.type)}
           </span>
           <p className="mt-2 font-display text-[16px] leading-snug">{item.title}</p>
+          <p className="mt-1.5 text-xs text-muted-foreground">
+            {dotDate(item.date)}・{idolName}
+          </p>
         </div>
       </SoftCard>
     </button>
-  );
-}
-
-function HeartDetailSheet({
-  item,
-  idolName,
-  onOpenChange,
-  onEdit,
-  onDelete,
-}: {
-  item: HeartItem | null;
-  idolName: string;
-  onOpenChange: (open: boolean) => void;
-  onEdit: () => void;
-  onDelete: () => void;
-}) {
-  return (
-    <Sheet open={!!item} onOpenChange={onOpenChange}>
-      <SheetContent
-        side="bottom"
-        className="mx-auto max-h-[92vh] w-full max-w-md overflow-x-hidden overflow-y-auto rounded-t-3xl border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
-      >
-        {item ? (
-          <>
-            <SheetHeader className="px-0 text-left">
-              <SheetTitle className="sr-only">{item.title}</SheetTitle>
-              <SheetDescription className="sr-only">嗑糖瞬間的細節</SheetDescription>
-            </SheetHeader>
-
-            <div className="overflow-hidden rounded-2xl border border-border/60">
-              {item.image ? (
-                <StoredImage src={item.image} alt={item.title} className="aspect-[4/3] w-full object-cover" />
-              ) : (
-                <Placeholder item={item} name={idolName} />
-              )}
-            </div>
-
-            <p className="mt-5 text-xs text-muted-foreground">
-              {idolName}・{dotDate(item.date)}・{heartTypeLabel(item.type)}
-            </p>
-            <h2 className="mt-2 font-display text-[22px] leading-snug">{item.title}</h2>
-
-            {item.note ? (
-              <p className="mt-4 rounded-2xl bg-surface/60 px-4 py-4 text-sm leading-relaxed whitespace-pre-wrap">
-                {item.note}
-              </p>
-            ) : null}
-
-            {item.link ? (
-              <a
-                href={item.link}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-4 flex items-center gap-2 rounded-2xl border border-border/60 px-4 py-3 text-sm break-all text-primary"
-              >
-                <ExternalLink className="size-4 shrink-0" strokeWidth={1.6} />
-                {item.link}
-              </a>
-            ) : null}
-
-            <div className="mt-6 flex gap-3">
-              <button
-                type="button"
-                onClick={onEdit}
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-border/70 py-3 text-sm transition-transform duration-300 active:scale-95"
-              >
-                <Pencil className="size-4" strokeWidth={1.6} />
-                編輯
-              </button>
-              <button
-                type="button"
-                onClick={onDelete}
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-destructive/30 py-3 text-sm text-destructive transition-transform duration-300 active:scale-95"
-              >
-                <Trash2 className="size-4" strokeWidth={1.6} />
-                刪除
-              </button>
-            </div>
-          </>
-        ) : null}
-      </SheetContent>
-    </Sheet>
   );
 }
 
@@ -219,31 +107,14 @@ function HeartPage() {
 
   const idolName = (id: string) => idols.find((i) => i.id === id)?.name || "已刪除的偶像";
 
+  // 我的糖庫：最新收藏 → 最舊收藏
   const filtered = useMemo(
     () =>
-      items
+      sortHeartItemsByCollected(items)
         .filter((i) => (idolFilter === "ALL" ? true : i.idolId === idolFilter))
         .filter((i) => (typeFilter === "ALL" ? true : i.type === typeFilter)),
     [items, idolFilter, typeFilter],
   );
-
-  const groups = useMemo(() => {
-    const map = new Map<string, Map<string, HeartItem[]>>();
-    for (const item of filtered) {
-      const p = parseLocalDate(item.date);
-      if (!p) continue;
-      const year = String(p.y);
-      const month = pad(p.m);
-      if (!map.has(year)) map.set(year, new Map());
-      const months = map.get(year)!;
-      if (!months.has(month)) months.set(month, []);
-      months.get(month)!.push(item);
-    }
-    return [...map.entries()].map(([year, months]) => ({
-      year,
-      months: [...months.entries()].map(([month, list]) => ({ month, list })),
-    }));
-  }, [filtered]);
 
   const selectedIdol: Idol | undefined =
     idolFilter === "ALL" ? undefined : idols.find((i) => i.id === idolFilter);
@@ -258,8 +129,13 @@ function HeartPage() {
   }
 
   function submit(draft: HeartDraft) {
-    if (editing) void update(editing.id, draft);
-    else void add(draft);
+    if (editing) {
+      void update(editing.id, draft);
+      toast("這顆糖更新好了 ♡");
+    } else {
+      void add(draft);
+      toast("收好了 ♡", { description: "這顆糖以後可以慢慢嗑。" });
+    }
     setFormOpen(false);
     setEditing(null);
     setDetail(null);
@@ -269,13 +145,11 @@ function HeartPage() {
     <AppShell>
       <header className="mb-7">
         <p className="text-[11px] tracking-[0.28em] text-muted-foreground uppercase">
-          My Heart Archive
+          My Sugar Archive
         </p>
-        <h1 className="mt-2 font-display text-[28px] leading-tight font-medium">
-          🍬 嗑糖考古
-        </h1>
+        <h1 className="mt-2 font-display text-[28px] leading-tight font-medium">🍬 嗑糖</h1>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          收藏那些讓我嗑到的瞬間 🍬
+          收藏那些讓我忍不住嘴角上揚的瞬間。
         </p>
       </header>
 
@@ -286,7 +160,6 @@ function HeartPage() {
       ) : null}
 
       {!ready || !idolsReady ? (
-
         <div className="h-60 rounded-3xl border border-border/60 bg-surface/40" aria-hidden />
       ) : idols.length === 0 ? (
         <EmptyState
@@ -305,16 +178,15 @@ function HeartPage() {
       ) : items.length === 0 ? (
         <EmptyState
           icon={<Heart className="size-5" strokeWidth={1.6} />}
-          title="這裡還是空的。"
-          description="從第一顆糖開始收藏吧 ♡"
+          title="還沒有糖可以嗑 👀"
+          description="第一顆糖就從今天開始收藏。"
           action={
             <button
               type="button"
               onClick={openCreate}
               className="inline-flex items-center gap-1.5 rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
             >
-              <Plus className="size-4" strokeWidth={2} />
-              收藏第一顆糖
+              🍬 收藏第一顆糖
             </button>
           }
         />
@@ -379,59 +251,16 @@ function HeartPage() {
               這個分類還沒有糖，再去挖一下 👀
             </p>
           ) : (
-            <>
-              <section className="mt-8">
-                <h2 className="mb-3 font-display text-[15px] tracking-[0.08em]">時間軸</h2>
-                <div className="space-y-6">
-                  {groups.map((g) => (
-                    <div key={g.year}>
-                      <p className="font-display text-[18px] text-primary">{g.year}</p>
-                      <div className="mt-2 space-y-4 border-l border-border/70 pl-4">
-                        {g.months.map((m) => (
-                          <div key={m.month}>
-                            <p className="text-xs tracking-wide text-muted-foreground">
-                              {m.month} 月
-                            </p>
-                            <ul className="mt-2 space-y-2">
-                              {m.list.map((item) => (
-                                <li key={item.id}>
-                                  <button
-                                    type="button"
-                                    onClick={() => setDetail(item)}
-                                    className="flex w-full items-baseline gap-2 text-left"
-                                  >
-                                    <span aria-hidden className="text-primary">
-                                      ♡
-                                    </span>
-                                    <span className="min-w-0 flex-1 truncate text-sm">
-                                      {item.title}
-                                    </span>
-                                    <span className="text-xs text-muted-foreground">
-                                      {shortDate(item.date)}
-                                    </span>
-                                  </button>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              <section className="mt-9 space-y-4">
-                {filtered.map((item) => (
-                  <HeartCard
-                    key={item.id}
-                    item={item}
-                    idolName={idolName(item.idolId)}
-                    onOpen={() => setDetail(item)}
-                  />
-                ))}
-              </section>
-            </>
+            <section className="mt-8 space-y-4">
+              {filtered.map((item) => (
+                <HeartCard
+                  key={item.id}
+                  item={item}
+                  idolName={idolName(item.idolId)}
+                  onOpen={() => setDetail(item)}
+                />
+              ))}
+            </section>
           )}
         </>
       )}
@@ -459,8 +288,8 @@ function HeartPage() {
         idols={idols}
         initial={editing ? toDraft(editing) : undefined}
         defaultIdolId={idolFilter === "ALL" ? undefined : idolFilter}
-        title={editing ? "編輯嗑糖瞬間" : "收藏這顆糖 ♡"}
-        submitLabel={editing ? "儲存" : "收藏"}
+        title={editing ? "編輯這顆糖" : "收藏這顆糖 ♡"}
+        submitLabel={editing ? "儲存" : "收藏這顆糖 ♡"}
         onSubmit={submit}
       />
 
@@ -472,11 +301,13 @@ function HeartPage() {
       >
         <AlertDialogContent className="max-w-[20rem] rounded-3xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>要把這顆糖刪掉嗎……🥹</AlertDialogTitle>
-            <AlertDialogDescription>刪除後無法復原。</AlertDialogDescription>
+            <AlertDialogTitle>這顆真的要刪掉嗎……🥹</AlertDialogTitle>
+            <AlertDialogDescription>
+              刪掉之後，就不會再出現在你的糖庫裡了。
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-full">取消</AlertDialogCancel>
+            <AlertDialogCancel className="rounded-full">留下這顆糖</AlertDialogCancel>
             <AlertDialogAction
               className="rounded-full bg-destructive text-destructive-foreground"
               onClick={() => {
@@ -485,7 +316,7 @@ function HeartPage() {
                 setDetail(null);
               }}
             >
-              刪除
+              還是刪掉
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
