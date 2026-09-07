@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      events: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          idol_id: string
+          note: string
+          title: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          id?: string
+          idol_id: string
+          note?: string
+          title: string
+          type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          idol_id?: string
+          note?: string
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_idol_id_fkey"
+            columns: ["idol_id"]
+            isOneToOne: false
+            referencedRelation: "idols"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       idols: {
         Row: {
           birthday: string | null
@@ -58,6 +102,50 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      milestones: {
+        Row: {
+          completed: boolean
+          created_at: string
+          date: string | null
+          emoji: string
+          event_id: string
+          id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          date?: string | null
+          emoji?: string
+          event_id: string
+          id?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          date?: string | null
+          emoji?: string
+          event_id?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "milestones_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
