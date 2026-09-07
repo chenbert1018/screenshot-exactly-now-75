@@ -17,6 +17,8 @@ import { Route as HomeRouteImport } from './routes/home'
 import { Route as IdolsRouteImport } from './routes/idols'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as IdolsIdolIdRouteImport } from './routes/idols.$idolId'
+import { Route as MemoriesIndexRouteImport } from './routes/memories.index'
+import { Route as MemoriesFolderIdRouteImport } from './routes/memories.$folderId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -58,6 +60,16 @@ const IdolsIdolIdRoute = IdolsIdolIdRouteImport.update({
   path: '/$idolId',
   getParentRoute: () => IdolsRoute,
 } as any)
+const MemoriesIndexRoute = MemoriesIndexRouteImport.update({
+  id: '/memories/',
+  path: '/memories/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MemoriesFolderIdRoute = MemoriesFolderIdRouteImport.update({
+  id: '/memories/$folderId',
+  path: '/memories/$folderId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -68,6 +80,8 @@ export interface FileRoutesByFullPath {
   '/idols': typeof IdolsRouteWithChildren
   '/profile': typeof ProfileRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
+  '/memories/$folderId': typeof MemoriesFolderIdRoute
+  '/memories/': typeof MemoriesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -78,6 +92,8 @@ export interface FileRoutesByTo {
   '/idols': typeof IdolsRouteWithChildren
   '/profile': typeof ProfileRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
+  '/memories/$folderId': typeof MemoriesFolderIdRoute
+  '/memories': typeof MemoriesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,6 +105,8 @@ export interface FileRoutesById {
   '/idols': typeof IdolsRouteWithChildren
   '/profile': typeof ProfileRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
+  '/memories/$folderId': typeof MemoriesFolderIdRoute
+  '/memories/': typeof MemoriesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +119,8 @@ export interface FileRouteTypes {
     | '/idols'
     | '/profile'
     | '/idols/$idolId'
+    | '/memories/$folderId'
+    | '/memories/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,6 +131,8 @@ export interface FileRouteTypes {
     | '/idols'
     | '/profile'
     | '/idols/$idolId'
+    | '/memories/$folderId'
+    | '/memories'
   id:
     | '__root__'
     | '/'
@@ -121,6 +143,8 @@ export interface FileRouteTypes {
     | '/idols'
     | '/profile'
     | '/idols/$idolId'
+    | '/memories/$folderId'
+    | '/memories/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -131,6 +155,8 @@ export interface RootRouteChildren {
   HomeRoute: typeof HomeRoute
   IdolsRoute: typeof IdolsRouteWithChildren
   ProfileRoute: typeof ProfileRoute
+  MemoriesFolderIdRoute: typeof MemoriesFolderIdRoute
+  MemoriesIndexRoute: typeof MemoriesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -191,6 +217,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IdolsIdolIdRouteImport
       parentRoute: typeof IdolsRoute
     }
+    '/memories/': {
+      id: '/memories/'
+      path: '/memories'
+      fullPath: '/memories/'
+      preLoaderRoute: typeof MemoriesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/memories/$folderId': {
+      id: '/memories/$folderId'
+      path: '/memories/$folderId'
+      fullPath: '/memories/$folderId'
+      preLoaderRoute: typeof MemoriesFolderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -212,6 +252,8 @@ const rootRouteChildren: RootRouteChildren = {
   HomeRoute: HomeRoute,
   IdolsRoute: IdolsRouteWithChildren,
   ProfileRoute: ProfileRoute,
+  MemoriesFolderIdRoute: MemoriesFolderIdRoute,
+  MemoriesIndexRoute: MemoriesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

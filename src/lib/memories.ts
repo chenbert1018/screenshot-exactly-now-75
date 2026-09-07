@@ -6,12 +6,12 @@ export type Memory = {
   id: string;
   /** 舊資料可能沒有 folderId，讀取時安全處理 */
   folderId: string;
-  idolId?: string;
+  idolId?: string | undefined;
   title: string;
   /** YYYY-MM-DD */
   date: string;
   note: string;
-  photo?: string;
+  photo?: string | undefined;
   createdAt: string;
 };
 

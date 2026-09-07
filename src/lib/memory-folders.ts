@@ -4,12 +4,12 @@ const STORAGE_KEY = "idoldays.memoryFolders.v1";
 
 export type MemoryFolder = {
   id: string;
-  idolId?: string;
+  idolId?: string | undefined;
   title: string;
-  description?: string;
-  coverPhoto?: string;
-  startDate?: string;
-  endDate?: string;
+  description?: string | undefined;
+  coverPhoto?: string | undefined;
+  startDate?: string | undefined;
+  endDate?: string | undefined;
   createdAt: string;
 };
 

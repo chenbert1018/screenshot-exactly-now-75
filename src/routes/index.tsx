@@ -297,7 +297,18 @@ function HomePage() {
           <YearsAgo />
         </>
       )}
+
+      <Link
+        to="/memories"
+        className="mt-10 flex items-center justify-between rounded-3xl border border-border/60 bg-card/70 px-5 py-4 shadow-soft transition-transform duration-300 active:scale-[0.98]"
+      >
+        <span className="text-sm">把喜歡過的每一天，留在這裡 ♡</span>
+        <span aria-hidden className="text-primary">
+          →
+        </span>
+      </Link>
     </AppShell>
+
   );
 }
 
