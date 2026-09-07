@@ -292,6 +292,139 @@ export type Database = {
           },
         ]
       }
+      reminders: {
+        Row: {
+          created_at: string
+          days_before: number
+          enabled: boolean
+          event_id: string | null
+          id: string
+          idol_id: string | null
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          days_before?: number
+          enabled?: boolean
+          event_id?: string | null
+          id?: string
+          idol_id?: string | null
+          type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          days_before?: number
+          enabled?: boolean
+          event_id?: string | null
+          id?: string
+          idol_id?: string | null
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reminders_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reminders_idol_id_fkey"
+            columns: ["idol_id"]
+            isOneToOne: false
+            referencedRelation: "idols"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sugar_items: {
+        Row: {
+          created_at: string
+          date: string | null
+          id: string
+          idol_id: string | null
+          image: string
+          link: string
+          note: string
+          title: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string | null
+          id?: string
+          idol_id?: string | null
+          image?: string
+          link?: string
+          note?: string
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string | null
+          id?: string
+          idol_id?: string | null
+          image?: string
+          link?: string
+          note?: string
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sugar_items_idol_id_fkey"
+            columns: ["idol_id"]
+            isOneToOne: false
+            referencedRelation: "idols"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      widget_preferences: {
+        Row: {
+          created_at: string
+          enabled_contents: string[]
+          idol_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          enabled_contents?: string[]
+          idol_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          enabled_contents?: string[]
+          idol_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "widget_preferences_idol_id_fkey"
+            columns: ["idol_id"]
+            isOneToOne: false
+            referencedRelation: "idols"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
