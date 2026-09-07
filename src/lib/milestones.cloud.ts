@@ -65,11 +65,17 @@ export async function updateCloudMilestone(
   id: string,
   patch: Partial<MilestoneDraft> & { completed?: boolean },
 ): Promise<Milestone> {
-  const row: Record<string, unknown> = {};
-  if (patch.title !== undefined) row['title'] = patch.title;
-  if (patch.date !== undefined) row['date'] = patch.date || null;
-  if (patch.emoji !== undefined) row['emoji'] = patch.emoji;
-  if (patch.completed !== undefined) row['completed'] = patch.completed;
+  const row: {
+    title?: string;
+    date?: string | null;
+    emoji?: string;
+    completed?: boolean;
+  } = {};
+  if (patch.title !== undefined) row.title = patch.title;
+  if (patch.date !== undefined) row.date = patch.date || null;
+  if (patch.emoji !== undefined) row.emoji = patch.emoji;
+  if (patch.completed !== undefined) row.completed = patch.completed;
+
 
   const { data, error } = await supabase
     .from("milestones")
