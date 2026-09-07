@@ -155,17 +155,27 @@ function CalendarPage() {
 
   const idolOf = (id: string) => findIdol(id);
   const selectedEvents = selectedDate ? (byDate.get(selectedDate) ?? []) : [];
+  const selectedBirthdays = selectedDate ? (birthdaysByDate.get(selectedDate) ?? []) : [];
   const detail = events.find((e) => e.id === detailId) ?? null;
   const detailCountdown = detail ? eventCountdown(detail.date, base) : null;
+  const birthdayDetail = birthdayIdolId
+    ? (monthBirthdays.find((b) => b.idol.id === birthdayIdolId) ?? null)
+    : null;
 
   function openDate(dateKey: string) {
     const list = byDate.get(dateKey) ?? [];
-    if (list.length === 1 && list[0]) {
+    const births = birthdaysByDate.get(dateKey) ?? [];
+    if (list.length === 0 && births.length === 1 && births[0]) {
+      setBirthdayIdolId(births[0].idol.id);
+      return;
+    }
+    if (births.length === 0 && list.length === 1 && list[0]) {
       setDetailId(list[0].id);
       return;
     }
     setSelectedDate(dateKey);
   }
+
 
   function openCreate(dateKey: string) {
     setSelectedDate(null);
