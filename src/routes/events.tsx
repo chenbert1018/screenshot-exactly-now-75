@@ -146,6 +146,18 @@ function EventsPage() {
         }
       />
 
+      <div className="mb-5 flex gap-2 rounded-full bg-surface/70 p-1">
+        <span className="flex-1 rounded-full bg-card py-2 text-center text-xs font-medium text-primary shadow-soft">
+          倒數中的日子
+        </span>
+        <Link
+          to="/calendar"
+          className="flex-1 rounded-full py-2 text-center text-xs text-muted-foreground transition-transform duration-300 active:scale-95"
+        >
+          行事曆
+        </Link>
+      </div>
+
       {error ? (
         <p className="mb-4 rounded-2xl border border-border/60 bg-surface/50 px-4 py-3 text-center text-xs text-muted-foreground">
           目前連不上雲端資料，你的日子沒有遺失，請稍後再試。
