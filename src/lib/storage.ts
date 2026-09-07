@@ -75,13 +75,13 @@ export function dataUrlToBlob(value: string): ParsedDataUrl | null {
     const payload = value.slice(commaAt + 1);
     if (!payload) return null;
 
-    let bytes: Uint8Array;
+    let bytes: Uint8Array<ArrayBuffer>;
     if (isBase64) {
       const binary = atob(payload);
       bytes = new Uint8Array(binary.length);
       for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
     } else {
-      bytes = new TextEncoder().encode(decodeURIComponent(payload));
+      bytes = new TextEncoder().encode(decodeURIComponent(payload)) as Uint8Array<ArrayBuffer>;
     }
     if (bytes.byteLength === 0) return null;
 
