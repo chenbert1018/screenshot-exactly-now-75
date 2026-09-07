@@ -20,6 +20,7 @@ import { Route as HomeRouteImport } from './routes/home'
 import { Route as IdolsRouteImport } from './routes/idols'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as WidgetRouteImport } from './routes/widget'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as IdolsIdolIdRouteImport } from './routes/idols.$idolId'
 import { Route as MemoriesIndexRouteImport } from './routes/memories.index'
 import { Route as MemoriesFolderIdRouteImport } from './routes/memories.$folderId'
@@ -79,6 +80,11 @@ const WidgetRoute = WidgetRouteImport.update({
   path: '/widget',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const IdolsIdolIdRoute = IdolsIdolIdRouteImport.update({
   id: '/$idolId',
   path: '/$idolId',
@@ -97,7 +103,7 @@ const MemoriesFolderIdRoute = MemoriesFolderIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/archaeology': typeof ArchaeologyRoute
   '/auth': typeof AuthRoute
   '/calendar': typeof CalendarRoute
@@ -109,11 +115,11 @@ export interface FileRoutesByFullPath {
   '/widget': typeof WidgetRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
   '/memories/$folderId': typeof MemoriesFolderIdRoute
+  '/admin/': typeof AdminIndexRoute
   '/memories/': typeof MemoriesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/archaeology': typeof ArchaeologyRoute
   '/auth': typeof AuthRoute
   '/calendar': typeof CalendarRoute
@@ -125,12 +131,13 @@ export interface FileRoutesByTo {
   '/widget': typeof WidgetRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
   '/memories/$folderId': typeof MemoriesFolderIdRoute
+  '/admin': typeof AdminIndexRoute
   '/memories': typeof MemoriesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/archaeology': typeof ArchaeologyRoute
   '/auth': typeof AuthRoute
   '/calendar': typeof CalendarRoute
@@ -142,6 +149,7 @@ export interface FileRoutesById {
   '/widget': typeof WidgetRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
   '/memories/$folderId': typeof MemoriesFolderIdRoute
+  '/admin/': typeof AdminIndexRoute
   '/memories/': typeof MemoriesIndexRoute
 }
 export interface FileRouteTypes {
@@ -160,11 +168,11 @@ export interface FileRouteTypes {
     | '/widget'
     | '/idols/$idolId'
     | '/memories/$folderId'
+    | '/admin/'
     | '/memories/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin'
     | '/archaeology'
     | '/auth'
     | '/calendar'
@@ -176,6 +184,7 @@ export interface FileRouteTypes {
     | '/widget'
     | '/idols/$idolId'
     | '/memories/$folderId'
+    | '/admin'
     | '/memories'
   id:
     | '__root__'
@@ -192,12 +201,13 @@ export interface FileRouteTypes {
     | '/widget'
     | '/idols/$idolId'
     | '/memories/$folderId'
+    | '/admin/'
     | '/memories/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   ArchaeologyRoute: typeof ArchaeologyRoute
   AuthRoute: typeof AuthRoute
   CalendarRoute: typeof CalendarRoute
@@ -290,6 +300,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WidgetRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/idols/$idolId': {
       id: '/idols/$idolId'
       path: '/$idolId'
@@ -314,6 +331,16 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminRouteChildren {
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 interface IdolsRouteChildren {
   IdolsIdolIdRoute: typeof IdolsIdolIdRoute
 }
@@ -326,7 +353,7 @@ const IdolsRouteWithChildren = IdolsRoute._addFileChildren(IdolsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   ArchaeologyRoute: ArchaeologyRoute,
   AuthRoute: AuthRoute,
   CalendarRoute: CalendarRoute,
