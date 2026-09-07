@@ -115,21 +115,23 @@ export function addHeartItem(draft: HeartDraft) {
 
 export function updateHeartItem(id: string, draft: HeartDraft) {
   emit(
-    loadHeartItems().map((i) =>
+    loadHeartItems().map((i): HeartItem =>
       i.id === id
         ? {
-            ...i,
+            id: i.id,
+            createdAt: i.createdAt,
             idolId: draft.idolId,
             title: draft.title.trim(),
             date: draft.date,
             type: draft.type,
-            note: draft.note.trim() || undefined,
-            image: draft.image || undefined,
-            link: draft.link.trim() || undefined,
+            ...(draft.note.trim() ? { note: draft.note.trim() } : {}),
+            ...(draft.image ? { image: draft.image } : {}),
+            ...(draft.link.trim() ? { link: draft.link.trim() } : {}),
           }
         : i,
     ),
   );
+
 }
 
 export function deleteHeartItem(id: string) {
