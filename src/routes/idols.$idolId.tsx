@@ -16,6 +16,7 @@ import {
 import { useIdols, type IdolDraft } from "@/lib/idols";
 import { ReminderSheet } from "@/components/ReminderSheet";
 import {
+  DEFAULT_DAYS_BEFORE,
   deleteRemindersForIdol,
   findReminder,
   formatDaysBefore,
@@ -217,8 +218,8 @@ function IdolDetailPage() {
         eventDate={(reminderKind === "ANNIVERSARY" ? idol.debutDate : idol.birthday) || ""}
         initialDaysBefore={
           reminderKind === "ANNIVERSARY"
-            ? (debutReminder?.daysBefore ?? null)
-            : (birthdayReminder?.daysBefore ?? null)
+            ? (debutReminder?.daysBefore ?? DEFAULT_DAYS_BEFORE)
+            : (birthdayReminder?.daysBefore ?? DEFAULT_DAYS_BEFORE)
         }
         onSave={(daysBefore) => {
           if (!reminderKind) return;

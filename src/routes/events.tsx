@@ -16,6 +16,7 @@ import { ReminderSheet } from "@/components/ReminderSheet";
 import { EventDetailSheet } from "@/components/EventDetailSheet";
 import { deleteMilestonesForEvent } from "@/lib/milestones";
 import {
+  DEFAULT_DAYS_BEFORE,
   deleteReminders,
   findReminder,
   formatReminderSummary,
@@ -239,7 +240,7 @@ function EventsPage() {
           eventTitle={detail.title}
           eventDate={eventCountdown(detail.date)?.dotDate ?? detail.date}
           initialDaysBefore={
-            findReminder(reminders, { type: "EVENT", eventId: detail.id })?.daysBefore ?? null
+            findReminder(reminders, { type: "EVENT", eventId: detail.id })?.daysBefore ?? DEFAULT_DAYS_BEFORE
           }
           onSave={(daysBefore) => {
             setReminderFor({ type: "EVENT", eventId: detail.id }, daysBefore);
