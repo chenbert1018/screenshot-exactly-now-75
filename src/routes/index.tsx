@@ -57,6 +57,10 @@ function CountdownHero({ idol, event }: { idol: Idol; event?: IdolEvent | undefi
           ddayLabel: countdown.ddayLabel,
           dateLabel: countdown.dotDate,
           titleLabel: `${eventTypeMeta(event.type).emoji} ${idol.name} 的${event.title}`,
+          line:
+            event.type === "BIRTHDAY"
+              ? birthdayDdayLine(idol.name, countdown.daysUntil ?? 0)
+              : eventDdayLine(idol.name, countdown.daysUntil ?? 0),
         }
       : day && anniversary
         ? {
@@ -64,6 +68,14 @@ function CountdownHero({ idol, event }: { idol: Idol; event?: IdolEvent | undefi
             ddayLabel: day.ddayLabel,
             dateLabel: formatDotDate(anniversary.nextDate),
             titleLabel: `${day.kind === "birthday" ? "🎂" : "✨"} ${idol.name} 的${day.title}`,
+            line:
+              day.kind === "birthday"
+                ? birthdayDdayLine(idol.name, day.daysUntil)
+                : debutDdayLine(
+                    idol.name,
+                    day.daysUntil,
+                    debutYear ? anniversary.nextDate.getFullYear() - debutYear : null,
+                  ),
           }
         : null;
 
