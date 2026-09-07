@@ -16,9 +16,11 @@ import { ReminderSheet } from "@/components/ReminderSheet";
 import { EventDetailSheet } from "@/components/EventDetailSheet";
 import { deleteMilestonesForEvent } from "@/lib/milestones";
 import {
+  DEFAULT_DAYS_BEFORE,
   deleteReminders,
+  findReminder,
   formatReminderSummary,
-  saveReminders,
+  setReminderFor,
   useReminders,
 } from "@/lib/reminders";
 
@@ -95,7 +97,7 @@ function EventsPage() {
   const [detailId, setDetailId] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [reminderOpen, setReminderOpen] = useState(false);
-  const { remindersFor } = useReminders();
+  const { reminders, remindersFor } = useReminders();
 
 
   const { upcoming, past } = useMemo(() => sortEvents(events), [events]);
@@ -237,9 +239,11 @@ function EventsPage() {
           eventLabel={`${eventTypeMeta(detail.type).emoji} ${idolLabel(idolOf(detail.idolId))}`}
           eventTitle={detail.title}
           eventDate={eventCountdown(detail.date)?.dotDate ?? detail.date}
-          initialOffsets={remindersFor(detail.id).filter((r) => r.enabled).map((r) => r.offset)}
-          onSave={(offsets) => {
-            saveReminders(detail.id, offsets);
+          initialDaysBefore={
+            findReminder(reminders, { type: "EVENT", eventId: detail.id })?.daysBefore ?? DEFAULT_DAYS_BEFORE
+          }
+          onSave={(daysBefore) => {
+            setReminderFor({ type: "EVENT", eventId: detail.id }, daysBefore);
             setReminderOpen(false);
           }}
         />

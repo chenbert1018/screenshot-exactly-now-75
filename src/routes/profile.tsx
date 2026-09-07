@@ -1,6 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { UserRound, Settings, Bell, Palette, Sparkles, ChevronRight } from "lucide-react";
 import { AppShell, PageHeader, Section, SoftCard } from "@/components/AppShell";
+import { Trash2 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import {
+  deleteReminder,
+  formatDaysBefore,
+  updateReminder,
+  useReminders,
+} from "@/lib/reminders";
+import { useIdols } from "@/lib/idols";
+import { useEvents, eventTypeMeta } from "@/lib/events";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -21,6 +31,30 @@ const settings = [
 ];
 
 function ProfilePage() {
+  const { reminders } = useReminders();
+  const { idols } = useIdols();
+  const { events } = useEvents();
+
+  const reminderRows = reminders.map((r) => {
+    const event = r.eventId ? events.find((e) => e.id === r.eventId) : undefined;
+    const idol = idols.find((i) => i.id === (r.idolId ?? event?.idolId));
+    const title =
+      r.type === "BIRTHDAY"
+        ? "🎂 生日"
+        : r.type === "ANNIVERSARY"
+          ? "✨ 出道紀念日"
+          : event
+            ? `${eventTypeMeta(event.type).emoji} ${event.title}`
+            : "已刪除的日子";
+    return {
+      id: r.id,
+      title,
+      idolName: idol?.name ?? "已刪除的偶像",
+      daysBefore: r.daysBefore,
+      enabled: r.enabled,
+    };
+  });
+
   return (
     <AppShell>
       <PageHeader title="我的" />
@@ -34,6 +68,46 @@ function ProfilePage() {
           <p className="mt-1 text-sm text-muted-foreground">歡迎來到 IdolDays</p>
         </div>
       </SoftCard>
+
+      <Section title="提醒設定">
+        <SoftCard className="px-5 py-5">
+          <p className="flex items-center gap-2 text-[15px] font-medium">🔔 重要日子提醒</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            這裡只保存提醒設定，暫時不會真的發送通知。
+          </p>
+          {reminderRows.length === 0 ? (
+            <p className="mt-4 rounded-2xl bg-surface/60 px-4 py-4 text-sm text-muted-foreground">
+              還沒有提醒。到日子或偶像頁面就能設定。
+            </p>
+          ) : (
+            <ul className="mt-4 divide-y divide-border/60">
+              {reminderRows.map((row) => (
+                <li key={row.id} className="flex items-center gap-3 py-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm">{row.title}</p>
+                    <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                      {row.idolName} · {formatDaysBefore(row.daysBefore)}
+                    </p>
+                  </div>
+                  <Switch
+                    checked={row.enabled}
+                    aria-label={`${row.title} 提醒開關`}
+                    onCheckedChange={(v) => updateReminder(row.id, { enabled: v })}
+                  />
+                  <button
+                    type="button"
+                    aria-label={`刪除 ${row.title} 提醒`}
+                    onClick={() => deleteReminder(row.id)}
+                    className="rounded-full p-2 text-muted-foreground transition-transform duration-300 active:scale-90"
+                  >
+                    <Trash2 className="size-4" strokeWidth={1.6} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </SoftCard>
+      </Section>
 
       <Section title="設定">
         <SoftCard className="divide-y divide-border/60">

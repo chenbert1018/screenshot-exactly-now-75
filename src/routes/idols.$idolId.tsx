@@ -14,6 +14,17 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useIdols, type IdolDraft } from "@/lib/idols";
+import { ReminderSheet } from "@/components/ReminderSheet";
+import {
+  DEFAULT_DAYS_BEFORE,
+  deleteRemindersForIdol,
+  findReminder,
+  formatDaysBefore,
+  setReminderFor,
+  useReminders,
+  type ReminderType,
+} from "@/lib/reminders";
+import { Bell } from "lucide-react";
 import { daysSince, primaryDay, nextAnniversary } from "@/lib/dates";
 
 export const Route = createFileRoute("/idols/$idolId")({
@@ -43,6 +54,8 @@ function IdolDetailPage() {
   const { idols, ready, updateIdol, removeIdol } = useIdols();
   const [editing, setEditing] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  const [reminderKind, setReminderKind] = useState<ReminderType | null>(null);
+  const { reminders } = useReminders();
 
   const idol = idols.find((i) => i.id === idolId);
 
@@ -76,6 +89,7 @@ function IdolDetailPage() {
   }
 
   function handleDelete() {
+    deleteRemindersForIdol(idolId);
     removeIdol(idolId);
     setConfirming(false);
     setEditing(false);
@@ -86,6 +100,8 @@ function IdolDetailPage() {
   const day = primaryDay(idol);
   const since = daysSince(idol.sinceDate);
   const debut = nextAnniversary(idol.debutDate);
+  const birthdayReminder = findReminder(reminders, { type: "BIRTHDAY", idolId });
+  const debutReminder = findReminder(reminders, { type: "ANNIVERSARY", idolId });
 
   return (
     <AppShell>
@@ -160,6 +176,57 @@ function IdolDetailPage() {
         <Row label="粉絲名稱" value={idol.fanName} />
         <Row label="我喜歡他的日期" value={idol.sinceDate} />
       </SoftCard>
+
+      {idol.birthday || idol.debutDate ? (
+        <SoftCard className="mt-5 divide-y divide-border/60">
+          {idol.birthday ? (
+            <button
+              type="button"
+              onClick={() => setReminderKind("BIRTHDAY")}
+              className="flex w-full items-center gap-3 px-5 py-4 text-left transition-colors active:bg-surface/70"
+            >
+              <Bell className="size-[18px] text-muted-foreground" strokeWidth={1.6} />
+              <span className="flex-1 text-sm">生日提醒</span>
+              <span className="text-sm text-muted-foreground">
+                {birthdayReminder ? formatDaysBefore(birthdayReminder.daysBefore) : "不提醒"}
+              </span>
+            </button>
+          ) : null}
+          {idol.debutDate ? (
+            <button
+              type="button"
+              onClick={() => setReminderKind("ANNIVERSARY")}
+              className="flex w-full items-center gap-3 px-5 py-4 text-left transition-colors active:bg-surface/70"
+            >
+              <Bell className="size-[18px] text-muted-foreground" strokeWidth={1.6} />
+              <span className="flex-1 text-sm">出道紀念日提醒</span>
+              <span className="text-sm text-muted-foreground">
+                {debutReminder ? formatDaysBefore(debutReminder.daysBefore) : "不提醒"}
+              </span>
+            </button>
+          ) : null}
+        </SoftCard>
+      ) : null}
+
+      <ReminderSheet
+        open={reminderKind !== null}
+        onOpenChange={(o) => {
+          if (!o) setReminderKind(null);
+        }}
+        eventLabel={idol.name}
+        eventTitle={reminderKind === "ANNIVERSARY" ? "出道紀念日" : "生日"}
+        eventDate={(reminderKind === "ANNIVERSARY" ? idol.debutDate : idol.birthday) || ""}
+        initialDaysBefore={
+          reminderKind === "ANNIVERSARY"
+            ? (debutReminder?.daysBefore ?? DEFAULT_DAYS_BEFORE)
+            : (birthdayReminder?.daysBefore ?? DEFAULT_DAYS_BEFORE)
+        }
+        onSave={(daysBefore) => {
+          if (!reminderKind) return;
+          setReminderFor({ type: reminderKind, idolId }, daysBefore);
+          setReminderKind(null);
+        }}
+      />
 
       <IdolFormSheet
         open={editing}
