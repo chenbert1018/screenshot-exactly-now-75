@@ -1,5 +1,11 @@
+import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { UserRound, Settings, Bell, Palette, Sparkles, ChevronRight } from "lucide-react";
+import {
+  GeneralSettingsSheet,
+  NotificationSettingsSheet,
+  ThemeSettingsSheet,
+} from "@/components/SettingsSheets";
 import { AppShell, PageHeader, Section, SoftCard } from "@/components/AppShell";
 import { Trash2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
@@ -24,13 +30,16 @@ export const Route = createFileRoute("/profile")({
   component: ProfilePage,
 });
 
-const settings = [
-  { label: "一般設定", Icon: Settings },
-  { label: "提醒通知", Icon: Bell },
-  { label: "外觀主題", Icon: Palette },
+type SettingKey = "general" | "notification" | "theme";
+
+const settings: { key: SettingKey; label: string; Icon: typeof Settings }[] = [
+  { key: "general", label: "一般設定", Icon: Settings },
+  { key: "notification", label: "提醒通知", Icon: Bell },
+  { key: "theme", label: "外觀主題", Icon: Palette },
 ];
 
 function ProfilePage() {
+  const [openSheet, setOpenSheet] = useState<SettingKey | null>(null);
   const { reminders } = useReminders();
   const { idols } = useIdols();
   const { events } = useEvents();
@@ -111,10 +120,11 @@ function ProfilePage() {
 
       <Section title="設定">
         <SoftCard className="divide-y divide-border/60">
-          {settings.map(({ label, Icon }) => (
+          {settings.map(({ key, label, Icon }) => (
             <button
-              key={label}
+              key={key}
               type="button"
+              onClick={() => setOpenSheet(key)}
               className="flex w-full items-center gap-3 px-5 py-4 text-left transition-colors active:bg-surface/70"
             >
               <Icon className="size-[18px] text-muted-foreground" strokeWidth={1.6} />
@@ -138,6 +148,19 @@ function ProfilePage() {
       </Section>
 
       <p className="mt-10 text-center text-xs text-muted-foreground">版本 0.1.0（S0 Foundation）</p>
+
+      <GeneralSettingsSheet
+        open={openSheet === "general"}
+        onOpenChange={(v) => setOpenSheet(v ? "general" : null)}
+      />
+      <NotificationSettingsSheet
+        open={openSheet === "notification"}
+        onOpenChange={(v) => setOpenSheet(v ? "notification" : null)}
+      />
+      <ThemeSettingsSheet
+        open={openSheet === "theme"}
+        onOpenChange={(v) => setOpenSheet(v ? "theme" : null)}
+      />
     </AppShell>
   );
 }
