@@ -105,6 +105,23 @@ function localPhotos(key: string, field: "photo" | "image"): Array<{ id: string;
 
 type TableName = "idols" | "memories" | "sugar_items";
 
+/** 三張表共用同一種「只讀寫圖片欄位」的存取方式，型別上以最小介面處理 */
+type PhotoTable = {
+  select: (columns: string) => {
+    eq: (
+      column: string,
+      value: string,
+    ) => { maybeSingle: () => Promise<{ data: Record<string, unknown> | null; error: unknown }> };
+  };
+  update: (patch: Record<string, string>) => {
+    eq: (column: string, value: string) => Promise<{ error: unknown }>;
+  };
+};
+
+function photoTable(table: TableName): PhotoTable {
+  return supabase.from(table) as unknown as PhotoTable;
+}
+
 async function migrateOne(params: {
   userId: string;
   kind: MediaKind;
@@ -124,8 +141,7 @@ async function migrateOne(params: {
   if (isStorageRef(mappings[localId])) return true;
 
   // 2. 雲端資料已經是 Storage reference
-  const { data: row, error: readError } = await supabase
-    .from(table)
+  const { data: row, error: readError } = await photoTable(table)
     .select(`id, ${column}`)
     .eq("id", cloudId)
     .maybeSingle();
@@ -137,7 +153,7 @@ async function migrateOne(params: {
     warnings.push(`${label} 找不到對應的雲端資料，已保留在本機`);
     return false;
   }
-  const current = ((row as Record<string, unknown>)[column] as string | null) ?? "";
+  const current = (row[column] as string | null) ?? "";
   if (isStorageRef(current)) {
     mappings[localId] = current;
     return true;
@@ -164,8 +180,7 @@ async function migrateOne(params: {
     }
   }
 
-  const { error: updateError } = await supabase
-    .from(table)
+  const { error: updateError } = await photoTable(table)
     .update({ [column]: ref })
     .eq("id", cloudId);
   if (updateError) {
