@@ -20,15 +20,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { MemoryFolderFormSheet } from "@/components/MemoryFolderFormSheet";
 import { MemoryFormSheet } from "@/components/MemoryFormSheet";
-import { useMemoryFolders } from "@/lib/memory-folders";
+import { useMemoryFolderSource } from "@/lib/memory-folders.source";
 import {
-  deleteMemoriesForFolder,
   groupMemoriesByDate,
-  useMemories,
   type Memory,
   type MemoryDraft,
 } from "@/lib/memories";
-import { useIdols } from "@/lib/idols";
+import { useMemorySource } from "@/lib/memories.source";
+import { useIdolSource } from "@/lib/idols.source";
 import { parseLocalDate } from "@/lib/dates";
 
 export const Route = createFileRoute("/memories/$folderId")({
@@ -55,9 +54,9 @@ function dotDate(value?: string) {
 function FolderDetailPage() {
   const { folderId } = Route.useParams();
   const navigate = useNavigate();
-  const { folders, ready, updateFolder, removeFolder } = useMemoryFolders();
-  const { memories, addMemory, updateMemory, removeMemory } = useMemories(folderId);
-  const { idols } = useIdols();
+  const { folders, ready, updateFolder, removeFolder, mode } = useMemoryFolderSource();
+  const { memories, addMemory, updateMemory, removeMemory } = useMemorySource(folderId);
+  const { idols } = useIdolSource();
 
   const folder = folders.find((f) => f.id === folderId);
   const idol = folder?.idolId ? idols.find((i) => i.id === folder.idolId) : undefined;
@@ -275,7 +274,7 @@ function FolderDetailPage() {
           title="編輯資料夾"
           submitLabel="儲存"
           onSubmit={(draft) => {
-            updateFolder(folder.id, draft);
+            void updateFolder(folder.id, draft);
             setEditFolder(false);
           }}
         />
@@ -291,8 +290,8 @@ function FolderDetailPage() {
         title={editing ? "編輯回憶" : "留下回憶"}
         submitLabel={editing ? "儲存" : "留下來"}
         onSubmit={(draft) => {
-          if (editing) updateMemory(editing.id, draft);
-          else addMemory(folderId, draft, folder?.idolId);
+          if (editing) void updateMemory(editing.id, draft);
+          else void addMemory(folderId, draft, folder?.idolId);
           setMemoryOpen(false);
           setEditing(null);
         }}
@@ -311,9 +310,15 @@ function FolderDetailPage() {
             <AlertDialogAction
               className="rounded-full bg-destructive text-destructive-foreground"
               onClick={() => {
-                deleteMemoriesForFolder(folderId);
-                removeFolder(folderId);
-                navigate({ to: "/memories" });
+                void (async () => {
+                  // 雲端會一併刪除資料夾底下的回憶；本機則手動清除
+                  if (mode === "local") {
+                    const { deleteMemoriesForFolder } = await import("@/lib/memories");
+                    deleteMemoriesForFolder(folderId);
+                  }
+                  await removeFolder(folderId);
+                  navigate({ to: "/memories" });
+                })();
               }}
             >
               刪除
@@ -333,7 +338,7 @@ function FolderDetailPage() {
             <AlertDialogAction
               className="rounded-full bg-destructive text-destructive-foreground"
               onClick={() => {
-                if (pendingDelete) removeMemory(pendingDelete.id);
+                if (pendingDelete) void removeMemory(pendingDelete.id);
                 setPendingDelete(null);
               }}
             >

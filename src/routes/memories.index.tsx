@@ -3,9 +3,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { FolderHeart, Plus, Images } from "lucide-react";
 import { AppShell, EmptyState, SoftCard } from "@/components/AppShell";
 import { MemoryFolderFormSheet } from "@/components/MemoryFolderFormSheet";
-import { useMemoryFolders, type MemoryFolder } from "@/lib/memory-folders";
-import { useMemories } from "@/lib/memories";
-import { useIdols } from "@/lib/idols";
+import { type MemoryFolder } from "@/lib/memory-folders";
+import { useMemoryFolderSource } from "@/lib/memory-folders.source";
+import { useMemorySource } from "@/lib/memories.source";
+import { useIdolSource } from "@/lib/idols.source";
 import { parseLocalDate } from "@/lib/dates";
 
 export const Route = createFileRoute("/memories/")({
@@ -37,9 +38,9 @@ function rangeLabel(folder: MemoryFolder) {
 }
 
 function MemoriesPage() {
-  const { folders, ready, addFolder } = useMemoryFolders();
-  const { all } = useMemories();
-  const { idols } = useIdols();
+  const { folders, ready, addFolder, error } = useMemoryFolderSource();
+  const { all } = useMemorySource();
+  const { idols } = useIdolSource();
   const [open, setOpen] = useState(false);
 
   return (
@@ -64,6 +65,12 @@ function MemoriesPage() {
           </button>
         ) : null}
       </div>
+
+      {error ? (
+        <p className="mb-4 rounded-2xl border border-border/60 bg-surface/50 px-4 py-3 text-center text-xs text-muted-foreground">
+          目前連不上雲端資料，你的回憶沒有遺失，請稍後再試。
+        </p>
+      ) : null}
 
       {!ready ? (
         <div className="h-40 rounded-3xl border border-border/60 bg-surface/40" aria-hidden />
@@ -133,7 +140,7 @@ function MemoriesPage() {
         title="建立回憶資料夾"
         submitLabel="建立"
         onSubmit={(draft) => {
-          addFolder(draft);
+          void addFolder(draft);
           setOpen(false);
         }}
       />
