@@ -7,7 +7,7 @@ import {
   listCloudEvents,
   updateCloudEvent,
 } from "./events.cloud";
-import { getMigrationRecord, migrateLocalIdols } from "./idols.source";
+import { ensureIdolMigration } from "./idols.source";
 import {
   getMilestoneMigrationRecord,
   migrateLocalMilestones,
