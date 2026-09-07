@@ -191,9 +191,7 @@ export function ensureEventMigration(userId: string) {
 
 async function runEventMigration(userId: string) {
   // 1. 先確認偶像 migration 完成，取得 local idol → cloud idol 對照
-  const idolRecord = getMigrationRecord(userId);
-  if (!idolRecord.done) await migrateLocalIdols(userId);
-  const idolMap = getMigrationRecord(userId).map;
+  const idolMap = await ensureIdolMigration(userId);
 
   // 2. 再搬日子（可安全重跑），完成後才寫入 migration 標記
   const eventRecord = getEventMigrationRecord(userId);

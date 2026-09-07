@@ -137,6 +137,23 @@ export async function migrateLocalIdols(userId: string): Promise<MigrationResult
   return result;
 }
 
+/* ------------------------- migration orchestration ------------------------- */
+
+/** 同一次瀏覽中避免多處同時搬移（會造成重複偶像） */
+const inflight = new Map<string, Promise<Record<string, string>>>();
+
+/** 確保偶像 migration 完成，回傳 local idol id → cloud idol id 對照；同時只會執行一次 */
+export function ensureIdolMigration(userId: string): Promise<Record<string, string>> {
+  const running = inflight.get(userId);
+  if (running) return running;
+  const task = (async () => {
+    if (!getMigrationRecord(userId).done) await migrateLocalIdols(userId);
+    return getMigrationRecord(userId).map;
+  })().finally(() => inflight.delete(userId));
+  inflight.set(userId, task);
+  return task;
+}
+
 /* --------------------------- data source hook --------------------------- */
 
 export type IdolSource = {
@@ -181,12 +198,9 @@ export function useIdolSource(): IdolSource {
     (async () => {
       try {
         // 先完成一次性 migration，再切換到雲端資料
-        const record = getMigrationRecord(userId);
-        if (!record.done) {
-          await migrateLocalIdols(userId);
-        }
+        const map = await ensureIdolMigration(userId);
         if (!active) return;
-        setAliasMap(getMigrationRecord(userId).map);
+        setAliasMap(map);
 
         const list = await listCloudIdols();
         if (!active) return;
