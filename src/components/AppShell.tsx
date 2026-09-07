@@ -101,13 +101,19 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <SoftCard className="px-6 py-10 text-center">
+    <SoftCard className="relative overflow-hidden px-6 py-11 text-center">
+      <span aria-hidden className="pointer-events-none absolute top-4 left-5 text-primary/25 select-none">
+        ♡
+      </span>
+      <span aria-hidden className="pointer-events-none absolute right-6 bottom-5 text-lavender select-none">
+        ✦
+      </span>
       {icon ? (
-        <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-surface text-muted-foreground">
+        <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-accent/40 text-primary">
           {icon}
         </div>
       ) : null}
-      <p className="text-[15px] font-medium text-foreground">{title}</p>
+      <p className="font-display text-[16px] text-foreground">{title}</p>
       {description ? (
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{description}</p>
       ) : null}
