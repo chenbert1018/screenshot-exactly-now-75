@@ -15,6 +15,24 @@ import {
   type SugarItemInput,
 } from "./sugar.cloud";
 import { ensureEventMigration } from "./events.source";
+import { ensureStorageMigration } from "./storage-migration";
+import { isDataUrl, uploadImage } from "./storage";
+
+/** 新增／修改雲端收藏時，把 dataURL 圖片改存到 Storage（欄位仍是 image） */
+async function storeSugarImage(
+  userId: string,
+  cloudId: string,
+  image: string | undefined,
+  save: (ref: string) => Promise<unknown>,
+) {
+  if (!image || !isDataUrl(image)) return;
+  try {
+    const ref = await uploadImage(userId, "sugar", cloudId, image);
+    if (ref) await save(ref);
+  } catch {
+    /* 上傳失敗時維持原本的圖片 */
+  }
+}
 
 /**
  * 「嗑糖」資料來源切換層（技術名稱維持 heart / sugar_items）。
@@ -217,6 +235,7 @@ export function useSugarSource(): SugarSource {
     (async () => {
       try {
         await ensureSugarMigration(userId);
+        await ensureStorageMigration(userId);
         const list = await listSugarItems();
         if (!active) return;
         setCloudItems(list);
@@ -244,7 +263,10 @@ export function useSugarSource(): SugarSource {
         local.add(draft);
         return;
       }
-      await createSugarItem(draftToInput(draft, draft.idolId || null), userId);
+      const created = await createSugarItem(draftToInput(draft, draft.idolId || null), userId);
+      await storeSugarImage(userId, created.id, draft.image, (image) =>
+        updateSugarItem(created.id, { image }),
+      );
       reload();
     },
     [isCloud, userId, local, reload],
@@ -257,9 +279,14 @@ export function useSugarSource(): SugarSource {
         return;
       }
       await updateSugarItem(id, draftToInput(draft, draft.idolId || null));
+      if (userId) {
+        await storeSugarImage(userId, id, draft.image, (image) =>
+          updateSugarItem(id, { image }),
+        );
+      }
       reload();
     },
-    [isCloud, local, reload],
+    [isCloud, userId, local, reload],
   );
 
   const remove = useCallback(

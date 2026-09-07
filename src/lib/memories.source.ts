@@ -8,6 +8,24 @@ import {
   updateMemory as updateCloudMemory,
 } from "./memories.cloud";
 import { ensureFolderMigration, mapIdolId } from "./memory-folders.source";
+import { ensureStorageMigration } from "./storage-migration";
+import { isDataUrl, uploadImage } from "./storage";
+
+/** 新增／修改雲端回憶時，把 dataURL 照片改存到 Storage（失敗時保留原本的照片） */
+async function storeMemoryPhoto(
+  userId: string,
+  cloudId: string,
+  photo: string | undefined,
+  save: (ref: string) => Promise<unknown>,
+) {
+  if (!photo || !isDataUrl(photo)) return;
+  try {
+    const ref = await uploadImage(userId, "memories", cloudId, photo);
+    if (ref) await save(ref);
+  } catch {
+    /* 上傳失敗時維持原本的照片 */
+  }
+}
 
 /**
  * Memory 資料來源切換層。
@@ -218,6 +236,7 @@ export function useMemorySource(folderId?: string): MemorySource {
       try {
         // 1. 偶像 → 2. 資料夾 對照完成後，才搬回憶
         await ensureMemoryMigration(userId);
+        await ensureStorageMigration(userId);
 
         const list = await listMemories();
         if (!active) return;
@@ -250,7 +269,10 @@ export function useMemorySource(folderId?: string): MemorySource {
   const addMemory = useCallback(
     async (id: string, draft: MemoryDraft, idolId?: string) => {
       if (isCloud && userId) {
-        await createMemory(id, draft, userId, idolId);
+        const created = await createMemory(id, draft, userId, idolId);
+        await storeMemoryPhoto(userId, created.id, draft.photo, (photo) =>
+          updateCloudMemory(created.id, { ...draft, photo }),
+        );
         reload();
         return;
       }
@@ -263,12 +285,17 @@ export function useMemorySource(folderId?: string): MemorySource {
     async (id: string, draft: MemoryDraft) => {
       if (isCloud) {
         await updateCloudMemory(id, draft);
+        if (userId) {
+          await storeMemoryPhoto(userId, id, draft.photo, (photo) =>
+            updateCloudMemory(id, { ...draft, photo }),
+          );
+        }
         reload();
         return;
       }
       local.updateMemory(id, draft);
     },
-    [isCloud, local, reload],
+    [isCloud, userId, local, reload],
   );
 
   const removeMemory = useCallback(

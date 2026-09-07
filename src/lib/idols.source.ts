@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./auth";
 import { MAX_IDOLS, useIdols, type Idol, type IdolDraft } from "./idols";
+import { ensureStorageMigration } from "./storage-migration";
+import { isDataUrl, uploadImage } from "./storage";
 import {
   createCloudIdol,
   deleteCloudIdol,
@@ -154,6 +156,22 @@ export function ensureIdolMigration(userId: string): Promise<Record<string, stri
   return task;
 }
 
+/** 新增／修改雲端偶像時，把 dataURL 照片改存到 Storage（失敗時保留原本的照片） */
+async function storePhoto(
+  userId: string,
+  cloudId: string,
+  photo: string | undefined,
+  save: (ref: string) => Promise<unknown>,
+) {
+  if (!photo || !isDataUrl(photo)) return;
+  try {
+    const ref = await uploadImage(userId, "idols", cloudId, photo);
+    if (ref) await save(ref);
+  } catch {
+    /* 上傳失敗時維持原本的照片，不影響既有流程 */
+  }
+}
+
 /* --------------------------- data source hook --------------------------- */
 
 export type IdolSource = {
@@ -201,6 +219,10 @@ export function useIdolSource(): IdolSource {
         const map = await ensureIdolMigration(userId);
         if (!active) return;
         setAliasMap(map);
+
+        // 照片一次性搬到 Storage（同一帳號同時只跑一次）
+        await ensureStorageMigration(userId);
+        if (!active) return;
 
         const list = await listCloudIdols();
         if (!active) return;
@@ -253,7 +275,10 @@ export function useIdolSource(): IdolSource {
   const addIdol = useCallback(
     async (draft: IdolDraft) => {
       if (isCloud && userId) {
-        await createCloudIdol(draft, userId);
+        const created = await createCloudIdol(draft, userId);
+        await storePhoto(userId, created.id, draft.photo, (photo) =>
+          updateCloudIdol(created.id, { ...draft, photo }),
+        );
         reload();
         return;
       }
@@ -266,12 +291,17 @@ export function useIdolSource(): IdolSource {
     async (id: string, draft: IdolDraft) => {
       if (isCloud) {
         await updateCloudIdol(id, draft);
+        if (userId) {
+          await storePhoto(userId, id, draft.photo, (photo) =>
+            updateCloudIdol(id, { ...draft, photo }),
+          );
+        }
         reload();
         return;
       }
       local.updateIdol(id, draft);
     },
-    [isCloud, local, reload],
+    [isCloud, userId, local, reload],
   );
 
   const removeIdol = useCallback(
