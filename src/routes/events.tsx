@@ -4,6 +4,7 @@ import { CalendarHeart, Plus } from "lucide-react";
 import { AppShell, EmptyState, PageHeader, SoftCard } from "@/components/AppShell";
 import { EventFormSheet } from "@/components/EventFormSheet";
 import {
+  completedLine,
   eventCountdown,
   eventTypeMeta,
   sortEvents,
@@ -67,13 +68,13 @@ function EventCard({
             <p className="truncate text-[17px]">{event.title}</p>
             <p className="mt-1 text-sm text-muted-foreground">{c?.dotDate ?? event.date}</p>
           </div>
-          <p
-            className={`font-display text-[26px] leading-none font-semibold ${
-              done ? "text-muted-foreground" : "text-primary"
-            }`}
-          >
-            {c?.ddayLabel ?? "—"}
-          </p>
+          {done ? (
+            <p className="shrink-0 text-sm text-muted-foreground">{completedLine(event.type)}</p>
+          ) : (
+            <p className="font-display text-[26px] leading-none font-semibold text-primary">
+              {c?.ddayLabel ?? "—"}
+            </p>
+          )}
         </div>
         <p className="mt-3 inline-flex rounded-full bg-surface px-3 py-1 text-[11px] tracking-wide text-muted-foreground">
           {meta.emoji} {meta.label}
@@ -177,7 +178,7 @@ function EventsPage() {
 
           {past.length > 0 ? (
             <>
-              <p className="pt-4 pb-1 text-xs tracking-wide text-muted-foreground">已經走過的日子</p>
+              <p className="pt-4 pb-1 text-xs tracking-wide text-muted-foreground">已經見過啦 🥹</p>
               {past.map((e) => (
                 <EventCard
                   key={e.id}
@@ -225,6 +226,17 @@ function EventsPage() {
           setEditing(detail);
           setDetailId(null);
           setFormOpen(true);
+        }}
+        onRestore={async (date: string) => {
+          if (!detail) return;
+          await updateEvent(detail.id, {
+            idolId: detail.idolId,
+            title: detail.title,
+            type: detail.type,
+            date,
+            note: detail.note,
+          });
+          setDetailId(null);
         }}
         onDelete={async () => {
           if (!detail) return;
