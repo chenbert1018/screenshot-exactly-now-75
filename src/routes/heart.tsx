@@ -278,7 +278,14 @@ function HeartPage() {
         </p>
       </header>
 
+      {error ? (
+        <p className="mb-4 rounded-2xl border border-border/60 bg-surface/60 px-4 py-3 text-sm text-muted-foreground">
+          目前連不上雲端資料，你收藏的糖沒有遺失，請稍後再試。
+        </p>
+      ) : null}
+
       {!ready || !idolsReady ? (
+
         <div className="h-60 rounded-3xl border border-border/60 bg-surface/40" aria-hidden />
       ) : idols.length === 0 ? (
         <EmptyState
