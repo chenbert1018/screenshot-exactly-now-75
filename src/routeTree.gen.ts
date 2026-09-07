@@ -15,8 +15,10 @@ import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as IdolsRouteImport } from './routes/idols'
+import { Route as MemoriesRouteImport } from './routes/memories'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as IdolsIdolIdRouteImport } from './routes/idols.$idolId'
+import { Route as MemoriesFolderIdRouteImport } from './routes/memories.$folderId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -48,6 +50,11 @@ const IdolsRoute = IdolsRouteImport.update({
   path: '/idols',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MemoriesRoute = MemoriesRouteImport.update({
+  id: '/memories',
+  path: '/memories',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -58,6 +65,11 @@ const IdolsIdolIdRoute = IdolsIdolIdRouteImport.update({
   path: '/$idolId',
   getParentRoute: () => IdolsRoute,
 } as any)
+const MemoriesFolderIdRoute = MemoriesFolderIdRouteImport.update({
+  id: '/$folderId',
+  path: '/$folderId',
+  getParentRoute: () => MemoriesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -66,8 +78,10 @@ export interface FileRoutesByFullPath {
   '/events': typeof EventsRoute
   '/home': typeof HomeRoute
   '/idols': typeof IdolsRouteWithChildren
+  '/memories': typeof MemoriesRouteWithChildren
   '/profile': typeof ProfileRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
+  '/memories/$folderId': typeof MemoriesFolderIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -76,8 +90,10 @@ export interface FileRoutesByTo {
   '/events': typeof EventsRoute
   '/home': typeof HomeRoute
   '/idols': typeof IdolsRouteWithChildren
+  '/memories': typeof MemoriesRouteWithChildren
   '/profile': typeof ProfileRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
+  '/memories/$folderId': typeof MemoriesFolderIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -87,8 +103,10 @@ export interface FileRoutesById {
   '/events': typeof EventsRoute
   '/home': typeof HomeRoute
   '/idols': typeof IdolsRouteWithChildren
+  '/memories': typeof MemoriesRouteWithChildren
   '/profile': typeof ProfileRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
+  '/memories/$folderId': typeof MemoriesFolderIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -99,8 +117,10 @@ export interface FileRouteTypes {
     | '/events'
     | '/home'
     | '/idols'
+    | '/memories'
     | '/profile'
     | '/idols/$idolId'
+    | '/memories/$folderId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -109,8 +129,10 @@ export interface FileRouteTypes {
     | '/events'
     | '/home'
     | '/idols'
+    | '/memories'
     | '/profile'
     | '/idols/$idolId'
+    | '/memories/$folderId'
   id:
     | '__root__'
     | '/'
@@ -119,8 +141,10 @@ export interface FileRouteTypes {
     | '/events'
     | '/home'
     | '/idols'
+    | '/memories'
     | '/profile'
     | '/idols/$idolId'
+    | '/memories/$folderId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -130,6 +154,7 @@ export interface RootRouteChildren {
   EventsRoute: typeof EventsRoute
   HomeRoute: typeof HomeRoute
   IdolsRoute: typeof IdolsRouteWithChildren
+  MemoriesRoute: typeof MemoriesRouteWithChildren
   ProfileRoute: typeof ProfileRoute
 }
 
@@ -177,6 +202,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IdolsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/memories': {
+      id: '/memories'
+      path: '/memories'
+      fullPath: '/memories'
+      preLoaderRoute: typeof MemoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profile': {
       id: '/profile'
       path: '/profile'
@@ -191,6 +223,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IdolsIdolIdRouteImport
       parentRoute: typeof IdolsRoute
     }
+    '/memories/$folderId': {
+      id: '/memories/$folderId'
+      path: '/$folderId'
+      fullPath: '/memories/$folderId'
+      preLoaderRoute: typeof MemoriesFolderIdRouteImport
+      parentRoute: typeof MemoriesRoute
+    }
   }
 }
 
@@ -204,6 +243,18 @@ const IdolsRouteChildren: IdolsRouteChildren = {
 
 const IdolsRouteWithChildren = IdolsRoute._addFileChildren(IdolsRouteChildren)
 
+interface MemoriesRouteChildren {
+  MemoriesFolderIdRoute: typeof MemoriesFolderIdRoute
+}
+
+const MemoriesRouteChildren: MemoriesRouteChildren = {
+  MemoriesFolderIdRoute: MemoriesFolderIdRoute,
+}
+
+const MemoriesRouteWithChildren = MemoriesRoute._addFileChildren(
+  MemoriesRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ArchaeologyRoute: ArchaeologyRoute,
@@ -211,6 +262,7 @@ const rootRouteChildren: RootRouteChildren = {
   EventsRoute: EventsRoute,
   HomeRoute: HomeRoute,
   IdolsRoute: IdolsRouteWithChildren,
+  MemoriesRoute: MemoriesRouteWithChildren,
   ProfileRoute: ProfileRoute,
 }
 export const routeTree = rootRouteImport
