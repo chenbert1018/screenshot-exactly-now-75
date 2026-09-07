@@ -11,5 +11,5 @@ type StoredImageProps = Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src"> &
  */
 export function StoredImage({ src, ...props }: StoredImageProps) {
   const resolved = useImageSrc(src);
-  return <img {...props} src={resolved} />;
+  return <img {...props} src={resolved || undefined} />;
 }
