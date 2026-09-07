@@ -14,7 +14,7 @@ const items = [
   { to: "/idols", label: "偶像", Icon: Sparkles },
   { to: "/events", label: "日子", Icon: CalendarHeart },
   { to: "/memories", label: "回憶", Icon: FolderHeart },
-  { to: "/heart", label: "心動", Icon: HeartIcon },
+  { to: "/heart", label: "嗑糖", Icon: HeartIcon },
   { to: "/calendar", label: "行事曆", Icon: CalendarDays },
   { to: "/profile", label: "我的", Icon: User },
 ] as const;

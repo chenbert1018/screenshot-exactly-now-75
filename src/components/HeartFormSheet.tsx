@@ -78,7 +78,7 @@ export function HeartFormSheet({
       >
         <SheetHeader className="px-0 text-left">
           <SheetTitle className="text-xl">{title}</SheetTitle>
-          <SheetDescription>收藏那些讓你重新心動的瞬間 ♡</SheetDescription>
+          <SheetDescription>收藏那些讓我嗑到的瞬間 ♡</SheetDescription>
         </SheetHeader>
 
         <form onSubmit={submit} className="space-y-5 pt-1">
@@ -111,7 +111,7 @@ export function HeartFormSheet({
             <p className="mb-2 text-sm font-medium">照片</p>
             {draft.image ? (
               <div className="relative overflow-hidden rounded-2xl border border-border/60">
-                <img src={draft.image} alt="心動照片預覽" className="aspect-[4/3] w-full object-cover" />
+                <img src={draft.image} alt="嗑糖照片預覽" className="aspect-[4/3] w-full object-cover" />
                 <div className="absolute right-3 bottom-3 flex gap-2">
                   <button
                     type="button"
@@ -137,7 +137,7 @@ export function HeartFormSheet({
                 className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-surface/50 text-muted-foreground"
               >
                 <ImagePlus className="size-6" strokeWidth={1.4} />
-                <span className="text-sm">放一張讓你心動的照片（可略過）</span>
+                <span className="text-sm">放一張讓你嗑到的照片（可略過）</span>
               </button>
             )}
             <input

@@ -216,13 +216,13 @@ function KeepToday({ idol }: { idol?: Idol }) {
 function HeartPrompt({ onOpen }: { onOpen: () => void }) {
   return (
     <div className="mt-9 flex items-center justify-between gap-3 rounded-3xl border border-border/60 bg-card/70 px-5 py-4 shadow-soft">
-      <span className="text-sm">今天，也有一個心動瞬間嗎？</span>
+      <span className="text-sm">今天，也有一顆糖嗎？</span>
       <button
         type="button"
         onClick={onOpen}
         className="shrink-0 rounded-full bg-primary px-4 py-2 text-xs font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
       >
-        收藏心動 ♡
+        收藏這顆糖 ♡
       </button>
     </div>
   );
@@ -322,7 +322,7 @@ function HomePage() {
         open={heartOpen}
         onOpenChange={setHeartOpen}
         idols={idols}
-        title="收藏一個心動"
+        title="收藏這顆糖 ♡"
         submitLabel="收藏"
         onSubmit={(draft) => {
           addHeartItem(draft);

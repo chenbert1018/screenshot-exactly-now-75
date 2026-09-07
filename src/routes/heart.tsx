@@ -35,10 +35,10 @@ import { parseLocalDate } from "@/lib/dates";
 export const Route = createFileRoute("/heart")({
   head: () => ({
     meta: [
-      { title: "心動考古｜IdolDays" },
-      { name: "description", content: "把那些讓你心動的瞬間，一一收藏起來。" },
-      { property: "og:title", content: "心動考古｜IdolDays" },
-      { property: "og:description", content: "收藏那些讓你重新心動的瞬間。" },
+      { title: "嗑糖考古｜IdolDays" },
+      { name: "description", content: "把那些讓你嗑到的瞬間，一一收藏起來。" },
+      { property: "og:title", content: "嗑糖考古｜IdolDays" },
+      { property: "og:description", content: "收藏那些讓我嗑到的瞬間。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -144,7 +144,7 @@ function HeartDetailSheet({
           <>
             <SheetHeader className="px-0 text-left">
               <SheetTitle className="sr-only">{item.title}</SheetTitle>
-              <SheetDescription className="sr-only">心動瞬間的細節</SheetDescription>
+              <SheetDescription className="sr-only">嗑糖瞬間的細節</SheetDescription>
             </SheetHeader>
 
             <div className="overflow-hidden rounded-2xl border border-border/60">
@@ -246,8 +246,8 @@ function HeartPage() {
     idolFilter === "ALL" ? undefined : idols.find((i) => i.id === idolFilter);
 
   const countText = selectedIdol
-    ? `和 ${selectedIdol.name} 一起收藏了 ${filtered.length} 個瞬間`
-    : `已收藏 ${filtered.length} 個心動瞬間`;
+    ? `和 ${selectedIdol.name} 一起收藏了 ${filtered.length} 顆糖`
+    : `已收藏 ${filtered.length} 顆糖`;
 
   function openCreate() {
     setEditing(null);
@@ -269,10 +269,10 @@ function HeartPage() {
           My Heart Archive
         </p>
         <h1 className="mt-2 font-display text-[28px] leading-tight font-medium">
-          那些讓我心動的瞬間
+          🍬 嗑糖考古
         </h1>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          有些瞬間過了很久，重新看到時，還是會心動。
+          收藏那些讓我嗑到的瞬間。
         </p>
       </header>
 
@@ -281,7 +281,7 @@ function HeartPage() {
       ) : idols.length === 0 ? (
         <EmptyState
           icon={<Heart className="size-5" strokeWidth={1.6} />}
-          title="先建立一位偶像，再開始收藏心動吧 ♡"
+          title="先建立一位偶像，再開始收藏糖吧 ♡"
           action={
             <Link
               to="/idols"
@@ -296,7 +296,7 @@ function HeartPage() {
         <EmptyState
           icon={<Heart className="size-5" strokeWidth={1.6} />}
           title="這裡還是空的。"
-          description="從第一個讓你心動的瞬間開始收藏吧 ♡"
+          description="從第一顆糖開始收藏吧 ♡"
           action={
             <button
               type="button"
@@ -304,7 +304,7 @@ function HeartPage() {
               className="inline-flex items-center gap-1.5 rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
             >
               <Plus className="size-4" strokeWidth={2} />
-              收藏第一個心動
+              收藏第一顆糖
             </button>
           }
         />
@@ -361,7 +361,7 @@ function HeartPage() {
             className="mt-5 flex w-full items-center justify-center gap-1.5 rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
           >
             <Plus className="size-4" strokeWidth={2} />
-            收藏一個心動
+            收藏這顆糖 ♡
           </button>
 
           {filtered.length === 0 ? (
@@ -449,7 +449,7 @@ function HeartPage() {
         idols={idols}
         initial={editing ? toDraft(editing) : undefined}
         defaultIdolId={idolFilter === "ALL" ? undefined : idolFilter}
-        title={editing ? "編輯心動瞬間" : "收藏一個心動"}
+        title={editing ? "編輯嗑糖瞬間" : "收藏這顆糖 ♡"}
         submitLabel={editing ? "儲存" : "收藏"}
         onSubmit={submit}
       />
@@ -462,7 +462,7 @@ function HeartPage() {
       >
         <AlertDialogContent className="max-w-[20rem] rounded-3xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>要把這個心動瞬間刪掉嗎？</AlertDialogTitle>
+            <AlertDialogTitle>要把這顆糖刪掉嗎？</AlertDialogTitle>
             <AlertDialogDescription>刪除後無法復原。</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
