@@ -15,22 +15,24 @@ export function BottomNav() {
   return (
     <nav
       aria-label="主要導覽"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-border/70 bg-card/85 backdrop-blur-xl"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-border/50 bg-card/70 backdrop-blur-xl"
     >
-      <ul className="mx-auto flex max-w-md items-stretch justify-between px-2 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+      <ul className="mx-auto flex max-w-md items-stretch justify-between px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         {items.map(({ to, label, Icon }) => (
           <li key={to} className="flex-1">
             <Link
               to={to}
               activeOptions={{ exact: to === "/" }}
-              className="group flex flex-col items-center gap-1 rounded-xl py-1.5 text-muted-foreground transition-colors"
-              activeProps={{ className: "text-primary" }}
+              className="group flex flex-col items-center gap-1 rounded-2xl py-1 text-muted-foreground transition-colors"
+              activeProps={{ className: "text-primary [&_.nav-pill]:bg-accent/50" }}
             >
-              <Icon
-                className="size-[22px] transition-transform duration-300 group-active:scale-90"
-                strokeWidth={1.6}
-              />
-              <span className="text-[11px] tracking-wide">{label}</span>
+              <span className="nav-pill flex items-center justify-center rounded-full px-3.5 py-1 transition-colors duration-300">
+                <Icon
+                  className="size-[20px] transition-transform duration-300 group-active:scale-90"
+                  strokeWidth={1.5}
+                />
+              </span>
+              <span className="text-[10.5px] tracking-wide">{label}</span>
             </Link>
           </li>
         ))}
