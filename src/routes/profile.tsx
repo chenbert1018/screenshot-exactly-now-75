@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { UserRound, Settings, Bell, Palette, Sparkles, ChevronRight } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { UserRound, Settings, Bell, Palette, Sparkles, ChevronRight, Cloud } from "lucide-react";
 import {
   GeneralSettingsSheet,
   NotificationSettingsSheet,
@@ -77,6 +77,20 @@ function ProfilePage() {
           <p className="mt-1 text-sm text-muted-foreground">歡迎來到 IdolDays</p>
         </div>
       </SoftCard>
+
+      <Section title="雲端帳號">
+        <SoftCard className="divide-y divide-border/60">
+          <Link
+            to="/auth"
+            className="flex w-full items-center gap-3 px-5 py-4 text-left transition-colors active:bg-surface/70"
+          >
+            <Cloud className="size-[18px] text-muted-foreground" strokeWidth={1.6} />
+            <span className="flex-1 text-sm">登入／註冊雲端帳號</span>
+            <ChevronRight className="size-4 text-muted-foreground" strokeWidth={1.6} />
+          </Link>
+        </SoftCard>
+      </Section>
+
 
       <Section title="提醒設定">
         <SoftCard className="px-5 py-5">
