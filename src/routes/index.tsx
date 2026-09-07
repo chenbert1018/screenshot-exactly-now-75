@@ -1,5 +1,5 @@
 import { StoredImage } from "@/components/StoredImage";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Heart, ImageIcon, Plus } from "lucide-react";
 import { AppShell, Section, EmptyState, SoftCard } from "@/components/AppShell";
@@ -19,11 +19,23 @@ import {
   birthdayDdayLine,
   debutDdayLine,
   eventDdayLine,
-  sugarLine,
   yearsAgoLine,
 } from "@/lib/fanCopy";
-import { addHeartItem } from "@/lib/heart";
+import { dailySugarPick, type HeartItem } from "@/lib/heart";
+import { useSugarSource } from "@/lib/sugar.source";
 import { HeartFormSheet } from "@/components/HeartFormSheet";
+import { HeartDetailSheet, dotDate } from "@/components/HeartDetailSheet";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -238,18 +250,60 @@ function KeepToday({ idol }: { idol?: Idol }) {
   );
 }
 
-function HeartPrompt({ onOpen }: { onOpen: () => void }) {
+/** 首頁糖區：只回顧已收藏的糖，不會產生任何新資料 */
+function SugarSection({
+  pick,
+  idolName,
+  onOpen,
+  onCreate,
+}: {
+  pick: HeartItem | null;
+  idolName: string;
+  onOpen: () => void;
+  onCreate: () => void;
+}) {
   return (
-    <div className="mt-9 flex items-center justify-between gap-3 rounded-3xl border border-border/60 bg-card/70 px-5 py-4 shadow-soft">
-      <span className="min-w-0 text-sm">{sugarLine()}</span>
-      <button
-        type="button"
-        onClick={onOpen}
-        className="shrink-0 rounded-full bg-primary px-4 py-2 text-xs font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
-      >
-        收藏這顆糖 ♡
-      </button>
-    </div>
+    <section className="mt-9">
+      <h2 className="font-display text-[17px]">🍬 今天也有一顆糖嗎？</h2>
+      {pick ? (
+        <>
+          <p className="mt-1.5 text-sm text-muted-foreground">這顆我可以嗑很久 👀</p>
+          <SoftCard className="mt-3 overflow-hidden p-0">
+            {pick.image ? (
+              <StoredImage
+                src={pick.image}
+                alt={pick.title}
+                className="aspect-[4/3] w-full object-cover"
+              />
+            ) : null}
+            <div className="px-5 py-4">
+              <p className="font-display text-[16px] leading-snug">{pick.title}</p>
+              <p className="mt-1.5 text-xs text-muted-foreground">
+                {dotDate(pick.date)}・{idolName}
+              </p>
+              <button
+                type="button"
+                onClick={onOpen}
+                className="mt-4 inline-flex rounded-full bg-primary px-5 py-2 text-xs font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+              >
+                去嗑這顆 →
+              </button>
+            </div>
+          </SoftCard>
+        </>
+      ) : (
+        <div className="mt-3 rounded-3xl border border-border/60 bg-card/70 px-5 py-5 shadow-soft">
+          <p className="text-sm text-muted-foreground">還沒有收藏的糖，先去存一顆吧 ♡</p>
+          <button
+            type="button"
+            onClick={onCreate}
+            className="mt-4 inline-flex rounded-full bg-primary px-5 py-2 text-xs font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+          >
+            去收藏第一顆糖 →
+          </button>
+        </div>
+      )}
+    </section>
   );
 }
 
@@ -265,6 +319,14 @@ function YearsAgo() {
 function HomePage() {
   const { idols, ready, findIdol, mainIdol } = useIdolSource();
   const [heartOpen, setHeartOpen] = useState(false);
+  const { items: sugarItems, add: addSugar, update: updateSugar, remove: removeSugar } =
+    useSugarSource();
+  const [sugarDetail, setSugarDetail] = useState<HeartItem | null>(null);
+  const [sugarEditing, setSugarEditing] = useState<HeartItem | null>(null);
+  const [sugarPendingDelete, setSugarPendingDelete] = useState<HeartItem | null>(null);
+  // 每天固定挑一顆「已收藏」的糖回顧，不會建立任何新資料
+  const dailySugar = useMemo(() => dailySugarPick(sugarItems), [sugarItems]);
+  const sugarIdolName = (id: string) => idols.find((i) => i.id === id)?.name || "已刪除的偶像";
   const { events } = useEventSource();
   const main = mainIdol;
   const others = idols.filter((i) => i.id !== main?.id);
@@ -294,7 +356,12 @@ function HomePage() {
           <div className="mt-9">
             <KeepToday idol={main} />
           </div>
-          <HeartPrompt onOpen={() => setHeartOpen(true)} />
+          <SugarSection
+            pick={dailySugar}
+            idolName={dailySugar ? sugarIdolName(dailySugar.idolId) : ""}
+            onOpen={() => setSugarDetail(dailySugar)}
+            onCreate={() => setHeartOpen(true)}
+          />
           <Divider />
           <YearsAgo />
 
@@ -335,23 +402,95 @@ function HomePage() {
           <div className="mt-9">
             <KeepToday />
           </div>
-          <HeartPrompt onOpen={() => setHeartOpen(true)} />
+          <SugarSection
+            pick={dailySugar}
+            idolName={dailySugar ? sugarIdolName(dailySugar.idolId) : ""}
+            onOpen={() => setSugarDetail(dailySugar)}
+            onCreate={() => setHeartOpen(true)}
+          />
           <Divider />
           <YearsAgo />
         </>
       )}
 
+      <HeartDetailSheet
+        item={sugarDetail}
+        idolName={sugarDetail ? sugarIdolName(sugarDetail.idolId) : ""}
+        onOpenChange={(open) => {
+          if (!open) setSugarDetail(null);
+        }}
+        onEdit={() => {
+          if (!sugarDetail) return;
+          setSugarEditing(sugarDetail);
+          setHeartOpen(true);
+        }}
+        onDelete={() => sugarDetail && setSugarPendingDelete(sugarDetail)}
+      />
+
       <HeartFormSheet
         open={heartOpen}
-        onOpenChange={setHeartOpen}
+        onOpenChange={(open) => {
+          setHeartOpen(open);
+          if (!open) setSugarEditing(null);
+        }}
         idols={idols}
-        title="收藏這顆糖 ♡"
-        submitLabel="收藏"
+        initial={
+          sugarEditing
+            ? {
+                idolId: sugarEditing.idolId,
+                title: sugarEditing.title,
+                date: sugarEditing.date,
+                type: sugarEditing.type,
+                note: sugarEditing.note ?? "",
+                image: sugarEditing.image ?? "",
+                link: sugarEditing.link ?? "",
+              }
+            : undefined
+        }
+        title={sugarEditing ? "編輯這顆糖" : "收藏這顆糖 ♡"}
+        submitLabel="收藏這顆糖 ♡"
         onSubmit={(draft) => {
-          addHeartItem(draft);
+          if (sugarEditing) {
+            void updateSugar(sugarEditing.id, draft);
+            toast("這顆糖更新好了 ♡");
+          } else {
+            void addSugar(draft);
+            toast("收好了 ♡", { description: "這顆糖以後可以慢慢嗑。" });
+          }
           setHeartOpen(false);
+          setSugarEditing(null);
+          setSugarDetail(null);
         }}
       />
+
+      <AlertDialog
+        open={!!sugarPendingDelete}
+        onOpenChange={(open) => {
+          if (!open) setSugarPendingDelete(null);
+        }}
+      >
+        <AlertDialogContent className="max-w-[20rem] rounded-3xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>這顆真的要刪掉嗎……🥹</AlertDialogTitle>
+            <AlertDialogDescription>
+              刪掉之後，就不會再出現在你的糖庫裡了。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-full">留下這顆糖</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-full bg-destructive text-destructive-foreground"
+              onClick={() => {
+                if (sugarPendingDelete) void removeSugar(sugarPendingDelete.id);
+                setSugarPendingDelete(null);
+                setSugarDetail(null);
+              }}
+            >
+              還是刪掉
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <Link
         to="/memories"

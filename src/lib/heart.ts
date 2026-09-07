@@ -5,10 +5,10 @@ const STORAGE_KEY = "idoldays.heart.v1";
 export type HeartItemType = "PHOTO" | "MOMENT" | "STAGE" | "SWEET" | "CUSTOM";
 
 export const HEART_TYPES: { value: HeartItemType; label: string; emoji: string }[] = [
-  { value: "PHOTO", label: "照片", emoji: "📷" },
+  { value: "STAGE", label: "舞台糖", emoji: "🎤" },
+  { value: "SWEET", label: "互動糖", emoji: "🍬" },
+  { value: "PHOTO", label: "圖片糖", emoji: "📷" },
   { value: "MOMENT", label: "名場面", emoji: "✦" },
-  { value: "STAGE", label: "舞台", emoji: "🎤" },
-  { value: "SWEET", label: "撒糖", emoji: "🍬" },
   { value: "CUSTOM", label: "其他", emoji: "♡" },
 ];
 
@@ -173,4 +173,17 @@ const WHISPERS = [
 export function heartWhisper(base: Date = new Date()) {
   const seed = base.getFullYear() * 10000 + (base.getMonth() + 1) * 100 + base.getDate();
   return WHISPERS[seed % WHISPERS.length];
+}
+
+/** 收藏時間新 → 舊（我的糖庫預設排序） */
+export function sortHeartItemsByCollected(list: HeartItem[]) {
+  return [...list].sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? ""));
+}
+
+/** 同一天固定選中同一顆已收藏的糖（不會產生新資料） */
+export function dailySugarPick(list: HeartItem[], base: Date = new Date()): HeartItem | null {
+  if (list.length === 0) return null;
+  const ordered = sortHeartItemsByCollected(list);
+  const seed = base.getFullYear() * 10000 + (base.getMonth() + 1) * 100 + base.getDate();
+  return ordered[seed % ordered.length] ?? null;
 }
