@@ -541,6 +541,14 @@ function CalendarPage() {
 
               {detail.note ? <p className="mt-1 text-[15px] leading-relaxed">{detail.note}</p> : null}
 
+              <button
+                type="button"
+                onClick={() => setReminderOpen(true)}
+                className="mt-2 rounded-full border border-border/70 px-4 py-2 text-xs text-muted-foreground transition-transform duration-300 active:scale-95"
+              >
+                {reminderLabel}
+              </button>
+
               {confirmDelete ? (
                 <div className="mt-3">
                   <p className="text-sm">確定要刪除這個日子嗎？</p>
