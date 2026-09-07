@@ -47,6 +47,7 @@ function CountdownHero({ idol, event }: { idol: Idol; event?: IdolEvent | undefi
   const source = day?.kind === "birthday" ? idol.birthday : idol.debutDate;
   const anniversary = nextAnniversary(source);
   const countdown = event ? eventCountdown(event.date) : null;
+  const debutYear = parseLocalDate(idol.debutDate)?.y;
 
   // 優先使用最近的 Event；沒有 Event 時沿用生日／出道紀念日
   const next =
