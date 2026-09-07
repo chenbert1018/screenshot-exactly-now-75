@@ -603,32 +603,77 @@ function CalendarPage() {
         </DialogContent>
       </Dialog>
 
-      {/* 生日 Dialog（衍生顯示，不是 Event） */}
+      {/* 生日／出道紀念日 Dialog（衍生顯示，不是 Event） */}
       <Dialog
-        open={Boolean(birthdayDetail)}
+        open={Boolean(annDetail)}
         onOpenChange={(o) => {
-          if (!o) setBirthdayIdolId(null);
+          if (!o) setAnnId(null);
         }}
       >
         <DialogContent className="max-w-[22rem] rounded-3xl border-border/60 bg-card text-center">
-          {birthdayDetail ? (
+          {annDetail ? (
             <>
               <DialogHeader className="items-center">
                 <DialogDescription className="text-xs tracking-wide">
-                  {idolLabel(birthdayDetail.idol)}
+                  {idolLabel(annDetail.idol)}
                 </DialogDescription>
                 <DialogTitle className="text-[19px]">
-                  🎂 {birthdayDetail.idol.name} 的生日
+                  {annDetail.kind === "birthday"
+                    ? `🎂 ${annDetail.idol.name} 的生日`
+                    : `✨ ${annDetail.idol.name} 的出道紀念日`}
                 </DialogTitle>
               </DialogHeader>
               <p className="text-sm text-muted-foreground">
-                {cursor.y} 年 {cursor.m} 月 {birthdayDetail.day} 日
+                {cursor.y} 年 {cursor.m} 月 {annDetail.day} 日
+                {annDetail.kind === "debut" && annDetail.years && annDetail.years > 0
+                  ? `・出道 ${annDetail.years} 週年`
+                  : ""}
               </p>
               <p className="mt-1 text-[15px] leading-relaxed">今天也一起陪他走過 ♡</p>
+              <button
+                type="button"
+                onClick={() => setReminderOpen(true)}
+                className="mx-auto mt-2 rounded-full border border-border/70 px-4 py-2 text-xs text-muted-foreground transition-transform duration-300 active:scale-95"
+              >
+                {reminderLabel}
+              </button>
             </>
           ) : null}
         </DialogContent>
       </Dialog>
+
+      {reminderTarget ? (
+        <ReminderSheet
+          open={reminderOpen}
+          onOpenChange={setReminderOpen}
+          eventLabel={
+            annDetail
+              ? `${annEmoji(annDetail.kind)} ${idolLabel(annDetail.idol)}`
+              : detail
+                ? `${eventTypeMeta(detail.type).emoji} ${idolLabel(idolOf(detail.idolId))}`
+                : ""
+          }
+          eventTitle={
+            annDetail
+              ? annDetail.kind === "birthday"
+                ? "生日"
+                : "出道紀念日"
+              : (detail?.title ?? "")
+          }
+          eventDate={
+            annDetail
+              ? `${cursor.y}.${pad(cursor.m)}.${pad(annDetail.day)}`
+              : (detail ? (eventCountdown(detail.date, base)?.dotDate ?? detail.date) : "")
+          }
+          initialDaysBefore={currentReminder?.enabled ? currentReminder.daysBefore : null}
+          onSave={(daysBefore) => {
+            void setReminderFor(reminderTarget, daysBefore);
+            setReminderOpen(false);
+          }}
+        />
+      ) : null}
+
+
 
 
       <EventFormSheet
