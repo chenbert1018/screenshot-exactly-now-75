@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
+import { Link } from "@tanstack/react-router";
+import { User } from "lucide-react";
 import { BottomNav } from "./BottomNav";
+
 
 export function AppShell({ children }: { children: ReactNode }) {
   return (
