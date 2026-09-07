@@ -41,7 +41,7 @@ export const Route = createFileRoute("/heart")({
       { title: "嗑糖考古｜IdolDays" },
       { name: "description", content: "把那些讓你嗑到的瞬間，一一收藏起來。" },
       { property: "og:title", content: "嗑糖考古｜IdolDays" },
-      { property: "og:description", content: "收藏那些讓我嗑到的瞬間。" },
+      { property: "og:description", content: "收藏那些讓我嗑到的瞬間 🍬" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -275,7 +275,7 @@ function HeartPage() {
           🍬 嗑糖考古
         </h1>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          收藏那些讓我嗑到的瞬間。
+          收藏那些讓我嗑到的瞬間 🍬
         </p>
       </header>
 
@@ -376,7 +376,7 @@ function HeartPage() {
 
           {filtered.length === 0 ? (
             <p className="mt-8 text-center text-sm text-muted-foreground">
-              這個分類還沒有收藏 ♡
+              這個分類還沒有糖，再去挖一下 👀
             </p>
           ) : (
             <>
@@ -472,7 +472,7 @@ function HeartPage() {
       >
         <AlertDialogContent className="max-w-[20rem] rounded-3xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>要把這顆糖刪掉嗎？</AlertDialogTitle>
+            <AlertDialogTitle>要把這顆糖刪掉嗎……🥹</AlertDialogTitle>
             <AlertDialogDescription>刪除後無法復原。</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -82,10 +82,10 @@ type AnnItem = {
 const annEmoji = (kind: AnnKind) => (kind === "birthday" ? "🎂" : "✨");
 
 function annTitle(item: AnnItem) {
-  if (item.kind === "birthday") return `🎂 ${item.idol.name} 生日`;
+  if (item.kind === "birthday") return `${item.idol.name} 的生日 🎂`;
   return item.years && item.years > 0
-    ? `✨ ${item.idol.name} 出道 ${item.years} 週年`
-    : `✨ ${item.idol.name} 出道紀念日`;
+    ? `${item.idol.name} 出道 ${item.years} 週年 ✨`
+    : `${item.idol.name} 出道紀念日 ✨`;
 }
 
 function CalendarPage() {
@@ -216,8 +216,8 @@ function CalendarPage() {
       : null;
   const currentReminder = reminderTarget ? reminderFor(reminderTarget) : undefined;
   const reminderLabel = currentReminder?.enabled
-    ? `🔔 已設定提醒・${formatDaysBefore(currentReminder.daysBefore)}`
-    : "🔔 設定提醒";
+    ? `🔔 我幫你記住了・${formatDaysBefore(currentReminder.daysBefore)}`
+    : "🔔 幫我記住 ♡";
 
   function openDate(dateKey: string) {
     const list = byDate.get(dateKey) ?? [];
@@ -338,11 +338,11 @@ function CalendarPage() {
       </SoftCard>
 
       <section className="mb-8">
-        <h2 className="mb-3 text-[15px] font-medium tracking-wide">本月值得期待</h2>
+        <h2 className="mb-3 text-[15px] font-medium tracking-wide">這個月有什麼大事 👀</h2>
 
         {monthItems.length === 0 ? (
           <SoftCard className="px-6 py-10 text-center">
-            <p className="text-[15px]">這個月還沒有值得倒數的日子。</p>
+            <p className="text-[15px]">這個月好像沒什麼事……先放一個期待進來吧 👀</p>
             <button
               type="button"
               onClick={() => openCreate(toKey(cursor.y, cursor.m, 1))}
@@ -435,8 +435,8 @@ function CalendarPage() {
                 <DialogTitle className="text-[19px]">{selectedLabel(selectedDate)}</DialogTitle>
                 <DialogDescription className="text-xs">
                   {selectedEvents.length > 0 || selectedAnns.length > 0
-                    ? "這一天的日子"
-                    : "這一天還沒有安排日子。"}
+                    ? "這一天有這些 ♡"
+                    : "這天目前空空的，要放點什麼嗎 👀"}
                 </DialogDescription>
               </DialogHeader>
 
@@ -619,8 +619,8 @@ function CalendarPage() {
                 </DialogDescription>
                 <DialogTitle className="text-[19px]">
                   {annDetail.kind === "birthday"
-                    ? `🎂 ${annDetail.idol.name} 的生日`
-                    : `✨ ${annDetail.idol.name} 的出道紀念日`}
+                    ? `${annDetail.idol.name} 的生日 🎂`
+                    : `${annDetail.idol.name} 出道紀念日 ✨`}
                 </DialogTitle>
               </DialogHeader>
               <p className="text-sm text-muted-foreground">
@@ -629,7 +629,9 @@ function CalendarPage() {
                   ? `・出道 ${annDetail.years} 週年`
                   : ""}
               </p>
-              <p className="mt-1 text-[15px] leading-relaxed">今天也一起陪他走過 ♡</p>
+              <p className="mt-1 text-[15px] leading-relaxed">
+                {annDetail.kind === "birthday" ? "今天也一起陪他走過吧 ♡" : "又一起走過一年了。"}
+              </p>
               <button
                 type="button"
                 onClick={() => setReminderOpen(true)}

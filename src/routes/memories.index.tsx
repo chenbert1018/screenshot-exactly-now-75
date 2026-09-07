@@ -78,8 +78,8 @@ function MemoriesPage() {
       ) : folders.length === 0 ? (
         <EmptyState
           icon={<FolderHeart className="size-5" strokeWidth={1.6} />}
-          title="還沒有收藏任何回憶"
-          description="建立第一個回憶資料夾吧 ♡"
+          title="還沒有回憶，先從第一張開始吧 ♡"
+          description="建立第一個回憶資料夾，把那些日子放進來。"
           action={
             <button
               onClick={() => setOpen(true)}

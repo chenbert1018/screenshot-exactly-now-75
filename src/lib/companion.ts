@@ -1,18 +1,9 @@
 import { daysSince, nextAnniversary, primaryDay, today } from "./dates";
-
-const MESSAGES = [
-  "今天也一起度過吧。",
-  "今天也來看看他吧。",
-  "今天的日子，也值得被記住。",
-  "慢慢喜歡，慢慢收藏。",
-  "今天也有一個喜歡的人，在你的世界裡。",
-  "今天也在喜歡你的路上。",
-] as const;
+import { todayLine } from "./fanCopy";
 
 /** 同一天固定同一則文案（依當地日期決定） */
-export function dailyMessage(base: Date = today()) {
-  const seed = base.getFullYear() * 10000 + (base.getMonth() + 1) * 100 + base.getDate();
-  return MESSAGES[seed % MESSAGES.length];
+export function dailyMessage(name?: string, base: Date = today()) {
+  return todayLine(name, base);
 }
 
 const WEEK = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];

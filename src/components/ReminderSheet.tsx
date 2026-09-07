@@ -35,7 +35,7 @@ export function ReminderSheet({
   }, [open]);
 
   const options: { value: number | null; label: string }[] = [
-    { value: null, label: "不提醒" },
+    { value: null, label: "先不用提醒我" },
     ...DAYS_BEFORE_OPTIONS.map((o) => ({ value: o.value as number | null, label: o.label })),
   ];
 
@@ -46,8 +46,8 @@ export function ReminderSheet({
         className="mx-auto max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-3xl border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
       >
         <SheetHeader className="px-0 text-left">
-          <SheetTitle className="text-xl">設定提醒</SheetTitle>
-          <SheetDescription>在重要日子之前提醒你。</SheetDescription>
+          <SheetTitle className="text-xl">幫我記住 ♡</SheetTitle>
+          <SheetDescription>這麼重要的日子，當然不能忘。</SheetDescription>
         </SheetHeader>
 
         <div className="rounded-2xl bg-surface/60 px-4 py-3">
@@ -58,7 +58,7 @@ export function ReminderSheet({
           ) : null}
         </div>
 
-        <p className="pt-4 pb-1 text-[15px] font-medium">提醒我</p>
+        <p className="pt-4 pb-1 text-[15px] font-medium">要提前幾天叫我 👀</p>
         <ul className="space-y-2">
           {options.map((o) => {
             const active = selected === o.value;
@@ -107,7 +107,7 @@ export function ReminderSheet({
             onClick={() => onSave(selected)}
             className="flex-1 rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
           >
-            儲存提醒
+            幫我記住 ♡
           </button>
         </div>
       </SheetContent>

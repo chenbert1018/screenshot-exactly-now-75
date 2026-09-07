@@ -33,9 +33,9 @@ export function formatDaysBefore(daysBefore: number): string {
 
 /** 提醒文案預覽（只是文字，不會真的發送通知） */
 export function reminderPreview(title: string, daysBefore: number): string {
-  if (daysBefore <= 0) return `今天就是${title}，記得一起收藏這一天 ♡`;
-  if (daysBefore === 1) return `再一下下，距離${title}只剩 1 天了 ♡`;
-  return `距離${title}還有 ${daysBefore} 天 ♡`;
+  if (daysBefore <= 0) return `就是今天！${title}，我會在當天提醒你 ♡`;
+  if (daysBefore === 1) return `會在${title}前 1 天提醒你 ♡`;
+  return `會在${title}前 ${daysBefore} 天提醒你 ♡`;
 }
 
 function newId() {

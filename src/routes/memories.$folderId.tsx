@@ -176,8 +176,8 @@ function FolderDetailPage() {
       {memories.length === 0 ? (
         <EmptyState
           icon={<Images className="size-5" strokeWidth={1.6} />}
-          title="這裡還很安靜"
-          description="留下第一則回憶，之後就能慢慢翻閱 ♡"
+          title="還沒有回憶，先從第一張開始吧 ♡"
+          description="把這一天留下來 📸 之後就能慢慢翻。"
           action={
             <button
               onClick={() => {
@@ -288,7 +288,7 @@ function FolderDetailPage() {
           if (!o) setEditing(null);
         }}
         initial={editDraft}
-        title={editing ? "編輯回憶" : "留下回憶"}
+        title={editing ? "編輯回憶" : "把這一天留下來 📸"}
         submitLabel={editing ? "儲存" : "留下來"}
         onSubmit={(draft) => {
           if (editing) void updateMemory(editing.id, draft);
@@ -331,8 +331,8 @@ function FolderDetailPage() {
       <AlertDialog open={pendingDelete !== null} onOpenChange={(o) => !o && setPendingDelete(null)}>
         <AlertDialogContent className="max-w-[20rem] rounded-3xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>要刪除這則回憶嗎？</AlertDialogTitle>
-            <AlertDialogDescription>刪除後就找不回來了。</AlertDialogDescription>
+            <AlertDialogTitle>這張真的要刪掉嗎……🥹</AlertDialogTitle>
+            <AlertDialogDescription>刪掉之後就真的找不回來了。</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="rounded-full">取消</AlertDialogCancel>
