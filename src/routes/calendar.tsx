@@ -537,6 +537,34 @@ function CalendarPage() {
         </DialogContent>
       </Dialog>
 
+      {/* 生日 Dialog（衍生顯示，不是 Event） */}
+      <Dialog
+        open={Boolean(birthdayDetail)}
+        onOpenChange={(o) => {
+          if (!o) setBirthdayIdolId(null);
+        }}
+      >
+        <DialogContent className="max-w-[22rem] rounded-3xl border-border/60 bg-card text-center">
+          {birthdayDetail ? (
+            <>
+              <DialogHeader className="items-center">
+                <DialogDescription className="text-xs tracking-wide">
+                  {idolLabel(birthdayDetail.idol)}
+                </DialogDescription>
+                <DialogTitle className="text-[19px]">
+                  🎂 {birthdayDetail.idol.name} 的生日
+                </DialogTitle>
+              </DialogHeader>
+              <p className="text-sm text-muted-foreground">
+                {cursor.y} 年 {cursor.m} 月 {birthdayDetail.day} 日
+              </p>
+              <p className="mt-1 text-[15px] leading-relaxed">今天也一起陪他走過 ♡</p>
+            </>
+          ) : null}
+        </DialogContent>
+      </Dialog>
+
+
       <EventFormSheet
         open={formOpen}
         onOpenChange={(o) => {
