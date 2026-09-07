@@ -67,13 +67,13 @@ function EventCard({
             <p className="truncate text-[17px]">{event.title}</p>
             <p className="mt-1 text-sm text-muted-foreground">{c?.dotDate ?? event.date}</p>
           </div>
-          <p
-            className={`font-display text-[26px] leading-none font-semibold ${
-              done ? "text-muted-foreground" : "text-primary"
-            }`}
-          >
-            {c?.ddayLabel ?? "—"}
-          </p>
+          {done ? (
+            <p className="shrink-0 text-sm text-muted-foreground">{completedLine(event.type)}</p>
+          ) : (
+            <p className="font-display text-[26px] leading-none font-semibold text-primary">
+              {c?.ddayLabel ?? "—"}
+            </p>
+          )}
         </div>
         <p className="mt-3 inline-flex rounded-full bg-surface px-3 py-1 text-[11px] tracking-wide text-muted-foreground">
           {meta.emoji} {meta.label}
