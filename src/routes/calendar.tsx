@@ -96,11 +96,13 @@ function CalendarPage() {
   const [cursor, setCursor] = useState({ y: base.getFullYear(), m: base.getMonth() + 1 });
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
-  const [birthdayIdolId, setBirthdayIdolId] = useState<string | null>(null);
+  const [annId, setAnnId] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<IdolEvent | null>(null);
   const [prefillDate, setPrefillDate] = useState("");
+  const [reminderOpen, setReminderOpen] = useState(false);
+  const { reminderFor, setReminderFor } = useReminderSource();
 
   const byDate = useMemo(() => {
     const map = new Map<string, IdolEvent[]>();
@@ -113,26 +115,47 @@ function CalendarPage() {
     return map;
   }, [events]);
 
-  /** 目前月份的偶像生日（每年重複的月／日） */
-  const monthBirthdays = useMemo(() => {
-    const list: BirthdayItem[] = [];
+  /** 目前月份的生日與出道紀念日（每年重複的月／日） */
+  const monthAnniversaries = useMemo(() => {
+    const list: AnnItem[] = [];
     for (const idol of idols) {
-      const p = parseLocalDate(idol.birthday);
-      if (!p || p.m !== cursor.m) continue;
-      list.push({ key: toKey(cursor.y, cursor.m, p.d), idol, day: p.d });
+      const b = parseLocalDate(idol.birthday);
+      if (b && b.m === cursor.m) {
+        list.push({
+          id: `birthday-${idol.id}`,
+          kind: "birthday",
+          key: toKey(cursor.y, cursor.m, b.d),
+          idol,
+          day: b.d,
+          years: null,
+        });
+      }
+      const d = parseLocalDate(idol.debutDate);
+      if (d && d.m === cursor.m) {
+        list.push({
+          id: `debut-${idol.id}`,
+          kind: "debut",
+          key: toKey(cursor.y, cursor.m, d.d),
+          idol,
+          day: d.d,
+          years: cursor.y - d.y,
+        });
+      }
     }
-    return list.sort((a, b) => a.day - b.day);
+    return list.sort((a, b) =>
+      a.day !== b.day ? a.day - b.day : a.kind === b.kind ? 0 : a.kind === "birthday" ? -1 : 1,
+    );
   }, [idols, cursor]);
 
-  const birthdaysByDate = useMemo(() => {
-    const map = new Map<string, BirthdayItem[]>();
-    for (const b of monthBirthdays) {
-      const list = map.get(b.key) ?? [];
-      list.push(b);
-      map.set(b.key, list);
+  const annByDate = useMemo(() => {
+    const map = new Map<string, AnnItem[]>();
+    for (const a of monthAnniversaries) {
+      const list = map.get(a.key) ?? [];
+      list.push(a);
+      map.set(a.key, list);
     }
     return map;
-  }, [monthBirthdays]);
+  }, [monthAnniversaries]);
 
   const monthEvents = useMemo(() => {
     const prefix = `${cursor.y}-${pad(cursor.m)}-`;
@@ -141,20 +164,22 @@ function CalendarPage() {
       .sort((a, b) => (a.date === b.date ? a.createdAt - b.createdAt : a.date < b.date ? -1 : 1));
   }, [events, cursor]);
 
-  /** 本月值得期待：Event + 生日，依日期排序（生日優先） */
+  /** 本月值得期待：生日 → 出道紀念日 → Event，依日期排序 */
   const monthItems = useMemo(() => {
+    const rank = (r: { kind: "event" | "ann"; ann?: AnnItem }) =>
+      r.kind === "ann" ? (r.ann?.kind === "birthday" ? 0 : 1) : 2;
     const rows: Array<
-      { kind: "event"; date: string; event: IdolEvent } | { kind: "birthday"; date: string; birthday: BirthdayItem }
+      | { kind: "event"; date: string; event: IdolEvent }
+      | { kind: "ann"; date: string; ann: AnnItem }
     > = [
-      ...monthBirthdays.map((b) => ({ kind: "birthday" as const, date: b.key, birthday: b })),
+      ...monthAnniversaries.map((a) => ({ kind: "ann" as const, date: a.key, ann: a })),
       ...monthEvents.map((e) => ({ kind: "event" as const, date: e.date, event: e })),
     ];
     return rows.sort((a, b) => {
       if (a.date !== b.date) return a.date < b.date ? -1 : 1;
-      if (a.kind === b.kind) return 0;
-      return a.kind === "birthday" ? -1 : 1;
+      return rank(a) - rank(b);
     });
-  }, [monthBirthdays, monthEvents]);
+  }, [monthAnniversaries, monthEvents]);
 
 
   const firstDay = new Date(cursor.y, cursor.m - 1, 1).getDay();
@@ -175,26 +200,39 @@ function CalendarPage() {
 
   const idolOf = (id: string) => findIdol(id);
   const selectedEvents = selectedDate ? (byDate.get(selectedDate) ?? []) : [];
-  const selectedBirthdays = selectedDate ? (birthdaysByDate.get(selectedDate) ?? []) : [];
+  const selectedAnns = selectedDate ? (annByDate.get(selectedDate) ?? []) : [];
   const detail = events.find((e) => e.id === detailId) ?? null;
   const detailCountdown = detail ? eventCountdown(detail.date, base) : null;
-  const birthdayDetail = birthdayIdolId
-    ? (monthBirthdays.find((b) => b.idol.id === birthdayIdolId) ?? null)
-    : null;
+  const annDetail = annId ? (monthAnniversaries.find((a) => a.id === annId) ?? null) : null;
+
+  /** 目前開啟的提醒目標（沿用既有 reminders，不建立新資料模型） */
+  const reminderTarget = annDetail
+    ? {
+        type: annDetail.kind === "birthday" ? ("BIRTHDAY" as const) : ("ANNIVERSARY" as const),
+        idolId: annDetail.idol.id,
+      }
+    : detail
+      ? { type: "EVENT" as const, eventId: detail.id }
+      : null;
+  const currentReminder = reminderTarget ? reminderFor(reminderTarget) : undefined;
+  const reminderLabel = currentReminder?.enabled
+    ? `🔔 已設定提醒・${formatDaysBefore(currentReminder.daysBefore)}`
+    : "🔔 設定提醒";
 
   function openDate(dateKey: string) {
     const list = byDate.get(dateKey) ?? [];
-    const births = birthdaysByDate.get(dateKey) ?? [];
-    if (list.length === 0 && births.length === 1 && births[0]) {
-      setBirthdayIdolId(births[0].idol.id);
+    const anns = annByDate.get(dateKey) ?? [];
+    if (list.length === 0 && anns.length === 1 && anns[0]) {
+      setAnnId(anns[0].id);
       return;
     }
-    if (births.length === 0 && list.length === 1 && list[0]) {
+    if (anns.length === 0 && list.length === 1 && list[0]) {
       setDetailId(list[0].id);
       return;
     }
     setSelectedDate(dateKey);
   }
+
 
 
   function openCreate(dateKey: string) {
