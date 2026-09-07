@@ -11,9 +11,9 @@ export function IdolCard({ idol }: { idol: Idol }) {
     <Link
       to="/idols/$idolId"
       params={{ idolId: idol.id }}
-      className="group block overflow-hidden rounded-2xl border border-border/60 bg-card shadow-soft transition-all duration-300 active:scale-[0.98] hover:shadow-lift"
+      className="group polaroid block transition-all duration-300 active:scale-[0.98] hover:shadow-lift"
     >
-      <div className="relative aspect-[3/4] w-full overflow-hidden bg-surface">
+      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[0.6rem] bg-surface">
         {idol.photo ? (
           <img
             src={idol.photo}
