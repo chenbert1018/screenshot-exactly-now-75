@@ -12,6 +12,8 @@ import {
   todayFullLabel,
   todayWeekday,
 } from "@/lib/companion";
+import { addHeartItem } from "@/lib/heart";
+import { HeartFormSheet } from "@/components/HeartFormSheet";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -211,6 +213,21 @@ function KeepToday({ idol }: { idol?: Idol }) {
   );
 }
 
+function HeartPrompt({ onOpen }: { onOpen: () => void }) {
+  return (
+    <div className="mt-9 flex items-center justify-between gap-3 rounded-3xl border border-border/60 bg-card/70 px-5 py-4 shadow-soft">
+      <span className="text-sm">今天，也有一個心動瞬間嗎？</span>
+      <button
+        type="button"
+        onClick={onOpen}
+        className="shrink-0 rounded-full bg-primary px-4 py-2 text-xs font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+      >
+        收藏心動 ♡
+      </button>
+    </div>
+  );
+}
+
 function YearsAgo() {
   return (
     <section className="text-center">
@@ -224,6 +241,7 @@ function YearsAgo() {
 
 function HomePage() {
   const { idols, ready } = useIdols();
+  const [heartOpen, setHeartOpen] = useState(false);
   const { events } = useEvents();
   const main = idols[0];
   const others = idols.slice(1);
@@ -253,6 +271,7 @@ function HomePage() {
           <div className="mt-9">
             <KeepToday idol={main} />
           </div>
+          <HeartPrompt onOpen={() => setHeartOpen(true)} />
           <Divider />
           <YearsAgo />
 
@@ -293,10 +312,23 @@ function HomePage() {
           <div className="mt-9">
             <KeepToday />
           </div>
+          <HeartPrompt onOpen={() => setHeartOpen(true)} />
           <Divider />
           <YearsAgo />
         </>
       )}
+
+      <HeartFormSheet
+        open={heartOpen}
+        onOpenChange={setHeartOpen}
+        idols={idols}
+        title="收藏一個心動"
+        submitLabel="收藏"
+        onSubmit={(draft) => {
+          addHeartItem(draft);
+          setHeartOpen(false);
+        }}
+      />
 
       <Link
         to="/memories"
