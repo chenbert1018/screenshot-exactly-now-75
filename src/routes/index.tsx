@@ -63,30 +63,21 @@ function CountdownHero({ idol, event }: { idol: Idol; event?: IdolEvent | undefi
 
   const isToday = next?.days === 0;
 
-
   return (
     <section className="text-center">
-      <Link
-        to="/idols/$idolId"
-        params={{ idolId: idol.id }}
-        className="mx-auto block size-40 overflow-hidden rounded-full border border-border/60 bg-surface shadow-soft transition-transform duration-300 active:scale-[0.98]"
-      >
-        {idol.photo ? (
-          <img src={idol.photo} alt={`${idol.name} 的照片`} className="size-full object-cover" />
-        ) : (
-          <div className="flex size-full flex-col items-center justify-center gap-1.5 text-muted-foreground">
-            <ImageIcon className="size-6" strokeWidth={1.3} />
-            <span className="text-[11px]">放一張照片</span>
-          </div>
-        )}
-      </Link>
+      {/* 1. 本命 */}
+      <h2 className="text-xl font-semibold">
+        {idol.groupName ? `${idol.groupName}・${idol.name}` : idol.name}
+      </h2>
 
       {next ? (
         <>
-          <p className="mt-8 text-[11px] tracking-[0.34em] text-muted-foreground uppercase">
+          {/* 2. 下一個重要日子 */}
+          <p className="mt-6 text-[11px] tracking-[0.34em] text-muted-foreground uppercase">
             Next D-Day
           </p>
 
+          {/* 3. D-Day */}
           {isToday ? (
             <p className="mt-3 font-display text-[64px] leading-none font-semibold text-primary">
               TODAY
@@ -102,7 +93,9 @@ function CountdownHero({ idol, event }: { idol: Idol; event?: IdolEvent | undefi
             </>
           )}
 
+          {/* 4. 活動名稱 */}
           <p className="mt-6 text-[17px]">{next.titleLabel}</p>
+          {/* 5. 活動日期 */}
           <p className="mt-1.5 text-sm text-muted-foreground">
             {next.dateLabel}・{next.ddayLabel}
           </p>
@@ -113,9 +106,6 @@ function CountdownHero({ idol, event }: { idol: Idol; event?: IdolEvent | undefi
 
       ) : (
         <>
-          <h2 className="mt-7 text-xl font-semibold">
-            {idol.groupName ? `${idol.groupName}・${idol.name}` : idol.name}
-          </h2>
           <p className="mt-3 text-sm text-muted-foreground">還沒有設定重要日子</p>
           <Link
             to="/idols/$idolId"
@@ -126,6 +116,22 @@ function CountdownHero({ idol, event }: { idol: Idol; event?: IdolEvent | undefi
           </Link>
         </>
       )}
+
+      {/* 6. 偶像照片 */}
+      <Link
+        to="/idols/$idolId"
+        params={{ idolId: idol.id }}
+        className="mx-auto mt-10 block size-40 overflow-hidden rounded-full border border-border/60 bg-surface shadow-soft transition-transform duration-300 active:scale-[0.98]"
+      >
+        {idol.photo ? (
+          <img src={idol.photo} alt={`${idol.name} 的照片`} className="size-full object-cover" />
+        ) : (
+          <div className="flex size-full flex-col items-center justify-center gap-1.5 text-muted-foreground">
+            <ImageIcon className="size-6" strokeWidth={1.3} />
+            <span className="text-[11px]">放一張照片</span>
+          </div>
+        )}
+      </Link>
     </section>
   );
 }
