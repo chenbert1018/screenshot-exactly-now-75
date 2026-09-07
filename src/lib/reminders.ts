@@ -47,27 +47,28 @@ type LegacyReminder = Reminder & { offset?: number };
 
 function normalize(raw: unknown): Reminder[] {
   if (!Array.isArray(raw)) return [];
-  return raw
-    .map((item) => {
-      const r = item as LegacyReminder;
-      if (!r || typeof r !== "object") return null;
-      const daysBefore =
-        typeof r.daysBefore === "number"
-          ? r.daysBefore
-          : typeof r.offset === "number"
-            ? Math.max(0, Math.round(r.offset / 1440))
-            : DEFAULT_DAYS_BEFORE;
-      return {
-        id: r.id ?? newId(),
-        eventId: r.eventId,
-        idolId: r.idolId,
-        type: r.type ?? "EVENT",
-        daysBefore,
-        enabled: r.enabled !== false,
-        createdAt: r.createdAt ?? new Date().toISOString(),
-      } satisfies Reminder;
-    })
-    .filter((r): r is Reminder => Boolean(r));
+  const out: Reminder[] = [];
+  for (const item of raw) {
+    const r = item as LegacyReminder;
+    if (!r || typeof r !== "object") continue;
+    const daysBefore =
+      typeof r.daysBefore === "number"
+        ? r.daysBefore
+        : typeof r.offset === "number"
+          ? Math.max(0, Math.round(r.offset / 1440))
+          : DEFAULT_DAYS_BEFORE;
+    const base: Reminder = {
+      id: r.id ?? newId(),
+      type: r.type ?? "EVENT",
+      daysBefore,
+      enabled: r.enabled !== false,
+      createdAt: r.createdAt ?? new Date().toISOString(),
+    };
+    if (r.eventId) base.eventId = r.eventId;
+    if (r.idolId) base.idolId = r.idolId;
+    out.push(base);
+  }
+  return out;
 }
 
 export function loadReminders(): Reminder[] {
