@@ -304,9 +304,9 @@ function CalendarPage() {
             if (!d) return <div key={`e${i}`} className="h-12" />;
             const key = toKey(cursor.y, cursor.m, d);
             const list = byDate.get(key) ?? [];
-            const births = birthdaysByDate.get(key) ?? [];
+            const anns = annByDate.get(key) ?? [];
             const marks = [
-              ...births.map((b) => ({ id: `b-${b.idol.id}`, emoji: "🎂" })),
+              ...anns.map((a) => ({ id: a.id, emoji: annEmoji(a.kind) })),
               ...list.map((e) => ({ id: e.id, emoji: INDICATOR[e.type] ?? "♡" })),
             ];
             const isToday = key === todayKey;
@@ -355,24 +355,24 @@ function CalendarPage() {
         ) : (
           <div className="space-y-3">
             {monthItems.map((item) => {
-              if (item.kind === "birthday") {
-                const b = item.birthday;
+              if (item.kind === "ann") {
+                const a = item.ann;
                 return (
                   <button
-                    key={`birthday-${b.idol.id}`}
+                    key={a.id}
                     type="button"
-                    onClick={() => setBirthdayIdolId(b.idol.id)}
+                    onClick={() => setAnnId(a.id)}
                     className="w-full text-left transition-transform duration-300 active:scale-[0.99]"
                   >
                     <SoftCard className="flex items-center gap-4 px-5 py-4">
                       <span className="w-12 shrink-0 text-sm text-muted-foreground">
-                        {pad(cursor.m)}/{pad(b.day)}
+                        {pad(cursor.m)}/{pad(a.day)}
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-xs text-muted-foreground">
-                          🎂 {idolLabel(b.idol)}
+                          {annEmoji(a.kind)} {idolLabel(a.idol)}
                         </span>
-                        <span className="block truncate text-[15px]">🎂 {b.idol.name} 生日</span>
+                        <span className="block truncate text-[15px]">{annTitle(a)}</span>
                       </span>
                       <span className="shrink-0 font-display text-[17px] leading-none font-semibold text-primary">
                         ♡
@@ -434,29 +434,29 @@ function CalendarPage() {
               <DialogHeader className="items-center text-center">
                 <DialogTitle className="text-[19px]">{selectedLabel(selectedDate)}</DialogTitle>
                 <DialogDescription className="text-xs">
-                  {selectedEvents.length > 0 || selectedBirthdays.length > 0
+                  {selectedEvents.length > 0 || selectedAnns.length > 0
                     ? "這一天的日子"
                     : "這一天還沒有安排日子。"}
                 </DialogDescription>
               </DialogHeader>
 
-              {selectedBirthdays.length > 0 ? (
+              {selectedAnns.length > 0 ? (
                 <div className="space-y-2">
-                  {selectedBirthdays.map((b) => (
+                  {selectedAnns.map((a) => (
                     <button
-                      key={`b-${b.idol.id}`}
+                      key={a.id}
                       type="button"
                       onClick={() => {
                         setSelectedDate(null);
-                        setBirthdayIdolId(b.idol.id);
+                        setAnnId(a.id);
                       }}
                       className="flex w-full items-center gap-3 rounded-2xl bg-surface/60 px-4 py-3 text-left"
                     >
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-xs text-muted-foreground">
-                          🎂 {idolLabel(b.idol)}
+                          {annEmoji(a.kind)} {idolLabel(a.idol)}
                         </span>
-                        <span className="block truncate text-[15px]">🎂 {b.idol.name} 生日</span>
+                        <span className="block truncate text-[15px]">{annTitle(a)}</span>
                       </span>
                       <span className="font-display text-[15px] font-semibold text-primary">♡</span>
                     </button>
