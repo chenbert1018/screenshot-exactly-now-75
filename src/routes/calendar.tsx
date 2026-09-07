@@ -376,11 +376,38 @@ function CalendarPage() {
               <DialogHeader className="items-center text-center">
                 <DialogTitle className="text-[19px]">{selectedLabel(selectedDate)}</DialogTitle>
                 <DialogDescription className="text-xs">
-                  {selectedEvents.length > 0 ? "這一天的日子" : "這一天還沒有安排日子。"}
+                  {selectedEvents.length > 0 || selectedBirthdays.length > 0
+                    ? "這一天的日子"
+                    : "這一天還沒有安排日子。"}
                 </DialogDescription>
               </DialogHeader>
 
+              {selectedBirthdays.length > 0 ? (
+                <div className="space-y-2">
+                  {selectedBirthdays.map((b) => (
+                    <button
+                      key={`b-${b.idol.id}`}
+                      type="button"
+                      onClick={() => {
+                        setSelectedDate(null);
+                        setBirthdayIdolId(b.idol.id);
+                      }}
+                      className="flex w-full items-center gap-3 rounded-2xl bg-surface/60 px-4 py-3 text-left"
+                    >
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-xs text-muted-foreground">
+                          🎂 {idolLabel(b.idol)}
+                        </span>
+                        <span className="block truncate text-[15px]">🎂 {b.idol.name} 生日</span>
+                      </span>
+                      <span className="font-display text-[15px] font-semibold text-primary">♡</span>
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+
               {selectedEvents.length > 0 ? (
+
                 <div className="space-y-2">
                   {selectedEvents.map((e) => {
                     const c = eventCountdown(e.date, base);
