@@ -65,6 +65,9 @@ function idolLabel(idol?: Idol) {
   return idol.groupName ? `${idol.groupName} · ${idol.name}` : idol.name;
 }
 
+/** Calendar 衍生資料：偶像生日（不寫入 Event，也不改任何資料結構） */
+type BirthdayItem = { key: string; idol: Idol; day: number };
+
 function CalendarPage() {
   const base = today();
   const { idols, findIdol } = useIdolSource();
@@ -73,6 +76,7 @@ function CalendarPage() {
   const [cursor, setCursor] = useState({ y: base.getFullYear(), m: base.getMonth() + 1 });
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
+  const [birthdayIdolId, setBirthdayIdolId] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<IdolEvent | null>(null);
@@ -89,12 +93,49 @@ function CalendarPage() {
     return map;
   }, [events]);
 
+  /** 目前月份的偶像生日（每年重複的月／日） */
+  const monthBirthdays = useMemo(() => {
+    const list: BirthdayItem[] = [];
+    for (const idol of idols) {
+      const p = parseLocalDate(idol.birthday);
+      if (!p || p.m !== cursor.m) continue;
+      list.push({ key: toKey(cursor.y, cursor.m, p.d), idol, day: p.d });
+    }
+    return list.sort((a, b) => a.day - b.day);
+  }, [idols, cursor]);
+
+  const birthdaysByDate = useMemo(() => {
+    const map = new Map<string, BirthdayItem[]>();
+    for (const b of monthBirthdays) {
+      const list = map.get(b.key) ?? [];
+      list.push(b);
+      map.set(b.key, list);
+    }
+    return map;
+  }, [monthBirthdays]);
+
   const monthEvents = useMemo(() => {
     const prefix = `${cursor.y}-${pad(cursor.m)}-`;
     return events
       .filter((e) => e.date.startsWith(prefix))
       .sort((a, b) => (a.date === b.date ? a.createdAt - b.createdAt : a.date < b.date ? -1 : 1));
   }, [events, cursor]);
+
+  /** 本月值得期待：Event + 生日，依日期排序（生日優先） */
+  const monthItems = useMemo(() => {
+    const rows: Array<
+      { kind: "event"; date: string; event: IdolEvent } | { kind: "birthday"; date: string; birthday: BirthdayItem }
+    > = [
+      ...monthBirthdays.map((b) => ({ kind: "birthday" as const, date: b.key, birthday: b })),
+      ...monthEvents.map((e) => ({ kind: "event" as const, date: e.date, event: e })),
+    ];
+    return rows.sort((a, b) => {
+      if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+      if (a.kind === b.kind) return 0;
+      return a.kind === "birthday" ? -1 : 1;
+    });
+  }, [monthBirthdays, monthEvents]);
+
 
   const firstDay = new Date(cursor.y, cursor.m - 1, 1).getDay();
   const daysInMonth = new Date(cursor.y, cursor.m, 0).getDate();
