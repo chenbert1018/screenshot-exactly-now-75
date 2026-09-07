@@ -65,6 +65,9 @@ function idolLabel(idol?: Idol) {
   return idol.groupName ? `${idol.groupName} · ${idol.name}` : idol.name;
 }
 
+/** Calendar 衍生資料：偶像生日（不寫入 Event，也不改任何資料結構） */
+type BirthdayItem = { key: string; idol: Idol; day: number };
+
 function CalendarPage() {
   const base = today();
   const { idols, findIdol } = useIdolSource();
@@ -73,6 +76,7 @@ function CalendarPage() {
   const [cursor, setCursor] = useState({ y: base.getFullYear(), m: base.getMonth() + 1 });
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
+  const [birthdayIdolId, setBirthdayIdolId] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<IdolEvent | null>(null);
@@ -89,12 +93,49 @@ function CalendarPage() {
     return map;
   }, [events]);
 
+  /** 目前月份的偶像生日（每年重複的月／日） */
+  const monthBirthdays = useMemo(() => {
+    const list: BirthdayItem[] = [];
+    for (const idol of idols) {
+      const p = parseLocalDate(idol.birthday);
+      if (!p || p.m !== cursor.m) continue;
+      list.push({ key: toKey(cursor.y, cursor.m, p.d), idol, day: p.d });
+    }
+    return list.sort((a, b) => a.day - b.day);
+  }, [idols, cursor]);
+
+  const birthdaysByDate = useMemo(() => {
+    const map = new Map<string, BirthdayItem[]>();
+    for (const b of monthBirthdays) {
+      const list = map.get(b.key) ?? [];
+      list.push(b);
+      map.set(b.key, list);
+    }
+    return map;
+  }, [monthBirthdays]);
+
   const monthEvents = useMemo(() => {
     const prefix = `${cursor.y}-${pad(cursor.m)}-`;
     return events
       .filter((e) => e.date.startsWith(prefix))
       .sort((a, b) => (a.date === b.date ? a.createdAt - b.createdAt : a.date < b.date ? -1 : 1));
   }, [events, cursor]);
+
+  /** 本月值得期待：Event + 生日，依日期排序（生日優先） */
+  const monthItems = useMemo(() => {
+    const rows: Array<
+      { kind: "event"; date: string; event: IdolEvent } | { kind: "birthday"; date: string; birthday: BirthdayItem }
+    > = [
+      ...monthBirthdays.map((b) => ({ kind: "birthday" as const, date: b.key, birthday: b })),
+      ...monthEvents.map((e) => ({ kind: "event" as const, date: e.date, event: e })),
+    ];
+    return rows.sort((a, b) => {
+      if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+      if (a.kind === b.kind) return 0;
+      return a.kind === "birthday" ? -1 : 1;
+    });
+  }, [monthBirthdays, monthEvents]);
+
 
   const firstDay = new Date(cursor.y, cursor.m - 1, 1).getDay();
   const daysInMonth = new Date(cursor.y, cursor.m, 0).getDate();
@@ -114,17 +155,27 @@ function CalendarPage() {
 
   const idolOf = (id: string) => findIdol(id);
   const selectedEvents = selectedDate ? (byDate.get(selectedDate) ?? []) : [];
+  const selectedBirthdays = selectedDate ? (birthdaysByDate.get(selectedDate) ?? []) : [];
   const detail = events.find((e) => e.id === detailId) ?? null;
   const detailCountdown = detail ? eventCountdown(detail.date, base) : null;
+  const birthdayDetail = birthdayIdolId
+    ? (monthBirthdays.find((b) => b.idol.id === birthdayIdolId) ?? null)
+    : null;
 
   function openDate(dateKey: string) {
     const list = byDate.get(dateKey) ?? [];
-    if (list.length === 1 && list[0]) {
+    const births = birthdaysByDate.get(dateKey) ?? [];
+    if (list.length === 0 && births.length === 1 && births[0]) {
+      setBirthdayIdolId(births[0].idol.id);
+      return;
+    }
+    if (births.length === 0 && list.length === 1 && list[0]) {
       setDetailId(list[0].id);
       return;
     }
     setSelectedDate(dateKey);
   }
+
 
   function openCreate(dateKey: string) {
     setSelectedDate(null);
@@ -195,6 +246,11 @@ function CalendarPage() {
             if (!d) return <div key={`e${i}`} className="h-12" />;
             const key = toKey(cursor.y, cursor.m, d);
             const list = byDate.get(key) ?? [];
+            const births = birthdaysByDate.get(key) ?? [];
+            const marks = [
+              ...births.map((b) => ({ id: `b-${b.idol.id}`, emoji: "🎂" })),
+              ...list.map((e) => ({ id: e.id, emoji: INDICATOR[e.type] ?? "♡" })),
+            ];
             const isToday = key === todayKey;
             return (
               <button
@@ -213,8 +269,8 @@ function CalendarPage() {
                   {d}
                 </span>
                 <span className="flex h-3 items-center gap-px text-[9px] leading-none">
-                  {list.slice(0, 2).map((e) => (
-                    <span key={e.id}>{INDICATOR[e.type] ?? "♡"}</span>
+                  {marks.slice(0, 2).map((m) => (
+                    <span key={m.id}>{m.emoji}</span>
                   ))}
                 </span>
               </button>
@@ -226,7 +282,7 @@ function CalendarPage() {
       <section className="mb-8">
         <h2 className="mb-3 text-[15px] font-medium tracking-wide">本月值得期待</h2>
 
-        {monthEvents.length === 0 ? (
+        {monthItems.length === 0 ? (
           <SoftCard className="px-6 py-10 text-center">
             <p className="text-[15px]">這個月還沒有值得倒數的日子。</p>
             <button
@@ -240,7 +296,34 @@ function CalendarPage() {
           </SoftCard>
         ) : (
           <div className="space-y-3">
-            {monthEvents.map((e) => {
+            {monthItems.map((item) => {
+              if (item.kind === "birthday") {
+                const b = item.birthday;
+                return (
+                  <button
+                    key={`birthday-${b.idol.id}`}
+                    type="button"
+                    onClick={() => setBirthdayIdolId(b.idol.id)}
+                    className="w-full text-left transition-transform duration-300 active:scale-[0.99]"
+                  >
+                    <SoftCard className="flex items-center gap-4 px-5 py-4">
+                      <span className="w-12 shrink-0 text-sm text-muted-foreground">
+                        {pad(cursor.m)}/{pad(b.day)}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-xs text-muted-foreground">
+                          🎂 {idolLabel(b.idol)}
+                        </span>
+                        <span className="block truncate text-[15px]">🎂 {b.idol.name} 生日</span>
+                      </span>
+                      <span className="shrink-0 font-display text-[17px] leading-none font-semibold text-primary">
+                        ♡
+                      </span>
+                    </SoftCard>
+                  </button>
+                );
+              }
+              const e = item.event;
               const c = eventCountdown(e.date, base);
               const done = c?.status === "COMPLETED";
               const meta = eventTypeMeta(e.type);
@@ -279,6 +362,7 @@ function CalendarPage() {
         )}
       </section>
 
+
       {/* 日期 Dialog：多個事件或沒有事件 */}
       <Dialog
         open={Boolean(selectedDate)}
@@ -292,11 +376,38 @@ function CalendarPage() {
               <DialogHeader className="items-center text-center">
                 <DialogTitle className="text-[19px]">{selectedLabel(selectedDate)}</DialogTitle>
                 <DialogDescription className="text-xs">
-                  {selectedEvents.length > 0 ? "這一天的日子" : "這一天還沒有安排日子。"}
+                  {selectedEvents.length > 0 || selectedBirthdays.length > 0
+                    ? "這一天的日子"
+                    : "這一天還沒有安排日子。"}
                 </DialogDescription>
               </DialogHeader>
 
+              {selectedBirthdays.length > 0 ? (
+                <div className="space-y-2">
+                  {selectedBirthdays.map((b) => (
+                    <button
+                      key={`b-${b.idol.id}`}
+                      type="button"
+                      onClick={() => {
+                        setSelectedDate(null);
+                        setBirthdayIdolId(b.idol.id);
+                      }}
+                      className="flex w-full items-center gap-3 rounded-2xl bg-surface/60 px-4 py-3 text-left"
+                    >
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-xs text-muted-foreground">
+                          🎂 {idolLabel(b.idol)}
+                        </span>
+                        <span className="block truncate text-[15px]">🎂 {b.idol.name} 生日</span>
+                      </span>
+                      <span className="font-display text-[15px] font-semibold text-primary">♡</span>
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+
               {selectedEvents.length > 0 ? (
+
                 <div className="space-y-2">
                   {selectedEvents.map((e) => {
                     const c = eventCountdown(e.date, base);
@@ -425,6 +536,34 @@ function CalendarPage() {
           ) : null}
         </DialogContent>
       </Dialog>
+
+      {/* 生日 Dialog（衍生顯示，不是 Event） */}
+      <Dialog
+        open={Boolean(birthdayDetail)}
+        onOpenChange={(o) => {
+          if (!o) setBirthdayIdolId(null);
+        }}
+      >
+        <DialogContent className="max-w-[22rem] rounded-3xl border-border/60 bg-card text-center">
+          {birthdayDetail ? (
+            <>
+              <DialogHeader className="items-center">
+                <DialogDescription className="text-xs tracking-wide">
+                  {idolLabel(birthdayDetail.idol)}
+                </DialogDescription>
+                <DialogTitle className="text-[19px]">
+                  🎂 {birthdayDetail.idol.name} 的生日
+                </DialogTitle>
+              </DialogHeader>
+              <p className="text-sm text-muted-foreground">
+                {cursor.y} 年 {cursor.m} 月 {birthdayDetail.day} 日
+              </p>
+              <p className="mt-1 text-[15px] leading-relaxed">今天也一起陪他走過 ♡</p>
+            </>
+          ) : null}
+        </DialogContent>
+      </Dialog>
+
 
       <EventFormSheet
         open={formOpen}
