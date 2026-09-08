@@ -31,9 +31,16 @@ function IdolsLayout() {
 function IdolsPage() {
   const { idols, ready, addIdol, error } = useIdolSource();
   const [open, setOpen] = useState(false);
+  const [paywall, setPaywall] = useState(false);
+  const { idolLimit, isPlus } = useSubscription();
 
-  const canAdd = idols.length < MAX_IDOLS;
-  const slots = Math.max(0, MAX_IDOLS - idols.length);
+  const canAdd = idols.length < idolLimit;
+  const slots = Math.max(0, idolLimit - idols.length);
+
+  function openAdd() {
+    if (canAdd) setOpen(true);
+    else setPaywall(true);
+  }
 
   async function handleCreate(draft: IdolDraft) {
     await addIdol(draft);
