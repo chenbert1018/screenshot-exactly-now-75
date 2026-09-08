@@ -8,7 +8,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Paywall } from "@/components/Paywall";
-import { shareLinkFor, useAlbumShare, type AlbumShareMode } from "@/lib/album-share";
+import { isValidShareEmail, shareLinkFor, useAlbumShare, type AlbumShareMode } from "@/lib/album-share";
 import { useSubscription } from "@/lib/subscription";
 import { toast } from "sonner";
 
@@ -48,7 +48,7 @@ export function AlbumShareSheet({
   folderId: string;
   folderTitle: string;
 }) {
-  const { share, setMode, addRecipient, removeRecipient, regenerateLink } =
+  const { share, ready, loading, error, setMode, addRecipient, removeRecipient, regenerateLink } =
     useAlbumShare(folderId);
   const { isPlus: plus } = useSubscription();
 
@@ -56,11 +56,12 @@ export function AlbumShareSheet({
   const [name, setName] = useState("");
 
   function choose(mode: AlbumShareMode, needsPlus: boolean) {
+    if (loading) return;
     if (needsPlus && !plus) {
       setPaywall(true);
       return;
     }
-    setMode(mode);
+    void setMode(mode).catch(() => toast.error("分享設定儲存失敗，請稍後再試。"));
   }
 
   const link = share.publicToken ? shareLinkFor(share.publicToken) : "";
@@ -77,6 +78,9 @@ export function AlbumShareSheet({
           </SheetHeader>
 
           <div className="space-y-3 px-4 pb-6">
+            {!ready ? <p className="text-sm text-muted-foreground">正在載入分享設定…</p> : null}
+            {loading ? <p className="text-sm text-muted-foreground">正在儲存分享設定…</p> : null}
+            {error ? <p className="rounded-2xl bg-destructive/10 px-4 py-3 text-sm text-destructive">{error}</p> : null}
             {OPTIONS.map((o) => {
               const active = share.mode === o.mode;
               return (
@@ -84,6 +88,7 @@ export function AlbumShareSheet({
                   key={o.mode}
                   type="button"
                   aria-pressed={active}
+                  disabled={loading}
                   onClick={() => choose(o.mode, o.plus)}
                   className={`flex w-full items-start gap-3 rounded-2xl border px-4 py-3.5 text-left transition-colors ${
                     active ? "border-primary/50 bg-accent/30" : "border-border/60 bg-card/70"
@@ -120,19 +125,31 @@ export function AlbumShareSheet({
                   className="mt-3 flex items-center gap-2"
                   onSubmit={(e) => {
                     e.preventDefault();
-                    addRecipient(name);
-                    setName("");
+                    if (!isValidShareEmail(name)) {
+                      toast.error("請輸入有效的 Email。");
+                      return;
+                    }
+                    void addRecipient(name)
+                      .then(() => {
+                        setName("");
+                        toast.success("已加入分享對象 ♡");
+                      })
+                      .catch(() => toast.error("新增分享對象失敗，請稍後再試。"));
                   }}
                 >
                   <input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="輸入 Email 或暱稱"
+                    disabled={loading}
+                    type="email"
+                    inputMode="email"
+                    placeholder="輸入對方 Email"
                     className="min-w-0 flex-1 rounded-full bg-card px-4 py-2.5 text-sm shadow-soft outline-none"
                   />
                   <button
                     type="submit"
                     aria-label="新增分享對象"
+                    disabled={loading}
                     className="rounded-full bg-primary p-2.5 text-primary-foreground shadow-soft active:scale-95"
                   >
                     <Plus className="size-4" strokeWidth={2} />
@@ -151,7 +168,12 @@ export function AlbumShareSheet({
                         <button
                           type="button"
                           aria-label={`移除 ${r}`}
-                          onClick={() => removeRecipient(r)}
+                          disabled={loading}
+                          onClick={() => {
+                            void removeRecipient(r)
+                              .then(() => toast.success("已移除分享對象"))
+                              .catch(() => toast.error("移除失敗，請稍後再試。"));
+                          }}
                           className="ml-2 shrink-0 rounded-full p-1 text-muted-foreground"
                         >
                           <X className="size-4" strokeWidth={1.8} />
@@ -172,6 +194,7 @@ export function AlbumShareSheet({
                 <div className="mt-3 flex items-center gap-2">
                   <button
                     type="button"
+                    disabled={!link || loading}
                     onClick={() => {
                       void navigator.clipboard
                         ?.writeText(link)
@@ -185,9 +208,11 @@ export function AlbumShareSheet({
                   </button>
                   <button
                     type="button"
+                    disabled={loading}
                     onClick={() => {
-                      regenerateLink();
-                      toast.success("已重新產生連結，舊連結失效");
+                      void regenerateLink()
+                        .then(() => toast.success("已重新產生連結，舊連結失效"))
+                        .catch(() => toast.error("重新產生連結失敗，請稍後再試。"));
                     }}
                     className="inline-flex items-center gap-1.5 rounded-full bg-card px-4 py-2 text-sm text-muted-foreground shadow-soft active:scale-95"
                   >
@@ -196,7 +221,7 @@ export function AlbumShareSheet({
                   </button>
                 </div>
                 <p className="mt-3 text-sm text-muted-foreground">
-                  連結目前只保存在這台手機，雲端分享還在準備中。
+                  擁有這個連結的人可以查看這本相簿。
                 </p>
               </div>
             ) : null}

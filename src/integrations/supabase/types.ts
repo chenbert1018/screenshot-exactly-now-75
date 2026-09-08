@@ -14,6 +14,73 @@ export type Database = {
   }
   public: {
     Tables: {
+      album_share_recipients: {
+        Row: {
+          created_at: string
+          id: string
+          recipient_email: string
+          share_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          recipient_email: string
+          share_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          recipient_email?: string
+          share_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "album_share_recipients_share_id_fkey"
+            columns: ["share_id"]
+            isOneToOne: false
+            referencedRelation: "album_shares"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      album_shares: {
+        Row: {
+          created_at: string
+          folder_id: string
+          id: string
+          mode: string
+          public_token: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          folder_id: string
+          id?: string
+          mode?: string
+          public_token?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          folder_id?: string
+          id?: string
+          mode?: string
+          public_token?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "album_shares_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "memory_folders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           created_at: string

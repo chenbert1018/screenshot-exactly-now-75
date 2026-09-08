@@ -31,6 +31,7 @@ import { Route as AdminWidgetRouteImport } from './routes/admin.widget'
 import { Route as IdolsIdolIdRouteImport } from './routes/idols.$idolId'
 import { Route as MemoriesIndexRouteImport } from './routes/memories.index'
 import { Route as MemoriesFolderIdRouteImport } from './routes/memories.$folderId'
+import { Route as SharedTokenRouteImport } from './routes/shared.$token'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -142,6 +143,11 @@ const MemoriesFolderIdRoute = MemoriesFolderIdRouteImport.update({
   path: '/memories/$folderId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SharedTokenRoute = SharedTokenRouteImport.update({
+  id: '/shared/$token',
+  path: '/shared/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -164,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/admin/widget': typeof AdminWidgetRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
   '/memories/$folderId': typeof MemoriesFolderIdRoute
+  '/shared/$token': typeof SharedTokenRoute
   '/admin/': typeof AdminIndexRoute
   '/memories/': typeof MemoriesIndexRoute
 }
@@ -187,6 +194,7 @@ export interface FileRoutesByTo {
   '/admin/widget': typeof AdminWidgetRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
   '/memories/$folderId': typeof MemoriesFolderIdRoute
+  '/shared/$token': typeof SharedTokenRoute
   '/admin': typeof AdminIndexRoute
   '/memories': typeof MemoriesIndexRoute
 }
@@ -212,6 +220,7 @@ export interface FileRoutesById {
   '/admin/widget': typeof AdminWidgetRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
   '/memories/$folderId': typeof MemoriesFolderIdRoute
+  '/shared/$token': typeof SharedTokenRoute
   '/admin/': typeof AdminIndexRoute
   '/memories/': typeof MemoriesIndexRoute
 }
@@ -238,6 +247,7 @@ export interface FileRouteTypes {
     | '/admin/widget'
     | '/idols/$idolId'
     | '/memories/$folderId'
+    | '/shared/$token'
     | '/admin/'
     | '/memories/'
   fileRoutesByTo: FileRoutesByTo
@@ -261,6 +271,7 @@ export interface FileRouteTypes {
     | '/admin/widget'
     | '/idols/$idolId'
     | '/memories/$folderId'
+    | '/shared/$token'
     | '/admin'
     | '/memories'
   id:
@@ -285,6 +296,7 @@ export interface FileRouteTypes {
     | '/admin/widget'
     | '/idols/$idolId'
     | '/memories/$folderId'
+    | '/shared/$token'
     | '/admin/'
     | '/memories/'
   fileRoutesById: FileRoutesById
@@ -302,6 +314,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   WidgetRoute: typeof WidgetRoute
   MemoriesFolderIdRoute: typeof MemoriesFolderIdRoute
+  SharedTokenRoute: typeof SharedTokenRoute
   MemoriesIndexRoute: typeof MemoriesIndexRoute
 }
 
@@ -461,6 +474,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MemoriesFolderIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shared/$token': {
+      id: '/shared/$token'
+      path: '/shared/$token'
+      fullPath: '/shared/$token'
+      preLoaderRoute: typeof SharedTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -511,6 +531,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   WidgetRoute: WidgetRoute,
   MemoriesFolderIdRoute: MemoriesFolderIdRoute,
+  SharedTokenRoute: SharedTokenRoute,
   MemoriesIndexRoute: MemoriesIndexRoute,
 }
 export const routeTree = rootRouteImport
