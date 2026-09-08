@@ -33,16 +33,17 @@ export const PLUS_IDOL_LIMIT = 6;
 /** IdolDays+ 解鎖項目（Paywall 清單） */
 export const PLUS_BENEFITS = [
   "最多 6 位偶像",
-  "Advanced D-Day",
-  "Premium Themes",
-  "Premium Widget",
-  "Memory Plus",
-  "Yearbook",
+  "進階倒數日",
+  "專屬主題",
+  "專屬桌面小工具",
+  "回憶進階功能",
+  "年度回顧手帳",
   "私人相簿分享",
-  "Sugar Plus",
-  "Custom Reminder",
-  "Premium Companion",
-  "Cloud Plus",
+  "嗑糖進階功能",
+  "自訂提醒",
+  "專屬陪伴文案",
+  "雲端備份加大",
+
 ] as const;
 
 export type PremiumFeature =

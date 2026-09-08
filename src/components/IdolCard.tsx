@@ -41,7 +41,7 @@ export function IdolCard({ idol }: { idol: Idol }) {
         </span>
       </div>
       <div className="px-1.5 pt-2.5">
-        <p className="font-display truncate text-[15px]">{idol.name}</p>
+        <p className="font-display truncate text-[18px] font-bold">{idol.name}</p>
         <p className="mt-0.5 truncate text-[13px] text-muted-foreground">
           {idol.groupName || "　"}
         </p>
