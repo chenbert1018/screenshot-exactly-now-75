@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/sheet";
 import { Paywall } from "@/components/Paywall";
 import { shareLinkFor, useAlbumShare, type AlbumShareMode } from "@/lib/album-share";
-import { isPlusActive, useSubscription } from "@/lib/subscription";
+import { useSubscription } from "@/lib/subscription";
 import { toast } from "sonner";
 
 const OPTIONS: {
@@ -50,8 +50,7 @@ export function AlbumShareSheet({
 }) {
   const { share, setMode, addRecipient, removeRecipient, regenerateLink } =
     useAlbumShare(folderId);
-  const { state } = useSubscription();
-  const plus = isPlusActive(state);
+  const { isPlus: plus } = useSubscription();
 
   const [paywall, setPaywall] = useState(false);
   const [name, setName] = useState("");
