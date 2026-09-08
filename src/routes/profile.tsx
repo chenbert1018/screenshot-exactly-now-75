@@ -14,6 +14,8 @@ import { useReminderSource } from "@/lib/reminders.source";
 import { useIdolSource } from "@/lib/idols.source";
 import { eventTypeMeta } from "@/lib/events";
 import { useEventSource } from "@/lib/events.source";
+import { Paywall } from "@/components/Paywall";
+import { PLUS_NAME, PLUS_PRICE_LABEL, useSubscription } from "@/lib/subscription";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -37,6 +39,8 @@ const settings: { key: SettingKey; label: string; Icon: typeof Settings }[] = [
 
 function ProfilePage() {
   const [openSheet, setOpenSheet] = useState<SettingKey | null>(null);
+  const [paywall, setPaywall] = useState(false);
+  const { isPlus } = useSubscription();
   const { reminders, updateReminder, removeReminder } = useReminderSource();
   const { idols } = useIdolSource();
   const { events } = useEventSource();
