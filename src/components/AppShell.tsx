@@ -57,7 +57,7 @@ export function PageHeader({
   return (
     <header className="mb-7 flex items-start justify-between gap-4">
       <div>
-        <h1 className="font-display text-[28px] leading-tight font-medium tracking-[0.01em]">
+        <h1 className="font-display text-[24px] leading-snug font-bold tracking-[0.01em]">
           {title}
         </h1>
         {subtitle ? (
@@ -81,7 +81,7 @@ export function Section({
   return (
     <section className="mb-8">
       <div className="mb-3 flex items-baseline justify-between">
-        <h2 className="font-display text-[15px] font-medium tracking-[0.08em]">{title}</h2>
+        <h2 className="font-display text-[17px] font-semibold tracking-[0.04em]">{title}</h2>
         {hint ? <span className="text-xs text-muted-foreground">{hint}</span> : null}
       </div>
       {children}
