@@ -39,7 +39,7 @@ export function BottomNav() {
                   strokeWidth={1.5}
                 />
               </span>
-              <span className="text-[11px] tracking-wide">{label}</span>
+              <span className="text-[13px] tracking-wide">{label}</span>
 
             </Link>
           </li>

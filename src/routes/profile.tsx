@@ -164,7 +164,7 @@ function ProfilePage() {
               <p className="flex items-center gap-2 text-[15px] font-medium">
                 {PLUS_NAME}
                 {isPlus ? (
-                  <span className="rounded-full bg-accent px-2 py-0.5 text-[11px] text-accent-foreground">
+                  <span className="rounded-full bg-accent px-2 py-0.5 text-[13px] text-accent-foreground">
                     訂閱中
                   </span>
                 ) : null}

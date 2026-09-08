@@ -110,7 +110,7 @@ function CountdownHero({ idol, event }: { idol: Idol; event?: IdolEvent | undefi
       {next ? (
         <>
           {/* 2. 下一個重要日子 */}
-          <p className="mt-6 text-[11px] tracking-[0.34em] text-muted-foreground uppercase">
+          <p className="mt-6 text-[13px] tracking-[0.34em] text-muted-foreground uppercase">
             Next D-Day
           </p>
 
@@ -124,7 +124,7 @@ function CountdownHero({ idol, event }: { idol: Idol; event?: IdolEvent | undefi
               <p className="mt-2 font-display text-[92px] leading-[0.95] font-semibold text-primary">
                 {next.days}
               </p>
-              <p className="mt-2 text-[11px] tracking-[0.34em] text-muted-foreground uppercase">
+              <p className="mt-2 text-[13px] tracking-[0.34em] text-muted-foreground uppercase">
                 Days
               </p>
             </>
@@ -167,7 +167,7 @@ function CountdownHero({ idol, event }: { idol: Idol; event?: IdolEvent | undefi
         ) : (
           <div className="flex size-full flex-col items-center justify-center gap-1.5 text-muted-foreground">
             <ImageIcon className="size-6" strokeWidth={1.3} />
-            <span className="text-[11px]">放一張照片</span>
+            <span className="text-[13px]">放一張照片</span>
           </div>
         )}
       </Link>
@@ -199,7 +199,7 @@ function Companionship({ idol }: { idol: Idol }) {
       <p className="text-sm text-muted-foreground">已經一起走過</p>
       <p className="mt-2 font-display text-[40px] leading-none font-semibold">
         {since.days}
-        <span className="ml-2 align-middle text-[11px] tracking-[0.3em] text-muted-foreground uppercase">
+        <span className="ml-2 align-middle text-[13px] tracking-[0.3em] text-muted-foreground uppercase">
           Days
         </span>
       </p>
@@ -215,7 +215,7 @@ function Companionship({ idol }: { idol: Idol }) {
 function TodaySection({ name }: { name?: string }) {
   return (
     <section className="text-center">
-      <p className="text-[11px] tracking-[0.34em] text-muted-foreground uppercase">Today</p>
+      <p className="text-[13px] tracking-[0.34em] text-muted-foreground uppercase">Today</p>
       <p className="mt-3 text-[17px]">{todayFullLabel()}</p>
       <p className="mt-1 text-sm text-muted-foreground">{todayWeekday()}</p>
       <p className="mt-5 text-[15px] leading-relaxed">{dailyMessage(name)}</p>
@@ -530,7 +530,7 @@ function MiniIdol({ idol }: { idol: Idol }) {
       </div>
       <div className="px-3 pt-2.5 pb-3">
         <p className="truncate text-sm font-medium">{idol.name}</p>
-        <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
+        <p className="mt-0.5 truncate text-[13px] text-muted-foreground">
           {day ? day.ddayLabel : "設定重要日子"}
         </p>
       </div>

@@ -116,7 +116,7 @@ function MemoriesPage() {
                     {f.description ? (
                       <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{f.description}</p>
                     ) : null}
-                    <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
+                    <div className="mt-3 flex flex-wrap items-center gap-2 text-[13px] text-muted-foreground">
                       {range ? (
                         <span className="rounded-full bg-surface px-2.5 py-1 tracking-wide">{range}</span>
                       ) : null}

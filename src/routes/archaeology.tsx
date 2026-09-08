@@ -35,7 +35,7 @@ function ArchaeologyPage() {
               <p className="text-[15px] font-medium">{label}</p>
               <p className="mt-1 text-sm text-muted-foreground">{desc}</p>
             </div>
-            <span className="rounded-full bg-surface px-3 py-1 text-[11px] tracking-wide text-muted-foreground">
+            <span className="rounded-full bg-surface px-3 py-1 text-[13px] tracking-wide text-muted-foreground">
               尚未開放
             </span>
           </SoftCard>

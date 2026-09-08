@@ -76,7 +76,7 @@ function EventCard({
             </p>
           )}
         </div>
-        <p className="mt-3 inline-flex rounded-full bg-surface px-3 py-1 text-[11px] tracking-wide text-muted-foreground">
+        <p className="mt-3 inline-flex rounded-full bg-surface px-3 py-1 text-[13px] tracking-wide text-muted-foreground">
           {meta.emoji} {meta.label}
         </p>
       </SoftCard>
