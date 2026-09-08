@@ -4,8 +4,10 @@ import { Heart, Plus } from "lucide-react";
 import { AppShell, PageHeader, EmptyState } from "@/components/AppShell";
 import { IdolCard, EmptySlot } from "@/components/IdolCard";
 import { IdolFormSheet } from "@/components/IdolFormSheet";
-import { MAX_IDOLS, type IdolDraft } from "@/lib/idols";
+import { type IdolDraft } from "@/lib/idols";
 import { useIdolSource } from "@/lib/idols.source";
+import { Paywall } from "@/components/Paywall";
+import { useSubscription } from "@/lib/subscription";
 
 export const Route = createFileRoute("/idols")({
   head: () => ({
@@ -29,9 +31,16 @@ function IdolsLayout() {
 function IdolsPage() {
   const { idols, ready, addIdol, error } = useIdolSource();
   const [open, setOpen] = useState(false);
+  const [paywall, setPaywall] = useState(false);
+  const { idolLimit, isPlus } = useSubscription();
 
-  const canAdd = idols.length < MAX_IDOLS;
-  const slots = Math.max(0, MAX_IDOLS - idols.length);
+  const canAdd = idols.length < idolLimit;
+  const slots = Math.max(0, idolLimit - idols.length);
+
+  function openAdd() {
+    if (canAdd) setOpen(true);
+    else setPaywall(true);
+  }
 
   async function handleCreate(draft: IdolDraft) {
     await addIdol(draft);
@@ -44,10 +53,10 @@ function IdolsPage() {
         title="我的偶像"
         subtitle="收藏那些讓你心動的名字"
         action={
-          canAdd ? (
+          idols.length < 6 ? (
             <button
               type="button"
-              onClick={() => setOpen(true)}
+              onClick={openAdd}
               className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
             >
               <Plus className="size-4" strokeWidth={2} />
@@ -71,7 +80,7 @@ function IdolsPage() {
           action={
             <button
               type="button"
-              onClick={() => setOpen(true)}
+              onClick={openAdd}
               className="inline-flex items-center gap-1.5 rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
             >
               <Plus className="size-4" strokeWidth={2} />
@@ -85,14 +94,22 @@ function IdolsPage() {
             <IdolCard key={idol.id} idol={idol} />
           ))}
           {Array.from({ length: slots }).map((_, i) => (
-            <EmptySlot key={`slot-${i}`} onClick={() => setOpen(true)} />
+            <EmptySlot key={`slot-${i}`} onClick={openAdd} />
           ))}
         </div>
       )}
 
-      <p className="mt-6 text-center text-xs text-muted-foreground">
-        最多 5 位偶像
-      </p>
+      {isPlus ? (
+        <p className="mt-6 text-center text-xs text-muted-foreground">最多 6 位偶像</p>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setPaywall(true)}
+          className="mt-6 w-full text-center text-xs text-muted-foreground"
+        >
+          免費版可收藏 1 位偶像 · IdolDays+ 最多 6 位（NT$90／月）
+        </button>
+      )}
 
       <IdolFormSheet
         open={open}
@@ -100,6 +117,13 @@ function IdolsPage() {
         title="新增偶像"
         submitLabel="建立偶像"
         onSubmit={handleCreate}
+      />
+
+      <Paywall
+        open={paywall}
+        onOpenChange={setPaywall}
+        feature="IDOL_SLOT"
+        onSubscribed={() => setOpen(true)}
       />
     </AppShell>
   );

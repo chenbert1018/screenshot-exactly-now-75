@@ -14,6 +14,8 @@ import { useReminderSource } from "@/lib/reminders.source";
 import { useIdolSource } from "@/lib/idols.source";
 import { eventTypeMeta } from "@/lib/events";
 import { useEventSource } from "@/lib/events.source";
+import { Paywall } from "@/components/Paywall";
+import { PLUS_NAME, PLUS_PRICE_LABEL, useSubscription } from "@/lib/subscription";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -37,6 +39,8 @@ const settings: { key: SettingKey; label: string; Icon: typeof Settings }[] = [
 
 function ProfilePage() {
   const [openSheet, setOpenSheet] = useState<SettingKey | null>(null);
+  const [paywall, setPaywall] = useState(false);
+  const { isPlus } = useSubscription();
   const { reminders, updateReminder, removeReminder } = useReminderSource();
   const { idols } = useIdolSource();
   const { events } = useEventSource();
@@ -146,17 +150,33 @@ function ProfilePage() {
         </SoftCard>
       </Section>
 
-      <Section title="Premium">
-        <SoftCard className="flex items-center gap-4 px-5 py-5">
-          <div className="flex size-11 items-center justify-center rounded-full bg-accent text-accent-foreground">
-            <Sparkles className="size-5" strokeWidth={1.6} />
-          </div>
-          <div className="flex-1">
-            <p className="text-[15px] font-medium">IdolDays Premium</p>
-            <p className="mt-1 text-sm text-muted-foreground">敬請期待</p>
-          </div>
+      <Section title="訂閱">
+        <SoftCard className="px-0 py-0">
+          <button
+            type="button"
+            onClick={() => setPaywall(true)}
+            className="flex w-full items-center gap-4 px-5 py-5 text-left transition-colors active:bg-surface/70"
+          >
+            <div className="flex size-11 items-center justify-center rounded-full bg-accent text-accent-foreground">
+              <Sparkles className="size-5" strokeWidth={1.6} />
+            </div>
+            <div className="flex-1">
+              <p className="flex items-center gap-2 text-[15px] font-medium">
+                {PLUS_NAME}
+                {isPlus ? (
+                  <span className="rounded-full bg-accent px-2 py-0.5 text-[11px] text-accent-foreground">
+                    訂閱中
+                  </span>
+                ) : null}
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">{PLUS_PRICE_LABEL}</p>
+            </div>
+            <ChevronRight className="size-4 text-muted-foreground" strokeWidth={1.6} />
+          </button>
         </SoftCard>
       </Section>
+
+      <Paywall open={paywall} onOpenChange={setPaywall} />
 
       <p className="mt-10 text-center text-xs text-muted-foreground">版本 0.1.0（S0 Foundation）</p>
 
