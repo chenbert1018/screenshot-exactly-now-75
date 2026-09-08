@@ -25,11 +25,11 @@ export function IdolCard({ idol }: { idol: Idol }) {
         ) : (
           <div className="flex size-full flex-col items-center justify-center gap-2 text-muted-foreground">
             <ImageIcon className="size-6" strokeWidth={1.4} />
-            <span className="text-[11px]">還沒有照片</span>
+            <span className="text-[13px]">還沒有照片</span>
           </div>
         )}
         {day ? (
-          <span className="font-display absolute top-2.5 left-2.5 rounded-full bg-card/90 px-2.5 py-1 text-[11px] text-primary shadow-soft backdrop-blur">
+          <span className="font-display absolute top-2.5 left-2.5 rounded-full bg-card/90 px-2.5 py-1 text-[13px] text-primary shadow-soft backdrop-blur">
             {day.ddayLabel}
           </span>
         ) : null}
@@ -41,11 +41,11 @@ export function IdolCard({ idol }: { idol: Idol }) {
         </span>
       </div>
       <div className="px-1.5 pt-2.5">
-        <p className="font-display truncate text-[15px]">{idol.name}</p>
-        <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
+        <p className="font-display truncate text-[18px] font-bold">{idol.name}</p>
+        <p className="mt-0.5 truncate text-[13px] text-muted-foreground">
           {idol.groupName || "　"}
         </p>
-        <div className="mt-2 space-y-0.5 text-[10.5px] text-muted-foreground">
+        <div className="mt-2 space-y-0.5 text-[13px] text-muted-foreground">
           <p className="truncate">{day ? `${day.title}・${day.humanLabel}` : "設定一個重要日子"}</p>
           <p className="truncate">{since ? since.humanLabel : "設定喜歡他的日期"}</p>
         </div>
@@ -64,7 +64,7 @@ export function EmptySlot({ onClick }: { onClick: () => void }) {
       <span className="flex size-9 items-center justify-center rounded-full bg-accent/40 text-primary">
         <Plus className="size-4" strokeWidth={1.8} />
       </span>
-      <span className="text-[11px]">加入本命 ♡</span>
+      <span className="text-[13px]">加入本命 ♡</span>
     </button>
   );
 }

@@ -296,7 +296,7 @@ function CalendarPage() {
       <SoftCard className="mb-8 px-3 py-5">
         <div className="grid grid-cols-7 gap-y-1 text-center">
           {weekdays.map((w) => (
-            <span key={w} className="pb-1 text-[11px] text-muted-foreground">
+            <span key={w} className="pb-1 text-[13px] text-muted-foreground">
               {w}
             </span>
           ))}
@@ -531,11 +531,11 @@ function CalendarPage() {
                 <DialogTitle className="text-[19px]">{detail.title}</DialogTitle>
               </DialogHeader>
 
-              <p className="font-display text-[52px] leading-none font-semibold text-primary">
+              <p className="font-display text-[46px] leading-none font-semibold text-primary">
                 {detailCountdown?.ddayLabel ?? "—"}
               </p>
               <p className="text-sm text-muted-foreground">{detailCountdown?.fullDate}</p>
-              <p className="text-[11px] tracking-wide text-muted-foreground">
+              <p className="text-[13px] tracking-wide text-muted-foreground">
                 {eventTypeMeta(detail.type).emoji} {eventTypeMeta(detail.type).label}
               </p>
 

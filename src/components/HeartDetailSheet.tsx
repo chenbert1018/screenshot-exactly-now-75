@@ -70,7 +70,7 @@ export function HeartDetailSheet({
               )}
             </div>
 
-            <span className="mt-5 inline-flex rounded-full bg-surface px-3 py-1 text-[11px] text-muted-foreground">
+            <span className="mt-5 inline-flex rounded-full bg-surface px-3 py-1 text-[13px] text-muted-foreground">
               {heartTypeLabel(item.type)}
             </span>
             <h2 className="mt-2 font-display text-[22px] leading-snug">{item.title}</h2>

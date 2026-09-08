@@ -214,12 +214,12 @@ export function EventDetailSheet({
                 {completedLine(event.type)}
               </p>
             ) : c?.status === "TODAY" ? (
-              <p className="mt-3 font-display text-[56px] leading-none font-semibold text-primary">
+              <p className="mt-3 font-display text-[46px] leading-none font-semibold text-primary">
                 D-DAY
               </p>
             ) : (
               <>
-                <p className="mt-2 font-display text-[92px] leading-none font-semibold text-primary">
+                <p className="mt-2 font-display text-[48px] leading-none font-semibold text-primary">
                   {c?.daysUntil}
                 </p>
                 <p className="mt-2 text-sm text-muted-foreground">天・{c?.ddayLabel}</p>

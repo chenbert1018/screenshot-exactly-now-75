@@ -81,7 +81,7 @@ function HeartCard({
           <SugarPlaceholder item={item} name={idolName} />
         )}
         <div className="px-4 py-4">
-          <span className="inline-flex rounded-full bg-surface px-2.5 py-1 text-[11px] text-muted-foreground">
+          <span className="inline-flex rounded-full bg-surface px-2.5 py-1 text-[13px] text-muted-foreground">
             {heartTypeLabel(item.type)}
           </span>
           <p className="mt-2 font-display text-[16px] leading-snug">{item.title}</p>
@@ -144,7 +144,7 @@ function HeartPage() {
   return (
     <AppShell>
       <header className="mb-7">
-        <p className="text-[11px] tracking-[0.28em] text-muted-foreground uppercase">
+        <p className="text-[13px] tracking-[0.28em] text-muted-foreground uppercase">
           My Sugar Archive
         </p>
         <h1 className="mt-2 font-display text-[28px] leading-tight font-medium">🍬 嗑糖</h1>
