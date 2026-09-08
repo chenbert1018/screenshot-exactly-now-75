@@ -116,12 +116,12 @@ function CountdownHero({ idol, event }: { idol: Idol; event?: IdolEvent | undefi
 
           {/* 3. D-Day */}
           {isToday ? (
-            <p className="mt-3 font-display text-[64px] leading-none font-semibold text-primary">
+            <p className="mt-3 font-display text-[44px] leading-none font-semibold text-primary">
               TODAY
             </p>
           ) : (
             <>
-              <p className="mt-2 font-display text-[92px] leading-[0.95] font-semibold text-primary">
+              <p className="mt-2 font-display text-[48px] leading-[0.95] font-semibold text-primary">
                 {next.days}
               </p>
               <p className="mt-2 text-[13px] tracking-[0.34em] text-muted-foreground uppercase">
