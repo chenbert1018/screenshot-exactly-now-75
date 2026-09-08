@@ -531,7 +531,7 @@ function CalendarPage() {
                 <DialogTitle className="text-[19px]">{detail.title}</DialogTitle>
               </DialogHeader>
 
-              <p className="font-display text-[52px] leading-none font-semibold text-primary">
+              <p className="font-display text-[46px] leading-none font-semibold text-primary">
                 {detailCountdown?.ddayLabel ?? "—"}
               </p>
               <p className="text-sm text-muted-foreground">{detailCountdown?.fullDate}</p>
