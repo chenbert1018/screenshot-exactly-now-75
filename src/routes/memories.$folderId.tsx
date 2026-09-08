@@ -19,6 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { AlbumShareSheet } from "@/components/AlbumShareSheet";
 import { MemoryFolderFormSheet } from "@/components/MemoryFolderFormSheet";
 import { MemoryFormSheet } from "@/components/MemoryFormSheet";
 import { useMemoryFolderSource } from "@/lib/memory-folders.source";
@@ -63,6 +64,7 @@ function FolderDetailPage() {
   const idol = folder?.idolId ? idols.find((i) => i.id === folder.idolId) : undefined;
 
   const [editFolder, setEditFolder] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const [deleteFolder, setDeleteFolder] = useState(false);
   const [memoryOpen, setMemoryOpen] = useState(false);
   const [editing, setEditing] = useState<Memory | null>(null);
@@ -118,6 +120,7 @@ function FolderDetailPage() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onSelect={() => setEditFolder(true)}>編輯資料夾</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => setShareOpen(true)}>分享設定</DropdownMenuItem>
               <DropdownMenuItem
                 className="text-destructive focus:text-destructive"
                 onSelect={() => setDeleteFolder(true)}
@@ -280,6 +283,13 @@ function FolderDetailPage() {
           }}
         />
       ) : null}
+
+      <AlbumShareSheet
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+        folderId={folderId}
+        folderTitle={folder?.title ?? ""}
+      />
 
       <MemoryFormSheet
         open={memoryOpen}
