@@ -80,7 +80,7 @@ function IdolsPage() {
           action={
             <button
               type="button"
-              onClick={() => setOpen(true)}
+              onClick={openAdd}
               className="inline-flex items-center gap-1.5 rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
             >
               <Plus className="size-4" strokeWidth={2} />
@@ -94,14 +94,22 @@ function IdolsPage() {
             <IdolCard key={idol.id} idol={idol} />
           ))}
           {Array.from({ length: slots }).map((_, i) => (
-            <EmptySlot key={`slot-${i}`} onClick={() => setOpen(true)} />
+            <EmptySlot key={`slot-${i}`} onClick={openAdd} />
           ))}
         </div>
       )}
 
-      <p className="mt-6 text-center text-xs text-muted-foreground">
-        最多 5 位偶像
-      </p>
+      {isPlus ? (
+        <p className="mt-6 text-center text-xs text-muted-foreground">最多 6 位偶像</p>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setPaywall(true)}
+          className="mt-6 w-full text-center text-xs text-muted-foreground"
+        >
+          免費版可收藏 1 位偶像 · IdolDays+ 最多 6 位（NT$90／月）
+        </button>
+      )}
 
       <IdolFormSheet
         open={open}
@@ -109,6 +117,13 @@ function IdolsPage() {
         title="新增偶像"
         submitLabel="建立偶像"
         onSubmit={handleCreate}
+      />
+
+      <Paywall
+        open={paywall}
+        onOpenChange={setPaywall}
+        feature="IDOL_SLOT"
+        onSubscribed={() => setOpen(true)}
       />
     </AppShell>
   );
