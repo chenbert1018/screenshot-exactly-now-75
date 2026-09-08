@@ -4,8 +4,10 @@ import { Heart, Plus } from "lucide-react";
 import { AppShell, PageHeader, EmptyState } from "@/components/AppShell";
 import { IdolCard, EmptySlot } from "@/components/IdolCard";
 import { IdolFormSheet } from "@/components/IdolFormSheet";
-import { MAX_IDOLS, type IdolDraft } from "@/lib/idols";
+import { type IdolDraft } from "@/lib/idols";
 import { useIdolSource } from "@/lib/idols.source";
+import { Paywall } from "@/components/Paywall";
+import { useSubscription } from "@/lib/subscription";
 
 export const Route = createFileRoute("/idols")({
   head: () => ({

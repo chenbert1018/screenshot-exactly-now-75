@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
-export const MAX_IDOLS = 5;
+/** 系統硬上限（IdolDays+ 最多 6 位；免費版另由訂閱狀態限制為 1 位） */
+export const MAX_IDOLS = 6;
 const STORAGE_KEY = "idoldays.idols.v1";
 
 export type Idol = {
