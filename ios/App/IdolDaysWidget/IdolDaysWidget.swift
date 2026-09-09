@@ -12,7 +12,20 @@ struct IdolDaysEntry: TimelineEntry {
     let quote: String
 }
 
+struct WidgetSnapshot: Codable {
+    let version: Int
+    let idolName: String
+    let eventTitle: String
+    let dDay: String
+    let eventDate: String
+    let location: String
+    let quote: String
+    let updatedAt: String
+}
+
 struct IdolDaysProvider: TimelineProvider {
+
+    private let appGroupID = "group.com.idoldays.app"
 
     func placeholder(in context: Context) -> IdolDaysEntry {
         mockEntry
@@ -22,13 +35,19 @@ struct IdolDaysProvider: TimelineProvider {
         in context: Context,
         completion: @escaping (IdolDaysEntry) -> Void
     ) {
-        completion(mockEntry)
+        if context.isPreview {
+            completion(mockEntry)
+        } else {
+            completion(loadSharedEntry() ?? mockEntry)
+        }
     }
 
     func getTimeline(
         in context: Context,
         completion: @escaping (Timeline<IdolDaysEntry>) -> Void
     ) {
+        let entry = loadSharedEntry() ?? mockEntry
+
         let nextUpdate =
             Calendar.current.nextDate(
                 after: Date(),
@@ -38,11 +57,49 @@ struct IdolDaysProvider: TimelineProvider {
             ?? Date().addingTimeInterval(86400)
 
         let timeline = Timeline(
-            entries: [mockEntry],
+            entries: [entry],
             policy: .after(nextUpdate)
         )
 
         completion(timeline)
+    }
+
+    private func loadSharedEntry() -> IdolDaysEntry? {
+        guard let containerURL = FileManager.default.containerURL(
+            forSecurityApplicationGroupIdentifier: appGroupID
+        ) else {
+            return nil
+        }
+
+        let snapshotURL =
+            containerURL.appendingPathComponent(
+                "widget-snapshot.json"
+            )
+
+        guard
+            let data = try? Data(contentsOf: snapshotURL),
+            let snapshot = try? JSONDecoder().decode(
+                WidgetSnapshot.self,
+                from: data
+            ),
+            !snapshot.idolName
+                .trimmingCharacters(
+                    in: .whitespacesAndNewlines
+                )
+                .isEmpty
+        else {
+            return nil
+        }
+
+        return IdolDaysEntry(
+            date: Date(),
+            idolName: snapshot.idolName,
+            eventTitle: snapshot.eventTitle,
+            dDay: snapshot.dDay,
+            eventDate: snapshot.eventDate,
+            location: snapshot.location,
+            quote: snapshot.quote
+        )
     }
 
     private var mockEntry: IdolDaysEntry {
