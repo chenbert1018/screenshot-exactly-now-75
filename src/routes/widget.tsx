@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { StoredImage } from "@/components/StoredImage";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ImageIcon, Plus } from "lucide-react";
@@ -5,6 +6,8 @@ import { AppShell, PageHeader, EmptyState, SoftCard } from "@/components/AppShel
 import { useIdolSource } from "@/lib/idols.source";
 import { useEventSource } from "@/lib/events.source";
 import { useWidgetPreferenceSource } from "@/lib/widget-preferences.source";
+import { updateNativeWidget } from "@/lib/widget-native-bridge";
+import { resolveImageUrl } from "@/lib/storage";
 import {
   getWidgetCompanionContent,
   WIDGET_CONTENT_TYPES,
@@ -32,6 +35,116 @@ const CONTENT_LABELS: Record<WidgetContentType, string> = {
   MOOD: "今日心情",
   COUNTDOWN: "重要日子",
 };
+
+type WidgetCompanionContent = ReturnType<
+  typeof getWidgetCompanionContent
+>;
+
+async function imageUrlToDataUrl(url: string): Promise<string> {
+  if (!url) {
+    return "";
+  }
+
+  if (url.startsWith("data:image/")) {
+    return url;
+  }
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Widget image fetch failed: ${response.status}`);
+  }
+
+  const blob = await response.blob();
+
+  return await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      resolve(typeof reader.result === "string" ? reader.result : "");
+    };
+
+    reader.onerror = () => {
+      reject(reader.error ?? new Error("Widget image conversion failed"));
+    };
+
+    reader.readAsDataURL(blob);
+  });
+}
+
+function WidgetNativeSync({
+  content,
+  enabledContents,
+}: {
+  content: WidgetCompanionContent;
+  enabledContents: WidgetContentType[];
+}) {
+  const idolName = content.idol?.name ?? "";
+  const idolImage = content.idol?.image ?? "";
+  const eventTitle = content.importantDate?.title ?? "";
+  const dDay = content.importantDate?.countdownLabel ?? "";
+  const eventDate = content.importantDate?.date ?? "";
+  const quote = content.dailyMessage ?? "";
+  const moodEmoji = content.mood?.emoji ?? "";
+  const moodLabel = content.mood?.label ?? "";
+  const decorationEmoji = content.decoration?.emoji ?? "";
+  const decorationLabel = content.decoration?.label ?? "";
+
+  useEffect(() => {
+    if (!idolName) {
+      return;
+    }
+
+    void (async () => {
+      let imageData: string | undefined;
+
+      if (idolImage) {
+        try {
+          const resolvedImageUrl = await resolveImageUrl(idolImage);
+          const converted = await imageUrlToDataUrl(resolvedImageUrl);
+
+          if (converted) {
+            imageData = converted;
+          }
+        } catch (error) {
+          console.error(
+            "[IdolDays Widget] Photo sync failed:",
+            error,
+          );
+        }
+      }
+
+      await updateNativeWidget({
+        idolName,
+        eventTitle,
+        dDay,
+        eventDate,
+        location: "",
+        quote,
+        moodEmoji,
+        moodLabel,
+        decorationEmoji,
+        decorationLabel,
+        enabledContents,
+        imageData,
+      });
+    })();
+  }, [
+    idolName,
+    idolImage,
+    eventTitle,
+    dDay,
+    eventDate,
+    quote,
+    moodEmoji,
+    moodLabel,
+    decorationEmoji,
+    decorationLabel,
+    enabledContents,
+  ]);
+
+  return null;
+}
 
 function WidgetPage() {
   const { idols, ready } = useIdolSource();
@@ -86,6 +199,10 @@ function WidgetPage() {
 
   return (
     <AppShell>
+      <WidgetNativeSync
+        content={content}
+        enabledContents={prefs.enabledContents}
+      />
       <PageHeader title="桌面陪伴" subtitle="讓他每天出現在你的桌面。" />
 
       <p className="mb-3 text-[13px] tracking-wide text-muted-foreground">你的桌面陪伴</p>

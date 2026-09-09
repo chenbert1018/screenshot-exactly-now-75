@@ -14,6 +14,11 @@ export interface WidgetNativePayload {
   eventDate: string;
   location: string;
   quote: string;
+  moodEmoji: string;
+  moodLabel: string;
+  decorationEmoji: string;
+  decorationLabel: string;
+  enabledContents: string[];
   imageData?: string;
 }
 

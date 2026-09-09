@@ -12,177 +12,47 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
 
-        runWidgetBridgeDiagnostics()
+        registerIdolDaysWidgetBridge()
 
         return true
     }
 
-    private func runWidgetBridgeDiagnostics() {
-        let appGroupID = "group.com.idoldays.app"
-
-        var log: [String] = []
-
-        log.append("WIDGET_BRIDGE_START")
-        log.append("DATE=\(Date())")
-
-        guard let containerURL = FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: appGroupID
-        ) else {
-            log.append("APP_GROUP_FOUND=NO")
-            log.append("RESULT=FAILED_APP_GROUP")
-            printLog(log)
-            return
-        }
-
-        log.append("APP_GROUP_FOUND=YES")
-        log.append("APP_GROUP_PATH=\(containerURL.path)")
-
-        guard let image = UIImage(named: "WidgetTestPhoto") else {
-            log.append("PHOTO_FOUND=NO")
-            log.append("RESULT=FAILED_PHOTO_NOT_FOUND")
-
-            writeLog(
-                log,
-                to: containerURL
-            )
-
-            printLog(log)
-            return
-        }
-
-        log.append("PHOTO_FOUND=YES")
-        log.append(
-            "PHOTO_SIZE=\(Int(image.size.width))x\(Int(image.size.height))"
-        )
-
-        guard let imageData = image.jpegData(
-            compressionQuality: 0.9
-        ) else {
-            log.append("JPEG_CREATED=NO")
-            log.append("RESULT=FAILED_JPEG")
-
-            writeLog(
-                log,
-                to: containerURL
-            )
-
-            printLog(log)
-            return
-        }
-
-        log.append("JPEG_CREATED=YES")
-        log.append("PHOTO_BYTES=\(imageData.count)")
-
-        let imageURL =
-            containerURL.appendingPathComponent("idol-photo.jpg")
-
-        do {
-            try imageData.write(
-                to: imageURL,
-                options: .atomic
-            )
-
-            log.append("PHOTO_WRITTEN=YES")
-            log.append("PHOTO_PATH=\(imageURL.path)")
-
-        } catch {
-            log.append("PHOTO_WRITTEN=NO")
-            log.append(
-                "PHOTO_WRITE_ERROR=\(error.localizedDescription)"
-            )
-            log.append("RESULT=FAILED_WRITE")
-
-            writeLog(
-                log,
-                to: containerURL
-            )
-
-            printLog(log)
-            return
-        }
-
-        if FileManager.default.fileExists(
-            atPath: imageURL.path
-        ) {
-            log.append("PHOTO_FILE_EXISTS=YES")
-        } else {
-            log.append("PHOTO_FILE_EXISTS=NO")
-        }
-
-        if
-            let savedData = try? Data(contentsOf: imageURL),
-            UIImage(data: savedData) != nil
-        {
-            log.append("PHOTO_CAN_READ_BACK=YES")
-        } else {
-            log.append("PHOTO_CAN_READ_BACK=NO")
-        }
-
-        log.append("RESULT=SUCCESS")
-
-        writeLog(
-            log,
-            to: containerURL
-        )
-
-        printLog(log)
-
-        WidgetCenter.shared.reloadTimelines(
-            ofKind: "IdolDaysWidget"
-        )
-
-        WidgetCenter.shared.reloadAllTimelines()
-    }
-
-    private func writeLog(
-        _ log: [String],
-        to containerURL: URL
+    private func registerIdolDaysWidgetBridge(
+        attempt: Int = 0
     ) {
+        DispatchQueue.main.asyncAfter(
+            deadline: .now() + (attempt == 0 ? 0.1 : 0.25)
+        ) { [weak self] in
+            guard let self else {
+                return
+            }
 
-        let text = log.joined(
-            separator: "\n"
-        )
+            guard
+                let bridgeViewController =
+                    self.window?.rootViewController
+                        as? CAPBridgeViewController,
+                let bridge = bridgeViewController.bridge
+            else {
+                if attempt < 12 {
+                    self.registerIdolDaysWidgetBridge(
+                        attempt: attempt + 1
+                    )
+                } else {
+                    print(
+                        "❌ IdolDaysWidgetBridge: Capacitor bridge not found"
+                    )
+                }
+                return
+            }
 
-        let fileURL =
-            containerURL.appendingPathComponent(
-                "widget-diagnostics.txt"
-            )
-
-        do {
-            try text.write(
-                to: fileURL,
-                atomically: true,
-                encoding: .utf8
+            bridge.registerPluginInstance(
+                IdolDaysWidgetBridgePlugin()
             )
 
             print(
-                "✅ widget-diagnostics.txt written:",
-                fileURL.path
-            )
-
-        } catch {
-            print(
-                "❌ diagnostics write failed:",
-                error.localizedDescription
+                "✅ IdolDaysWidgetBridge native plugin registered"
             )
         }
-    }
-
-    private func printLog(
-        _ log: [String]
-    ) {
-
-        print("")
-        print("==============================")
-        print("IDOLDAYS WIDGET BRIDGE")
-        print("==============================")
-
-        for line in log {
-            print(line)
-        }
-
-        print("==============================")
-        print("")
     }
 
     func applicationWillResignActive(

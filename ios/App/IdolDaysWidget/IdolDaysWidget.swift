@@ -2,6 +2,13 @@ import WidgetKit
 import SwiftUI
 import UIKit
 
+
+private extension String {
+    var trimmed: String {
+        trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+}
+
 struct IdolDaysEntry: TimelineEntry {
     let date: Date
     let idolName: String
@@ -10,6 +17,15 @@ struct IdolDaysEntry: TimelineEntry {
     let eventDate: String
     let location: String
     let quote: String
+    let moodEmoji: String
+    let moodLabel: String
+    let decorationEmoji: String
+    let decorationLabel: String
+    let enabledContents: [String]
+
+    func enabled(_ type: String) -> Bool {
+        enabledContents.contains(type)
+    }
 }
 
 struct WidgetSnapshot: Codable {
@@ -20,6 +36,13 @@ struct WidgetSnapshot: Codable {
     let eventDate: String
     let location: String
     let quote: String
+
+    let moodEmoji: String?
+    let moodLabel: String?
+    let decorationEmoji: String?
+    let decorationLabel: String?
+    let enabledContents: [String]?
+
     let updatedAt: String
 }
 
@@ -56,12 +79,12 @@ struct IdolDaysProvider: TimelineProvider {
             )
             ?? Date().addingTimeInterval(86400)
 
-        let timeline = Timeline(
-            entries: [entry],
-            policy: .after(nextUpdate)
+        completion(
+            Timeline(
+                entries: [entry],
+                policy: .after(nextUpdate)
+            )
         )
-
-        completion(timeline)
     }
 
     private func loadSharedEntry() -> IdolDaysEntry? {
@@ -91,6 +114,18 @@ struct IdolDaysProvider: TimelineProvider {
             return nil
         }
 
+        // 舊 snapshot 沒有 enabledContents 時，
+        // 暫時視為全部顯示，確保向下相容。
+        let enabled =
+            snapshot.enabledContents
+            ?? [
+                "IDOL",
+                "MESSAGE",
+                "DECORATION",
+                "MOOD",
+                "COUNTDOWN"
+            ]
+
         return IdolDaysEntry(
             date: Date(),
             idolName: snapshot.idolName,
@@ -98,7 +133,12 @@ struct IdolDaysProvider: TimelineProvider {
             dDay: snapshot.dDay,
             eventDate: snapshot.eventDate,
             location: snapshot.location,
-            quote: snapshot.quote
+            quote: snapshot.quote,
+            moodEmoji: snapshot.moodEmoji ?? "",
+            moodLabel: snapshot.moodLabel ?? "",
+            decorationEmoji: snapshot.decorationEmoji ?? "",
+            decorationLabel: snapshot.decorationLabel ?? "",
+            enabledContents: enabled
         )
     }
 
@@ -110,16 +150,38 @@ struct IdolDaysProvider: TimelineProvider {
             dDay: "D-12",
             eventDate: "SEP 21 · 19:30",
             location: "Taipei Arena",
-            quote: "今天也離見面的那一天更近了一點 ♡"
+            quote: "今天也離見面的那一天更近了一點 ♡",
+            moodEmoji: "♡",
+            moodLabel: "今天值得開心",
+            decorationEmoji: "✦",
+            decorationLabel: "平常的一天，也很好",
+            enabledContents: [
+                "IDOL",
+                "MESSAGE",
+                "DECORATION",
+                "MOOD",
+                "COUNTDOWN"
+            ]
         )
     }
 }
 
 struct IdolDaysWidgetEntryView: View {
-
     @Environment(\.widgetFamily) private var family
 
     let entry: IdolDaysEntry
+
+    private let blush = Color(
+        red: 0.98,
+        green: 0.87,
+        blue: 0.89
+    )
+
+    private let ink = Color(
+        red: 0.10,
+        green: 0.12,
+        blue: 0.22
+    )
 
     var body: some View {
         Group {
@@ -138,288 +200,625 @@ struct IdolDaysWidgetEntryView: View {
             }
         }
         .containerBackground(for: .widget) {
-            LinearGradient(
-                colors: [
-                    Color(red: 1.00, green: 0.92, blue: 0.95),
-                    Color(red: 0.96, green: 0.90, blue: 1.00)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            Color.clear
         }
     }
 
+    // MARK: - Small
+    //
+    // 設計稿：
+    // 偶像照片滿版
+    // 名字 / 活動 / D-Day 在右下
+    //
+
     private var smallWidget: some View {
-        ZStack(alignment: .topTrailing) {
+        ZStack {
+            if entry.enabled("IDOL") {
+                fullBleedPhoto(
+                    alignment: .top
+                )
+            } else {
+                blush
+            }
 
-            decorativeStars
+            LinearGradient(
+                colors: [
+                    .clear,
+                    .clear,
+                    Color.black.opacity(0.08),
+                    Color.black.opacity(0.72)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
 
-            VStack(alignment: .leading, spacing: 7) {
+            VStack {
+                if entry.enabled("DECORATION") {
+                    HStack {
+                        Spacer()
 
-                HStack(spacing: 8) {
-
-                    idolAvatar(size: 42)
-
-                    VStack(alignment: .leading, spacing: 1) {
-
-                        Text(entry.idolName)
-                            .font(
-                                .system(
-                                    size: 14,
-                                    weight: .bold,
-                                    design: .rounded
-                                )
-                            )
-                            .lineLimit(1)
-
-                        Text("MY IDOL")
-                            .font(.system(size: 8, weight: .semibold))
-                            .foregroundStyle(.secondary)
-                            .tracking(1)
+                        Text(
+                            entry.decorationEmoji.trimmed.isEmpty
+                                ? "♡"
+                                : entry.decorationEmoji
+                        )
+                        .font(.system(size: 22))
+                        .foregroundStyle(.white)
+                        .shadow(
+                            color: .black.opacity(0.25),
+                            radius: 3
+                        )
                     }
                 }
 
-                Spacer(minLength: 2)
+                Spacer()
 
-                Text(entry.eventTitle)
-                    .font(
-                        .system(
-                            size: 11,
-                            weight: .semibold,
-                            design: .rounded
-                        )
-                    )
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
+                HStack(
+                    alignment: .bottom,
+                    spacing: 5
+                ) {
+                    Spacer(minLength: 0)
 
-                Text(entry.dDay)
-                    .font(
-                        .system(
-                            size: 34,
-                            weight: .black,
-                            design: .rounded
-                        )
-                    )
-                    .minimumScaleFactor(0.7)
-                    .lineLimit(1)
+                    VStack(
+                        alignment: .trailing,
+                        spacing: 1
+                    ) {
+                        if entry.enabled("IDOL"),
+                           !entry.idolName.trimmed.isEmpty {
+                            Text(entry.idolName.uppercased())
+                                .font(
+                                    .system(
+                                        size: 19,
+                                        weight: .bold,
+                                        design: .rounded
+                                    )
+                                )
+                                .foregroundStyle(.white)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.6)
+                        }
 
-                Text(entry.eventDate)
-                    .font(
-                        .system(
-                            size: 9,
-                            weight: .medium,
-                            design: .rounded
-                        )
-                    )
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
+                        if entry.enabled("COUNTDOWN"),
+                           !entry.eventTitle.trimmed.isEmpty {
+                            Text(entry.eventTitle.uppercased())
+                                .font(
+                                    .system(
+                                        size: 10,
+                                        weight: .semibold,
+                                        design: .rounded
+                                    )
+                                )
+                                .foregroundStyle(
+                                    .white.opacity(0.92)
+                                )
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.6)
+                        }
+
+                        if entry.enabled("COUNTDOWN"),
+                           !entry.dDay.trimmed.isEmpty {
+                            Text(entry.dDay)
+                                .font(
+                                    .system(
+                                        size: 26,
+                                        weight: .bold,
+                                        design: .rounded
+                                    )
+                                )
+                                .foregroundStyle(
+                                    Color(
+                                        red: 1.0,
+                                        green: 0.68,
+                                        blue: 0.77
+                                    )
+                                )
+                                .lineLimit(1)
+                        }
+                    }
+                }
             }
-            .frame(
-                maxWidth: .infinity,
-                maxHeight: .infinity,
-                alignment: .leading
-            )
+            .padding(12)
         }
+        .clipped()
     }
+
+    // MARK: - Medium
+    //
+    // 設計稿：
+    // 左約 52% 是偶像照片
+    // 右邊粉色資訊區
+    //
 
     private var mediumWidget: some View {
-        HStack(spacing: 14) {
-
-            VStack(spacing: 6) {
-
-                idolAvatar(size: 92)
-
-                Text(entry.idolName)
-                    .font(
-                        .system(
-                            size: 15,
-                            weight: .bold,
-                            design: .rounded
+        GeometryReader { geo in
+            HStack(spacing: 0) {
+                ZStack {
+                    if entry.enabled("IDOL") {
+                        photo(
+                            width: geo.size.width * 0.52,
+                            height: geo.size.height,
+                            alignment: .top
                         )
-                    )
-                    .lineLimit(1)
-            }
-            .frame(width: 100)
-
-            VStack(alignment: .leading, spacing: 6) {
-
-                Text("NEXT MOMENT")
-                    .font(.system(size: 9, weight: .bold))
-                    .foregroundStyle(.secondary)
-                    .tracking(1.3)
-
-                Text(entry.eventTitle)
-                    .font(
-                        .system(
-                            size: 15,
-                            weight: .bold,
-                            design: .rounded
-                        )
-                    )
-                    .lineLimit(2)
-
-                Text(entry.dDay)
-                    .font(
-                        .system(
-                            size: 36,
-                            weight: .black,
-                            design: .rounded
-                        )
-                    )
-                    .lineLimit(1)
-
-                Spacer(minLength: 0)
-
-                Label(
-                    entry.eventDate,
-                    systemImage: "calendar"
+                    } else {
+                        blush.opacity(0.55)
+                    }
+                }
+                .frame(
+                    width: geo.size.width * 0.52,
+                    height: geo.size.height
                 )
-                .font(.system(size: 10, weight: .medium))
+                .clipped()
 
-                Label(
-                    entry.location,
-                    systemImage: "mappin.and.ellipse"
+                ZStack {
+                    LinearGradient(
+                        colors: [
+                            Color(
+                                red: 1.00,
+                                green: 0.91,
+                                blue: 0.91
+                            ),
+                            Color(
+                                red: 0.98,
+                                green: 0.79,
+                                blue: 0.84
+                            )
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+
+                    VStack(
+                        alignment: .leading,
+                        spacing: 5
+                    ) {
+                        Spacer(minLength: 0)
+
+                        if entry.enabled("IDOL"),
+                           !entry.idolName.trimmed.isEmpty {
+                            Text(entry.idolName.uppercased())
+                                .font(
+                                    .system(
+                                        size: 19,
+                                        weight: .bold,
+                                        design: .rounded
+                                    )
+                                )
+                                .foregroundStyle(ink)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.6)
+                        }
+
+                        if entry.enabled("COUNTDOWN"),
+                           !entry.eventTitle.trimmed.isEmpty {
+                            Text(entry.eventTitle.uppercased())
+                                .font(
+                                    .system(
+                                        size: 12,
+                                        weight: .medium,
+                                        design: .rounded
+                                    )
+                                )
+                                .foregroundStyle(ink)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.6)
+                        }
+
+                        if entry.enabled("COUNTDOWN"),
+                           !entry.dDay.trimmed.isEmpty {
+                            Text(entry.dDay)
+                                .font(
+                                    .system(
+                                        size: 32,
+                                        weight: .bold,
+                                        design: .rounded
+                                    )
+                                )
+                                .foregroundStyle(
+                                    Color(
+                                        red: 0.72,
+                                        green: 0.36,
+                                        blue: 0.46
+                                    )
+                                )
+                                .lineLimit(1)
+                        }
+
+                        Spacer(minLength: 2)
+
+                        if entry.enabled("COUNTDOWN"),
+                           !entry.eventDate.trimmed.isEmpty {
+                            HStack(spacing: 5) {
+                                Text("🗓️")
+                                    .font(.system(size: 14))
+                                Text(entry.eventDate)
+                            }
+                            .font(
+                                .system(
+                                    size: 10,
+                                    weight: .medium
+                                )
+                            )
+                            .foregroundStyle(ink)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.6)
+                        }
+
+                        if entry.enabled("COUNTDOWN"),
+                           !entry.location.trimmed.isEmpty {
+                            HStack(spacing: 5) {
+                                Text("📍")
+                                    .font(.system(size: 14))
+                                Text(entry.location)
+                            }
+                            .font(
+                                .system(
+                                    size: 10,
+                                    weight: .medium
+                                )
+                            )
+                            .foregroundStyle(ink)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.6)
+                        }
+
+                        if entry.enabled("DECORATION"),
+                           (
+                               !entry.decorationEmoji.trimmed.isEmpty
+                               || !entry.decorationLabel.trimmed.isEmpty
+                           ) {
+                            HStack(spacing: 3) {
+                                Text(entry.decorationEmoji)
+
+                                Text(entry.decorationLabel)
+                                    .lineLimit(1)
+                            }
+                            .font(
+                                .system(
+                                    size: 9,
+                                    weight: .medium,
+                                    design: .rounded
+                                )
+                            )
+                            .foregroundStyle(
+                                Color(
+                                    red: 0.76,
+                                    green: 0.42,
+                                    blue: 0.54
+                                )
+                            )
+                        }
+
+                        Spacer(minLength: 0)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .frame(
+                        maxWidth: .infinity,
+                        maxHeight: .infinity,
+                        alignment: .leading
+                    )
+                }
+                .frame(
+                    width: geo.size.width * 0.48,
+                    height: geo.size.height
                 )
-                .font(.system(size: 10, weight: .medium))
-                .lineLimit(1)
             }
-
-            Spacer(minLength: 0)
         }
+        .clipped()
     }
 
+    // MARK: - Large
+    //
+    // 設計稿：
+    // 100% 大照片
+    // 人物為主
+    // 左下名字 / 活動
+    // 右下 D-Day
+    // 最底日期地點 + 每日一句
+    //
+
     private var largeWidget: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        ZStack {
+            if entry.enabled("IDOL") {
+                fullBleedPhoto(
+                    alignment: .top
+                )
+            } else {
+                blush
+            }
 
-            HStack(alignment: .top) {
+            LinearGradient(
+                colors: [
+                    .clear,
+                    .clear,
+                    Color.black.opacity(0.10),
+                    Color.black.opacity(0.70)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
 
-                idolAvatar(size: 108)
+            VStack(spacing: 0) {
+                if entry.enabled("DECORATION"),
+                   (
+                       !entry.decorationEmoji.trimmed.isEmpty
+                       || !entry.decorationLabel.trimmed.isEmpty
+                   ) {
+                    HStack(spacing: 8) {
+                        if !entry.decorationEmoji.trimmed.isEmpty {
+                            Text(prettyDecorationEmoji)
+                                .font(.system(size: 30))
+                                .shadow(
+                                    color: Color.pink.opacity(0.35),
+                                    radius: 5,
+                                    x: 0,
+                                    y: 2
+                                )
+                        }
+
+                        if !entry.decorationLabel.trimmed.isEmpty {
+                            Text(entry.decorationLabel)
+                                .font(
+                                    .system(
+                                        size: 14,
+                                        weight: .semibold,
+                                        design: .rounded
+                                    )
+                                )
+                                .foregroundStyle(.white)
+                                .shadow(
+                                    color: .black.opacity(0.28),
+                                    radius: 3,
+                                    x: 0,
+                                    y: 1
+                                )
+                                .lineLimit(1)
+                        }
+
+                        Spacer()
+                    }
+                    .padding(.top, 17)
+                    .padding(.horizontal, 18)
+                }
 
                 Spacer()
 
-                VStack(alignment: .trailing, spacing: 2) {
+                VStack(
+                    alignment: .leading,
+                    spacing: 8
+                ) {
+                    HStack(
+                        alignment: .bottom
+                    ) {
+                        VStack(
+                            alignment: .leading,
+                            spacing: 2
+                        ) {
+                            if entry.enabled("IDOL"),
+                               !entry.idolName.trimmed.isEmpty {
+                                Text(entry.idolName.uppercased())
+                                    .font(
+                                        .system(
+                                            size: 28,
+                                            weight: .bold,
+                                            design: .rounded
+                                        )
+                                    )
+                                    .foregroundStyle(.white)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.65)
+                            }
 
-                    Text(entry.dDay)
+                            if entry.enabled("COUNTDOWN"),
+                               !entry.eventTitle.trimmed.isEmpty {
+                                Text(entry.eventTitle.uppercased())
+                                    .font(
+                                        .system(
+                                            size: 15,
+                                            weight: .medium,
+                                            design: .rounded
+                                        )
+                                    )
+                                    .foregroundStyle(
+                                        .white.opacity(0.94)
+                                    )
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.65)
+                            }
+                        }
+
+                        Spacer()
+
+                        if entry.enabled("COUNTDOWN"),
+                           !entry.dDay.trimmed.isEmpty {
+                            Text(entry.dDay)
+                                .font(
+                                    .system(
+                                        size: 46,
+                                        weight: .bold,
+                                        design: .rounded
+                                    )
+                                )
+                                .foregroundStyle(.white)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.65)
+                        }
+                    }
+
+                    if entry.enabled("COUNTDOWN"),
+                       (
+                           !entry.eventDate.trimmed.isEmpty
+                           || !entry.location.trimmed.isEmpty
+                       ) {
+                        HStack(spacing: 12) {
+                            if !entry.eventDate.trimmed.isEmpty {
+                                Label(
+                                    entry.eventDate,
+                                    systemImage: "calendar"
+                                )
+                            }
+
+                            if !entry.location.trimmed.isEmpty {
+                                Label(
+                                    entry.location,
+                                    systemImage: "mappin"
+                                )
+                            }
+                        }
                         .font(
                             .system(
-                                size: 42,
-                                weight: .black,
+                                size: 12,
+                                weight: .medium
+                            )
+                        )
+                        .foregroundStyle(
+                            .white.opacity(0.92)
+                        )
+                        .lineLimit(1)
+                    }
+
+                    if entry.enabled("MOOD"),
+                       (
+                           !entry.moodEmoji.trimmed.isEmpty
+                           || !entry.moodLabel.trimmed.isEmpty
+                       ) {
+                        HStack(spacing: 4) {
+                            Text(entry.moodEmoji)
+                            Text(entry.moodLabel)
+                        }
+                        .font(
+                            .system(
+                                size: 12,
+                                weight: .medium,
                                 design: .rounded
                             )
                         )
+                        .foregroundStyle(
+                            .white.opacity(0.90)
+                        )
+                    }
 
-                    Text("UNTIL WE MEET")
-                        .font(.system(size: 8, weight: .bold))
-                        .foregroundStyle(.secondary)
-                        .tracking(1.2)
+                    if entry.enabled("MESSAGE"),
+                       !entry.quote.trimmed.isEmpty {
+                        HStack(spacing: 7) {
+                            Text("💌")
+                                .font(.system(size: 17))
+
+                            Text("「\(entry.quote)」")
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.68)
+                        }
+                            .font(
+                                .system(
+                                    size: 13,
+                                    weight: .medium,
+                                    design: .rounded
+                                )
+                            )
+                            .foregroundStyle(.white)
+                            .frame(
+                                maxWidth: .infinity,
+                                alignment: .leading
+                            )
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 7)
+                            .background(
+                                .ultraThinMaterial.opacity(0.78)
+                            )
+                            .clipShape(
+                                RoundedRectangle(
+                                    cornerRadius: 13,
+                                    style: .continuous
+                                )
+                            )
+                    }
                 }
+                .padding(.horizontal, 18)
+                .padding(.bottom, 14)
             }
+        }
+        .clipped()
+    }
 
-            VStack(alignment: .leading, spacing: 3) {
+    // MARK: - Pretty Decoration
 
-                Text(entry.idolName)
-                    .font(
-                        .system(
-                            size: 23,
-                            weight: .black,
-                            design: .rounded
-                        )
-                    )
+    private var prettyDecorationEmoji: String {
+        let label = entry.decorationLabel.lowercased()
+        let emoji = entry.decorationEmoji
 
-                Text(entry.eventTitle)
-                    .font(
-                        .system(
-                            size: 16,
-                            weight: .bold,
-                            design: .rounded
-                        )
-                    )
-                    .lineLimit(2)
-            }
+        if label.contains("生日") {
+            return "🎂"
+        }
 
-            HStack(spacing: 16) {
+        if label.contains("見面")
+            || label.contains("concert")
+            || label.contains("演唱會") {
+            return "🎫"
+        }
 
-                Label(
-                    entry.eventDate,
-                    systemImage: "calendar"
-                )
+        if label.contains("回歸")
+            || label.contains("舞台") {
+            return "✨"
+        }
 
-                Label(
-                    entry.location,
-                    systemImage: "mappin.and.ellipse"
-                )
-            }
-            .font(.system(size: 11, weight: .medium))
-            .foregroundStyle(.secondary)
+        if label.contains("紀念") {
+            return "💝"
+        }
 
-            Spacer()
+        if emoji == "✦"
+            || emoji == "★"
+            || emoji == "☆" {
+            return "✨"
+        }
 
-            HStack(alignment: .top, spacing: 8) {
+        return emoji.isEmpty ? "💗" : emoji
+    }
 
-                Image(systemName: "quote.opening")
-                    .font(.system(size: 12, weight: .bold))
-                    .foregroundStyle(.pink)
+    // MARK: - Shared Photo
 
-                Text(entry.quote)
-                    .font(
-                        .system(
-                            size: 13,
-                            weight: .semibold,
-                            design: .rounded
-                        )
-                    )
-                    .lineLimit(3)
-            }
-            .padding(12)
-            .background(
-                Color.white.opacity(0.45),
-                in: RoundedRectangle(cornerRadius: 16)
+    @ViewBuilder
+    private func fullBleedPhoto(
+        alignment: Alignment
+    ) -> some View {
+        GeometryReader { geo in
+            photo(
+                width: geo.size.width,
+                height: geo.size.height,
+                alignment: alignment
             )
         }
     }
 
     @ViewBuilder
-    private func idolAvatar(size: CGFloat) -> some View {
-
+    private func photo(
+        width: CGFloat,
+        height: CGFloat,
+        alignment: Alignment
+    ) -> some View {
         if let image = loadSharedIdolImage() {
-
             Image(uiImage: image)
                 .resizable()
                 .scaledToFill()
                 .frame(
-                    width: size,
-                    height: size
+                    width: width,
+                    height: height,
+                    alignment: alignment
                 )
                 .clipped()
-                .clipShape(
-                    RoundedRectangle(
-                        cornerRadius: size * 0.28
-                    )
-                )
-                .overlay(
-                    RoundedRectangle(
-                        cornerRadius: size * 0.28
-                    )
-                    .stroke(
-                        Color.white.opacity(0.65),
-                        lineWidth: 1.5
-                    )
-                )
-                .shadow(
-                    color: Color.black.opacity(0.08),
-                    radius: 5,
-                    x: 0,
-                    y: 3
-                )
-
         } else {
-
             ZStack {
-
                 LinearGradient(
                     colors: [
-                        Color.pink.opacity(0.75),
-                        Color.purple.opacity(0.65)
+                        Color(
+                            red: 0.98,
+                            green: 0.82,
+                            blue: 0.87
+                        ),
+                        Color(
+                            red: 0.90,
+                            green: 0.79,
+                            blue: 0.95
+                        )
                     ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
@@ -428,21 +827,16 @@ struct IdolDaysWidgetEntryView: View {
                 Image(systemName: "person.fill")
                     .font(
                         .system(
-                            size: size * 0.46,
-                            weight: .medium
+                            size: min(width, height) * 0.38
                         )
                     )
-                    .foregroundStyle(.white.opacity(0.92))
-                    .offset(y: size * 0.07)
+                    .foregroundStyle(
+                        .white.opacity(0.75)
+                    )
             }
             .frame(
-                width: size,
-                height: size
-            )
-            .clipShape(
-                RoundedRectangle(
-                    cornerRadius: size * 0.28
-                )
+                width: width,
+                height: height
             )
         }
     }
@@ -450,32 +844,30 @@ struct IdolDaysWidgetEntryView: View {
     private func loadSharedIdolImage() -> UIImage? {
         let appGroupID = "group.com.idoldays.app"
 
-        guard let containerURL = FileManager.default.containerURL(
-            forSecurityApplicationGroupIdentifier: appGroupID
-        ) else {
+        guard let containerURL =
+                FileManager.default.containerURL(
+                    forSecurityApplicationGroupIdentifier:
+                        appGroupID
+                )
+        else {
             return nil
         }
 
         let imageURL =
-            containerURL.appendingPathComponent("idol-photo.jpg")
+            containerURL.appendingPathComponent(
+                "idol-photo.jpg"
+            )
 
         guard
-            let data = try? Data(contentsOf: imageURL),
+            let data = try? Data(
+                contentsOf: imageURL
+            ),
             let image = UIImage(data: data)
         else {
             return nil
         }
 
         return image
-    }
-
-    private var decorativeStars: some View {
-        HStack(spacing: 5) {
-            Image(systemName: "sparkle")
-            Image(systemName: "heart.fill")
-        }
-        .font(.system(size: 8))
-        .foregroundStyle(.pink.opacity(0.65))
     }
 }
 
@@ -484,64 +876,62 @@ struct IdolDaysWidget: Widget {
     let kind: String = "IdolDaysWidget"
 
     var body: some WidgetConfiguration {
-
         StaticConfiguration(
             kind: kind,
             provider: IdolDaysProvider()
         ) { entry in
-
             IdolDaysWidgetEntryView(
                 entry: entry
             )
         }
         .configurationDisplayName("IdolDays")
-        .description("把與偶像見面的倒數日放在你的主畫面。")
+        .description(
+            "把喜歡的偶像與重要日子放在你的主畫面。"
+        )
         .supportedFamilies([
             .systemSmall,
             .systemMedium,
             .systemLarge
         ])
+        .contentMarginsDisabled()
     }
 }
 
 #Preview("Small", as: .systemSmall) {
     IdolDaysWidget()
 } timeline: {
-    IdolDaysEntry(
-        date: .now,
-        idolName: "JENNIE",
-        eventTitle: "DEADLINE WORLD TOUR",
-        dDay: "D-12",
-        eventDate: "SEP 21 · 19:30",
-        location: "Taipei Arena",
-        quote: "今天也離見面的那一天更近了一點 ♡"
-    )
+    previewEntry
 }
 
 #Preview("Medium", as: .systemMedium) {
     IdolDaysWidget()
 } timeline: {
-    IdolDaysEntry(
-        date: .now,
-        idolName: "JENNIE",
-        eventTitle: "DEADLINE WORLD TOUR",
-        dDay: "D-12",
-        eventDate: "SEP 21 · 19:30",
-        location: "Taipei Arena",
-        quote: "今天也離見面的那一天更近了一點 ♡"
-    )
+    previewEntry
 }
 
 #Preview("Large", as: .systemLarge) {
     IdolDaysWidget()
 } timeline: {
-    IdolDaysEntry(
-        date: .now,
-        idolName: "JENNIE",
-        eventTitle: "DEADLINE WORLD TOUR",
-        dDay: "D-12",
-        eventDate: "SEP 21 · 19:30",
-        location: "Taipei Arena",
-        quote: "今天也離見面的那一天更近了一點 ♡"
-    )
+    previewEntry
 }
+
+private let previewEntry = IdolDaysEntry(
+    date: .now,
+    idolName: "JENNIE",
+    eventTitle: "DEADLINE WORLD TOUR",
+    dDay: "D-12",
+    eventDate: "SEP 21 · 19:30",
+    location: "Taipei Arena",
+    quote: "今天也離見面的那一天更近了一點 ♡",
+    moodEmoji: "♡",
+    moodLabel: "今天值得開心",
+    decorationEmoji: "✦",
+    decorationLabel: "平常的一天，也很好",
+    enabledContents: [
+        "IDOL",
+        "MESSAGE",
+        "DECORATION",
+        "MOOD",
+        "COUNTDOWN"
+    ]
+)

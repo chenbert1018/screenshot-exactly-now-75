@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { UserRound, Settings, Bell, Palette, Sparkles, ChevronRight, Cloud } from "lucide-react";
+import { UserRound, Settings, Bell, Palette, Sparkles, ChevronRight, Cloud, PanelsTopLeft } from "lucide-react";
 import {
   GeneralSettingsSheet,
   NotificationSettingsSheet,
@@ -147,6 +147,15 @@ function ProfilePage() {
               <ChevronRight className="size-4 text-muted-foreground" strokeWidth={1.6} />
             </button>
           ))}
+
+          <Link
+            to="/widget"
+            className="flex w-full items-center gap-3 px-5 py-4 text-left transition-colors active:bg-surface/70"
+          >
+            <PanelsTopLeft className="size-[18px] text-muted-foreground" strokeWidth={1.6} />
+            <span className="flex-1 text-sm">桌面陪伴</span>
+            <ChevronRight className="size-4 text-muted-foreground" strokeWidth={1.6} />
+          </Link>
         </SoftCard>
       </Section>
 

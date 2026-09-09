@@ -31,6 +31,11 @@ public class IdolDaysWidgetBridgePlugin: CAPPlugin, CAPBridgedPlugin {
         let eventDate = call.getString("eventDate") ?? ""
         let location = call.getString("location") ?? ""
         let quote = call.getString("quote") ?? ""
+        let moodEmoji = call.getString("moodEmoji") ?? ""
+        let moodLabel = call.getString("moodLabel") ?? ""
+        let decorationEmoji = call.getString("decorationEmoji") ?? ""
+        let decorationLabel = call.getString("decorationLabel") ?? ""
+        let enabledContents = call.getArray("enabledContents", String.self) ?? []
 
         guard !idolName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             call.reject("idolName is required")
@@ -45,6 +50,11 @@ public class IdolDaysWidgetBridgePlugin: CAPPlugin, CAPBridgedPlugin {
             "eventDate": eventDate,
             "location": location,
             "quote": quote,
+            "moodEmoji": moodEmoji,
+            "moodLabel": moodLabel,
+            "decorationEmoji": decorationEmoji,
+            "decorationLabel": decorationLabel,
+            "enabledContents": enabledContents,
             "updatedAt": ISO8601DateFormatter().string(from: Date())
         ]
 
