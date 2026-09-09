@@ -14,7 +14,7 @@ import type { CapacitorConfig } from "@capacitor/cli";
  */
 const APP_URL =
   process.env["CAPACITOR_SERVER_URL"] ??
-  "https://project--341000bb-c956-4427-b4cd-b832d297664e.lovable.app";
+  "https://chenbert1018-screenshot-exactly-now-75.idoldays.workers.dev";
 
 const config: CapacitorConfig = {
   appId: "com.idoldays.app",

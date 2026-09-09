@@ -1,49 +1,238 @@
 import UIKit
 import Capacitor
+import WidgetKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+
+        runWidgetBridgeDiagnostics()
+
         return true
     }
 
-    func applicationWillResignActive(_ application: UIApplication) {
-        // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-        // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
+    private func runWidgetBridgeDiagnostics() {
+        let appGroupID = "group.com.idoldays.app"
+
+        var log: [String] = []
+
+        log.append("WIDGET_BRIDGE_START")
+        log.append("DATE=\(Date())")
+
+        guard let containerURL = FileManager.default.containerURL(
+            forSecurityApplicationGroupIdentifier: appGroupID
+        ) else {
+            log.append("APP_GROUP_FOUND=NO")
+            log.append("RESULT=FAILED_APP_GROUP")
+            printLog(log)
+            return
+        }
+
+        log.append("APP_GROUP_FOUND=YES")
+        log.append("APP_GROUP_PATH=\(containerURL.path)")
+
+        guard let image = UIImage(named: "WidgetTestPhoto") else {
+            log.append("PHOTO_FOUND=NO")
+            log.append("RESULT=FAILED_PHOTO_NOT_FOUND")
+
+            writeLog(
+                log,
+                to: containerURL
+            )
+
+            printLog(log)
+            return
+        }
+
+        log.append("PHOTO_FOUND=YES")
+        log.append(
+            "PHOTO_SIZE=\(Int(image.size.width))x\(Int(image.size.height))"
+        )
+
+        guard let imageData = image.jpegData(
+            compressionQuality: 0.9
+        ) else {
+            log.append("JPEG_CREATED=NO")
+            log.append("RESULT=FAILED_JPEG")
+
+            writeLog(
+                log,
+                to: containerURL
+            )
+
+            printLog(log)
+            return
+        }
+
+        log.append("JPEG_CREATED=YES")
+        log.append("PHOTO_BYTES=\(imageData.count)")
+
+        let imageURL =
+            containerURL.appendingPathComponent("idol-photo.jpg")
+
+        do {
+            try imageData.write(
+                to: imageURL,
+                options: .atomic
+            )
+
+            log.append("PHOTO_WRITTEN=YES")
+            log.append("PHOTO_PATH=\(imageURL.path)")
+
+        } catch {
+            log.append("PHOTO_WRITTEN=NO")
+            log.append(
+                "PHOTO_WRITE_ERROR=\(error.localizedDescription)"
+            )
+            log.append("RESULT=FAILED_WRITE")
+
+            writeLog(
+                log,
+                to: containerURL
+            )
+
+            printLog(log)
+            return
+        }
+
+        if FileManager.default.fileExists(
+            atPath: imageURL.path
+        ) {
+            log.append("PHOTO_FILE_EXISTS=YES")
+        } else {
+            log.append("PHOTO_FILE_EXISTS=NO")
+        }
+
+        if
+            let savedData = try? Data(contentsOf: imageURL),
+            UIImage(data: savedData) != nil
+        {
+            log.append("PHOTO_CAN_READ_BACK=YES")
+        } else {
+            log.append("PHOTO_CAN_READ_BACK=NO")
+        }
+
+        log.append("RESULT=SUCCESS")
+
+        writeLog(
+            log,
+            to: containerURL
+        )
+
+        printLog(log)
+
+        WidgetCenter.shared.reloadTimelines(
+            ofKind: "IdolDaysWidget"
+        )
+
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
-    func applicationDidEnterBackground(_ application: UIApplication) {
-        // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-        // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    private func writeLog(
+        _ log: [String],
+        to containerURL: URL
+    ) {
+
+        let text = log.joined(
+            separator: "\n"
+        )
+
+        let fileURL =
+            containerURL.appendingPathComponent(
+                "widget-diagnostics.txt"
+            )
+
+        do {
+            try text.write(
+                to: fileURL,
+                atomically: true,
+                encoding: .utf8
+            )
+
+            print(
+                "✅ widget-diagnostics.txt written:",
+                fileURL.path
+            )
+
+        } catch {
+            print(
+                "❌ diagnostics write failed:",
+                error.localizedDescription
+            )
+        }
     }
 
-    func applicationWillEnterForeground(_ application: UIApplication) {
-        // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+    private func printLog(
+        _ log: [String]
+    ) {
+
+        print("")
+        print("==============================")
+        print("IDOLDAYS WIDGET BRIDGE")
+        print("==============================")
+
+        for line in log {
+            print(line)
+        }
+
+        print("==============================")
+        print("")
     }
 
-    func applicationDidBecomeActive(_ application: UIApplication) {
-        // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    func applicationWillResignActive(
+        _ application: UIApplication
+    ) {
     }
 
-    func applicationWillTerminate(_ application: UIApplication) {
-        // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    func applicationDidEnterBackground(
+        _ application: UIApplication
+    ) {
     }
 
-    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-        // Called when the app was launched with a url. Feel free to add additional processing here,
-        // but if you want the App API to support tracking app url opens, make sure to keep this call
-        return ApplicationDelegateProxy.shared.application(app, open: url, options: options)
+    func applicationWillEnterForeground(
+        _ application: UIApplication
+    ) {
     }
 
-    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-        // Called when the app was launched with an activity, including Universal Links.
-        // Feel free to add additional processing here, but if you want the App API to support
-        // tracking app url opens, make sure to keep this call
-        return ApplicationDelegateProxy.shared.application(application, continue: userActivity, restorationHandler: restorationHandler)
+    func applicationDidBecomeActive(
+        _ application: UIApplication
+    ) {
     }
 
+    func applicationWillTerminate(
+        _ application: UIApplication
+    ) {
+    }
+
+    func application(
+        _ app: UIApplication,
+        open url: URL,
+        options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+    ) -> Bool {
+
+        return ApplicationDelegateProxy.shared.application(
+            app,
+            open: url,
+            options: options
+        )
+    }
+
+    func application(
+        _ application: UIApplication,
+        continue userActivity: NSUserActivity,
+        restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
+    ) -> Bool {
+
+        return ApplicationDelegateProxy.shared.application(
+            application,
+            continue: userActivity,
+            restorationHandler: restorationHandler
+        )
+    }
 }
