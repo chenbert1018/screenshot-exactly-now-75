@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CalendarHeart, Plus } from "lucide-react";
 import { AppShell, EmptyState, PageHeader, SoftCard } from "@/components/AppShell";
@@ -87,6 +87,19 @@ function EventCard({
 function EventsPage() {
   const { idols, findIdol } = useIdolSource();
   const { events, ready, addEvent, updateEvent, removeEvent, error } = useEventSource();
+  const [pendingDebug, setPendingDebug] = useState<unknown[]>([]);
+
+  useEffect(() => {
+    if (!ready) return;
+
+    const timer = window.setTimeout(() => {
+      void debugPendingEventNotifications().then((notifications) => {
+        setPendingDebug(notifications);
+      });
+    }, 1000);
+
+    return () => window.clearTimeout(timer);
+  }, [ready, events]);
 
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<IdolEvent | null>(null);
@@ -163,6 +176,13 @@ function EventsPage() {
           目前連不上雲端資料，你的日子沒有遺失，請稍後再試。
         </p>
       ) : null}
+
+      <div className="mb-5 rounded-2xl border border-border/60 bg-surface/50 px-4 py-4">
+        <p className="text-sm font-medium">🔔 為你記住的日子 · {pendingDebug.length} 個提醒</p>
+        <pre className="mt-3 max-h-72 overflow-auto whitespace-pre-wrap break-all text-[11px] leading-relaxed text-muted-foreground">
+          {JSON.stringify(pendingDebug, null, 2)}
+        </pre>
+      </div>
 
       {!ready ? (
         <div className="h-40 rounded-2xl border border-border/60 bg-surface/40" aria-hidden />

@@ -1,3 +1,7 @@
+import {
+  cancelEventNotifications,
+} from "./event-notifications";
+
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "./auth";
 import { useEvents, type EventDraft, type IdolEvent } from "./events";
@@ -294,6 +298,8 @@ export function useEventSource(): EventSource {
 
   const removeEvent = useCallback(
     async (id: string) => {
+      await cancelEventNotifications(id);
+
       if (isCloud) {
         // 雲端會一併刪除該日子的里程碑（不影響偶像與帳號）
         await deleteCloudEvent(id);

@@ -21,6 +21,7 @@ export const DAYS_BEFORE_OPTIONS = [
   { value: 1, label: "1 天前" },
   { value: 3, label: "3 天前" },
   { value: 7, label: "7 天前" },
+  { value: 30, label: "30 天前" },
 ] as const;
 
 /** 新提醒的預設值 */
