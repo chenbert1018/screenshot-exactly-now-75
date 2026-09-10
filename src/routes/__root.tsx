@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { useEventSource } from "../lib/events.source";
 import { useFanWeatherLifecycle } from "../lib/fan-weather-lifecycle";
+import { useNotificationNavigation } from "../lib/notification-navigation";
 
 function NotFoundComponent() {
   return (
@@ -129,9 +130,11 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
   const { events, ready } = useEventSource();
 
   useFanWeatherLifecycle(events, ready);
+  useNotificationNavigation(router);
 
   return (
     <QueryClientProvider client={queryClient}>

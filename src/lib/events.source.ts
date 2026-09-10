@@ -331,6 +331,7 @@ export function useEventSource(): EventSource {
 
         void refreshFanWeatherNotification(
           updatedEvent,
+          { cancelStaleBeforeRefresh: true },
         );
 
         reload();
@@ -349,6 +350,7 @@ export function useEventSource(): EventSource {
 
         void refreshFanWeatherNotification(
           updatedEvent,
+          { cancelStaleBeforeRefresh: true },
         );
       }
     },

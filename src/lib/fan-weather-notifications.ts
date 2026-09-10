@@ -26,6 +26,9 @@ type WeatherApiResponse = {
  */
 export async function refreshFanWeatherNotification(
   event: IdolEvent,
+  options?: {
+    cancelStaleBeforeRefresh?: boolean;
+  },
 ): Promise<number> {
   if (
     !event.weatherEnabled ||
@@ -34,6 +37,10 @@ export async function refreshFanWeatherNotification(
   ) {
     await cancelFanWeatherNotification(event.id);
     return 0;
+  }
+
+  if (options?.cancelStaleBeforeRefresh) {
+    await cancelFanWeatherNotification(event.id);
   }
 
   try {
