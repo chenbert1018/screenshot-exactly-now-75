@@ -68,6 +68,7 @@ export async function refreshFanWeatherNotification(
       generateFanWeatherNotificationCopy(
         data.weather,
         event.title || "重要日子",
+        event.weatherTone ?? "SUNSHINE",
       );
 
     return await scheduleFanWeatherNotification(

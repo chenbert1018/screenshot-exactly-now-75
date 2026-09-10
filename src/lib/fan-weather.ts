@@ -136,8 +136,10 @@ export function generateFanWeatherReminder(
       ],
       checklist: [
         "確認主辦單位最新公告",
-        "確認交通狀況",
-        "準備雨具",
+        "確認交通與停駛資訊",
+        "雨衣／雨傘",
+        "小卡／票券防水收納",
+        "準備備用交通或行程方案",
         "避免危險的戶外久候",
       ],
     };
@@ -171,7 +173,7 @@ const REMINDER_CONTENT: Record<
         "外場如果要排很久，雨傘也帶著～",
         "人跟周邊都要平安到場 ♡",
       ],
-      checklist: ["防水袋", "雨傘／雨衣", "防水鞋", "行動電源防水"],
+      checklist: ["雨衣／雨傘", "小卡／手幅防水袋", "防水鞋／替換襪", "行動電源防水", "毛巾", "票券防水收納"],
     },
     CAT: {
       lines: [
@@ -182,7 +184,7 @@ const REMINDER_CONTENT: Record<
         "到時候濕掉真的不要哭ㅋㅋ",
         "你自己也顧一下",
       ],
-      checklist: ["防水袋", "雨具", "好走的鞋", "行動電源"],
+      checklist: ["雨衣／雨傘", "小卡／手幅防水袋", "防水鞋／替換襪", "行動電源防水", "毛巾", "票券防水收納"],
     },
     FOX: {
       lines: [
@@ -192,7 +194,7 @@ const REMINDER_CONTENT: Record<
         "東西別濕",
         "你也一樣",
       ],
-      checklist: ["防水袋", "雨具", "手燈防水", "行動電源"],
+      checklist: ["雨衣／雨傘", "小卡／手幅防水袋", "防水鞋／替換襪", "手燈防水", "行動電源防水", "票券防水收納"],
     },
   },
 
@@ -204,7 +206,7 @@ const REMINDER_CONTENT: Record<
         "暖暖包也塞幾個進包包～",
         "追星可以很熱血，但本人不要冷到發抖ㅋㅋ",
       ],
-      checklist: ["保暖外套", "暖暖包", "熱飲", "圍巾"],
+      checklist: ["保暖外套", "暖暖包", "圍巾／手套", "熱飲", "口罩", "行動電源"],
     },
     CAT: {
       lines: [
@@ -215,7 +217,7 @@ const REMINDER_CONTENT: Record<
         "冷到發抖我可不管你",
         "……還是穿暖一點",
       ],
-      checklist: ["外套", "暖暖包", "熱飲", "圍巾"],
+      checklist: ["保暖外套", "暖暖包", "圍巾／手套", "熱飲", "口罩", "行動電源"],
     },
     FOX: {
       lines: [
@@ -224,7 +226,7 @@ const REMINDER_CONTENT: Record<
         "外套跟暖暖包帶著",
         "別著涼",
       ],
-      checklist: ["保暖外套", "暖暖包", "熱飲"],
+      checklist: ["保暖外套", "暖暖包", "圍巾／手套", "熱飲", "口罩", "行動電源"],
     },
   },
 
@@ -236,7 +238,7 @@ const REMINDER_CONTENT: Record<
         "外場排隊記得找時間去陰涼的地方休息",
         "防曬也補一下～不要還沒見到人就先融化ㅋㅋ",
       ],
-      checklist: ["水", "防曬", "小風扇", "帽子"],
+      checklist: ["飲用水", "防曬", "小風扇", "帽子／遮陽用品", "毛巾", "行動電源"],
     },
     CAT: {
       lines: [
@@ -246,7 +248,7 @@ const REMINDER_CONTENT: Record<
         "不要硬站在太陽下面",
         "中暑真的一點都不好笑",
       ],
-      checklist: ["水", "防曬", "小風扇", "帽子"],
+      checklist: ["飲用水", "防曬", "小風扇", "帽子／遮陽用品", "毛巾", "行動電源"],
     },
     FOX: {
       lines: [
@@ -256,7 +258,7 @@ const REMINDER_CONTENT: Record<
         "排隊太久就找地方休息",
         "別逞強",
       ],
-      checklist: ["水", "防曬", "遮陽用品", "小風扇"],
+      checklist: ["飲用水", "防曬", "小風扇", "帽子／遮陽用品", "毛巾", "行動電源"],
     },
   },
 
@@ -268,7 +270,7 @@ const REMINDER_CONTENT: Record<
         "外場東西不要一放下就被吹走",
         "雨傘如果不好撐也別硬撐喔",
       ],
-      checklist: ["固定手幅", "收好帽子", "注意雨傘", "固定隨身物品"],
+      checklist: ["固定手幅", "收好帽子", "小卡安全收納", "固定隨身物品", "避免大型鬆散應援物", "注意雨傘"],
     },
     CAT: {
       lines: [
@@ -278,7 +280,7 @@ const REMINDER_CONTENT: Record<
         "東西不要亂放",
         "不然追的可能不是偶像 是你的東西",
       ],
-      checklist: ["固定手幅", "帽子", "隨身物品", "注意雨傘"],
+      checklist: ["固定手幅", "收好帽子", "小卡安全收納", "固定隨身物品", "避免大型鬆散應援物", "注意雨傘"],
     },
     FOX: {
       lines: [
@@ -287,7 +289,7 @@ const REMINDER_CONTENT: Record<
         "東西收好再走",
         "別讓它們先去追星",
       ],
-      checklist: ["固定手幅", "收好帽子", "固定隨身物品"],
+      checklist: ["固定手幅", "收好帽子", "小卡安全收納", "固定隨身物品", "避免大型鬆散應援物", "注意雨傘"],
     },
   },
 
@@ -299,7 +301,7 @@ const REMINDER_CONTENT: Record<
         "手燈、小卡、行動電源最後再確認一次",
         "然後就開開心心出發吧ㅠㅠ",
       ],
-      checklist: ["手燈", "小卡", "票券", "行動電源"],
+      checklist: ["票券／入場憑證", "證件", "手燈", "小卡／應援物", "行動電源", "飲用水"],
     },
     CAT: {
       lines: [
@@ -309,7 +311,7 @@ const REMINDER_CONTENT: Record<
         "票跟手燈自己記得帶",
         "這個總不能也要提醒吧ㅋㅋ",
       ],
-      checklist: ["票券", "手燈", "小卡", "行動電源"],
+      checklist: ["票券／入場憑證", "證件", "手燈", "小卡／應援物", "行動電源", "飲用水"],
     },
     FOX: {
       lines: [
@@ -318,7 +320,7 @@ const REMINDER_CONTENT: Record<
         "票、手燈、行動電源",
         "剩下的就好好玩",
       ],
-      checklist: ["票券", "手燈", "小卡", "行動電源"],
+      checklist: ["票券／入場憑證", "證件", "手燈", "小卡／應援物", "行動電源", "飲用水"],
     },
   },
 };
@@ -338,47 +340,53 @@ export type FanWeatherNotificationCopy = {
 export function generateFanWeatherNotificationCopy(
   weather: FanWeatherInput,
   eventTitle: string,
+  tone: WeatherReminderTone = "SUNSHINE",
 ): FanWeatherNotificationCopy {
   const result = classifyFanWeather(weather);
 
+  // 劇烈天氣永遠安全優先，不套角色語氣。
+  if (result.scenario === "SEVERE") {
+    return {
+      title: "⛈️ 明天天氣可能不太穩定",
+      body: `${eventTitle} 出門前記得確認交通和主辦單位公告，安全最重要。`,
+    };
+  }
+
   const title = "☁️ 明天的追星天氣準備好了";
 
-  switch (result.scenario) {
-    case "SEVERE":
-      return {
-        title: "⛈️ 明天天氣可能不太穩定",
-        body: `${eventTitle} 出門前記得確認交通和主辦單位公告，安全最重要。`,
-      };
+  const bodies: Record<
+    Exclude<FanWeatherScenario, "SEVERE">,
+    Record<WeatherReminderTone, string>
+  > = {
+    HEAVY_RAIN: {
+      SUNSHINE: `${eventTitle} 可能有大雨，小卡、手幅和雨具都先準備好，人跟周邊都不要淋濕 ♡`,
+      CAT: `${eventTitle} 明天大雨。防水袋跟雨具帶好，不要又覺得「應該還好」ㅋㅋ`,
+      FOX: `${eventTitle} 明天雨不小。小卡、手幅和雨具先準備好，別淋濕。`,
+    },
+    COLD: {
+      SUNSHINE: `${eventTitle} 明天會冷，外套和暖暖包記得帶著，追星也要暖暖的 ♡`,
+      CAT: `${eventTitle} 明天很冷。外套跟暖暖包帶著，不要只顧穿漂亮。`,
+      FOX: `${eventTitle} 明天偏冷。外套、暖暖包帶好，別著涼。`,
+    },
+    HOT: {
+      SUNSHINE: `${eventTitle} 明天很熱，水、防曬和小風扇記得帶，不要先被太陽融化了 ♡`,
+      CAT: `${eventTitle} 明天超熱。水跟防曬帶好，不要硬站在太陽下面。`,
+      FOX: `${eventTitle} 明天很熱。水帶夠、防曬補好，累了就休息。`,
+    },
+    WINDY: {
+      SUNSHINE: `${eventTitle} 明天風有點大，手幅、帽子和小卡都顧好，別讓它們先飛走ㅋㅋ`,
+      CAT: `${eventTitle} 明天風很大。手幅帽子抓好，不然等等追的是自己的東西。`,
+      FOX: `${eventTitle} 明天風不小。手幅、帽子和隨身物品固定好再出發。`,
+    },
+    COMFORTABLE: {
+      SUNSHINE: `${eventTitle} 明天天氣看起來很可以 ♡ 票券、手燈和行動電源最後確認一次就出發吧～`,
+      CAT: `${eventTitle} 明天天氣不錯。票跟手燈自己記得帶，這個總不能也忘吧ㅋㅋ`,
+      FOX: `${eventTitle} 明天天氣不錯。票、手燈、行動電源確認好，剩下的就好好玩。`,
+    },
+  };
 
-    case "HEAVY_RAIN":
-      return {
-        title,
-        body: `${eventTitle} 可能有大雨，小卡、手幅和雨具記得先準備好 ♡`,
-      };
-
-    case "COLD":
-      return {
-        title,
-        body: `${eventTitle} 天氣偏冷，外套和暖暖包記得帶著 ♡`,
-      };
-
-    case "HOT":
-      return {
-        title,
-        body: `${eventTitle} 天氣很熱，水、防曬和降溫用品別忘了 ♡`,
-      };
-
-    case "WINDY":
-      return {
-        title,
-        body: `${eventTitle} 風可能有點大，手幅、帽子和隨身物品記得固定好。`,
-      };
-
-    case "COMFORTABLE":
-    default:
-      return {
-        title,
-        body: `${eventTitle} 天氣看起來不錯，票券、手燈和行動電源最後再確認一次 ♡`,
-      };
-  }
+  return {
+    title,
+    body: bodies[result.scenario][tone],
+  };
 }
