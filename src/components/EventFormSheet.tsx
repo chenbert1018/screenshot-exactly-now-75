@@ -192,57 +192,50 @@ export function EventFormSheet({
             <div className="rounded-2xl border border-border/60 bg-surface/40 px-4 py-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
-                  <p className="text-[15px] font-medium">
-                    ☁️ 追星天氣
-                  </p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="text-[15px] font-medium">
+                      ☁️ 追星天氣
+                    </p>
+                    <span className="rounded-full bg-primary/10 px-2.5 py-1 text-[10px] font-medium text-primary">
+                      IdolDays+
+                    </span>
+                  </div>
 
                   <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                    重要日前依照當地天氣提醒我
+                    根據活動地點與真實天氣，自動準備你的追星提醒。
                   </p>
                 </div>
 
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={Boolean(draft.weatherEnabled)}
-                  onClick={() =>
-                    setDraft((d) => ({
-                      ...d,
-                      weatherEnabled: !d.weatherEnabled,
-                    }))
-                  }
-                  className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${
-                    draft.weatherEnabled
-                      ? "bg-primary"
-                      : "bg-border"
-                  }`}
-                >
-                  <span
-                    className={`absolute top-1 size-5 rounded-full bg-white shadow-sm transition-transform ${
-                      draft.weatherEnabled
-                        ? "translate-x-6"
-                        : "translate-x-1"
-                    }`}
-                  />
-                </button>
+                <span className="shrink-0 rounded-full bg-card px-3 py-1.5 text-xs text-muted-foreground">
+                  🔒 Plus 專屬
+                </span>
               </div>
 
-              {draft.weatherEnabled &&
-              (!draft.locationName?.trim() || !draft.city?.trim()) ? (
-                <p className="mt-3 rounded-xl bg-card px-3 py-2 text-xs leading-5 text-muted-foreground">
-                  📍 加入活動地點與城市後即可使用追星天氣
-                </p>
-              ) : null}
+              <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
+                <div className="rounded-xl bg-card px-3 py-2">
+                  🌧️ 雨天準備
+                </div>
+                <div className="rounded-xl bg-card px-3 py-2">
+                  ❄️ 保暖提醒
+                </div>
+                <div className="rounded-xl bg-card px-3 py-2">
+                  ☀️ 防曬補水
+                </div>
+                <div className="rounded-xl bg-card px-3 py-2">
+                  🌬️ 強風提醒
+                </div>
+              </div>
 
-              {draft.weatherEnabled &&
-              draft.locationName?.trim() &&
-              draft.city?.trim() ? (
-                <p className="mt-3 rounded-xl bg-card px-3 py-2 text-xs leading-5 text-muted-foreground">
-                  ♡ 會為這個重要日子準備當地的追星天氣提醒
+              <div className="mt-3 rounded-xl bg-card px-3 py-3">
+                <p className="text-xs leading-5 text-muted-foreground">
+                  🐕 🐱 🦊 專屬提醒語氣 · 追星準備清單 · 活動前一天提醒
                 </p>
-              ) : null}
+              </div>
+
+              <p className="mt-3 text-center text-xs font-medium text-primary">
+                IdolDays+ 即將推出
+              </p>
             </div>
-
             <div className="space-y-1.5">
               <Label htmlFor="event-note">備註</Label>
               <Textarea
