@@ -152,9 +152,12 @@ export async function ensureNotificationPermission():
 }
 
 /**
- * 取消某一活動的全部 D-Day 通知。
+ * 只取消某一活動的 D-Day 通知。
+ *
+ * 不碰 Fan Weather notification，
+ * 避免修改 D-Day 提醒時誤刪追星天氣提醒。
  */
-export async function cancelEventNotifications(
+async function cancelDdayEventNotifications(
   eventId: string,
 ): Promise<void> {
   if (!isIOSNative()) return;
@@ -167,7 +170,7 @@ export async function cancelEventNotifications(
     });
   } catch (error) {
     console.error(
-      "[IdolDays Notifications] Cancel failed:",
+      "[IdolDays Notifications] D-Day cancel failed:",
       error,
     );
   }
@@ -189,7 +192,7 @@ export async function scheduleEventNotifications(
 
   // 不提醒 = 清除這個活動所有既有通知
   if (daysBefore === null) {
-    await cancelEventNotifications(event.id);
+    await cancelDdayEventNotifications(event.id);
     return 0;
   }
 
@@ -199,7 +202,7 @@ export async function scheduleEventNotifications(
   if (!granted) return 0;
 
   // 修改提醒時間或活動日期時，先清掉舊排程
-  await cancelEventNotifications(event.id);
+  await cancelDdayEventNotifications(event.id);
 
   const at = parseEventDate(
     event.date,
@@ -242,6 +245,173 @@ export async function scheduleEventNotifications(
   } catch (error) {
     console.error(
       "[IdolDays Notifications] Schedule failed:",
+      error,
+    );
+
+    return 0;
+  }
+}
+/* ----------------------- Fan Weather notifications ----------------------- */
+
+const FAN_WEATHER_NOTIFICATION_HOUR = 21;
+
+/**
+ * Fan Weather 使用獨立 ID，
+ * 避免與既有 D-Day notification ID 衝突。
+ */
+function fanWeatherNotificationId(
+  eventId: string,
+): number {
+  return (
+    (hashString(`idoldays:fan-weather:${eventId}`) %
+      20_000_000) *
+      100 +
+    91
+  );
+}
+
+/**
+ * 活動前一天 21:00。
+ */
+function parseFanWeatherNotificationDate(
+  date: string,
+): Date | null {
+  const match =
+    /^(\d{4})-(\d{2})-(\d{2})$/.exec(date);
+
+  if (!match) return null;
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+
+  const target = new Date(
+    year,
+    month - 1,
+    day,
+    FAN_WEATHER_NOTIFICATION_HOUR,
+    0,
+    0,
+    0,
+  );
+
+  target.setDate(target.getDate() - 1);
+
+  return Number.isNaN(target.getTime())
+    ? null
+    : target;
+}
+
+export async function cancelFanWeatherNotification(
+  eventId: string,
+): Promise<void> {
+  if (!isIOSNative()) return;
+
+  try {
+    await LocalNotifications.cancel({
+      notifications: [
+        {
+          id: fanWeatherNotificationId(eventId),
+        },
+      ],
+    });
+  } catch (error) {
+    console.error(
+      "[IdolDays Fan Weather] Cancel failed:",
+      error,
+    );
+  }
+}
+
+/**
+ * 刪除整個 Event 時使用。
+ *
+ * 同時取消：
+ * - D-Day notification
+ * - Fan Weather notification
+ */
+export async function cancelEventNotifications(
+  eventId: string,
+): Promise<void> {
+  await Promise.all([
+    cancelDdayEventNotifications(eventId),
+    cancelFanWeatherNotification(eventId),
+  ]);
+}
+
+export type FanWeatherNotificationContent = {
+  title: string;
+  body: string;
+};
+
+/**
+ * 使用已經取得的真實天氣內容，
+ * 排活動前一天 21:00 的 Fan Weather 通知。
+ *
+ * 這個函式本身不抓 CWA，
+ * 避免把網路請求和 iOS notification 混在一起。
+ */
+export async function scheduleFanWeatherNotification(
+  event: IdolEvent,
+  content: FanWeatherNotificationContent,
+): Promise<number> {
+  if (!isIOSNative()) return 0;
+
+  if (
+    !event.weatherEnabled ||
+    !event.city?.trim()
+  ) {
+    await cancelFanWeatherNotification(event.id);
+    return 0;
+  }
+
+  const at =
+    parseFanWeatherNotificationDate(event.date);
+
+  if (!at || at.getTime() <= Date.now()) {
+    await cancelFanWeatherNotification(event.id);
+    return 0;
+  }
+
+  const granted =
+    await ensureNotificationPermission();
+
+  if (!granted) return 0;
+
+  // 只取消舊的 Fan Weather 通知，
+  // 不碰原本的 D-Day notification。
+  await cancelFanWeatherNotification(event.id);
+
+  const notification: LocalNotificationSchema = {
+    id: fanWeatherNotificationId(event.id),
+
+    title: content.title,
+
+    body: content.body,
+
+    schedule: {
+      at,
+      allowWhileIdle: true,
+    },
+
+    extra: {
+      eventId: event.id,
+      eventType: event.type,
+      eventDate: event.date,
+      notificationType: "FAN_WEATHER",
+      route: `/weather/${event.id}`,
+    },
+  };
+
+  try {
+    await LocalNotifications.schedule({
+      notifications: [notification],
+    });
+
+    return 1;
+  } catch (error) {
+    console.error(
+      "[IdolDays Fan Weather] Schedule failed:",
       error,
     );
 

@@ -12,6 +12,8 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { useEventSource } from "../lib/events.source";
+import { useFanWeatherLifecycle } from "../lib/fan-weather-lifecycle";
 
 function NotFoundComponent() {
   return (
@@ -127,6 +129,9 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const { events, ready } = useEventSource();
+
+  useFanWeatherLifecycle(events, ready);
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -1,5 +1,6 @@
 import { StoredImage } from "@/components/StoredImage";
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { MoreHorizontal, Plus } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import {
@@ -269,6 +270,46 @@ export function EventDetailSheet({
                   幫我記住 ♡
                 </button>
               ) : null}
+            </div>
+          ) : null}
+
+          {/* Fan Weather */}
+          {event.weatherEnabled ? (
+            <div className="mt-4 rounded-2xl border border-border/60 bg-surface/40 px-4 py-4">
+              <div className="flex items-center justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="text-xs tracking-wide text-muted-foreground">
+                    ☁️ 追星天氣
+                  </p>
+
+                  {event.locationName?.trim() && event.city?.trim() ? (
+                    <>
+                      <p className="mt-1 truncate text-sm">
+                        📍 {event.locationName}
+                      </p>
+
+                      <p className="mt-0.5 text-xs text-muted-foreground">
+                        {event.city} · 重要日子，也幫你看看天氣 ♡
+                      </p>
+                    </>
+                  ) : (
+                    <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                      📍 編輯日子並加入活動地點與城市後即可使用
+                    </p>
+                  )}
+                </div>
+
+                {event.locationName?.trim() && event.city?.trim() ? (
+                  <Link
+                    to="/weather/$eventId"
+                    params={{ eventId: event.id }}
+                    onClick={() => onOpenChange(false)}
+                    className="shrink-0 rounded-full bg-primary px-4 py-2 text-xs font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+                  >
+                    查看天氣
+                  </Link>
+                ) : null}
+              </div>
             </div>
           ) : null}
 

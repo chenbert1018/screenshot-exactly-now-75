@@ -11,6 +11,14 @@ import {
   listCloudEvents,
   updateCloudEvent,
 } from "./events.cloud";
+import {
+  mergeFanWeatherSettings,
+  removeFanWeatherSettings,
+  saveFanWeatherSettings,
+} from "./fan-weather-settings";
+import {
+  refreshFanWeatherNotification,
+} from "./fan-weather-notifications";
 import { ensureIdolMigration } from "./idols.source";
 import {
   getMilestoneMigrationRecord,
@@ -250,7 +258,7 @@ export function useEventSource(): EventSource {
 
         const list = await listCloudEvents();
         if (!active) return;
-        setCloudEvents(list);
+        setCloudEvents(list.map((event) => mergeFanWeatherSettings(event)));
         setError(null);
         setCloudReady(true);
       } catch (e) {
@@ -275,11 +283,28 @@ export function useEventSource(): EventSource {
   const addEvent = useCallback(
     async (draft: EventDraft) => {
       if (isCloud && userId) {
-        await createCloudEvent(draft, userId);
+        const created = await createCloudEvent(draft, userId);
+
+        saveFanWeatherSettings(created.id, {
+          locationName: draft.locationName ?? "",
+          city: draft.city ?? "",
+          weatherEnabled: Boolean(draft.weatherEnabled),
+          weatherTone: draft.weatherTone ?? "SUNSHINE",
+        });
+
+        const eventWithWeather =
+          mergeFanWeatherSettings(created);
+
+        void refreshFanWeatherNotification(
+          eventWithWeather,
+        );
+
         reload();
         return;
       }
-      local.addEvent(draft);
+      const created = local.addEvent(draft);
+
+      void refreshFanWeatherNotification(created);
     },
     [isCloud, userId, local, reload],
   );
@@ -288,10 +313,44 @@ export function useEventSource(): EventSource {
     async (id: string, draft: EventDraft) => {
       if (isCloud) {
         await updateCloudEvent(id, draft);
+
+        saveFanWeatherSettings(id, {
+          locationName: draft.locationName ?? "",
+          city: draft.city ?? "",
+          weatherEnabled: Boolean(draft.weatherEnabled),
+          weatherTone: draft.weatherTone ?? "SUNSHINE",
+        });
+
+        const updatedEvent: IdolEvent = {
+          ...draft,
+          id,
+          createdAt:
+            cloudEvents.find((event) => event.id === id)
+              ?.createdAt ?? Date.now(),
+        };
+
+        void refreshFanWeatherNotification(
+          updatedEvent,
+        );
+
         reload();
         return;
       }
       local.updateEvent(id, draft);
+
+      const existing =
+        local.events.find((event) => event.id === id);
+
+      if (existing) {
+        const updatedEvent: IdolEvent = {
+          ...existing,
+          ...draft,
+        };
+
+        void refreshFanWeatherNotification(
+          updatedEvent,
+        );
+      }
     },
     [isCloud, local, reload],
   );
@@ -303,6 +362,7 @@ export function useEventSource(): EventSource {
       if (isCloud) {
         // 雲端會一併刪除該日子的里程碑（不影響偶像與帳號）
         await deleteCloudEvent(id);
+        removeFanWeatherSettings(id);
         reload();
         return;
       }

@@ -24,6 +24,11 @@ export function eventTypeMeta(type: EventType): { value: string; label: string; 
   return EVENT_TYPES.find((t) => t.value === type) ?? FALLBACK_TYPE;
 }
 
+export type WeatherReminderTone =
+  | "SUNSHINE"
+  | "CAT"
+  | "FOX";
+
 export type IdolEvent = {
   id: string;
   idolId: string;
@@ -32,6 +37,19 @@ export type IdolEvent = {
   /** YYYY-MM-DD */
   date: string;
   note: string;
+
+  /** 追星天氣：使用者輸入的活動地點，例如「台北大巨蛋」 */
+  locationName?: string;
+
+  /** 追星天氣：縣市，例如「臺北市」 */
+  city?: string;
+
+  /** 是否為此重要日子啟用追星天氣 */
+  weatherEnabled?: boolean;
+
+  /** IdolDays+ 個性化提醒語氣 */
+  weatherTone?: WeatherReminderTone;
+
   createdAt: number;
 };
 
@@ -43,6 +61,10 @@ export const emptyEventDraft: EventDraft = {
   type: "CONCERT",
   date: "",
   note: "",
+  locationName: "",
+  city: "",
+  weatherEnabled: false,
+  weatherTone: "SUNSHINE",
 };
 
 export type EventStatus = "UPCOMING" | "TODAY" | "COMPLETED";
@@ -175,4 +197,34 @@ export function useEvents() {
   );
 
   return { events, ready, addEvent, updateEvent, removeEvent };
+}
+
+/** 預設適合啟用追星天氣的活動類型 */
+export const FAN_WEATHER_DEFAULT_TYPES: EventType[] = [
+  "CONCERT",
+  "FAN_MEETING",
+  "TRAVEL",
+  "SUPPORT",
+];
+
+/** 此活動類型是否預設建議開啟追星天氣 */
+export function isFanWeatherDefaultType(type: EventType): boolean {
+  return FAN_WEATHER_DEFAULT_TYPES.includes(type);
+}
+
+/**
+ * 是否具備使用追星天氣的基本條件。
+ * V1 先要求：
+ * - 使用者有開啟追星天氣
+ * - 有活動地點
+ * - 有縣市
+ */
+export function canUseFanWeather(
+  event: Pick<IdolEvent, "weatherEnabled" | "locationName" | "city">,
+): boolean {
+  return Boolean(
+    event.weatherEnabled &&
+      event.locationName?.trim() &&
+      event.city?.trim(),
+  );
 }

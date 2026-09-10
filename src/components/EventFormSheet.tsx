@@ -46,7 +46,13 @@ export function EventFormSheet({
     if (!draft.idolId) return setError("請先選擇一位偶像");
     if (!draft.title.trim()) return setError("請幫這個日子取一個名字");
     if (!draft.date) return setError("請選擇日期");
-    onSubmit({ ...draft, title: draft.title.trim(), note: draft.note.trim() });
+    onSubmit({
+      ...draft,
+      title: draft.title.trim(),
+      note: draft.note.trim(),
+      locationName: draft.locationName?.trim() ?? "",
+      city: draft.city?.trim() ?? "",
+    });
   }
 
   return (
@@ -143,6 +149,98 @@ export function EventFormSheet({
                 onChange={(e) => setDraft((d) => ({ ...d, date: e.target.value }))}
                 className="rounded-xl bg-surface/50"
               />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="event-location">活動地點</Label>
+              <Input
+                id="event-location"
+                value={draft.locationName ?? ""}
+                placeholder="例如：台北大巨蛋"
+                onChange={(e) =>
+                  setDraft((d) => ({
+                    ...d,
+                    locationName: e.target.value,
+                  }))
+                }
+                className="rounded-xl bg-surface/50"
+              />
+              <p className="text-xs leading-5 text-muted-foreground">
+                演唱會、Fan Meeting、應援或追星旅行可以加入地點
+              </p>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="event-city">城市／縣市</Label>
+              <Input
+                id="event-city"
+                value={draft.city ?? ""}
+                placeholder="例如：臺北市"
+                onChange={(e) =>
+                  setDraft((d) => ({
+                    ...d,
+                    city: e.target.value,
+                  }))
+                }
+                className="rounded-xl bg-surface/50"
+              />
+              <p className="text-xs leading-5 text-muted-foreground">
+                追星天氣會依這個地區取得活動當地的天氣
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-border/60 bg-surface/40 px-4 py-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="text-[15px] font-medium">
+                    ☁️ 追星天氣
+                  </p>
+
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                    重要日前依照當地天氣提醒我
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={Boolean(draft.weatherEnabled)}
+                  onClick={() =>
+                    setDraft((d) => ({
+                      ...d,
+                      weatherEnabled: !d.weatherEnabled,
+                    }))
+                  }
+                  className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${
+                    draft.weatherEnabled
+                      ? "bg-primary"
+                      : "bg-border"
+                  }`}
+                >
+                  <span
+                    className={`absolute top-1 size-5 rounded-full bg-white shadow-sm transition-transform ${
+                      draft.weatherEnabled
+                        ? "translate-x-6"
+                        : "translate-x-1"
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {draft.weatherEnabled &&
+              (!draft.locationName?.trim() || !draft.city?.trim()) ? (
+                <p className="mt-3 rounded-xl bg-card px-3 py-2 text-xs leading-5 text-muted-foreground">
+                  📍 加入活動地點與城市後即可使用追星天氣
+                </p>
+              ) : null}
+
+              {draft.weatherEnabled &&
+              draft.locationName?.trim() &&
+              draft.city?.trim() ? (
+                <p className="mt-3 rounded-xl bg-card px-3 py-2 text-xs leading-5 text-muted-foreground">
+                  ♡ 會為這個重要日子準備當地的追星天氣提醒
+                </p>
+              ) : null}
             </div>
 
             <div className="space-y-1.5">

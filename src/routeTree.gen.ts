@@ -28,10 +28,12 @@ import { Route as AdminRemindersRouteImport } from './routes/admin.reminders'
 import { Route as AdminSugarRouteImport } from './routes/admin.sugar'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminWidgetRouteImport } from './routes/admin.widget'
+import { Route as ApiWeatherRouteImport } from './routes/api.weather'
 import { Route as IdolsIdolIdRouteImport } from './routes/idols.$idolId'
 import { Route as MemoriesIndexRouteImport } from './routes/memories.index'
 import { Route as MemoriesFolderIdRouteImport } from './routes/memories.$folderId'
 import { Route as SharedTokenRouteImport } from './routes/shared.$token'
+import { Route as WeatherEventIdRouteImport } from './routes/weather.$eventId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -128,6 +130,11 @@ const AdminWidgetRoute = AdminWidgetRouteImport.update({
   path: '/widget',
   getParentRoute: () => AdminRoute,
 } as any)
+const ApiWeatherRoute = ApiWeatherRouteImport.update({
+  id: '/api/weather',
+  path: '/api/weather',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IdolsIdolIdRoute = IdolsIdolIdRouteImport.update({
   id: '/$idolId',
   path: '/$idolId',
@@ -146,6 +153,11 @@ const MemoriesFolderIdRoute = MemoriesFolderIdRouteImport.update({
 const SharedTokenRoute = SharedTokenRouteImport.update({
   id: '/shared/$token',
   path: '/shared/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WeatherEventIdRoute = WeatherEventIdRouteImport.update({
+  id: '/weather/$eventId',
+  path: '/weather/$eventId',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -168,9 +180,11 @@ export interface FileRoutesByFullPath {
   '/admin/sugar': typeof AdminSugarRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/widget': typeof AdminWidgetRoute
+  '/api/weather': typeof ApiWeatherRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
   '/memories/$folderId': typeof MemoriesFolderIdRoute
   '/shared/$token': typeof SharedTokenRoute
+  '/weather/$eventId': typeof WeatherEventIdRoute
   '/admin/': typeof AdminIndexRoute
   '/memories/': typeof MemoriesIndexRoute
 }
@@ -192,9 +206,11 @@ export interface FileRoutesByTo {
   '/admin/sugar': typeof AdminSugarRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/widget': typeof AdminWidgetRoute
+  '/api/weather': typeof ApiWeatherRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
   '/memories/$folderId': typeof MemoriesFolderIdRoute
   '/shared/$token': typeof SharedTokenRoute
+  '/weather/$eventId': typeof WeatherEventIdRoute
   '/admin': typeof AdminIndexRoute
   '/memories': typeof MemoriesIndexRoute
 }
@@ -218,9 +234,11 @@ export interface FileRoutesById {
   '/admin/sugar': typeof AdminSugarRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/widget': typeof AdminWidgetRoute
+  '/api/weather': typeof ApiWeatherRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
   '/memories/$folderId': typeof MemoriesFolderIdRoute
   '/shared/$token': typeof SharedTokenRoute
+  '/weather/$eventId': typeof WeatherEventIdRoute
   '/admin/': typeof AdminIndexRoute
   '/memories/': typeof MemoriesIndexRoute
 }
@@ -245,9 +263,11 @@ export interface FileRouteTypes {
     | '/admin/sugar'
     | '/admin/users'
     | '/admin/widget'
+    | '/api/weather'
     | '/idols/$idolId'
     | '/memories/$folderId'
     | '/shared/$token'
+    | '/weather/$eventId'
     | '/admin/'
     | '/memories/'
   fileRoutesByTo: FileRoutesByTo
@@ -269,9 +289,11 @@ export interface FileRouteTypes {
     | '/admin/sugar'
     | '/admin/users'
     | '/admin/widget'
+    | '/api/weather'
     | '/idols/$idolId'
     | '/memories/$folderId'
     | '/shared/$token'
+    | '/weather/$eventId'
     | '/admin'
     | '/memories'
   id:
@@ -294,9 +316,11 @@ export interface FileRouteTypes {
     | '/admin/sugar'
     | '/admin/users'
     | '/admin/widget'
+    | '/api/weather'
     | '/idols/$idolId'
     | '/memories/$folderId'
     | '/shared/$token'
+    | '/weather/$eventId'
     | '/admin/'
     | '/memories/'
   fileRoutesById: FileRoutesById
@@ -313,8 +337,10 @@ export interface RootRouteChildren {
   IdolsRoute: typeof IdolsRouteWithChildren
   ProfileRoute: typeof ProfileRoute
   WidgetRoute: typeof WidgetRoute
+  ApiWeatherRoute: typeof ApiWeatherRoute
   MemoriesFolderIdRoute: typeof MemoriesFolderIdRoute
   SharedTokenRoute: typeof SharedTokenRoute
+  WeatherEventIdRoute: typeof WeatherEventIdRoute
   MemoriesIndexRoute: typeof MemoriesIndexRoute
 }
 
@@ -453,6 +479,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminWidgetRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/api/weather': {
+      id: '/api/weather'
+      path: '/api/weather'
+      fullPath: '/api/weather'
+      preLoaderRoute: typeof ApiWeatherRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/idols/$idolId': {
       id: '/idols/$idolId'
       path: '/$idolId'
@@ -479,6 +512,13 @@ declare module '@tanstack/react-router' {
       path: '/shared/$token'
       fullPath: '/shared/$token'
       preLoaderRoute: typeof SharedTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/weather/$eventId': {
+      id: '/weather/$eventId'
+      path: '/weather/$eventId'
+      fullPath: '/weather/$eventId'
+      preLoaderRoute: typeof WeatherEventIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -530,8 +570,10 @@ const rootRouteChildren: RootRouteChildren = {
   IdolsRoute: IdolsRouteWithChildren,
   ProfileRoute: ProfileRoute,
   WidgetRoute: WidgetRoute,
+  ApiWeatherRoute: ApiWeatherRoute,
   MemoriesFolderIdRoute: MemoriesFolderIdRoute,
   SharedTokenRoute: SharedTokenRoute,
+  WeatherEventIdRoute: WeatherEventIdRoute,
   MemoriesIndexRoute: MemoriesIndexRoute,
 }
 export const routeTree = rootRouteImport

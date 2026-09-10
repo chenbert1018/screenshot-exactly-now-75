@@ -125,6 +125,10 @@ function EventsPage() {
         type: editing.type,
         date: editing.date,
         note: editing.note,
+        locationName: editing.locationName ?? "",
+        city: editing.city ?? "",
+        weatherEnabled: Boolean(editing.weatherEnabled),
+        weatherTone: editing.weatherTone ?? "SUNSHINE",
       }
     : undefined;
 
