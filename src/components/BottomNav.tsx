@@ -4,7 +4,7 @@ import {
   Sparkles,
   CalendarHeart,
   FolderHeart,
-  Heart as HeartIcon,
+  Search,
 } from "lucide-react";
 
 const items = [
@@ -12,7 +12,7 @@ const items = [
   { to: "/idols", label: "偶像", Icon: Sparkles },
   { to: "/events", label: "日子", Icon: CalendarHeart },
   { to: "/memories", label: "回憶", Icon: FolderHeart },
-  { to: "/heart", label: "嗑糖", Icon: HeartIcon },
+  { to: "/archaeology", label: "考古", Icon: Search },
 ] as const;
 
 

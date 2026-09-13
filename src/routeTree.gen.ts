@@ -28,6 +28,8 @@ import { Route as AdminRemindersRouteImport } from './routes/admin.reminders'
 import { Route as AdminSugarRouteImport } from './routes/admin.sugar'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminWidgetRouteImport } from './routes/admin.widget'
+import { Route as ApiLinkPreviewRouteImport } from './routes/api.link-preview'
+import { Route as ApiLinkPreviewImageRouteImport } from './routes/api.link-preview-image'
 import { Route as ApiWeatherRouteImport } from './routes/api.weather'
 import { Route as IdolsIdolIdRouteImport } from './routes/idols.$idolId'
 import { Route as MemoriesIndexRouteImport } from './routes/memories.index'
@@ -130,6 +132,16 @@ const AdminWidgetRoute = AdminWidgetRouteImport.update({
   path: '/widget',
   getParentRoute: () => AdminRoute,
 } as any)
+const ApiLinkPreviewRoute = ApiLinkPreviewRouteImport.update({
+  id: '/api/link-preview',
+  path: '/api/link-preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiLinkPreviewImageRoute = ApiLinkPreviewImageRouteImport.update({
+  id: '/api/link-preview-image',
+  path: '/api/link-preview-image',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiWeatherRoute = ApiWeatherRouteImport.update({
   id: '/api/weather',
   path: '/api/weather',
@@ -180,6 +192,8 @@ export interface FileRoutesByFullPath {
   '/admin/sugar': typeof AdminSugarRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/widget': typeof AdminWidgetRoute
+  '/api/link-preview': typeof ApiLinkPreviewRoute
+  '/api/link-preview-image': typeof ApiLinkPreviewImageRoute
   '/api/weather': typeof ApiWeatherRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
   '/memories/$folderId': typeof MemoriesFolderIdRoute
@@ -206,6 +220,8 @@ export interface FileRoutesByTo {
   '/admin/sugar': typeof AdminSugarRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/widget': typeof AdminWidgetRoute
+  '/api/link-preview': typeof ApiLinkPreviewRoute
+  '/api/link-preview-image': typeof ApiLinkPreviewImageRoute
   '/api/weather': typeof ApiWeatherRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
   '/memories/$folderId': typeof MemoriesFolderIdRoute
@@ -234,6 +250,8 @@ export interface FileRoutesById {
   '/admin/sugar': typeof AdminSugarRoute
   '/admin/users': typeof AdminUsersRoute
   '/admin/widget': typeof AdminWidgetRoute
+  '/api/link-preview': typeof ApiLinkPreviewRoute
+  '/api/link-preview-image': typeof ApiLinkPreviewImageRoute
   '/api/weather': typeof ApiWeatherRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
   '/memories/$folderId': typeof MemoriesFolderIdRoute
@@ -263,6 +281,8 @@ export interface FileRouteTypes {
     | '/admin/sugar'
     | '/admin/users'
     | '/admin/widget'
+    | '/api/link-preview'
+    | '/api/link-preview-image'
     | '/api/weather'
     | '/idols/$idolId'
     | '/memories/$folderId'
@@ -289,6 +309,8 @@ export interface FileRouteTypes {
     | '/admin/sugar'
     | '/admin/users'
     | '/admin/widget'
+    | '/api/link-preview'
+    | '/api/link-preview-image'
     | '/api/weather'
     | '/idols/$idolId'
     | '/memories/$folderId'
@@ -316,6 +338,8 @@ export interface FileRouteTypes {
     | '/admin/sugar'
     | '/admin/users'
     | '/admin/widget'
+    | '/api/link-preview'
+    | '/api/link-preview-image'
     | '/api/weather'
     | '/idols/$idolId'
     | '/memories/$folderId'
@@ -337,6 +361,8 @@ export interface RootRouteChildren {
   IdolsRoute: typeof IdolsRouteWithChildren
   ProfileRoute: typeof ProfileRoute
   WidgetRoute: typeof WidgetRoute
+  ApiLinkPreviewRoute: typeof ApiLinkPreviewRoute
+  ApiLinkPreviewImageRoute: typeof ApiLinkPreviewImageRoute
   ApiWeatherRoute: typeof ApiWeatherRoute
   MemoriesFolderIdRoute: typeof MemoriesFolderIdRoute
   SharedTokenRoute: typeof SharedTokenRoute
@@ -479,6 +505,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminWidgetRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/api/link-preview': {
+      id: '/api/link-preview'
+      path: '/api/link-preview'
+      fullPath: '/api/link-preview'
+      preLoaderRoute: typeof ApiLinkPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/link-preview-image': {
+      id: '/api/link-preview-image'
+      path: '/api/link-preview-image'
+      fullPath: '/api/link-preview-image'
+      preLoaderRoute: typeof ApiLinkPreviewImageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/weather': {
       id: '/api/weather'
       path: '/api/weather'
@@ -570,6 +610,8 @@ const rootRouteChildren: RootRouteChildren = {
   IdolsRoute: IdolsRouteWithChildren,
   ProfileRoute: ProfileRoute,
   WidgetRoute: WidgetRoute,
+  ApiLinkPreviewRoute: ApiLinkPreviewRoute,
+  ApiLinkPreviewImageRoute: ApiLinkPreviewImageRoute,
   ApiWeatherRoute: ApiWeatherRoute,
   MemoriesFolderIdRoute: MemoriesFolderIdRoute,
   SharedTokenRoute: SharedTokenRoute,
