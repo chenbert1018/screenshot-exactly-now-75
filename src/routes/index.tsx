@@ -182,9 +182,9 @@ function Hero({ idol }: { idol: Idol }) {
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 text-muted-foreground"><ImageIcon className="size-8" strokeWidth={1.3} /><span className="text-sm">放一張你喜歡的照片 ♡</span></div>
         )}
         <div className="absolute inset-x-0 bottom-0 z-20 h-48 bg-gradient-to-t from-[#fdf0f3] via-[#fdf0f3]/66 to-transparent" />
-        <div className="absolute left-5 top-[41%] z-30 max-w-[48%]">
-          <p className="font-display text-[29px] leading-tight text-primary/90">{timeGreeting()}</p>
-          <p className="mt-3 text-[16px] leading-relaxed text-foreground/85">今天也一起<br />追星吧！</p>
+        <div className="absolute bottom-5 left-5 z-30">
+          <p className="font-display text-[28px] leading-tight text-primary/90">{timeGreeting()}</p>
+          <p className="mt-2 text-[16px] leading-relaxed text-foreground/85">今天也一起<br />追星吧！</p>
         </div>
       </Link>
     </section>
