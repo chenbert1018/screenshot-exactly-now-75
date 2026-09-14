@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./auth";
-import { MAX_IDOLS, useIdols, type Idol, type IdolDraft } from "./idols";
+import { MAX_IDOLS, useIdols, type Idol, type IdolDraft, type RepresentativeAnimal } from "./idols";
 import { ensureStorageMigration } from "./storage-migration";
 import { isDataUrl, uploadImage } from "./storage";
 import {
@@ -23,6 +23,40 @@ import {
 /* ------------------------- migration metadata ------------------------- */
 
 const MIGRATION_KEY = "idoldays.cloudMigration.idols.v1";
+const ANIMAL_PREFERENCES_KEY = "idoldays.cloudIdolAnimals.v1";
+
+type AnimalPreferenceStore = Record<string, Record<string, RepresentativeAnimal>>;
+
+function readAnimalPreferences(userId: string): Record<string, RepresentativeAnimal> {
+  if (typeof window === "undefined") return {};
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(ANIMAL_PREFERENCES_KEY) ?? "{}") as AnimalPreferenceStore;
+    return parsed[userId] ?? {};
+  } catch {
+    return {};
+  }
+}
+
+function saveAnimalPreference(userId: string, idolId: string, animal: RepresentativeAnimal | undefined) {
+  if (!animal || typeof window === "undefined") return;
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(ANIMAL_PREFERENCES_KEY) ?? "{}") as AnimalPreferenceStore;
+    window.localStorage.setItem(
+      ANIMAL_PREFERENCES_KEY,
+      JSON.stringify({ ...parsed, [userId]: { ...(parsed[userId] ?? {}), [idolId]: animal } }),
+    );
+  } catch {
+    /* 不影響偶像基本資料的雲端儲存 */
+  }
+}
+
+function applyAnimalPreferences(list: Idol[], userId: string): Idol[] {
+  const preferences = readAnimalPreferences(userId);
+  return list.map((idol) => ({
+    ...idol,
+    representativeAnimal: preferences[idol.id] ?? idol.representativeAnimal,
+  }));
+}
 
 type MigrationRecord = {
   /** 這個 user 是否已完成一次性 migration */
@@ -226,7 +260,7 @@ export function useIdolSource(): IdolSource {
 
         const list = await listCloudIdols();
         if (!active) return;
-        setCloudIdols(list);
+        setCloudIdols(applyAnimalPreferences(list, userId));
 
         const { data } = await supabase
           .from("profiles")
@@ -276,6 +310,7 @@ export function useIdolSource(): IdolSource {
     async (draft: IdolDraft) => {
       if (isCloud && userId) {
         const created = await createCloudIdol(draft, userId);
+        saveAnimalPreference(userId, created.id, draft.representativeAnimal);
         await storePhoto(userId, created.id, draft.photo, (photo) =>
           updateCloudIdol(created.id, { ...draft, photo }),
         );
@@ -292,6 +327,7 @@ export function useIdolSource(): IdolSource {
       if (isCloud) {
         await updateCloudIdol(id, draft);
         if (userId) {
+          saveAnimalPreference(userId, id, draft.representativeAnimal);
           await storePhoto(userId, id, draft.photo, (photo) =>
             updateCloudIdol(id, { ...draft, photo }),
           );
