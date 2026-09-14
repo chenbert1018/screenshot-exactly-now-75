@@ -200,7 +200,7 @@ function HomePage() {
           {memoryFromToday ? <MemoryCard memory={memoryFromToday} /> : <EmptyMemoryCard />}
 
           {companionship && !companionship.isFuture && companionship.days !== null ? (
-            <section className="mt-5 rounded-[1.8rem] border border-white/80 bg-white/80 px-5 py-4 text-center shadow-[0_12px_32px_rgba(157,91,116,0.10)] backdrop-blur-xl">
+            <section className="relative mt-5 rounded-[1.8rem] border border-white/80 bg-white/80 px-5 py-4 text-center shadow-[0_12px_32px_rgba(157,91,116,0.10)] backdrop-blur-xl">
               <span aria-hidden className="absolute right-6 top-4 text-xl text-primary/55">♥</span>
               <p className="text-[13px] font-medium text-muted-foreground">陪伴總走過</p>
               <p className="mt-1 font-display text-[44px] leading-none text-foreground">
