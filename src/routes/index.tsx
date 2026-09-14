@@ -73,6 +73,26 @@ function FanWeatherCard({ event }: { event: IdolEvent }) {
   );
 }
 
+
+function FanWeatherSetupCard({ event }: { event: IdolEvent }) {
+  const days = eventCountdown(event.date).daysUntil ?? 0;
+  const timing = days === 0 ? "今天" : `${Math.max(0, days)} 天後`;
+
+  return (
+    <Link to="/events" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-white/80 bg-white/75 px-5 py-4 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
+      <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-[#e8e6ff] text-[#8b87cf]">
+        <CloudSun className="size-7" strokeWidth={1.45} />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-[11px] font-medium tracking-[0.08em] text-primary">Fan Weather</p>
+        <p className="mt-1 truncate text-[16px] font-medium">{timing}・{event.title}</p>
+        <p className="mt-1 truncate text-sm text-muted-foreground">設定地點與城市，幫你準備追星天氣 ♡</p>
+      </div>
+      <ArrowRight className="size-5 shrink-0 text-primary" strokeWidth={1.8} />
+    </Link>
+  );
+}
+
 function ArchaeologyCard({ item }: { item: { title: string; imageUrl?: string; createdAt: string; collection: string } }) {
   return (
     <Link to="/archaeology" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-white/80 bg-white/85 p-3 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
@@ -83,6 +103,23 @@ function ArchaeologyCard({ item }: { item: { title: string; imageUrl?: string; c
         <p className="text-[11px] font-medium text-primary">▣ 最近收進考古</p>
         <p className="mt-1 truncate text-[17px] font-medium">{item.title}</p>
         <p className="mt-1 text-sm text-muted-foreground">{dotDate(item.createdAt.slice(0, 10))}{item.collection ? `・${item.collection}` : ""}</p>
+      </div>
+      <ArrowRight className="mr-1 size-5 shrink-0 text-primary" strokeWidth={1.8} />
+    </Link>
+  );
+}
+
+
+function EmptyArchaeologyCard() {
+  return (
+    <Link to="/archaeology" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-white/80 bg-white/75 p-3 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
+      <div className="flex size-[5.2rem] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/10 text-primary">
+        <Search className="size-7" strokeWidth={1.5} />
+      </div>
+      <div className="min-w-0 flex-1 py-1">
+        <p className="text-[11px] font-medium text-primary">▣ 最近收進考古</p>
+        <p className="mt-1 text-[16px] font-medium">還沒有收進考古</p>
+        <p className="mt-1 truncate text-sm text-muted-foreground">把第一筆珍貴片段收藏起來吧 ♡</p>
       </div>
       <ArrowRight className="mr-1 size-5 shrink-0 text-primary" strokeWidth={1.8} />
     </Link>
@@ -195,8 +232,14 @@ function HomePage() {
         <>
           <Hero idol={main} />
           {nextMainEvent ? <EventCard event={nextMainEvent} /> : null}
-          {nextMainEvent && canUseFanWeather(nextMainEvent) ? <FanWeatherCard event={nextMainEvent} /> : null}
-          {latestArchaeology ? <ArchaeologyCard item={latestArchaeology} /> : null}
+          {nextMainEvent ? (
+            canUseFanWeather(nextMainEvent) ? (
+              <FanWeatherCard event={nextMainEvent} />
+            ) : (
+              <FanWeatherSetupCard event={nextMainEvent} />
+            )
+          ) : null}
+          {latestArchaeology ? <ArchaeologyCard item={latestArchaeology} /> : <EmptyArchaeologyCard />}
           {memoryFromToday ? <MemoryCard memory={memoryFromToday} /> : <EmptyMemoryCard />}
 
           {companionship && !companionship.isFuture && companionship.days !== null ? (
