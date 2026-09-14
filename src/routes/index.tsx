@@ -36,20 +36,22 @@ function timeGreeting() {
   return "좋은 밤이에요 ♡";
 }
 
-const DAILY_ANIMAL_LINES = [
-  "🐶 今天也要元氣滿滿地出發！",
-  "🐱 不准忘記照顧自己，追星也要帥帥的。",
-  "🦊 行程確認好，漂亮地去見喜歡的人吧。",
-  "🐰 慢慢準備也沒關係，今天會是可愛的一天。",
-  "🐺 帶好裝備，安靜地把期待做到最好。",
-  "🦁 跟著我，今天也要自信地奔向喜歡。",
-] as const;
+const ANIMAL_DAILY_LINES = {
+  DOG: ["🐶 今天也要元氣滿滿地出發！", "🐶 走吧，今天也一起發光。"],
+  CAT: ["🐱 不准忘記照顧自己，追星也要帥帥的。", "🐱 行程帶好，其他交給期待就好。"],
+  FOX: ["🦊 行程確認好，漂亮地去見喜歡的人吧。", "🦊 票券、手燈、心意，全部準備得剛剛好。"],
+  RABBIT: ["🐰 慢慢準備也沒關係，今天會是可愛的一天。", "🐰 帶著好心情，溫柔地去見喜歡的人吧。"],
+  WOLF: ["🐺 帶好裝備，安靜地把期待做到最好。", "🐺 今天也穩穩地，奔向你想見的人。"],
+  LION: ["🦁 跟著我，今天也要自信地奔向喜歡。", "🦁 抬頭出發，你的喜歡值得全力以赴。"],
+} as const;
 
-/** 依本地日期輪換，當天重新整理也不會換句子。 */
-function dailyAnimalLine() {
+/** 依本地日期輪換；優先使用這位偶像的代表動物。 */
+function dailyAnimalLine(idol: Idol) {
   const date = new Date();
   const seed = date.getFullYear() * 372 + (date.getMonth() + 1) * 31 + date.getDate();
-  return DAILY_ANIMAL_LINES[seed % DAILY_ANIMAL_LINES.length];
+  const animal = idol.representativeAnimal ?? "DOG";
+  const lines = ANIMAL_DAILY_LINES[animal];
+  return lines[seed % lines.length];
 }
 
 function dayLabel(event: IdolEvent) {
@@ -200,7 +202,7 @@ function Hero({ idol }: { idol: Idol }) {
         <div className="absolute inset-x-0 bottom-0 z-20 h-48 bg-gradient-to-t from-[#fdf0f3] via-[#fdf0f3]/66 to-transparent" />
         <div className="absolute bottom-5 left-5 z-30">
           <p className="font-display text-[28px] leading-tight text-primary/90">{timeGreeting()}</p>
-          <p className="mt-2 text-[16px] leading-relaxed text-foreground/85">{dailyAnimalLine()}</p>
+          <p className="mt-2 text-[16px] leading-relaxed text-foreground/85">{dailyAnimalLine(idol)}</p>
         </div>
       </Link>
     </section>
