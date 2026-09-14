@@ -198,21 +198,24 @@ export function EventDetailSheet({
             </DropdownMenu>
           </div>
 
-          {/* Event visual + D-Day card */}
-          <section className="relative mt-1 min-h-[448px] overflow-hidden rounded-[2rem] bg-gradient-to-b from-[#eec9df] via-[#f8dce8] to-[#fdeef2] shadow-[0_18px_42px_rgba(176,102,130,0.15)]">
-            {idol?.photo ? (
-              <StoredImage
-                src={idol.photo}
-                alt={idol.name}
-                className="absolute inset-0 size-full object-cover object-[70%_12%]"
-              />
-            ) : null}
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#fdeef2]/95" />
-            <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-[#fdeef2] via-[#fdeef2]/70 to-transparent" />
-            <span className="absolute left-6 top-8 text-xl text-white/75">✧</span>
-            <span className="absolute right-8 top-16 text-2xl text-white/70">✦</span>
+          {/* Photo, then separate D-Day cards — never cover the idol */}
+          <section className="mt-1">
+            <div className="relative h-[300px] overflow-hidden rounded-[2rem] bg-gradient-to-b from-[#eec9df] via-[#f8dce8] to-[#fdeef2] shadow-[0_16px_36px_rgba(176,102,130,0.13)]">
+              {idol?.photo ? (
+                <StoredImage
+                  src={idol.photo}
+                  alt={idol.name}
+                  className="absolute inset-0 size-full object-contain object-center"
+                />
+              ) : (
+                <div className="flex size-full items-center justify-center text-sm text-muted-foreground">{idolLabel}</div>
+              )}
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#fdeef2]/80 to-transparent" />
+              <span className="absolute left-6 top-8 text-xl text-white/75">✧</span>
+              <span className="absolute right-8 top-16 text-2xl text-white/70">✦</span>
+            </div>
 
-            <div className="absolute inset-x-7 bottom-[5.75rem] rounded-[1.45rem] border border-white/80 bg-white/80 px-4 py-3 text-center shadow-[0_12px_28px_rgba(126,74,96,0.16)] backdrop-blur-xl">
+            <div className="mt-4 rounded-[1.45rem] border border-white/80 bg-white/85 px-4 py-3 text-center shadow-[0_12px_28px_rgba(126,74,96,0.13)]">
               <p className="font-display text-[18px] font-semibold">{event.title}</p>
               <p className="mt-1 text-[10px] font-medium tracking-[0.12em] text-primary uppercase">{meta.label}</p>
               {c?.status === "COMPLETED" ? (
@@ -226,7 +229,7 @@ export function EventDetailSheet({
             </div>
 
             {since && !since.isFuture && since.days !== null ? (
-              <div className="absolute inset-x-5 bottom-4 rounded-[1.45rem] border border-white/75 bg-white/80 px-5 py-3 text-center shadow-[0_10px_24px_rgba(126,74,96,0.12)] backdrop-blur-xl">
+              <div className="mt-3 rounded-[1.45rem] border border-white/75 bg-white/80 px-5 py-3 text-center shadow-[0_10px_24px_rgba(126,74,96,0.10)]">
                 <p className="text-[11px] font-medium text-muted-foreground">陪伴總走過</p>
                 <p className="mt-0.5 font-display text-[30px] leading-none text-foreground">
                   {since.days}<span className="ml-1 text-sm">天</span>
