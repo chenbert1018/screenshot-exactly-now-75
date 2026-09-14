@@ -231,7 +231,7 @@ export function EventFormSheet({
 
               <div className="mt-3 rounded-xl bg-card px-3 py-3">
                 <p className="text-xs leading-5 text-muted-foreground">
-                  🐕 🐱 🦊 專屬提醒語氣 · 追星準備清單 · 活動前一天提醒
+                  選擇你的偶像代表動物 · 🐶 陽光小狗 · 🐱 傲嬌貓 · 🦊 帥氣狐狸
                 </p>
               </div>
 
