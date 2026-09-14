@@ -177,14 +177,14 @@ function Hero({ idol }: { idol: Idol }) {
         {idol.cutoutPhoto ? (
           <StoredImage src={idol.cutoutPhoto} alt={`${idol.name} 的去背照片`} className="absolute inset-x-0 bottom-0 z-10 mx-auto h-[94%] w-full object-contain object-bottom" />
         ) : idol.photo ? (
-          <StoredImage src={idol.photo} alt={`${idol.name} 的照片`} className="absolute inset-0 z-10 size-full object-cover object-center" />
+          <StoredImage src={idol.photo} alt={`${idol.name} 的照片`} className="absolute inset-0 z-10 size-full object-cover object-[72%_center]" />
         ) : (
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 text-muted-foreground"><ImageIcon className="size-8" strokeWidth={1.3} /><span className="text-sm">放一張你喜歡的照片 ♡</span></div>
         )}
         <div className="absolute inset-x-0 bottom-0 z-20 h-48 bg-gradient-to-t from-[#fdf0f3] via-[#fdf0f3]/66 to-transparent" />
-        <div className="absolute bottom-3 left-4 z-30 rounded-2xl bg-white/78 px-4 py-3 shadow-[0_8px_22px_rgba(118,75,91,0.10)] backdrop-blur-md">
-          <p className="font-display text-[25px] leading-tight text-primary/90">{timeGreeting()}</p>
-          <p className="mt-1.5 text-[15px] leading-relaxed text-foreground/80">今天也一起追星吧！</p>
+        <div className="absolute left-5 top-[41%] z-30 max-w-[48%]">
+          <p className="font-display text-[29px] leading-tight text-primary/90">{timeGreeting()}</p>
+          <p className="mt-3 text-[16px] leading-relaxed text-foreground/85">今天也一起<br />追星吧！</p>
         </div>
       </Link>
     </section>
