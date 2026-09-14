@@ -4,6 +4,17 @@ import { useCallback, useEffect, useState } from "react";
 export const MAX_IDOLS = 6;
 const STORAGE_KEY = "idoldays.idols.v1";
 
+export const REPRESENTATIVE_ANIMALS = [
+  { value: "DOG", emoji: "🐶", label: "陽光小狗" },
+  { value: "CAT", emoji: "🐱", label: "傲嬌貓" },
+  { value: "FOX", emoji: "🦊", label: "帥氣狐狸" },
+  { value: "RABBIT", emoji: "🐰", label: "溫柔兔子" },
+  { value: "WOLF", emoji: "🐺", label: "冷酷狼" },
+  { value: "LION", emoji: "🦁", label: "自信獅子" },
+] as const;
+
+export type RepresentativeAnimal = (typeof REPRESENTATIVE_ANIMALS)[number]["value"];
+
 export type Idol = {
   id: string;
   name: string;
@@ -15,6 +26,8 @@ export type Idol = {
   sinceDate: string;
   photo: string;
   cutoutPhoto?: string;
+  /** 偶像代表動物；舊資料未選擇時保持 undefined。 */
+  representativeAnimal?: RepresentativeAnimal;
 };
 
 export type IdolDraft = Omit<Idol, "id">;
