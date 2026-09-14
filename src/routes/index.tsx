@@ -36,6 +36,22 @@ function timeGreeting() {
   return "좋은 밤이에요 ♡";
 }
 
+const DAILY_ANIMAL_LINES = [
+  "🐶 今天也要元氣滿滿地出發！",
+  "🐱 不准忘記照顧自己，追星也要帥帥的。",
+  "🦊 行程確認好，漂亮地去見喜歡的人吧。",
+  "🐰 慢慢準備也沒關係，今天會是可愛的一天。",
+  "🐺 帶好裝備，安靜地把期待做到最好。",
+  "🦁 跟著我，今天也要自信地奔向喜歡。",
+] as const;
+
+/** 依本地日期輪換，當天重新整理也不會換句子。 */
+function dailyAnimalLine() {
+  const date = new Date();
+  const seed = date.getFullYear() * 372 + (date.getMonth() + 1) * 31 + date.getDate();
+  return DAILY_ANIMAL_LINES[seed % DAILY_ANIMAL_LINES.length];
+}
+
 function dayLabel(event: IdolEvent) {
   const days = eventCountdown(event.date).daysUntil ?? 0;
   return days === 0 ? "TODAY" : `D - ${Math.max(0, days)}`;
@@ -184,7 +200,7 @@ function Hero({ idol }: { idol: Idol }) {
         <div className="absolute inset-x-0 bottom-0 z-20 h-48 bg-gradient-to-t from-[#fdf0f3] via-[#fdf0f3]/66 to-transparent" />
         <div className="absolute bottom-5 left-5 z-30">
           <p className="font-display text-[28px] leading-tight text-primary/90">{timeGreeting()}</p>
-          <p className="mt-2 text-[16px] leading-relaxed text-foreground/85">今天也一起<br />追星吧！</p>
+          <p className="mt-2 text-[16px] leading-relaxed text-foreground/85">{dailyAnimalLine()}</p>
         </div>
       </Link>
     </section>
