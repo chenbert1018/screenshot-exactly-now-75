@@ -1,7 +1,7 @@
 import { StoredImage } from "@/components/StoredImage";
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Heart, ImageIcon, Plus } from "lucide-react";
+import { Bell, Heart, ImageIcon, Plus, User } from "lucide-react";
 import { AppShell, Section, EmptyState, SoftCard } from "@/components/AppShell";
 import type { Idol } from "@/lib/idols";
 import { useIdolSource } from "@/lib/idols.source";
@@ -66,149 +66,170 @@ function CountdownHero({ idol, event }: { idol: Idol; event?: IdolEvent | undefi
   const source = day?.kind === "birthday" ? idol.birthday : idol.debutDate;
   const anniversary = nextAnniversary(source);
   const countdown = event ? eventCountdown(event.date) : null;
-  const debutYear = parseLocalDate(idol.debutDate)?.y;
 
-  // 優先使用最近的 Event；沒有 Event 時沿用生日／出道紀念日
   const next =
     event && countdown
       ? {
           days: countdown.daysUntil ?? 0,
-          ddayLabel: countdown.ddayLabel,
           dateLabel: countdown.dotDate,
-          titleLabel: `${eventTypeMeta(event.type).emoji} ${idol.name} 的${event.title}`,
-          line:
-            event.type === "BIRTHDAY"
-              ? birthdayDdayLine(idol.name, countdown.daysUntil ?? 0)
-              : eventDdayLine(idol.name, countdown.daysUntil ?? 0),
+          titleLabel: event.title,
         }
       : day && anniversary
         ? {
             days: day.daysUntil,
-            ddayLabel: day.ddayLabel,
             dateLabel: formatDotDate(anniversary.nextDate),
-            titleLabel: `${day.kind === "birthday" ? "🎂" : "✨"} ${idol.name} 的${day.title}`,
-            line:
-              day.kind === "birthday"
-                ? birthdayDdayLine(idol.name, day.daysUntil)
-                : debutDdayLine(
-                    idol.name,
-                    day.daysUntil,
-                    debutYear ? anniversary.nextDate.getFullYear() - debutYear : null,
-                  ),
+            titleLabel: `${idol.name} 的${day.title}`,
           }
         : null;
 
   const isToday = next?.days === 0;
 
   return (
-    <section className="text-center">
-      {/* 1. 本命 */}
-      <h2 className="text-xl font-semibold">
-        {idol.groupName ? `${idol.groupName}・${idol.name}` : idol.name}
-      </h2>
+    <section className="-mx-5">
+      <div className="relative overflow-hidden bg-gradient-to-b from-[#fde8ef] via-[#fdf1f4] to-background px-3 pb-3">
 
-      {next ? (
-        <>
-          {/* 2. 下一個重要日子 */}
-          <p className="mt-6 text-[13px] tracking-[0.34em] text-muted-foreground uppercase">
-            Next D-Day
-          </p>
+        {/* Dreamy cutout Hero */}
+        <Link
+          to="/idols/$idolId"
+          params={{ idolId: idol.id }}
+          className="relative block h-[360px] overflow-hidden rounded-[1.8rem] bg-gradient-to-b from-[#f8dce8] via-[#fae7ee] to-[#f7dfe7]"
+        >
+          {idol.photo ? (
+            <StoredImage
+              src={idol.photo}
+              alt=""
+              aria-hidden
+              className="absolute inset-0 size-full scale-110 object-cover object-center opacity-20 blur-2xl"
+            />
+          ) : null}
 
-          {/* 3. D-Day */}
-          {isToday ? (
-            <p className="mt-3 font-display text-[44px] leading-none font-semibold text-primary">
-              TODAY
-            </p>
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/15 via-transparent to-[#f7dfe7]/90" />
+          <div className="pointer-events-none absolute -left-16 top-6 size-64 rounded-full bg-[#f5c8d9]/45 blur-3xl" />
+          <div className="pointer-events-none absolute -right-14 top-20 size-56 rounded-full bg-white/65 blur-3xl" />
+          <div className="pointer-events-none absolute inset-x-10 bottom-16 h-20 rounded-full bg-[#efbfd0]/30 blur-2xl" />
+
+          <span className="pointer-events-none absolute left-5 top-12 z-20 text-lg text-primary/35">
+            ✦
+          </span>
+          <span className="pointer-events-none absolute right-6 top-24 z-20 text-xl text-primary/25">
+            ✧
+          </span>
+          <span className="pointer-events-none absolute left-9 bottom-28 z-20 text-primary/30">
+            ♡
+          </span>
+
+          {idol.cutoutPhoto ? (
+            <StoredImage
+              src={idol.cutoutPhoto}
+              alt={`${idol.name} 的去背照片`}
+              className="absolute inset-x-0 bottom-0 z-10 mx-auto h-[95%] w-full object-contain object-bottom"
+            />
+          ) : idol.photo ? (
+            <StoredImage
+              src={idol.photo}
+              alt={`${idol.name} 的照片`}
+              className="absolute inset-0 z-10 size-full object-cover object-center"
+            />
           ) : (
-            <>
-              <p className="mt-2 font-display text-[48px] leading-[0.95] font-semibold text-primary">
-                {next.days}
-              </p>
-              <p className="mt-2 text-[13px] tracking-[0.34em] text-muted-foreground uppercase">
-                Days
-              </p>
-            </>
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 text-muted-foreground">
+              <ImageIcon className="size-8" strokeWidth={1.3} />
+              <span className="text-sm">放一張你喜歡的照片 ♡</span>
+            </div>
           )}
 
-          {/* 4. 活動名稱 */}
-          <p className="mt-6 text-[17px]">{next.titleLabel}</p>
-          {/* 5. 活動日期 */}
-          <p className="mt-1.5 text-sm text-muted-foreground">
-            {next.dateLabel}・{next.ddayLabel}
-          </p>
-          <p
-            className={`mt-3 text-[15px] leading-relaxed ${isToday ? "text-primary" : "text-muted-foreground"}`}
-          >
-            {next.line}
-          </p>
-        </>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-36 bg-gradient-to-t from-[#f7dfe7] via-[#f7dfe7]/58 to-transparent" />
 
-      ) : (
-        <>
-          <p className="mt-3 text-sm text-muted-foreground">還沒有設定重要日子</p>
+          <div className="absolute inset-x-5 bottom-9 z-30 text-center">
+            <p className="font-display text-[22px] font-medium text-foreground/90">
+              今天也一起追星吧 ♡
+            </p>
+            <p className="mt-1 text-[11px] tracking-[0.12em] text-muted-foreground">
+              {idol.groupName ? `${idol.groupName} · ${idol.name}` : idol.name}
+            </p>
+          </div>
+        </Link>
+
+        {/* D-Day card */}
+        {next ? (
+          <Link
+            to={event ? "/events" : "/idols/$idolId"}
+            params={event ? undefined : { idolId: idol.id }}
+            className="relative z-20 mx-2 -mt-5 block rounded-[1.8rem] border border-white/80 bg-white/90 px-5 py-4 shadow-[0_12px_32px_rgba(146,92,112,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <div className="min-w-0">
+                <p className="text-[10px] font-medium tracking-[0.18em] text-primary uppercase">
+                  Next D-Day
+                </p>
+
+                <p className="mt-1.5 truncate text-[15px] font-medium">
+                  {next.titleLabel}
+                </p>
+
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  {next.dateLabel}
+                </p>
+              </div>
+
+              <div className="shrink-0 text-right">
+                <p className="font-display text-[38px] font-semibold leading-none text-primary">
+                  {isToday ? "TODAY" : `D-${next.days}`}
+                </p>
+              </div>
+            </div>
+          </Link>
+        ) : (
           <Link
             to="/idols/$idolId"
             params={{ idolId: idol.id }}
-            className="mt-4 inline-flex rounded-full border border-border/70 px-5 py-2 text-xs transition-transform duration-300 active:scale-95"
+            className="relative z-20 mx-2 -mt-5 block rounded-[1.8rem] border border-white/80 bg-white/90 px-5 py-4 text-center shadow-soft"
           >
-            去設定
+            <p className="text-sm font-medium">還沒有下一個重要日子</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              設定生日、演唱會或紀念日 ♡
+            </p>
           </Link>
-        </>
-      )}
-
-      {/* 6. 偶像照片 */}
-      <Link
-        to="/idols/$idolId"
-        params={{ idolId: idol.id }}
-        className="mx-auto mt-10 block size-40 overflow-hidden rounded-full border border-border/60 bg-surface shadow-soft transition-transform duration-300 active:scale-[0.98]"
-      >
-        {idol.photo ? (
-          <StoredImage src={idol.photo} alt={`${idol.name} 的照片`} className="size-full object-cover" />
-        ) : (
-          <div className="flex size-full flex-col items-center justify-center gap-1.5 text-muted-foreground">
-            <ImageIcon className="size-6" strokeWidth={1.3} />
-            <span className="text-[13px]">放一張照片</span>
-          </div>
         )}
-      </Link>
+      </div>
     </section>
   );
 }
 
 function Companionship({ idol }: { idol: Idol }) {
   const since = daysSince(idol.sinceDate);
-  const start = parseLocalDate(idol.sinceDate);
 
   if (!since || since.isFuture || since.days === null) {
-    return (
-      <section className="text-center">
-        <p className="text-sm text-muted-foreground">還沒開始計算陪伴的日子</p>
-        <Link
-          to="/idols/$idolId"
-          params={{ idolId: idol.id }}
-          className="mt-3 inline-flex rounded-full border border-border/70 px-5 py-2 text-xs transition-transform duration-300 active:scale-95"
-        >
-          設定喜歡他的日期
-        </Link>
-      </section>
-    );
+    return null;
   }
 
   return (
-    <section className="text-center">
-      <p className="text-sm text-muted-foreground">已經一起走過</p>
-      <p className="mt-2 font-display text-[40px] leading-none font-semibold">
-        {since.days}
-        <span className="ml-2 align-middle text-[13px] tracking-[0.3em] text-muted-foreground uppercase">
-          Days
-        </span>
-      </p>
-      {start ? (
-        <p className="mt-2.5 text-xs tracking-wide text-muted-foreground">
-          since {start.y}.{String(start.m).padStart(2, "0")}.{String(start.d).padStart(2, "0")}
-        </p>
-      ) : null}
-    </section>
+    <Link
+      to="/idols/$idolId"
+      params={{ idolId: idol.id }}
+      className="mt-3 flex items-center justify-between rounded-[1.7rem] border border-white/80 bg-white/90 px-5 py-3.5 shadow-soft backdrop-blur-md transition-transform active:scale-[0.99]"
+    >
+      <div className="flex items-end gap-3">
+        <div>
+          <p className="text-[11px] tracking-[0.12em] text-primary">
+            陪伴他走過
+          </p>
+
+          <div className="mt-1 flex items-end gap-2">
+            <span className="font-display text-[30px] font-semibold leading-none">
+              {since.days}
+            </span>
+
+            <span className="pb-0.5 text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
+              Days
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex size-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+        ♡
+      </div>
+    </Link>
   );
 }
 
@@ -337,10 +358,30 @@ function HomePage() {
     (upcomingEvent ? findIdol(upcomingEvent.idolId) : undefined) ?? main;
 
   return (
-    <AppShell>
-      <header className="mb-8 text-center">
-        <p className="text-xs tracking-[0.32em] text-muted-foreground uppercase">IdolDays</p>
-        <p className="mt-2 text-xs tracking-[0.2em] text-muted-foreground">{formatDotDate(new Date())}</p>
+    <AppShell showProfileShortcut={false}>
+      <header className="mb-1 flex h-10 items-center justify-between">
+        <p className="font-display text-[24px] font-semibold tracking-[-0.02em] text-primary">
+          IdolDays
+        </p>
+
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            className="relative flex size-9 items-center justify-center rounded-full border border-white/70 bg-white/75 shadow-soft backdrop-blur-md"
+            aria-label="通知"
+          >
+            <Bell className="size-[18px]" strokeWidth={1.6} />
+            <span className="absolute right-1 top-1 size-2 rounded-full bg-primary" />
+          </button>
+
+          <Link
+            to="/profile"
+            aria-label="我的"
+            className="flex size-9 items-center justify-center rounded-full border border-white/70 bg-white/75 text-muted-foreground shadow-soft backdrop-blur-md transition-transform active:scale-95"
+          >
+            <User className="size-[18px]" strokeWidth={1.6} />
+          </Link>
+        </div>
       </header>
 
       {!ready ? (

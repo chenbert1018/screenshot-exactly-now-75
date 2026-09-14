@@ -14,6 +14,7 @@ export type Idol = {
   favoriteColor: string;
   sinceDate: string;
   photo: string;
+  cutoutPhoto?: string;
 };
 
 export type IdolDraft = Omit<Idol, "id">;

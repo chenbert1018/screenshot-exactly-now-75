@@ -1,4 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
+import {
+  getIdolDaysPlusEntitlement,
+  isStoreKitAvailable,
+  purchaseIdolDaysPlus,
+  restoreIdolDaysPlus,
+} from "./storekit-native";
 
 /**
  * IdolDays+ 訂閱狀態（只有三種，沒有試用）。
@@ -32,18 +38,14 @@ export const PLUS_IDOL_LIMIT = 6;
 
 /** IdolDays+ 解鎖項目（Paywall 清單） */
 export const PLUS_BENEFITS = [
-  "最多 6 位偶像",
-  "進階倒數日",
-  "專屬主題",
-  "專屬桌面小工具",
-  "回憶進階功能",
-  "年度回顧手帳",
-  "私人相簿分享",
-  "嗑糖進階功能",
-  "自訂提醒",
-  "專屬陪伴文案",
-  "雲端備份加大",
-
+  "👤 最多 6 位偶像",
+  "⏳ 進階倒數日",
+  "🎨 專屬主題",
+  "📱 專屬桌面小工具",
+  "📖 回憶 Plus",
+  "💌 私人相簿分享",
+  "🍬 嗑糖 Plus",
+  "🔔 進階提醒",
 ] as const;
 
 export type PremiumFeature =
@@ -136,11 +138,53 @@ export function useSubscription() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    setState(read());
-    setReady(true);
+    let cancelled = false;
+
+    const localState = read();
+    setState(localState);
+
     const fn = (s: SubscriptionState) => setState(s);
     listeners.add(fn);
+
+    const syncEntitlement = async () => {
+      if (!isStoreKitAvailable()) {
+        if (!cancelled) setReady(true);
+        return;
+      }
+
+      try {
+        const entitlement =
+          await getIdolDaysPlusEntitlement();
+
+        if (cancelled) return;
+
+        const next: SubscriptionState = {
+          status: entitlement.active
+            ? "ACTIVE"
+            : localState.status === "ACTIVE"
+              ? "EXPIRED"
+              : localState.status,
+          startedAt: entitlement.active
+            ? localState.startedAt ?? new Date().toISOString()
+            : null,
+        };
+
+        write(next);
+        emit(next);
+      } catch (error) {
+        console.error(
+          "IdolDays+ entitlement check failed",
+          error,
+        );
+      } finally {
+        if (!cancelled) setReady(true);
+      }
+    };
+
+    void syncEntitlement();
+
     return () => {
+      cancelled = true;
       listeners.delete(fn);
     };
   }, []);
@@ -154,8 +198,37 @@ export function useSubscription() {
     emit(next);
   }, []);
 
-  /** 訂閱後立即解鎖 */
-  const subscribe = useCallback(() => setStatus("ACTIVE"), [setStatus]);
+  /** 透過 Apple StoreKit 訂閱 IdolDays+ */
+  const subscribe = useCallback(async () => {
+    if (!isStoreKitAvailable()) {
+      return {
+        status: "unavailable" as const,
+        active: false,
+      };
+    }
+
+    const result = await purchaseIdolDaysPlus();
+
+    if (result.status === "purchased" && result.active) {
+      setStatus("ACTIVE");
+    }
+
+    return result;
+  }, [setStatus]);
+
+  /** 恢復 Apple 購買 */
+  const restorePurchases = useCallback(async () => {
+    if (!isStoreKitAvailable()) {
+      return { active: false };
+    }
+
+    const result = await restoreIdolDaysPlus();
+
+    setStatus(result.active ? "ACTIVE" : "EXPIRED");
+
+    return result;
+  }, [setStatus]);
+
   const expire = useCallback(() => setStatus("EXPIRED"), [setStatus]);
 
   return {
@@ -164,6 +237,7 @@ export function useSubscription() {
     isPlus: isPlusActive(state),
     idolLimit: idolLimitFor(state),
     subscribe,
+    restorePurchases,
     expire,
     setStatus,
   };

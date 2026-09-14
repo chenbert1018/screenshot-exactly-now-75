@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { isCutoutImageRef, loadCutoutImageBlob } from "@/lib/cutout-image-store";
 
 /**
  * 雲端照片（Supabase Storage）集中處理層。
@@ -172,22 +173,66 @@ export async function resolveImageUrl(value: string | null | undefined): Promise
 
 /** React 端統一入口：把任何照片值換成可顯示的 src */
 export function useImageSrc(value: string | null | undefined): string {
-  const [src, setSrc] = useState(() => (isStorageRef(value) ? "" : (value ?? "")));
+  const [src, setSrc] = useState(() =>
+    isStorageRef(value) || isCutoutImageRef(value)
+      ? ""
+      : (value ?? ""),
+  );
 
   useEffect(() => {
     let active = true;
+    let objectUrl: string | null = null;
+
     if (!value) {
       setSrc("");
-      return;
+
+      return () => {
+        active = false;
+      };
     }
+
+    if (isCutoutImageRef(value)) {
+      setSrc("");
+
+      void loadCutoutImageBlob(value)
+        .then((blob) => {
+          if (!active || !blob) return;
+
+          objectUrl = URL.createObjectURL(blob);
+          setSrc(objectUrl);
+        })
+        .catch((error) => {
+          console.error(
+            "[IdolDays Cutout] Unable to load local cutout:",
+            error,
+          );
+
+          if (active) setSrc("");
+        });
+
+      return () => {
+        active = false;
+
+        if (objectUrl) {
+          URL.revokeObjectURL(objectUrl);
+        }
+      };
+    }
+
     if (!isStorageRef(value)) {
       setSrc(value);
-      return;
+
+      return () => {
+        active = false;
+      };
     }
+
     setSrc("");
+
     void resolveImageUrl(value).then((url) => {
       if (active) setSrc(url);
     });
+
     return () => {
       active = false;
     };
