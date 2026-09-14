@@ -309,7 +309,7 @@ export function EventDetailSheet({
                 ☀️ 防曬補水
               </span>
               <span className="rounded-full bg-card px-3 py-1.5 text-[11px]">
-                選擇你的偶像代表動物 · 🐶 陽光小狗 · 🐱 傲嬌貓 · 🦊 帥氣狐狸 · 🐰 溫柔兔子 · 🐺 冷酷狼
+                選擇你的偶像代表動物 · 🐶 陽光小狗 · 🐱 傲嬌貓 · 🦊 帥氣狐狸 · 🐰 溫柔兔子 · 🐺 冷酷狼 · 🦁 自信獅子
               </span>
             </div>
 
