@@ -1,55 +1,22 @@
 import { StoredImage } from "@/components/StoredImage";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Bell, Heart, ImageIcon, Plus, User } from "lucide-react";
-import { AppShell, Section, EmptyState, SoftCard } from "@/components/AppShell";
+import { ArrowRight, Bell, CalendarHeart, CloudSun, Heart, History, ImageIcon, Plus, Search } from "lucide-react";
+import { AppShell, EmptyState, Section } from "@/components/AppShell";
 import type { Idol } from "@/lib/idols";
 import { useIdolSource } from "@/lib/idols.source";
-import { eventCountdown, eventTypeMeta, nextEvent, type IdolEvent } from "@/lib/events";
+import { canUseFanWeather, eventCountdown, nextEvent, type IdolEvent } from "@/lib/events";
 import { useEventSource } from "@/lib/events.source";
-import { daysSince, nextAnniversary, primaryDay, parseLocalDate } from "@/lib/dates";
-
-import {
-  dailyMessage,
-  formatDotDate,
-  todayFullLabel,
-  todayWeekday,
-} from "@/lib/companion";
-import {
-  birthdayDdayLine,
-  debutDdayLine,
-  eventDdayLine,
-  yearsAgoLine,
-} from "@/lib/fanCopy";
-import { dailySugarPick, type HeartItem } from "@/lib/heart";
-import { useSugarSource } from "@/lib/sugar.source";
-import { HeartFormSheet } from "@/components/HeartFormSheet";
-import { HeartDetailSheet, dotDate } from "@/components/HeartDetailSheet";
-import { toast } from "sonner";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { useArchaeology } from "@/lib/archaeology";
+import { useMemorySource } from "@/lib/memories.source";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "IdolDays｜偶像專屬倒數日" },
-      {
-        name: "description",
-        content: "IdolDays 是為 KPOP 粉絲打造的私人陪伴 App，收藏你喜歡一個人的日子。",
-      },
+      { name: "description", content: "IdolDays 是為 KPOP 粉絲打造的私人陪伴 App，收藏你喜歡一個人的日子。" },
       { property: "og:title", content: "IdolDays｜偶像專屬倒數日" },
-      {
-        property: "og:description",
-        content: "不是在倒數日子，而是在收藏我喜歡一個人的日子。",
-      },
+      { property: "og:description", content: "不是在倒數日子，而是在收藏我喜歡一個人的日子。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -57,524 +24,187 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
-function Divider() {
-  return <div className="mx-auto my-9 h-px w-16 bg-border/70" />;
+function dotDate(value: string) {
+  return value.replaceAll("-", ".");
 }
 
-function CountdownHero({ idol, event }: { idol: Idol; event?: IdolEvent | undefined }) {
-  const day = primaryDay(idol);
-  const source = day?.kind === "birthday" ? idol.birthday : idol.debutDate;
-  const anniversary = nextAnniversary(source);
-  const countdown = event ? eventCountdown(event.date) : null;
-
-  const next =
-    event && countdown
-      ? {
-          days: countdown.daysUntil ?? 0,
-          dateLabel: countdown.dotDate,
-          titleLabel: event.title,
-        }
-      : day && anniversary
-        ? {
-            days: day.daysUntil,
-            dateLabel: formatDotDate(anniversary.nextDate),
-            titleLabel: `${idol.name} 的${day.title}`,
-          }
-        : null;
-
-  const isToday = next?.days === 0;
-
-  return (
-    <section className="-mx-5">
-      <div className="relative overflow-hidden bg-gradient-to-b from-[#fde8ef] via-[#fdf1f4] to-background px-3 pb-3">
-
-        {/* Dreamy cutout Hero */}
-        <Link
-          to="/idols/$idolId"
-          params={{ idolId: idol.id }}
-          className="relative block h-[360px] overflow-hidden rounded-[1.8rem] bg-gradient-to-b from-[#f8dce8] via-[#fae7ee] to-[#f7dfe7]"
-        >
-          {idol.photo ? (
-            <StoredImage
-              src={idol.photo}
-              alt=""
-              aria-hidden
-              className="absolute inset-0 size-full scale-110 object-cover object-center opacity-20 blur-2xl"
-            />
-          ) : null}
-
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/15 via-transparent to-[#f7dfe7]/90" />
-          <div className="pointer-events-none absolute -left-16 top-6 size-64 rounded-full bg-[#f5c8d9]/45 blur-3xl" />
-          <div className="pointer-events-none absolute -right-14 top-20 size-56 rounded-full bg-white/65 blur-3xl" />
-          <div className="pointer-events-none absolute inset-x-10 bottom-16 h-20 rounded-full bg-[#efbfd0]/30 blur-2xl" />
-
-          <span className="pointer-events-none absolute left-5 top-12 z-20 text-lg text-primary/35">
-            ✦
-          </span>
-          <span className="pointer-events-none absolute right-6 top-24 z-20 text-xl text-primary/25">
-            ✧
-          </span>
-          <span className="pointer-events-none absolute left-9 bottom-28 z-20 text-primary/30">
-            ♡
-          </span>
-
-          {idol.cutoutPhoto ? (
-            <StoredImage
-              src={idol.cutoutPhoto}
-              alt={`${idol.name} 的去背照片`}
-              className="absolute inset-x-0 bottom-0 z-10 mx-auto h-[95%] w-full object-contain object-bottom"
-            />
-          ) : idol.photo ? (
-            <StoredImage
-              src={idol.photo}
-              alt={`${idol.name} 的照片`}
-              className="absolute inset-0 z-10 size-full object-cover object-center"
-            />
-          ) : (
-            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 text-muted-foreground">
-              <ImageIcon className="size-8" strokeWidth={1.3} />
-              <span className="text-sm">放一張你喜歡的照片 ♡</span>
-            </div>
-          )}
-
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-36 bg-gradient-to-t from-[#f7dfe7] via-[#f7dfe7]/58 to-transparent" />
-
-          <div className="absolute inset-x-5 bottom-9 z-30 text-center">
-            <p className="font-display text-[22px] font-medium text-foreground/90">
-              今天也一起追星吧 ♡
-            </p>
-            <p className="mt-1 text-[11px] tracking-[0.12em] text-muted-foreground">
-              {idol.groupName ? `${idol.groupName} · ${idol.name}` : idol.name}
-            </p>
-          </div>
-        </Link>
-
-        {/* D-Day card */}
-        {next ? (
-          <Link
-            to={event ? "/events" : "/idols/$idolId"}
-            params={event ? undefined : { idolId: idol.id }}
-            className="relative z-20 mx-2 -mt-5 block rounded-[1.8rem] border border-white/80 bg-white/90 px-5 py-4 shadow-[0_12px_32px_rgba(146,92,112,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]"
-          >
-            <div className="flex items-center justify-between gap-4">
-              <div className="min-w-0">
-                <p className="text-[10px] font-medium tracking-[0.18em] text-primary uppercase">
-                  Next D-Day
-                </p>
-
-                <p className="mt-1.5 truncate text-[15px] font-medium">
-                  {next.titleLabel}
-                </p>
-
-                <p className="mt-1 text-[11px] text-muted-foreground">
-                  {next.dateLabel}
-                </p>
-              </div>
-
-              <div className="shrink-0 text-right">
-                <p className="font-display text-[38px] font-semibold leading-none text-primary">
-                  {isToday ? "TODAY" : `D-${next.days}`}
-                </p>
-              </div>
-            </div>
-          </Link>
-        ) : (
-          <Link
-            to="/idols/$idolId"
-            params={{ idolId: idol.id }}
-            className="relative z-20 mx-2 -mt-5 block rounded-[1.8rem] border border-white/80 bg-white/90 px-5 py-4 text-center shadow-soft"
-          >
-            <p className="text-sm font-medium">還沒有下一個重要日子</p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              設定生日、演唱會或紀念日 ♡
-            </p>
-          </Link>
-        )}
-      </div>
-    </section>
-  );
+function dayLabel(event: IdolEvent) {
+  const days = eventCountdown(event.date).daysUntil ?? 0;
+  return days === 0 ? "TODAY" : `D - ${Math.max(0, days)}`;
 }
 
-function Companionship({ idol }: { idol: Idol }) {
-  const since = daysSince(idol.sinceDate);
-
-  if (!since || since.isFuture || since.days === null) {
-    return null;
-  }
-
+function EventCard({ event }: { event: IdolEvent }) {
   return (
-    <Link
-      to="/idols/$idolId"
-      params={{ idolId: idol.id }}
-      className="mt-3 flex items-center justify-between rounded-[1.7rem] border border-white/80 bg-white/90 px-5 py-3.5 shadow-soft backdrop-blur-md transition-transform active:scale-[0.99]"
-    >
-      <div className="flex items-end gap-3">
-        <div>
-          <p className="text-[11px] tracking-[0.12em] text-primary">
-            陪伴他走過
-          </p>
-
-          <div className="mt-1 flex items-end gap-2">
-            <span className="font-display text-[30px] font-semibold leading-none">
-              {since.days}
-            </span>
-
-            <span className="pb-0.5 text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
-              Days
-            </span>
-          </div>
-        </div>
+    <Link to="/events" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-white/80 bg-white/85 px-5 py-4 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
+      <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+        <CalendarHeart className="size-6" strokeWidth={1.55} />
       </div>
-
-      <div className="flex size-9 items-center justify-center rounded-full bg-primary/10 text-primary">
-        ♡
+      <div className="min-w-0 flex-1">
+        <p className="text-[11px] font-medium tracking-[0.12em] text-primary uppercase">Next D-Day</p>
+        <p className="mt-1 truncate text-[17px] font-medium">{event.title}</p>
+        <p className="mt-1 text-xs text-muted-foreground">{dotDate(event.date)}</p>
       </div>
+      <p className="shrink-0 font-display text-[35px] leading-none text-primary">{dayLabel(event)}</p>
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+        <ArrowRight className="size-4" strokeWidth={2} />
+      </span>
     </Link>
   );
 }
 
-function TodaySection({ name }: { name?: string }) {
+function FanWeatherCard({ event }: { event: IdolEvent }) {
+  const days = eventCountdown(event.date).daysUntil ?? 0;
+  const timing = days === 0 ? "今天" : `${Math.max(0, days)} 天後`;
+  const place = event.locationName?.trim() || event.city?.trim() || event.title;
+
   return (
-    <section className="text-center">
-      <p className="text-[13px] tracking-[0.34em] text-muted-foreground uppercase">Today</p>
-      <p className="mt-3 text-[17px]">{todayFullLabel()}</p>
-      <p className="mt-1 text-sm text-muted-foreground">{todayWeekday()}</p>
-      <p className="mt-5 text-[15px] leading-relaxed">{dailyMessage(name)}</p>
-    </section>
+    <Link to="/weather/$eventId" params={{ eventId: event.id }} className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-white/80 bg-white/85 px-5 py-4 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
+      <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-[#e8e6ff] text-[#8b87cf]">
+        <CloudSun className="size-7" strokeWidth={1.45} />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-[11px] font-medium tracking-[0.08em] text-primary">Fan Weather</p>
+        <p className="mt-1 truncate text-[16px] font-medium">{timing}・{event.title}</p>
+        <p className="mt-1 truncate text-sm text-muted-foreground">記得留意 {place} 的天氣 ♡</p>
+      </div>
+      <ArrowRight className="size-5 shrink-0 text-primary" strokeWidth={1.8} />
+    </Link>
   );
 }
 
-function KeepToday({ idol }: { idol?: Idol }) {
-  const [kept, setKept] = useState(false);
-  const since = idol ? daysSince(idol.sinceDate) : null;
-  const text =
-    idol && since && !since.isFuture
-      ? `已經喜歡 ${idol.name} ${since.days} 天了，怎麼還是每天都在被電 🥹`
-      : "今天也留給自己一點追星時間啦。";
-
+function ArchaeologyCard({ item }: { item: { title: string; imageUrl?: string; createdAt: string; collection: string } }) {
   return (
-    <SoftCard className="px-6 py-7 text-center">
-      <p className="text-xs tracking-wide text-muted-foreground">今天也想記一下</p>
-      <p className="mt-3 text-[15px] leading-relaxed">{text}</p>
-      {kept ? (
-        <p className="mt-5 text-sm text-primary">好啦，今天先收起來 ♡</p>
-      ) : (
-        <button
-          type="button"
-          onClick={() => setKept(true)}
-          className="mt-5 inline-flex rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
-        >
-          收藏今天
-        </button>
-      )}
-    </SoftCard>
+    <Link to="/archaeology" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-white/80 bg-white/85 p-3 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
+      <div className="flex size-[5.2rem] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/10 text-primary">
+        {item.imageUrl ? <StoredImage src={item.imageUrl} alt="" className="size-full object-cover" /> : <Search className="size-7" strokeWidth={1.5} />}
+      </div>
+      <div className="min-w-0 flex-1 py-1">
+        <p className="text-[11px] font-medium text-primary">▣ 最近收進考古</p>
+        <p className="mt-1 truncate text-[17px] font-medium">{item.title}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{dotDate(item.createdAt.slice(0, 10))}{item.collection ? `・${item.collection}` : ""}</p>
+      </div>
+      <ArrowRight className="mr-1 size-5 shrink-0 text-primary" strokeWidth={1.8} />
+    </Link>
   );
 }
 
-/** 首頁糖區：只回顧已收藏的糖，不會產生任何新資料 */
-function SugarSection({
-  pick,
-  idolName,
-  onOpen,
-  onCreate,
-}: {
-  pick: HeartItem | null;
-  idolName: string;
-  onOpen: () => void;
-  onCreate: () => void;
-}) {
+function MemoryCard({ memory }: { memory: { title: string; note: string; photo?: string; date: string } }) {
+  const text = memory.title.trim() || memory.note.trim() || "那天也好想你 ♡";
   return (
-    <section className="mt-9">
-      <h2 className="font-display text-[17px]">🍬 今天也有一顆糖嗎？</h2>
-      {pick ? (
-        <>
-          <p className="mt-1.5 text-sm text-muted-foreground">這顆我可以嗑很久 👀</p>
-          <SoftCard className="mt-3 overflow-hidden p-0">
-            {pick.image ? (
-              <StoredImage
-                src={pick.image}
-                alt={pick.title}
-                className="aspect-[4/3] w-full object-cover"
-              />
-            ) : null}
-            <div className="px-5 py-4">
-              <p className="font-display text-[16px] leading-snug">{pick.title}</p>
-              <p className="mt-1.5 text-xs text-muted-foreground">
-                {dotDate(pick.date)}・{idolName}
-              </p>
-              <button
-                type="button"
-                onClick={onOpen}
-                className="mt-4 inline-flex rounded-full bg-primary px-5 py-2 text-xs font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
-              >
-                去嗑這顆 →
-              </button>
-            </div>
-          </SoftCard>
-        </>
-      ) : (
-        <div className="mt-3 rounded-3xl border border-border/60 bg-card/70 px-5 py-5 shadow-soft">
-          <p className="text-sm text-muted-foreground">還沒有收藏的糖，先去存一顆吧 ♡</p>
-          <button
-            type="button"
-            onClick={onCreate}
-            className="mt-4 inline-flex rounded-full bg-primary px-5 py-2 text-xs font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
-          >
-            去收藏第一顆糖 →
-          </button>
+    <Link to="/memories" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-white/80 bg-white/85 p-3 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
+      <div className="flex size-[5.2rem] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/10 text-primary">
+        {memory.photo ? <StoredImage src={memory.photo} alt="" className="size-full object-cover" /> : <History className="size-7" strokeWidth={1.45} />}
+      </div>
+      <div className="min-w-0 flex-1 py-1">
+        <p className="text-[11px] font-medium text-primary">▣ 去年的今天</p>
+        <p className="mt-1 text-[17px] font-medium">{dotDate(memory.date)}</p>
+        <p className="mt-1 truncate text-sm text-muted-foreground">{text}</p>
+      </div>
+      <ArrowRight className="mr-1 size-5 shrink-0 text-primary" strokeWidth={1.8} />
+    </Link>
+  );
+}
+
+function EmptyMemoryCard() {
+  return (
+    <Link to="/memories" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-white/80 bg-white/75 px-5 py-4 shadow-soft backdrop-blur-xl transition-transform active:scale-[0.99]">
+      <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary"><History className="size-6" strokeWidth={1.45} /></div>
+      <div className="min-w-0 flex-1">
+        <p className="text-[11px] font-medium text-primary">去年的今天</p>
+        <p className="mt-1 text-sm text-muted-foreground">今天還沒有去年的回憶，繼續把喜歡收藏起來吧 ♡</p>
+      </div>
+      <ArrowRight className="size-5 shrink-0 text-primary" strokeWidth={1.8} />
+    </Link>
+  );
+}
+
+function Hero({ idol }: { idol: Idol }) {
+  const backdrop = idol.photo || idol.cutoutPhoto;
+  return (
+    <section className="relative mt-1 overflow-hidden rounded-[2rem] bg-gradient-to-b from-[#f6cddb] via-[#f9dfe7] to-[#fdf0f3] shadow-[0_18px_40px_rgba(176,102,130,0.16)]">
+      {backdrop ? <StoredImage src={backdrop} alt="" aria-hidden className="absolute inset-0 size-full scale-110 object-cover opacity-20 blur-3xl" /> : null}
+      <div className="absolute -left-16 top-12 size-56 rounded-full bg-white/40 blur-3xl" />
+      <div className="absolute -right-20 bottom-12 size-60 rounded-full bg-primary/20 blur-3xl" />
+      <span className="absolute left-5 top-24 text-xl text-primary/30">✧</span>
+      <span className="absolute right-6 top-36 text-2xl text-primary/30">✦</span>
+      <span className="absolute left-9 bottom-28 text-lg text-primary/35">♡</span>
+      <Link to="/idols/$idolId" params={{ idolId: idol.id }} className="relative block h-[350px] overflow-hidden">
+        {idol.cutoutPhoto ? (
+          <StoredImage src={idol.cutoutPhoto} alt={`${idol.name} 的去背照片`} className="absolute inset-x-0 bottom-0 z-10 mx-auto h-[94%] w-full object-contain object-bottom" />
+        ) : idol.photo ? (
+          <StoredImage src={idol.photo} alt={`${idol.name} 的照片`} className="absolute inset-0 z-10 size-full object-cover object-center" />
+        ) : (
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 text-muted-foreground"><ImageIcon className="size-8" strokeWidth={1.3} /><span className="text-sm">放一張你喜歡的照片 ♡</span></div>
+        )}
+        <div className="absolute inset-x-0 bottom-0 z-20 h-48 bg-gradient-to-t from-[#fdf0f3] via-[#fdf0f3]/66 to-transparent" />
+        <div className="absolute bottom-7 left-6 z-30">
+          <p className="font-display text-[36px] leading-none text-primary/90">Good<br />Morning ♡</p>
+          <p className="mt-5 text-[17px] leading-relaxed text-foreground/80">今天也一起<br />追星吧！</p>
         </div>
-      )}
-    </section>
-  );
-}
-
-function YearsAgo() {
-  return (
-    <section className="text-center">
-      <p className="text-xs tracking-wide text-muted-foreground">幾年前的今天</p>
-      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{yearsAgoLine()}</p>
+      </Link>
     </section>
   );
 }
 
 function HomePage() {
-  const { idols, ready, findIdol, mainIdol } = useIdolSource();
-  const [heartOpen, setHeartOpen] = useState(false);
-  const { items: sugarItems, add: addSugar, update: updateSugar, remove: removeSugar } =
-    useSugarSource();
-  const [sugarDetail, setSugarDetail] = useState<HeartItem | null>(null);
-  const [sugarEditing, setSugarEditing] = useState<HeartItem | null>(null);
-  const [sugarPendingDelete, setSugarPendingDelete] = useState<HeartItem | null>(null);
-  // 每天固定挑一顆「已收藏」的糖回顧，不會建立任何新資料
-  const dailySugar = useMemo(() => dailySugarPick(sugarItems), [sugarItems]);
-  const sugarIdolName = (id: string) => idols.find((i) => i.id === id)?.name || "已刪除的偶像";
+  const { mainIdol, ready } = useIdolSource();
   const { events } = useEventSource();
+  const { items: archaeology } = useArchaeology();
+  const { all: memories } = useMemorySource();
   const main = mainIdol;
-  const others = idols.filter((i) => i.id !== main?.id);
 
-  // NEXT D-DAY 優先使用最近的 Event（找不到對應偶像時仍以主要偶像呈現）
-  const upcomingEvent = nextEvent(events);
-  const heroIdol =
-    (upcomingEvent ? findIdol(upcomingEvent.idolId) : undefined) ?? main;
+  const nextMainEvent = useMemo(
+    () => (main ? nextEvent(events.filter((event) => event.idolId === main.id)) : undefined),
+    [events, main],
+  );
+  const latestArchaeology = useMemo(
+    () => main ? archaeology.filter((item) => item.idolId === main.id).sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0] : undefined,
+    [archaeology, main],
+  );
+  const memoryFromToday = useMemo(() => {
+    if (!main) return undefined;
+    const today = new Date();
+    const monthDay = `-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    const currentYear = today.getFullYear();
+    return memories
+      .filter((memory) => {
+        const year = Number(memory.date.slice(0, 4));
+        return memory.idolId === main.id && memory.date.endsWith(monthDay) && year < currentYear;
+      })
+      .sort((a, b) => b.date.localeCompare(a.date))[0];
+  }, [main, memories]);
 
   return (
     <AppShell showProfileShortcut={false}>
-      <header className="mb-1 flex h-10 items-center justify-between">
-        <p className="font-display text-[24px] font-semibold tracking-[-0.02em] text-primary">
-          IdolDays
-        </p>
-
-        <div className="flex items-center gap-1.5">
-          <button
-            type="button"
-            className="relative flex size-9 items-center justify-center rounded-full border border-white/70 bg-white/75 shadow-soft backdrop-blur-md"
-            aria-label="通知"
-          >
-            <Bell className="size-[18px]" strokeWidth={1.6} />
-            <span className="absolute right-1 top-1 size-2 rounded-full bg-primary" />
-          </button>
-
-          <Link
-            to="/profile"
-            aria-label="我的"
-            className="flex size-9 items-center justify-center rounded-full border border-white/70 bg-white/75 text-muted-foreground shadow-soft backdrop-blur-md transition-transform active:scale-95"
-          >
-            <User className="size-[18px]" strokeWidth={1.6} />
-          </Link>
-        </div>
+      <header className="mb-3 flex items-center justify-between px-1">
+        <p className="font-display text-[27px] tracking-[-0.03em] text-primary">IdolDays</p>
+        <Link to="/profile" aria-label="通知與個人設定" className="relative flex size-10 items-center justify-center rounded-full border border-white/75 bg-white/70 text-foreground shadow-soft backdrop-blur-md transition-transform active:scale-95">
+          <Bell className="size-5" strokeWidth={1.55} />
+          <span className="absolute right-0.5 top-0.5 size-2.5 rounded-full border-2 border-white bg-primary" />
+        </Link>
       </header>
 
       {!ready ? (
-        <div className="h-72 rounded-3xl border border-border/60 bg-surface/40" aria-hidden />
-      ) : main && heroIdol ? (
+        <div className="h-[31rem] rounded-[2rem] bg-surface/60" aria-hidden />
+      ) : main ? (
         <>
-          <CountdownHero idol={heroIdol} event={upcomingEvent} />
-
-          <Divider />
-          <Companionship idol={main} />
-          <Divider />
-          <TodaySection name={main.name} />
-          <div className="mt-9">
-            <KeepToday idol={main} />
-          </div>
-          <SugarSection
-            pick={dailySugar}
-            idolName={dailySugar ? sugarIdolName(dailySugar.idolId) : ""}
-            onOpen={() => setSugarDetail(dailySugar)}
-            onCreate={() => setHeartOpen(true)}
-          />
-          <Divider />
-          <YearsAgo />
-
-          {others.length > 0 ? (
-            <div className="mt-10">
-              <h2 className="mb-3 text-[15px] font-medium tracking-wide">我的偶像</h2>
-              <div className="-mx-5 flex snap-x gap-4 overflow-x-auto px-5 pb-2">
-                {others.map((idol) => (
-                  <div key={idol.id} className="w-36 shrink-0 snap-start">
-                    <MiniIdol idol={idol} />
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : null}
+          <Hero idol={main} />
+          {nextMainEvent ? <EventCard event={nextMainEvent} /> : null}
+          {nextMainEvent && canUseFanWeather(nextMainEvent) ? <FanWeatherCard event={nextMainEvent} /> : null}
+          {latestArchaeology ? <ArchaeologyCard item={latestArchaeology} /> : null}
+          {memoryFromToday ? <MemoryCard memory={memoryFromToday} /> : <EmptyMemoryCard />}
+          <p className="mt-10 px-8 text-center font-display text-[16px] leading-relaxed text-muted-foreground/80">一起走過的每一天，<br />都是珍貴的回憶 ♡</p>
         </>
       ) : (
-        <>
-          <Section title="我的偶像">
-            <EmptyState
-              icon={<Heart className="size-5" strokeWidth={1.6} />}
-              title="還沒有你的第一位偶像"
-              description="今天也可以從一個名字開始，收藏屬於你的追星日子。"
-              action={
-                <Link
-                  to="/idols"
-                  className="inline-flex items-center gap-1.5 rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
-                >
-                  <Plus className="size-4" strokeWidth={2} />
-                  加入第一位偶像
-                </Link>
-              }
-            />
-          </Section>
-
-          <Divider />
-          <TodaySection />
-          <div className="mt-9">
-            <KeepToday />
-          </div>
-          <SugarSection
-            pick={dailySugar}
-            idolName={dailySugar ? sugarIdolName(dailySugar.idolId) : ""}
-            onOpen={() => setSugarDetail(dailySugar)}
-            onCreate={() => setHeartOpen(true)}
+        <Section title="我的偶像">
+          <EmptyState
+            icon={<Heart className="size-5" strokeWidth={1.6} />}
+            title="還沒有你的第一位偶像"
+            description="今天也可以從一個名字開始，收藏屬於你的追星日子。"
+            action={<Link to="/idols" className="inline-flex items-center gap-1.5 rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"><Plus className="size-4" strokeWidth={2} />加入第一位偶像</Link>}
           />
-          <Divider />
-          <YearsAgo />
-        </>
+        </Section>
       )}
-
-      <HeartDetailSheet
-        item={sugarDetail}
-        idolName={sugarDetail ? sugarIdolName(sugarDetail.idolId) : ""}
-        onOpenChange={(open) => {
-          if (!open) setSugarDetail(null);
-        }}
-        onEdit={() => {
-          if (!sugarDetail) return;
-          setSugarEditing(sugarDetail);
-          setHeartOpen(true);
-        }}
-        onDelete={() => sugarDetail && setSugarPendingDelete(sugarDetail)}
-      />
-
-      <HeartFormSheet
-        open={heartOpen}
-        onOpenChange={(open) => {
-          setHeartOpen(open);
-          if (!open) setSugarEditing(null);
-        }}
-        idols={idols}
-        initial={
-          sugarEditing
-            ? {
-                idolId: sugarEditing.idolId,
-                title: sugarEditing.title,
-                date: sugarEditing.date,
-                type: sugarEditing.type,
-                note: sugarEditing.note ?? "",
-                image: sugarEditing.image ?? "",
-                link: sugarEditing.link ?? "",
-              }
-            : undefined
-        }
-        title={sugarEditing ? "編輯這顆糖" : "收藏這顆糖 ♡"}
-        submitLabel="收藏這顆糖 ♡"
-        onSubmit={(draft) => {
-          if (sugarEditing) {
-            void updateSugar(sugarEditing.id, draft);
-            toast("這顆糖更新好了 ♡");
-          } else {
-            void addSugar(draft);
-            toast("收好了 ♡", { description: "這顆糖以後可以慢慢嗑。" });
-          }
-          setHeartOpen(false);
-          setSugarEditing(null);
-          setSugarDetail(null);
-        }}
-      />
-
-      <AlertDialog
-        open={!!sugarPendingDelete}
-        onOpenChange={(open) => {
-          if (!open) setSugarPendingDelete(null);
-        }}
-      >
-        <AlertDialogContent className="max-w-[20rem] rounded-3xl">
-          <AlertDialogHeader>
-            <AlertDialogTitle>這顆真的要刪掉嗎……🥹</AlertDialogTitle>
-            <AlertDialogDescription>
-              刪掉之後，就不會再出現在你的糖庫裡了。
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-full">留下這顆糖</AlertDialogCancel>
-            <AlertDialogAction
-              className="rounded-full bg-destructive text-destructive-foreground"
-              onClick={() => {
-                if (sugarPendingDelete) void removeSugar(sugarPendingDelete.id);
-                setSugarPendingDelete(null);
-                setSugarDetail(null);
-              }}
-            >
-              還是刪掉
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <Link
-        to="/memories"
-        className="mt-10 flex items-center justify-between rounded-3xl border border-border/60 bg-card/70 px-5 py-4 shadow-soft transition-transform duration-300 active:scale-[0.98]"
-      >
-        <span className="text-sm">把喜歡過的每一天，留在這裡 ♡</span>
-        <span aria-hidden className="text-primary">
-          →
-        </span>
-      </Link>
     </AppShell>
-
-  );
-}
-
-function MiniIdol({ idol }: { idol: Idol }) {
-  const day = primaryDay(idol);
-  return (
-    <Link
-      to="/idols/$idolId"
-      params={{ idolId: idol.id }}
-      className="block overflow-hidden rounded-2xl border border-border/60 bg-card shadow-soft transition-transform duration-300 active:scale-[0.98]"
-    >
-      <div className="aspect-[3/4] w-full bg-surface">
-        {idol.photo ? (
-          <StoredImage
-            src={idol.photo}
-            alt={`${idol.name} 的照片`}
-            loading="lazy"
-            className="size-full object-cover"
-          />
-        ) : (
-          <div className="flex size-full items-center justify-center text-muted-foreground">
-            <ImageIcon className="size-5" strokeWidth={1.4} />
-          </div>
-        )}
-      </div>
-      <div className="px-3 pt-2.5 pb-3">
-        <p className="truncate text-sm font-medium">{idol.name}</p>
-        <p className="mt-0.5 truncate text-[13px] text-muted-foreground">
-          {day ? day.ddayLabel : "設定重要日子"}
-        </p>
-      </div>
-    </Link>
   );
 }
