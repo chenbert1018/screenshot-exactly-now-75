@@ -240,7 +240,7 @@ export function EventFormSheet({
                 onClick={() => setPaywallOpen(true)}
                 className="mt-3 w-full rounded-full bg-primary px-4 py-2.5 text-center text-xs font-medium text-primary-foreground shadow-soft transition-transform active:scale-95"
               >
-                立即訂閱 IdolDays+
+                立即訂閱
               </button>
             </div>
             <div className="space-y-1.5">
