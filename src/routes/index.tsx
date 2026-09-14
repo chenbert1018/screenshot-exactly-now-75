@@ -9,6 +9,7 @@ import { canUseFanWeather, eventCountdown, nextEvent, type IdolEvent } from "@/l
 import { useEventSource } from "@/lib/events.source";
 import { useArchaeology } from "@/lib/archaeology";
 import { useMemorySource } from "@/lib/memories.source";
+import { daysSince } from "@/lib/dates";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -152,6 +153,10 @@ function HomePage() {
   const { items: archaeology } = useArchaeology();
   const { all: memories } = useMemorySource();
   const main = mainIdol;
+  const companionship = useMemo(
+    () => (main ? daysSince(main.sinceDate) : null),
+    [main],
+  );
 
   const nextMainEvent = useMemo(
     () => (main ? nextEvent(events.filter((event) => event.idolId === main.id)) : undefined),
@@ -193,7 +198,20 @@ function HomePage() {
           {nextMainEvent && canUseFanWeather(nextMainEvent) ? <FanWeatherCard event={nextMainEvent} /> : null}
           {latestArchaeology ? <ArchaeologyCard item={latestArchaeology} /> : null}
           {memoryFromToday ? <MemoryCard memory={memoryFromToday} /> : <EmptyMemoryCard />}
-          <p className="mt-10 px-8 text-center font-display text-[16px] leading-relaxed text-muted-foreground/80">一起走過的每一天，<br />都是珍貴的回憶 ♡</p>
+
+          {companionship && !companionship.isFuture && companionship.days !== null ? (
+            <section className="mt-5 rounded-[1.8rem] border border-white/80 bg-white/80 px-5 py-4 text-center shadow-[0_12px_32px_rgba(157,91,116,0.10)] backdrop-blur-xl">
+              <span aria-hidden className="absolute right-6 top-4 text-xl text-primary/55">♥</span>
+              <p className="text-[13px] font-medium text-muted-foreground">陪伴總走過</p>
+              <p className="mt-1 font-display text-[44px] leading-none text-foreground">
+                {companionship.days}
+                <span className="ml-1 text-[20px]">天</span>
+              </p>
+              <p className="mt-2 text-sm text-muted-foreground">一起走過的每一天都很珍貴 ♡</p>
+            </section>
+          ) : null}
+
+          <p className="mt-8 px-8 text-center font-display text-[16px] leading-relaxed text-muted-foreground/80">一起走過的每一天，<br />都是珍貴的回憶 ♡</p>
         </>
       ) : (
         <Section title="我的偶像">
