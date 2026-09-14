@@ -204,7 +204,7 @@ export function EventDetailSheet({
               <StoredImage
                 src={idol.photo}
                 alt={idol.name}
-                className="absolute inset-0 size-full object-cover object-[center_20%]"
+                className="absolute inset-0 size-full object-cover object-[70%_12%]"
               />
             ) : null}
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#fdeef2]/95" />
@@ -212,15 +212,15 @@ export function EventDetailSheet({
             <span className="absolute left-6 top-8 text-xl text-white/75">✧</span>
             <span className="absolute right-8 top-16 text-2xl text-white/70">✦</span>
 
-            <div className="absolute inset-x-5 bottom-[6.3rem] rounded-[1.6rem] border border-white/80 bg-white/75 px-5 py-4 text-center shadow-[0_12px_28px_rgba(126,74,96,0.16)] backdrop-blur-xl">
-              <p className="font-display text-[19px] font-semibold">{event.title}</p>
+            <div className="absolute inset-x-7 bottom-[5.75rem] rounded-[1.45rem] border border-white/80 bg-white/80 px-4 py-3 text-center shadow-[0_12px_28px_rgba(126,74,96,0.16)] backdrop-blur-xl">
+              <p className="font-display text-[18px] font-semibold">{event.title}</p>
               <p className="mt-1 text-[10px] font-medium tracking-[0.12em] text-primary uppercase">{meta.label}</p>
               {c?.status === "COMPLETED" ? (
-                <p className="mt-3 font-display text-[27px] leading-none text-muted-foreground">{completedLine(event.type)}</p>
+                <p className="mt-2 font-display text-[24px] leading-none text-muted-foreground">{completedLine(event.type)}</p>
               ) : c?.status === "TODAY" ? (
-                <p className="mt-3 font-display text-[48px] leading-none text-primary">D-DAY</p>
+                <p className="mt-2 font-display text-[42px] leading-none text-primary">D-DAY</p>
               ) : (
-                <p className="mt-2 font-display text-[52px] leading-none text-primary">D - {c?.daysUntil ?? 0}</p>
+                <p className="mt-1 font-display text-[45px] leading-none text-primary">D - {c?.daysUntil ?? 0}</p>
               )}
               <p className="mt-2 text-xs text-muted-foreground">{dotDate(event.date)}</p>
             </div>
