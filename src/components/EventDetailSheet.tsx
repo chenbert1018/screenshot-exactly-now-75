@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MilestoneFormSheet } from "@/components/MilestoneFormSheet";
+import { Paywall } from "@/components/Paywall";
 import { completedLine, eventCountdown, eventTypeMeta, type IdolEvent } from "@/lib/events";
 import type { Idol } from "@/lib/idols";
 import { daysSince, parseLocalDate, today } from "@/lib/dates";
@@ -139,6 +140,7 @@ export function EventDetailSheet({
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [confirmRestore, setConfirmRestore] = useState(false);
   const [restoreDate, setRestoreDate] = useState("");
+  const [paywallOpen, setPaywallOpen] = useState(false);
 
   if (!event) return null;
 
@@ -311,11 +313,13 @@ export function EventDetailSheet({
               </span>
             </div>
 
-            <div className="mt-3 rounded-xl bg-card px-3 py-2.5 text-center">
-              <p className="text-xs font-medium text-primary">
-                🔒 Plus 專屬 · 即將推出
-              </p>
-            </div>
+            <button
+              type="button"
+              onClick={() => setPaywallOpen(true)}
+              className="mt-3 w-full rounded-xl bg-primary px-3 py-2.5 text-center text-xs font-medium text-primary-foreground shadow-soft transition-transform active:scale-95"
+            >
+              立即訂閱
+            </button>
           </div>
 
           {/* Milestones */}
@@ -437,6 +441,12 @@ export function EventDetailSheet({
           ) : null}
         </SheetContent>
       </Sheet>
+
+      <Paywall
+        open={paywallOpen}
+        onOpenChange={setPaywallOpen}
+        feature="CUSTOM_REMINDER"
+      />
 
       <MilestoneFormSheet
         open={formOpen}
