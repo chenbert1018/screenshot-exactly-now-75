@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { EVENT_TYPES, emptyEventDraft, type EventDraft, type EventType } from "@/lib/events";
+import { Paywall } from "@/components/Paywall";
 import type { Idol } from "@/lib/idols";
 
 export function EventFormSheet({
@@ -32,6 +33,7 @@ export function EventFormSheet({
 }) {
   const [draft, setDraft] = useState<EventDraft>(initial ?? emptyEventDraft);
   const [error, setError] = useState("");
+  const [paywallOpen, setPaywallOpen] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -56,7 +58,8 @@ export function EventFormSheet({
   }
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <>
+      <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
         className="mx-auto max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-3xl border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
@@ -232,9 +235,13 @@ export function EventFormSheet({
                 </p>
               </div>
 
-              <p className="mt-3 text-center text-xs font-medium text-primary">
-                IdolDays+ 即將推出
-              </p>
+              <button
+                type="button"
+                onClick={() => setPaywallOpen(true)}
+                className="mt-3 w-full rounded-full bg-primary px-4 py-2.5 text-center text-xs font-medium text-primary-foreground shadow-soft transition-transform active:scale-95"
+              >
+                立即訂閱 IdolDays+
+              </button>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="event-note">備註</Label>
@@ -268,6 +275,12 @@ export function EventFormSheet({
           </form>
         )}
       </SheetContent>
-    </Sheet>
+      </Sheet>
+      <Paywall
+        open={paywallOpen}
+        onOpenChange={setPaywallOpen}
+        feature="CUSTOM_REMINDER"
+      />
+    </>
   );
 }
