@@ -198,55 +198,43 @@ export function EventDetailSheet({
             </DropdownMenu>
           </div>
 
-          {/* Hero */}
-          <div className="flex flex-col items-center text-center">
-            <IdolVisual idol={idol} />
-            <p className="mt-4 text-sm tracking-wide text-muted-foreground">{idolLabel}</p>
-            <p className="mt-5 rounded-full bg-surface/70 px-5 py-2 text-[13px] text-surface-foreground">
-              {companionLine(c?.status ?? "UPCOMING", c?.daysUntil ?? null)}
-            </p>
-          </div>
+          {/* Event visual + D-Day card */}
+          <section className="relative mt-1 min-h-[448px] overflow-hidden rounded-[2rem] bg-gradient-to-b from-[#eec9df] via-[#f8dce8] to-[#fdeef2] shadow-[0_18px_42px_rgba(176,102,130,0.15)]">
+            {idol?.photo ? (
+              <StoredImage
+                src={idol.photo}
+                alt={idol.name}
+                className="absolute inset-0 size-full object-cover object-[center_20%]"
+              />
+            ) : null}
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#fdeef2]/95" />
+            <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-[#fdeef2] via-[#fdeef2]/70 to-transparent" />
+            <span className="absolute left-6 top-8 text-xl text-white/75">✧</span>
+            <span className="absolute right-8 top-16 text-2xl text-white/70">✦</span>
 
-          {/* Countdown */}
-          <div className="mt-10 text-center">
-            <p className="text-xs tracking-widest text-muted-foreground">
-              {c?.status === "COMPLETED" ? "那一天是" : `距離 ${c?.dotDate ?? event.date}`}
-            </p>
-            {c?.status === "COMPLETED" ? (
-              <p className="mt-3 font-display text-[32px] leading-none font-semibold text-muted-foreground">
-                {completedLine(event.type)}
-              </p>
-            ) : c?.status === "TODAY" ? (
-              <p className="mt-3 font-display text-[46px] leading-none font-semibold text-primary">
-                D-DAY
-              </p>
-            ) : (
-              <>
-                <p className="mt-2 font-display text-[48px] leading-none font-semibold text-primary">
-                  {c?.daysUntil}
-                </p>
-                <p className="mt-2 text-sm text-muted-foreground">天・{c?.ddayLabel}</p>
-              </>
-            )}
-
-            <p className="mt-8 font-display text-[22px] font-semibold">
-              {meta.emoji} {event.title}
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {meta.label}・{dotDate(event.date)}
-            </p>
-          </div>
-
-          {/* Companion */}
-          {since && !since.isFuture ? (
-            <div className="mt-10 border-y border-border/60 py-6 text-center">
-              <p className="text-xs tracking-widest text-muted-foreground">陪你走過</p>
-              <p className="mt-1 font-display text-[40px] leading-none font-semibold">
-                {since.days}
-                <span className="ml-1 text-sm font-normal text-muted-foreground">天</span>
-              </p>
+            <div className="absolute inset-x-5 bottom-[6.3rem] rounded-[1.6rem] border border-white/80 bg-white/75 px-5 py-4 text-center shadow-[0_12px_28px_rgba(126,74,96,0.16)] backdrop-blur-xl">
+              <p className="font-display text-[19px] font-semibold">{event.title}</p>
+              <p className="mt-1 text-[10px] font-medium tracking-[0.12em] text-primary uppercase">{meta.label}</p>
+              {c?.status === "COMPLETED" ? (
+                <p className="mt-3 font-display text-[27px] leading-none text-muted-foreground">{completedLine(event.type)}</p>
+              ) : c?.status === "TODAY" ? (
+                <p className="mt-3 font-display text-[48px] leading-none text-primary">D-DAY</p>
+              ) : (
+                <p className="mt-2 font-display text-[52px] leading-none text-primary">D - {c?.daysUntil ?? 0}</p>
+              )}
+              <p className="mt-2 text-xs text-muted-foreground">{dotDate(event.date)}</p>
             </div>
-          ) : null}
+
+            {since && !since.isFuture && since.days !== null ? (
+              <div className="absolute inset-x-5 bottom-4 rounded-[1.45rem] border border-white/75 bg-white/80 px-5 py-3 text-center shadow-[0_10px_24px_rgba(126,74,96,0.12)] backdrop-blur-xl">
+                <p className="text-[11px] font-medium text-muted-foreground">陪伴總走過</p>
+                <p className="mt-0.5 font-display text-[30px] leading-none text-foreground">
+                  {since.days}<span className="ml-1 text-sm">天</span>
+                </p>
+                <p className="mt-1 text-[11px] text-muted-foreground">{companionLine(c?.status ?? "UPCOMING", c?.daysUntil ?? null)}</p>
+              </div>
+            ) : null}
+          </section>
 
           {/* Note */}
           {event.note ? (
