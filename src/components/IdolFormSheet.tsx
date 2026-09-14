@@ -4,7 +4,7 @@ import { ImagePlus, Sparkles, X } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { emptyDraft, type IdolDraft } from "@/lib/idols";
+import { emptyDraft, REPRESENTATIVE_ANIMALS, type IdolDraft } from "@/lib/idols";
 import { saveCutoutImage } from "@/lib/cutout-image-store";
 import { resolveImageUrl } from "@/lib/storage";
 import {
@@ -149,7 +149,11 @@ export function IdolFormSheet({
       setError("請先幫這位偶像留下名字");
       return;
     }
-    onSubmit({ ...draft, name: draft.name.trim() });
+    onSubmit({
+      ...draft,
+      name: draft.name.trim(),
+      representativeAnimal: draft.representativeAnimal ?? "DOG",
+    });
   }
 
   return (
@@ -262,6 +266,33 @@ export function IdolFormSheet({
               />
             </div>
           ))}
+
+          <div className="space-y-2">
+            <Label>偶像代表動物</Label>
+            <p className="text-xs leading-5 text-muted-foreground">
+              用來決定首頁與追星天氣的專屬口吻。
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              {REPRESENTATIVE_ANIMALS.map((animal) => {
+                const active = (draft.representativeAnimal ?? "DOG") === animal.value;
+                return (
+                  <button
+                    key={animal.value}
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() => setDraft((d) => ({ ...d, representativeAnimal: animal.value }))}
+                    className={`rounded-xl border px-2 py-2.5 text-xs transition-colors ${
+                      active
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border/70 bg-surface/50 text-muted-foreground"
+                    }`}
+                  >
+                    <span className="mr-1">{animal.emoji}</span>{animal.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
           {error ? <p className="text-sm text-destructive">{error}</p> : null}
 
