@@ -53,9 +53,11 @@ function notificationId(
       ? 30
       : reminderDays === 7
         ? 7
-        : reminderDays === 1
-          ? 1
-          : 0;
+        : reminderDays === 3
+          ? 3
+          : reminderDays === 1
+            ? 1
+            : 0;
 
   // 保持在安全的正整數範圍
   return (
