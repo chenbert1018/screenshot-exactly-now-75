@@ -288,12 +288,24 @@ function FanWeatherPage() {
         {!weatherLoading && weatherError && (
           <SoftCard className="mt-4 px-5 py-6">
             <p className="text-sm font-medium">
-              ☁️ 天氣還看不到
+              ☁️ {weatherError === "這個重要日子還超出目前可查詢的天氣預報範圍" ? "天氣準備中" : "天氣還看不到"}
             </p>
 
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              {weatherError}
-            </p>
+            {weatherError === "這個重要日子還超出目前可查詢的天氣預報範圍" ? (
+              <>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  距離 {event.title} 還有一點時間，現在還沒有官方預報。
+                  接近活動時再回來看看，我會幫你整理天氣與出門準備 ♡
+                </p>
+                <p className="mt-3 text-xs text-primary">
+                  預報通常會在活動前一週左右出現。
+                </p>
+              </>
+            ) : (
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                {weatherError}
+              </p>
+            )}
           </SoftCard>
         )}
 
