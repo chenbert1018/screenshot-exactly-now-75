@@ -97,7 +97,7 @@ function ProfilePage() {
         <SoftCard className="px-5 py-5">
           <p className="flex items-center gap-2 text-[15px] font-medium">🔔 重要日子提醒</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            這裡只保存提醒設定，暫時不會真的發送通知。
+            已開啟的提醒會同步到 App，並在 iPhone 排程通知。
           </p>
           {reminderRows.length === 0 ? (
             <p className="mt-4 rounded-2xl bg-surface/60 px-4 py-4 text-sm text-muted-foreground">
