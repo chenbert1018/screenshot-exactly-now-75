@@ -34,6 +34,8 @@ export const PLUS_NAME = "IdolDays+";
 export const PLUS_TAGLINE = "解鎖完整追星體驗 ♡";
 export const PLUS_CTA = "訂閱 IdolDays+";
 export const PLUS_SECONDARY_CTA = "先不用";
+/** Apple Developer／App Store Connect 尚未啟用前，整個 App 都不會呼叫購買流程。 */
+export const SUBSCRIPTIONS_AVAILABLE = false;
 
 /** 偶像數量上限 */
 export const FREE_IDOL_LIMIT = 1;
@@ -147,6 +149,10 @@ export function useSubscription() {
     listeners.add(fn);
 
     const syncEntitlement = async () => {
+      if (!SUBSCRIPTIONS_AVAILABLE) {
+        if (!cancelled) setReady(true);
+        return;
+      }
       if (!isStoreKitAvailable()) {
         if (!cancelled) setReady(true);
         return;
@@ -176,13 +182,15 @@ export function useSubscription() {
     };
 
     void syncEntitlement();
-    void getIdolDaysPlusProduct()
-      .then((product) => {
-        if (!cancelled) setLocalizedPrice(product.displayPrice);
-      })
-      .catch(() => {
-        if (!cancelled) setLocalizedPrice(null);
-      });
+    if (SUBSCRIPTIONS_AVAILABLE) {
+      void getIdolDaysPlusProduct()
+        .then((product) => {
+          if (!cancelled) setLocalizedPrice(product.displayPrice);
+        })
+        .catch(() => {
+          if (!cancelled) setLocalizedPrice(null);
+        });
+    }
 
     const refreshWhenVisible = () => {
       if (document.visibilityState === "visible") void syncEntitlement();
@@ -228,7 +236,7 @@ export function useSubscription() {
 
   /** 透過 Apple StoreKit 訂閱 IdolDays+ */
   const subscribe = useCallback(async () => {
-    if (!isStoreKitAvailable()) {
+    if (!SUBSCRIPTIONS_AVAILABLE || !isStoreKitAvailable()) {
       return {
         status: "unavailable" as const,
         active: false,
@@ -246,7 +254,7 @@ export function useSubscription() {
 
   /** 恢復 Apple 購買 */
   const restorePurchases = useCallback(async () => {
-    if (!isStoreKitAvailable()) {
+    if (!SUBSCRIPTIONS_AVAILABLE || !isStoreKitAvailable()) {
       return { active: false };
     }
 

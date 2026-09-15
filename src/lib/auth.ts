@@ -60,6 +60,28 @@ export function useAuthActions() {
   return { signUp, signIn, signOut };
 }
 
+/** 清除這台裝置上的 IdolDays 快取；不會影響雲端資料。 */
+export function clearIdolDaysDeviceCache() {
+  if (typeof window === "undefined") return;
+
+  try {
+    const keys = Array.from({ length: window.localStorage.length }, (_, index) =>
+      window.localStorage.key(index),
+    );
+    keys.forEach((key) => {
+      if (key?.startsWith("idoldays.")) window.localStorage.removeItem(key);
+    });
+  } catch {
+    /* Private browsing or storage restrictions: signing out still succeeds. */
+  }
+
+  try {
+    window.indexedDB?.deleteDatabase("idoldays-local-media");
+  } catch {
+    /* ignore */
+  }
+}
+
 export type CloudProfile = {
   id: string;
   userId: string;
@@ -99,4 +121,34 @@ export async function fetchMyProfile(userId: string): Promise<CloudProfile | nul
     language: row.language,
     theme: row.theme,
   };
+}
+
+export async function updateMyProfile(
+  userId: string,
+  changes: Pick<CloudProfile, "displayName">,
+): Promise<CloudProfile> {
+  const { data, error } = await supabase
+    .from("profiles")
+    .update({ display_name: changes.displayName.trim() })
+    .eq("user_id", userId)
+    .select("*")
+    .single();
+  if (error) throw error;
+
+  return {
+    id: data.id,
+    userId: data.user_id,
+    displayName: data.display_name,
+    mainIdolId: data.main_idol_id,
+    dateFormat: data.date_format,
+    language: data.language,
+    theme: data.theme,
+  };
+}
+
+/** 由受保護的 Edge Function 刪除登入帳號及其雲端資料。 */
+export async function deleteMyAccount(): Promise<void> {
+  const { error } = await supabase.functions.invoke("delete-account", { method: "POST" });
+  if (error) throw error;
+  await supabase.auth.signOut({ scope: "local" });
 }

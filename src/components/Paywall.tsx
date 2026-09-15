@@ -15,6 +15,7 @@ import {
   PLUS_SECONDARY_CTA,
   PLUS_TAGLINE,
   PREMIUM_FEATURE_COPY,
+  SUBSCRIPTIONS_AVAILABLE,
   useSubscription,
   type PremiumFeature,
 } from "@/lib/subscription";
@@ -111,12 +112,23 @@ export function Paywall({
             </div>
           ) : null}
 
-          <p className="font-display text-[26px] leading-tight">
-            {localizedPrice ? `${localizedPrice}／月` : PLUS_PRICE_LABEL}
-          </p>
-          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-            每月自動續訂，可隨時於 Apple ID 訂閱設定取消。
-          </p>
+          {SUBSCRIPTIONS_AVAILABLE ? (
+            <>
+              <p className="font-display text-[26px] leading-tight">
+                {localizedPrice ? `${localizedPrice}／月` : PLUS_PRICE_LABEL}
+              </p>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                每月自動續訂，可隨時於 Apple ID 訂閱設定取消。
+              </p>
+            </>
+          ) : (
+            <div className="rounded-2xl bg-accent/60 px-4 py-4">
+              <p className="font-medium">IdolDays+ 正在準備中</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Apple 訂閱開通後會在這裡提供購買與恢復購買。
+              </p>
+            </div>
+          )}
 
           <ul className="mt-4 grid grid-cols-1 gap-2">
             {PLUS_BENEFITS.map((b) => (
@@ -140,23 +152,16 @@ export function Paywall({
             <p className="mt-4 text-center text-xs text-muted-foreground">{message}</p>
           ) : null}
 
-          <button
-            type="button"
-            onClick={handleSubscribe}
-            disabled={isPurchasing || isRestoring}
-            className="mt-6 w-full rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isPurchasing ? "正在連接 Apple…" : PLUS_CTA}
-          </button>
-
-          <button
-            type="button"
-            onClick={handleRestorePurchases}
-            disabled={isPurchasing || isRestoring}
-            className="mt-2 w-full rounded-full px-6 py-2.5 text-sm font-medium text-primary transition-colors active:bg-surface/70 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isRestoring ? "正在恢復購買…" : "恢復購買"}
-          </button>
+          {SUBSCRIPTIONS_AVAILABLE ? (
+            <>
+              <button type="button" onClick={handleSubscribe} disabled={isPurchasing || isRestoring} className="mt-6 w-full rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60">
+                {isPurchasing ? "正在連接 Apple…" : PLUS_CTA}
+              </button>
+              <button type="button" onClick={handleRestorePurchases} disabled={isPurchasing || isRestoring} className="mt-2 w-full rounded-full px-6 py-2.5 text-sm font-medium text-primary transition-colors active:bg-surface/70 disabled:cursor-not-allowed disabled:opacity-60">
+                {isRestoring ? "正在恢復購買…" : "恢復購買"}
+              </button>
+            </>
+          ) : null}
 
           <button
             type="button"
