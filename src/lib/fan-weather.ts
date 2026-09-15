@@ -170,11 +170,28 @@ type ToneContent = {
   checklist: string[];
 };
 
-type ExtendedTone = "RABBIT" | "WOLF" | "LION";
+type ExtendedTone =
+  | "RABBIT"
+  | "HAMSTER"
+  | "TIGER"
+  | "LION"
+  | "DEER"
+  | "CHIPMUNK"
+  | "PENGUIN"
+  | "WOLF";
 type NonSevereScenario = Exclude<FanWeatherScenario, "SEVERE">;
 
 function isExtendedTone(tone: WeatherReminderTone): tone is ExtendedTone {
-  return tone === "RABBIT" || tone === "WOLF" || tone === "LION";
+  return (
+    tone === "RABBIT" ||
+    tone === "HAMSTER" ||
+    tone === "TIGER" ||
+    tone === "LION" ||
+    tone === "DEER" ||
+    tone === "CHIPMUNK" ||
+    tone === "PENGUIN" ||
+    tone === "WOLF"
+  );
 }
 
 const EXTENDED_TONE_LINES: Record<
@@ -185,26 +202,51 @@ const EXTENDED_TONE_LINES: Record<
     RABBIT: ["明天雨會有點大。", "雨具和防水袋慢慢準備好，別讓自己和珍藏淋濕 ♡"],
     WOLF: ["明天有大雨。", "雨具、防水收納和備用襪一次備齊，穩穩到場。"],
     LION: ["大雨也別慌。", "裝備準備完整、路線先確認好，自信安全地出發。"],
+    HAMSTER: ["明天雨很大，腮幫子先別塞零食了。", "雨具和防水袋都放進包包，乾乾爽爽去見喜歡的人 ♡"],
+    TIGER: ["明天有大雨。", "雨具、防水與路線全部確認，氣勢滿分也要安全到場。"],
+    DEER: ["明天雨勢偏大。", "雨具和防水收納準備好，小心走路、平安抵達 ♡"],
+    CHIPMUNK: ["明天會下大雨。", "零食可以塞，防水袋更要塞；小卡手幅一個都別淋濕。"],
+    PENGUIN: ["明天有大雨。", "雨衣、防水袋和替換襪帶好，慢慢走也要穩穩到場。"],
   },
   COLD: {
     RABBIT: ["明天會冷冷的。", "外套和暖暖包帶好，把自己照顧得暖暖的 ♡"],
     WOLF: ["明天低溫。", "保暖層、暖暖包和熱飲準備好，別讓寒冷影響行程。"],
     LION: ["明天氣溫偏低。", "保暖做好再出發，精神和氣勢都要保持最佳狀態。"],
+    HAMSTER: ["明天冷冷的。", "外套、暖暖包和小零食裝好，暖呼呼地出發吧 ♡"],
+    TIGER: ["明天低溫。", "保暖裝備備齊，別讓寒冷削弱你的舞台應援氣勢。"],
+    DEER: ["明天會冷。", "圍巾和暖暖包帶著，把自己照顧好再去赴約 ♡"],
+    CHIPMUNK: ["明天很冷。", "暖暖包和熱飲記得囤好，補充體力才有力氣應援。"],
+    PENGUIN: ["明天低溫，企鵝也知道要保暖。", "外套和暖暖包帶好，別真的冷到縮成一團。"],
   },
   HOT: {
     RABBIT: ["明天會很熱。", "水和防曬記得帶，累了就到陰涼處休息一下 ♡"],
     WOLF: ["明天高溫。", "補水、防曬、小風扇備齊，保存體力再進場。"],
     LION: ["明天很熱也要漂亮應戰。", "水分、防曬和休息都安排好，自信到場。"],
+    HAMSTER: ["明天會很熱。", "水和小風扇帶好，零食也別放到曬壞了 ♡"],
+    TIGER: ["明天高溫。", "補水、防曬、休息安排好，把體力留給最重要的舞台。"],
+    DEER: ["明天陽光很強。", "水和防曬記得帶，累了就到陰涼處休息一下 ♡"],
+    CHIPMUNK: ["明天超熱。", "水要帶夠、能量要補好，別還沒進場就先沒電。"],
+    PENGUIN: ["明天很熱，對企鵝不太友善。", "水、防曬和小風扇備齊，找陰涼處休息。"],
   },
   WINDY: {
     RABBIT: ["明天風有點大。", "帽子、手幅和小卡都收好，別讓重要的東西飛走 ♡"],
     WOLF: ["明天強風。", "手幅與隨身物固定好，外套選防風一點的。"],
     LION: ["明天風不小。", "裝備固定好、步伐站穩，照樣帥氣出發。"],
+    HAMSTER: ["明天風有點大。", "帽子、手幅和小零食都收好，別讓包包被吹亂 ♡"],
+    TIGER: ["明天強風。", "裝備固定、腳步站穩，保持氣勢也保持安全。"],
+    DEER: ["明天風比較大。", "外套穿好、隨身物收穩，慢慢走不要著急 ♡"],
+    CHIPMUNK: ["明天風很大。", "手幅小卡全部收牢，不然就要追著自己的東西跑了。"],
+    PENGUIN: ["明天強風。", "防風外套穿好、東西固定好，穩穩走別被風吹歪。"],
   },
   COMFORTABLE: {
     RABBIT: ["明天天氣很舒服。", "票券、手燈和好心情帶著，溫柔地去見喜歡的人吧 ♡"],
     WOLF: ["明天天氣狀況不錯。", "基本裝備最後確認，準時、穩穩地出發。"],
     LION: ["明天天氣很給力。", "票券、手燈、行動電源確認好，自信迎接重要日子。"],
+    HAMSTER: ["明天天氣很舒服。", "票券、手燈和喜歡的小零食裝好，開心出發吧 ♡"],
+    TIGER: ["明天天氣狀況很好。", "裝備確認完畢，把最強的應援留給舞台。"],
+    DEER: ["明天天氣很溫柔。", "票券和手燈確認好，帶著好心情去見喜歡的人 ♡"],
+    CHIPMUNK: ["明天天氣不錯。", "票、手燈、行動電源和補充體力的小點心都帶齊。"],
+    PENGUIN: ["明天天氣很舒服。", "基本裝備帶好，照自己的步調可愛出發。"],
   },
 };
 
@@ -448,26 +490,51 @@ export function generateFanWeatherNotificationCopy(
       RABBIT: `${eventTitle} 明天可能有大雨，雨具和防水袋準備好，平安到場最重要 ♡`,
       WOLF: `${eventTitle} 明天有大雨。雨具、防水收納和備用襪一次備齊。`,
       LION: `${eventTitle} 明天大雨。裝備與路線確認好，自信也要安全地出發。`,
+      HAMSTER: `${eventTitle} 明天大雨。雨具、防水袋和替換襪裝好，乾乾爽爽到場 ♡`,
+      TIGER: `${eventTitle} 明天有大雨。防水裝備與路線全部確認，安全到場。`,
+      DEER: `${eventTitle} 明天雨大。雨具準備好、小心走路，平安赴約 ♡`,
+      CHIPMUNK: `${eventTitle} 明天大雨。小卡手幅全部防水，一個都別淋濕。`,
+      PENGUIN: `${eventTitle} 明天有大雨。雨衣、防水袋和替換襪帶好，穩穩到場。`,
     },
     COLD: {
       RABBIT: `${eventTitle} 明天冷冷的，外套和暖暖包記得帶，把自己照顧暖一點 ♡`,
       WOLF: `${eventTitle} 明天低溫。保暖層、暖暖包和熱飲準備好。`,
       LION: `${eventTitle} 明天偏冷。保暖做好，精神和氣勢保持最佳狀態。`,
+      HAMSTER: `${eventTitle} 明天冷冷的。外套、暖暖包和小零食裝好 ♡`,
+      TIGER: `${eventTitle} 明天低溫。保暖裝備備齊，把體力留給舞台。`,
+      DEER: `${eventTitle} 明天會冷。圍巾和暖暖包帶著，照顧好自己 ♡`,
+      CHIPMUNK: `${eventTitle} 明天很冷。暖暖包和熱飲帶好，補滿應援體力。`,
+      PENGUIN: `${eventTitle} 明天低溫。外套和暖暖包帶好，別冷到縮成一團。`,
     },
     HOT: {
       RABBIT: `${eventTitle} 明天很熱，水、防曬和小風扇要帶，累了就休息 ♡`,
       WOLF: `${eventTitle} 明天高溫。補水、防曬、小風扇備齊，保存體力。`,
       LION: `${eventTitle} 明天很熱。水分、防曬與休息安排好，自信到場。`,
+      HAMSTER: `${eventTitle} 明天很熱。水和小風扇帶好，別讓自己曬暈了 ♡`,
+      TIGER: `${eventTitle} 明天高溫。補水、防曬、休息安排好，保存體力。`,
+      DEER: `${eventTitle} 明天陽光很強。水和防曬記得帶，累了就休息 ♡`,
+      CHIPMUNK: `${eventTitle} 明天超熱。水帶夠、能量補好，進場前別先沒電。`,
+      PENGUIN: `${eventTitle} 明天很熱。水、防曬和小風扇備齊，記得休息。`,
     },
     WINDY: {
       RABBIT: `${eventTitle} 明天風大，帽子、手幅和小卡都要收好 ♡`,
       WOLF: `${eventTitle} 明天強風。手幅與隨身物固定好，穿防風外套。`,
       LION: `${eventTitle} 明天風不小。裝備固定好、步伐站穩再出發。`,
+      HAMSTER: `${eventTitle} 明天風大。帽子、手幅和隨身物都收好 ♡`,
+      TIGER: `${eventTitle} 明天強風。裝備固定、腳步站穩，安全出發。`,
+      DEER: `${eventTitle} 明天風大。外套穿好、隨身物收穩，慢慢走 ♡`,
+      CHIPMUNK: `${eventTitle} 明天風很大。手幅小卡收牢，別追著東西跑。`,
+      PENGUIN: `${eventTitle} 明天強風。防風外套穿好、東西固定好，穩穩走。`,
     },
     COMFORTABLE: {
       RABBIT: `${eventTitle} 明天天氣舒服，帶著票券、手燈和好心情出發吧 ♡`,
       WOLF: `${eventTitle} 明天天氣不錯。基本裝備最後確認，穩穩出發。`,
       LION: `${eventTitle} 明天天氣很給力。裝備確認好，自信迎接重要日子。`,
+      HAMSTER: `${eventTitle} 明天天氣舒服。票券、手燈和小零食裝好，開心出發 ♡`,
+      TIGER: `${eventTitle} 明天天氣很好。裝備確認完畢，把最強應援留給舞台。`,
+      DEER: `${eventTitle} 明天天氣很溫柔。票券和手燈帶好，開心赴約 ♡`,
+      CHIPMUNK: `${eventTitle} 明天天氣不錯。票、手燈、行動電源和點心都帶齊。`,
+      PENGUIN: `${eventTitle} 明天天氣舒服。基本裝備帶好，照自己的步調出發。`,
     },
   };
 
