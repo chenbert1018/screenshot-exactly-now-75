@@ -12,7 +12,7 @@ import {
 import { MilestoneFormSheet } from "@/components/MilestoneFormSheet";
 import { Paywall } from "@/components/Paywall";
 import { useSubscription } from "@/lib/subscription";
-import { completedLine, eventCountdown, eventTypeMeta, type IdolEvent } from "@/lib/events";
+import { canUseFanWeather, completedLine, eventCountdown, eventTypeMeta, type IdolEvent } from "@/lib/events";
 import type { Idol } from "@/lib/idols";
 import { daysSince, parseLocalDate, today } from "@/lib/dates";
 import { type Milestone, type MilestoneDraft } from "@/lib/milestones";
@@ -149,6 +149,7 @@ export function EventDetailSheet({
   const c = eventCountdown(event.date, base);
   const meta = eventTypeMeta(event.type);
   const since = idol ? daysSince(idol.sinceDate, base) : null;
+  const fanWeatherReady = canUseFanWeather(event);
 
   function submitMilestone(draft: MilestoneDraft) {
     if (!event) return;
@@ -308,16 +309,26 @@ export function EventDetailSheet({
               </span>
             </div>
 
-            <button
-              type="button"
-              onClick={() => {
-                if (isPlus) onEdit();
-                else setPaywallOpen(true);
-              }}
-              className="mt-3 w-full rounded-xl bg-primary px-3 py-2.5 text-center text-xs font-medium text-primary-foreground shadow-soft transition-transform active:scale-95"
-            >
-              {isPlus ? "設定追星天氣" : "立即訂閱"}
-            </button>
+            {isPlus && fanWeatherReady ? (
+              <Link
+                to="/weather/$eventId"
+                params={{ eventId: event.id }}
+                className="mt-3 block w-full rounded-xl bg-primary px-3 py-2.5 text-center text-xs font-medium text-primary-foreground shadow-soft"
+              >
+                查看天氣與提醒
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  if (isPlus) onEdit();
+                  else setPaywallOpen(true);
+                }}
+                className="mt-3 w-full rounded-xl bg-primary px-3 py-2.5 text-center text-xs font-medium text-primary-foreground shadow-soft transition-transform active:scale-95"
+              >
+                {isPlus ? "設定追星天氣" : "立即訂閱"}
+              </button>
+            )}
           </div>
 
           {/* Milestones */}
