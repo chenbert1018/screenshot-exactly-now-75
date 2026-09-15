@@ -192,7 +192,7 @@ function Hero({
 }) {
   const backdrop = idol.photo || idol.cutoutPhoto;
   return (
-    <section className="relative mt-1 overflow-hidden rounded-[2rem] bg-gradient-to-b from-[#f6cddb] via-[#f9dfe7] to-[#fdf0f3] shadow-[0_18px_40px_rgba(176,102,130,0.16)]">
+    <section className="relative mt-0 overflow-hidden rounded-[1.7rem] bg-gradient-to-b from-[#f6cddb] via-[#f9dfe7] to-[#fdf0f3] shadow-[0_18px_40px_rgba(176,102,130,0.16)]">
       {backdrop ? <StoredImage src={backdrop} alt="" aria-hidden className="absolute inset-0 size-full scale-110 object-cover opacity-20 blur-3xl" /> : null}
       <div className="absolute -left-16 top-12 size-56 rounded-full bg-white/40 blur-3xl" />
       <div className="absolute -right-20 bottom-12 size-60 rounded-full bg-primary/20 blur-3xl" />
@@ -209,7 +209,7 @@ function Hero({
           <Repeat2 className="size-5" strokeWidth={1.8} />
         </button>
       ) : null}
-      <Link to="/idols/$idolId" params={{ idolId: idol.id }} className="relative block h-[350px] overflow-hidden">
+      <Link to="/idols/$idolId" params={{ idolId: idol.id }} className="relative block h-[300px] overflow-hidden">
         {idol.cutoutPhoto ? (
           <StoredImage src={idol.cutoutPhoto} alt={`${idol.name} 的去背照片`} className="absolute inset-x-0 bottom-0 z-10 mx-auto h-[94%] w-full object-contain object-bottom" />
         ) : idol.photo ? (
@@ -268,7 +268,7 @@ function HomePage() {
 
   return (
     <AppShell showProfileShortcut={false}>
-      <header className="mb-3 flex items-center justify-between px-1">
+      <header className="mb-2 flex items-center justify-between px-1">
         <p className="font-display text-[27px] tracking-[-0.03em] text-primary">IdolDays</p>
         <Link to="/profile" aria-label="通知與個人設定" className="relative flex size-10 items-center justify-center rounded-full border border-border/75 bg-card/85 text-card-foreground shadow-soft backdrop-blur-md transition-transform active:scale-95">
           <Bell className="size-5" strokeWidth={1.55} />
