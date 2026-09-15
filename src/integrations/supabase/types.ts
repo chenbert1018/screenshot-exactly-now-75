@@ -136,6 +136,7 @@ export type Database = {
           id: string
           name: string
           photo: string
+          representative_animal: string
           since_date: string | null
           updated_at: string
           user_id: string
@@ -150,6 +151,7 @@ export type Database = {
           id?: string
           name: string
           photo?: string
+          representative_animal?: string
           since_date?: string | null
           updated_at?: string
           user_id: string
@@ -164,6 +166,7 @@ export type Database = {
           id?: string
           name?: string
           photo?: string
+          representative_animal?: string
           since_date?: string | null
           updated_at?: string
           user_id?: string
@@ -317,6 +320,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          cover_rotation: boolean
           created_at: string
           date_format: string
           display_name: string
@@ -328,6 +332,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          cover_rotation?: boolean
           created_at?: string
           date_format?: string
           display_name?: string
@@ -339,6 +344,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          cover_rotation?: boolean
           created_at?: string
           date_format?: string
           display_name?: string
