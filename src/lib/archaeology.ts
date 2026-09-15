@@ -133,7 +133,7 @@ function normalize(raw: unknown): ArchaeologyItem | null {
   };
 }
 
-function read(): ArchaeologyItem[] {
+export function loadArchaeologyItems(): ArchaeologyItem[] {
   if (typeof window === "undefined") return [];
 
   try {
@@ -191,7 +191,7 @@ export function useArchaeology() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    setItems(sortArchaeologyItems(read()));
+    setItems(sortArchaeologyItems(loadArchaeologyItems()));
     setReady(true);
 
     const listener = (next: ArchaeologyItem[]) => {
@@ -223,7 +223,7 @@ export function useArchaeology() {
         createdAt: new Date().toISOString(),
       };
 
-      emit([item, ...read()]);
+      emit([item, ...loadArchaeologyItems()]);
       return item;
     },
     [],
@@ -231,7 +231,7 @@ export function useArchaeology() {
 
   const updateItem = useCallback(
     (id: string, draft: ArchaeologyDraft) => {
-      const next = read().map((item) =>
+      const next = loadArchaeologyItems().map((item) =>
         item.id === id
           ? {
               ...item,
@@ -256,7 +256,7 @@ export function useArchaeology() {
 
   const toggleFavorite = useCallback((id: string) => {
     emit(
-      read().map((item) =>
+      loadArchaeologyItems().map((item) =>
         item.id === id
           ? { ...item, favorite: !item.favorite }
           : item,
@@ -265,7 +265,7 @@ export function useArchaeology() {
   }, []);
 
   const removeItem = useCallback((id: string) => {
-    emit(read().filter((item) => item.id !== id));
+    emit(loadArchaeologyItems().filter((item) => item.id !== id));
   }, []);
 
   return {
