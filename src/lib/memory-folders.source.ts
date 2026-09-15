@@ -13,6 +13,31 @@ import {
   updateMemoryFolder,
 } from "./memory-folders.cloud";
 import { getMigrationRecord, migrateLocalIdols } from "./idols.source";
+import { isDataUrl, uploadImage } from "./storage";
+
+async function storeFolderCover(
+  userId: string,
+  folderId: string,
+  draft: MemoryFolderDraft,
+) {
+  if (!draft.coverPhoto || !isDataUrl(draft.coverPhoto)) return;
+  try {
+    const ref = await uploadImage(
+      userId,
+      "memory-folders",
+      folderId,
+      draft.coverPhoto,
+    );
+    if (ref) {
+      await updateMemoryFolder(folderId, {
+        ...draft,
+        coverPhoto: ref,
+      });
+    }
+  } catch {
+    /* 建立資料夾成功時，不因封面上傳失敗而刪除資料夾。 */
+  }
+}
 
 /**
  * Memory Folder 資料來源切換層。
@@ -268,7 +293,8 @@ export function useMemoryFolderSource(): MemoryFolderSource {
   const addFolder = useCallback(
     async (draft: MemoryFolderDraft) => {
       if (isCloud && userId) {
-        await createMemoryFolder(draft, userId);
+        const created = await createMemoryFolder(draft, userId);
+        await storeFolderCover(userId, created.id, draft);
         reload();
         return;
       }
@@ -281,6 +307,7 @@ export function useMemoryFolderSource(): MemoryFolderSource {
     async (id: string, draft: MemoryFolderDraft) => {
       if (isCloud) {
         await updateMemoryFolder(id, draft);
+        if (userId) await storeFolderCover(userId, id, draft);
         reload();
         return;
       }
