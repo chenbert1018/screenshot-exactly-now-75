@@ -1,5 +1,5 @@
 import { StoredImage } from "@/components/StoredImage";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Bell, CalendarHeart, CloudSun, Heart, History, ImageIcon, Plus, Repeat2, Search } from "lucide-react";
 import { AppShell, EmptyState, Section } from "@/components/AppShell";
@@ -10,6 +10,7 @@ import { useEventSource } from "@/lib/events.source";
 import { useArchaeology } from "@/lib/archaeology";
 import { useMemorySource } from "@/lib/memories.source";
 import { daysSince } from "@/lib/dates";
+import { classifyFanWeather, type FanWeatherInput } from "@/lib/fan-weather";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -78,20 +79,69 @@ function EventCard({ event }: { event: IdolEvent }) {
   );
 }
 
+type HomeWeatherResponse =
+  | { ok: true; weather: FanWeatherInput }
+  | { ok: false; error?: string };
+
 function FanWeatherCard({ event }: { event: IdolEvent }) {
   const days = eventCountdown(event.date).daysUntil ?? 0;
   const timing = days === 0 ? "今天" : `${Math.max(0, days)} 天後`;
   const place = event.locationName?.trim() || event.city?.trim() || event.title;
+  const [input, setInput] = useState<FanWeatherInput | null>(null);
+  const [status, setStatus] = useState<"loading" | "ready" | "waiting" | "error">("loading");
+
+  useEffect(() => {
+    if (!event.city?.trim()) {
+      setStatus("error");
+      return;
+    }
+    let cancelled = false;
+    setStatus("loading");
+    const params = new URLSearchParams({
+      city: event.city.trim(),
+      date: event.date.slice(0, 10),
+    });
+    void fetch(`/api/weather?${params.toString()}`, {
+      headers: { "Cache-Control": "no-cache" },
+    })
+      .then(async (response) => {
+        const data = (await response.json()) as HomeWeatherResponse;
+        if (cancelled) return;
+        if (response.ok && data.ok) {
+          setInput(data.weather);
+          setStatus("ready");
+        } else {
+          setInput(null);
+          setStatus(!data.ok && data.error === "forecast date is outside available range" ? "waiting" : "error");
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setStatus("error");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [event.id, event.city, event.date]);
+
+  const result = input ? classifyFanWeather(input) : null;
+  const detail =
+    status === "ready" && input && result
+      ? `${result.emoji} ${result.label}・${input.minTemp}–${input.maxTemp}°C・降雨 ${input.rainProbability}%`
+      : status === "waiting"
+        ? "還沒到預報範圍，接近活動時會為你準備 ♡"
+        : status === "error"
+          ? `暫時看不到 ${place} 的天氣，晚點再看看 ♡`
+          : "正在確認活動當天的天氣…";
 
   return (
-    <Link to="/weather/$eventId" params={{ eventId: event.id }} className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground px-5 py-4 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
+    <Link to="/weather/$eventId" params={{ eventId: event.id }} className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 px-5 py-4 text-card-foreground shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
       <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-[#e8e6ff] text-[#8b87cf]">
         <CloudSun className="size-7" strokeWidth={1.45} />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-[11px] font-medium tracking-[0.08em] text-primary">Fan Weather</p>
+        <p className="text-[11px] font-medium tracking-[0.08em] text-primary">Fan Weather・{place}</p>
         <p className="mt-1 truncate text-[16px] font-medium">{timing}・{event.title}</p>
-        <p className="mt-1 truncate text-sm text-muted-foreground">記得留意 {place} 的天氣 ♡</p>
+        <p className="mt-1 truncate text-sm text-muted-foreground">{detail}</p>
       </div>
       <ArrowRight className="size-5 shrink-0 text-primary" strokeWidth={1.8} />
     </Link>
