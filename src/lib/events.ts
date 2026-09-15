@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { diffInDays, parseLocalDate, today } from "./dates";
+import type { RepresentativeAnimal } from "./idols";
 
 const STORAGE_KEY = "idoldays.events.v1";
 
@@ -27,7 +28,17 @@ export function eventTypeMeta(type: EventType): { value: string; label: string; 
 export type WeatherReminderTone =
   | "SUNSHINE"
   | "CAT"
-  | "FOX";
+  | "FOX"
+  | "RABBIT"
+  | "WOLF"
+  | "LION";
+
+export function weatherToneForAnimal(
+  animal?: RepresentativeAnimal,
+): WeatherReminderTone {
+  if (!animal || animal === "DOG") return "SUNSHINE";
+  return animal;
+}
 
 export type IdolEvent = {
   id: string;
