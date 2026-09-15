@@ -83,37 +83,49 @@ export type Database = {
       }
       events: {
         Row: {
+          city: string
           created_at: string
           date: string
           id: string
           idol_id: string
+          location_name: string
           note: string
           title: string
           type: string
           updated_at: string
           user_id: string
+          weather_enabled: boolean
+          weather_tone: string
         }
         Insert: {
+          city?: string
           created_at?: string
           date: string
           id?: string
           idol_id: string
+          location_name?: string
           note?: string
           title: string
           type?: string
           updated_at?: string
           user_id: string
+          weather_enabled?: boolean
+          weather_tone?: string
         }
         Update: {
+          city?: string
           created_at?: string
           date?: string
           id?: string
           idol_id?: string
+          location_name?: string
           note?: string
           title?: string
           type?: string
           updated_at?: string
           user_id?: string
+          weather_enabled?: boolean
+          weather_tone?: string
         }
         Relationships: [
           {
