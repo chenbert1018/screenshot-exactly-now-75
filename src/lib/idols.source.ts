@@ -298,15 +298,26 @@ export function useIdolSource(): IdolSource {
 
         const list = await listCloudIdols();
         if (!active) return;
-        setCloudIdols(applyAnimalPreferences(list, userId));
+        const mergedList = applyAnimalPreferences(list, userId);
+        setCloudIdols(mergedList);
+
+        // 將舊版存在本機的代表動物偏好補寫回雲端。
+        for (const idol of mergedList) {
+          const cloudAnimal = list.find((item) => item.id === idol.id)?.representativeAnimal;
+          if (idol.representativeAnimal && idol.representativeAnimal !== cloudAnimal) {
+            const { id: _id, ...draft } = idol;
+            void updateCloudIdol(idol.id, draft).catch(() => undefined);
+          }
+        }
 
         const { data } = await supabase
           .from("profiles")
-          .select("main_idol_id")
+          .select("main_idol_id, cover_rotation")
           .eq("user_id", userId)
           .maybeSingle();
         if (!active) return;
         setMainIdolId(data?.main_idol_id ?? readScopedPreference(LOCAL_MAIN_IDOL_KEY, scope));
+        setCoverRotationState(data?.cover_rotation ?? readScopedPreference(COVER_ROTATION_KEY, scope) === "true");
 
         setError(null);
         setCloudReady(true);
@@ -363,7 +374,13 @@ export function useIdolSource(): IdolSource {
   const setCoverRotation = useCallback((enabled: boolean) => {
     setCoverRotationState(enabled);
     writeScopedPreference(COVER_ROTATION_KEY, scope, String(enabled));
-  }, [scope]);
+    if (isCloud && userId) {
+      void supabase
+        .from("profiles")
+        .update({ cover_rotation: enabled })
+        .eq("user_id", userId);
+    }
+  }, [isCloud, scope, userId]);
 
   const addIdol = useCallback(
     async (draft: IdolDraft) => {
