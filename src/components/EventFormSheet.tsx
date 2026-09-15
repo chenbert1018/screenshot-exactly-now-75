@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { EVENT_TYPES, emptyEventDraft, type EventDraft, type EventType } from "@/lib/events";
 import { Paywall } from "@/components/Paywall";
+import { useSubscription } from "@/lib/subscription";
 import type { Idol } from "@/lib/idols";
 
 export function EventFormSheet({
@@ -34,6 +35,7 @@ export function EventFormSheet({
   const [draft, setDraft] = useState<EventDraft>(initial ?? emptyEventDraft);
   const [error, setError] = useState("");
   const [paywallOpen, setPaywallOpen] = useState(false);
+  const { isPlus } = useSubscription();
 
   useEffect(() => {
     if (open) {
@@ -235,13 +237,29 @@ export function EventFormSheet({
                 </p>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setPaywallOpen(true)}
-                className="mt-3 w-full rounded-full bg-primary px-4 py-2.5 text-center text-xs font-medium text-primary-foreground shadow-soft transition-transform active:scale-95"
-              >
-                立即訂閱
-              </button>
+              {isPlus ? (
+                <button
+                  type="button"
+                  aria-pressed={Boolean(draft.weatherEnabled)}
+                  onClick={() => setDraft((d) => ({ ...d, weatherEnabled: !d.weatherEnabled }))}
+                  className={`mt-3 flex w-full items-center justify-between rounded-full px-4 py-2.5 text-xs font-medium shadow-soft transition-transform active:scale-95 ${
+                    draft.weatherEnabled
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-card text-muted-foreground"
+                  }`}
+                >
+                  <span>{draft.weatherEnabled ? "追星天氣已開啟" : "開啟追星天氣"}</span>
+                  <span>{draft.weatherEnabled ? "✓" : "○"}</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setPaywallOpen(true)}
+                  className="mt-3 w-full rounded-full bg-primary px-4 py-2.5 text-center text-xs font-medium text-primary-foreground shadow-soft transition-transform active:scale-95"
+                >
+                  立即訂閱
+                </button>
+              )}
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="event-note">備註</Label>
