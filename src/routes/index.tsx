@@ -304,10 +304,21 @@ function HomePage() {
     () => (main ? nextEvent(events.filter((event) => event.idolId === main.id)) : undefined),
     [events, main],
   );
-  const latestArchaeology = useMemo(
-    () => main ? archaeology.filter((item) => item.idolId === main.id).sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0] : undefined,
-    [archaeology, main],
-  );
+  const latestArchaeology = useMemo(() => {
+    if (!main) return undefined;
+    const linked = archaeology.filter((item) => item.idolId === main.id);
+    const candidates =
+      linked.length > 0
+        ? linked
+        : archaeology.filter((item) => !item.idolId);
+    return [...candidates].sort((a, b) => {
+      if (a.favorite !== b.favorite) return a.favorite ? -1 : 1;
+      if (Boolean(a.imageUrl) !== Boolean(b.imageUrl)) {
+        return a.imageUrl ? -1 : 1;
+      }
+      return b.createdAt.localeCompare(a.createdAt);
+    })[0];
+  }, [archaeology, main]);
   const memoryFromToday = useMemo(() => {
     if (!main) return undefined;
     const today = new Date();
