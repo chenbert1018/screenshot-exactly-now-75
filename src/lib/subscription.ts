@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "./auth";
 import {
   getIdolDaysPlusEntitlement,
   isStoreKitAvailable,
@@ -134,8 +136,10 @@ function emit(value: SubscriptionState) {
 }
 
 export function useSubscription() {
+  const { user } = useAuth();
   const [state, setState] = useState<SubscriptionState>(defaultSubscription);
   const [ready, setReady] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -189,6 +193,30 @@ export function useSubscription() {
     };
   }, []);
 
+  // 管理員由資料庫角色決定；不在前端硬編碼任何 email。
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadAdminRole() {
+      if (!user?.id) {
+        setIsAdmin(false);
+        return;
+      }
+
+      const { data, error } = await supabase.rpc("has_role", {
+        _user_id: user.id,
+        _role: "admin",
+      });
+
+      if (!cancelled) setIsAdmin(!error && Boolean(data));
+    }
+
+    void loadAdminRole();
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
+
   const setStatus = useCallback((status: SubscriptionStatus) => {
     const next: SubscriptionState = {
       status,
@@ -234,8 +262,9 @@ export function useSubscription() {
   return {
     ...state,
     ready,
-    isPlus: isPlusActive(state),
-    idolLimit: idolLimitFor(state),
+    isAdmin,
+    isPlus: isPlusActive(state) || isAdmin,
+    idolLimit: isPlusActive(state) || isAdmin ? PLUS_IDOL_LIMIT : FREE_IDOL_LIMIT,
     subscribe,
     restorePurchases,
     expire,
