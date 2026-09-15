@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link2, Plus, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ImagePlus, Link2, Plus, X } from "lucide-react";
 
 import {
   Sheet,
@@ -75,6 +75,20 @@ function getYouTubeThumbnail(value: string) {
     : "";
 }
 
+async function imageFileToCover(file: File): Promise<string> {
+  const source = await createImageBitmap(file);
+  const maxWidth = 1200;
+  const scale = Math.min(1, maxWidth / source.width);
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round(source.width * scale));
+  canvas.height = Math.max(1, Math.round(source.height * scale));
+  const context = canvas.getContext("2d");
+  if (!context) throw new Error("image unavailable");
+  context.drawImage(source, 0, 0, canvas.width, canvas.height);
+  source.close();
+  return canvas.toDataURL("image/jpeg", 0.82);
+}
+
 export function ArchaeologyFormSheet({
   open,
   onOpenChange,
@@ -92,6 +106,7 @@ export function ArchaeologyFormSheet({
 }) {
   const [draft, setDraft] =
     useState<ArchaeologyDraft>(emptyArchaeologyDraft);
+  const coverInputRef = useRef<HTMLInputElement>(null);
   const [tagInput, setTagInput] = useState("");
   const [error, setError] = useState("");
   const [previewState, setPreviewState] = useState<
@@ -411,6 +426,32 @@ export function ArchaeologyFormSheet({
               }
               className="rounded-xl bg-surface/50"
             />
+            <input
+              ref={coverInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                event.target.value = "";
+                if (!file) return;
+                void imageFileToCover(file)
+                  .then((imageUrl) =>
+                    setDraft((current) => ({ ...current, imageUrl })),
+                  )
+                  .catch(() =>
+                    setError("封面圖片讀取失敗，請換一張圖片再試"),
+                  );
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => coverInputRef.current?.click()}
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-primary/20 bg-primary/8 px-4 py-2.5 text-sm font-medium text-primary"
+            >
+              <ImagePlus className="size-4" strokeWidth={1.7} />
+              從相簿選擇影片截圖
+            </button>
             {draft.imageUrl?.trim() ? (
               <div className="overflow-hidden rounded-2xl border border-border/50 bg-surface/40">
                 <img
@@ -424,7 +465,7 @@ export function ArchaeologyFormSheet({
               </div>
             ) : null}
             <p className="text-xs text-muted-foreground">
-              有圖片就會顯示在考古卡片上
+              Threads 影片抓不到縮圖時，可以直接選擇影片截圖
             </p>
           </div>
 
