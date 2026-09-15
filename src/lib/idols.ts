@@ -11,6 +11,7 @@ export const REPRESENTATIVE_ANIMALS = [
   { value: "FOX", emoji: "🦊", label: "狐狸" },
   { value: "HAMSTER", emoji: "🐹", label: "倉鼠" },
   { value: "TIGER", emoji: "🐯", label: "老虎" },
+  { value: "LION", emoji: "🦁", label: "獅子／猛獸系" },
   { value: "DEER", emoji: "🦌", label: "梅花鹿" },
   { value: "CHIPMUNK", emoji: "🐿️", label: "花栗鼠" },
   { value: "PENGUIN", emoji: "🐧", label: "企鵝" },
