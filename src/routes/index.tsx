@@ -7,7 +7,7 @@ import type { Idol } from "@/lib/idols";
 import { useIdolSource } from "@/lib/idols.source";
 import { canUseFanWeather, eventCountdown, nextEvent, type IdolEvent } from "@/lib/events";
 import { useEventSource } from "@/lib/events.source";
-import { useArchaeology } from "@/lib/archaeology";
+import { useArchaeologySource } from "@/lib/archaeology.source";
 import { useMemorySource } from "@/lib/memories.source";
 import { daysSince } from "@/lib/dates";
 import { classifyFanWeather, type FanWeatherInput } from "@/lib/fan-weather";
@@ -292,7 +292,7 @@ function HomePage() {
     setCoverRotation,
   } = useIdolSource();
   const { events } = useEventSource();
-  const { items: archaeology } = useArchaeology();
+  const { items: archaeology } = useArchaeologySource();
   const { all: memories } = useMemorySource();
   const main = homeIdol;
   const companionship = useMemo(
