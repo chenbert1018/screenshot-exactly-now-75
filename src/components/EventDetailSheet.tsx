@@ -73,29 +73,34 @@ function MilestoneRow({
 }) {
   const done = milestone.completed;
   return (
-    <li className="relative flex gap-4 pb-6 last:pb-0">
+    <li className="relative flex gap-3 pb-4 last:pb-0">
       {!last ? (
-        <span className="absolute top-5 bottom-0 left-[7px] w-px bg-border" aria-hidden />
+        <span className="absolute top-10 -bottom-1 left-[19px] w-0.5 bg-gradient-to-b from-primary/55 to-primary/15" aria-hidden />
       ) : null}
       <button
         type="button"
         aria-pressed={done}
         aria-label={done ? "標記為未完成" : "標記為完成"}
         onClick={onToggle}
-        className={`relative z-10 mt-1.5 size-[15px] shrink-0 rounded-full border-2 transition-colors ${
-          done ? "border-primary bg-primary" : "border-border bg-background"
+        className={`relative z-10 mt-3 flex size-10 shrink-0 items-center justify-center rounded-full border transition-all ${
+          done
+            ? "border-primary bg-primary text-primary-foreground shadow-[0_5px_14px_rgba(233,139,170,0.3)]"
+            : "border-primary/35 bg-card text-primary"
         }`}
-      />
-      <div className="min-w-0 flex-1">
-        <p className="text-xs text-muted-foreground">{shortDate(milestone.date)}</p>
+      >
+        <span className="text-base" aria-hidden>{done ? "✓" : milestone.emoji}</span>
+      </button>
+      <div className="min-w-0 flex-1 rounded-2xl border border-border/70 bg-card/90 px-4 py-3 text-card-foreground shadow-soft">
+        <p className="text-xs font-medium text-primary">{shortDate(milestone.date)}</p>
         <p className={`text-[15px] ${done ? "text-muted-foreground line-through" : ""}`}>
-          {milestone.emoji} {milestone.title}
+          {milestone.title}
         </p>
+        <p className="mt-1 text-[11px] text-muted-foreground">{done ? "已完成，這一步也收藏好了 ♡" : "點左側圖示標記完成"}</p>
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger
           aria-label="更多"
-          className="-mt-1 flex size-8 shrink-0 items-center justify-center rounded-full text-muted-foreground"
+          className="mt-2 flex size-8 shrink-0 items-center justify-center rounded-full bg-card text-muted-foreground shadow-soft"
         >
           <MoreHorizontal className="size-4" strokeWidth={1.8} />
         </DropdownMenuTrigger>
@@ -330,7 +335,7 @@ export function EventDetailSheet({
           </div>
 
           {/* Milestones */}
-          <div className="mt-10">
+          <div className="mt-10 rounded-[1.9rem] border border-border/60 bg-card/65 px-5 py-6 text-card-foreground shadow-soft">
             <h3 className="font-display text-[17px] font-semibold">里程碑</h3>
             <p className="mt-1 text-xs text-muted-foreground">為這一天留下幾個小小的節點。</p>
 
@@ -354,7 +359,7 @@ export function EventDetailSheet({
               </div>
             ) : (
               <>
-                <ul className="mt-6">
+                <ul className="mt-6 rounded-[1.75rem] border border-border/60 bg-surface/35 p-4">
                   {milestones.map((m, i) => (
                     <MilestoneRow
                       key={m.id}
