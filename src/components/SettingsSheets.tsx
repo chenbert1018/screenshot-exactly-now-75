@@ -14,9 +14,11 @@ import {
   formatWithSetting,
   useSettings,
 } from "@/lib/settings";
-import { useIdols } from "@/lib/idols";
-import { deleteReminder, formatDaysBefore, updateReminder, useReminders } from "@/lib/reminders";
-import { useEvents, eventTypeMeta } from "@/lib/events";
+import { useIdolSource } from "@/lib/idols.source";
+import { formatDaysBefore } from "@/lib/reminders";
+import { useReminderSource } from "@/lib/reminders.source";
+import { eventTypeMeta } from "@/lib/events";
+import { useEventSource } from "@/lib/events.source";
 
 function SheetShell({
   open,
@@ -88,7 +90,7 @@ export function GeneralSettingsSheet({
   onOpenChange: (open: boolean) => void;
 }) {
   const { settings, update } = useSettings();
-  const { idols } = useIdols();
+  const { idols } = useIdolSource();
 
   return (
     <SheetShell
@@ -157,9 +159,9 @@ export function NotificationSettingsSheet({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  const { reminders } = useReminders();
-  const { idols } = useIdols();
-  const { events } = useEvents();
+  const { reminders, updateReminder, removeReminder } = useReminderSource();
+  const { idols } = useIdolSource();
+  const { events } = useEventSource();
 
   const rows = reminders.map((r) => {
     const event = r.eventId ? events.find((e) => e.id === r.eventId) : undefined;
@@ -186,7 +188,7 @@ export function NotificationSettingsSheet({
       open={open}
       onOpenChange={onOpenChange}
       title="提醒通知"
-      description="這裡只保存提醒設定，暫時不會真的發送通知。"
+      description="已開啟的提醒會同步到 App，並在 iPhone 排程通知。"
     >
       {rows.length === 0 ? (
         <p className="rounded-2xl bg-surface/60 px-4 py-4 text-sm text-muted-foreground">
@@ -205,12 +207,12 @@ export function NotificationSettingsSheet({
               <Switch
                 checked={row.enabled}
                 aria-label={`${row.title} 提醒開關`}
-                onCheckedChange={(v) => updateReminder(row.id, { enabled: v })}
+                onCheckedChange={(v) => void updateReminder(row.id, { enabled: v })}
               />
               <button
                 type="button"
                 aria-label={`刪除 ${row.title} 提醒`}
-                onClick={() => deleteReminder(row.id)}
+                onClick={() => void removeReminder(row.id)}
                 className="rounded-full p-2 text-muted-foreground transition-transform duration-300 active:scale-90"
               >
                 <Trash2 className="size-4" strokeWidth={1.6} />
