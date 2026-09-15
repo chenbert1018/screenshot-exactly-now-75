@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MilestoneFormSheet } from "@/components/MilestoneFormSheet";
 import { Paywall } from "@/components/Paywall";
+import { useSubscription } from "@/lib/subscription";
 import { completedLine, eventCountdown, eventTypeMeta, type IdolEvent } from "@/lib/events";
 import type { Idol } from "@/lib/idols";
 import { daysSince, parseLocalDate, today } from "@/lib/dates";
@@ -141,6 +142,7 @@ export function EventDetailSheet({
   const [confirmRestore, setConfirmRestore] = useState(false);
   const [restoreDate, setRestoreDate] = useState("");
   const [paywallOpen, setPaywallOpen] = useState(false);
+  const { isPlus } = useSubscription();
 
   if (!event) return null;
 
@@ -284,8 +286,10 @@ export function EventDetailSheet({
                 </p>
               </div>
 
-              <span className="shrink-0 text-xs text-muted-foreground">
-                🔒
+              <span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-medium ${
+                isPlus ? "bg-primary/10 text-primary" : "text-muted-foreground"
+              }`}>
+                {isPlus ? "已開啟" : "🔒"}
               </span>
             </div>
 
@@ -309,7 +313,7 @@ export function EventDetailSheet({
               onClick={() => setPaywallOpen(true)}
               className="mt-3 w-full rounded-xl bg-primary px-3 py-2.5 text-center text-xs font-medium text-primary-foreground shadow-soft transition-transform active:scale-95"
             >
-              立即訂閱
+              {isPlus ? "設定追星天氣" : "立即訂閱"}
             </button>
           </div>
 
