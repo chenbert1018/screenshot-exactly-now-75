@@ -18,6 +18,7 @@ import {
   SoftCard,
 } from "@/components/AppShell";
 import { ArchaeologyFormSheet } from "@/components/ArchaeologyFormSheet";
+import { StoredImage } from "@/components/StoredImage";
 import { Input } from "@/components/ui/input";
 
 import {
@@ -523,10 +524,9 @@ function ArchaeologyCover({
       rel="noopener noreferrer"
       className="relative mb-3 block overflow-hidden rounded-2xl bg-surface"
     >
-      <img
+      <StoredImage
         src={imageUrl}
         alt={title}
-        loading="eager"
         className="aspect-[16/9] w-full object-cover"
         onError={() => setFailed(true)}
       />
