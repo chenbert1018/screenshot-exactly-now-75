@@ -1,7 +1,7 @@
 import { StoredImage } from "@/components/StoredImage";
 import { useMemo } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Bell, CalendarHeart, CloudSun, Heart, History, ImageIcon, Plus, Search } from "lucide-react";
+import { ArrowRight, Bell, CalendarHeart, CloudSun, Heart, History, ImageIcon, Plus, Repeat2, Search } from "lucide-react";
 import { AppShell, EmptyState, Section } from "@/components/AppShell";
 import type { Idol } from "@/lib/idols";
 import { useIdolSource } from "@/lib/idols.source";
@@ -61,7 +61,7 @@ function dayLabel(event: IdolEvent) {
 
 function EventCard({ event }: { event: IdolEvent }) {
   return (
-    <Link to="/events" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-white/80 bg-white/85 px-5 py-4 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
+    <Link to="/events" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground px-5 py-4 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
       <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
         <CalendarHeart className="size-6" strokeWidth={1.55} />
       </div>
@@ -84,7 +84,7 @@ function FanWeatherCard({ event }: { event: IdolEvent }) {
   const place = event.locationName?.trim() || event.city?.trim() || event.title;
 
   return (
-    <Link to="/weather/$eventId" params={{ eventId: event.id }} className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-white/80 bg-white/85 px-5 py-4 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
+    <Link to="/weather/$eventId" params={{ eventId: event.id }} className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground px-5 py-4 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
       <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-[#e8e6ff] text-[#8b87cf]">
         <CloudSun className="size-7" strokeWidth={1.45} />
       </div>
@@ -104,7 +104,7 @@ function FanWeatherSetupCard({ event }: { event: IdolEvent }) {
   const timing = days === 0 ? "今天" : `${Math.max(0, days)} 天後`;
 
   return (
-    <Link to="/events" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-white/80 bg-white/75 px-5 py-4 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
+    <Link to="/events" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/85 text-card-foreground px-5 py-4 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
       <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-[#e8e6ff] text-[#8b87cf]">
         <CloudSun className="size-7" strokeWidth={1.45} />
       </div>
@@ -120,7 +120,7 @@ function FanWeatherSetupCard({ event }: { event: IdolEvent }) {
 
 function ArchaeologyCard({ item }: { item: { title: string; imageUrl?: string; createdAt: string; collection: string } }) {
   return (
-    <Link to="/archaeology" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-white/80 bg-white/85 p-3 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
+    <Link to="/archaeology" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground p-3 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
       <div className="flex size-[5.2rem] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/10 text-primary">
         {item.imageUrl ? <StoredImage src={item.imageUrl} alt="" className="size-full object-cover" /> : <Search className="size-7" strokeWidth={1.5} />}
       </div>
@@ -137,7 +137,7 @@ function ArchaeologyCard({ item }: { item: { title: string; imageUrl?: string; c
 
 function EmptyArchaeologyCard() {
   return (
-    <Link to="/archaeology" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-white/80 bg-white/75 p-3 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
+    <Link to="/archaeology" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/85 text-card-foreground p-3 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
       <div className="flex size-[5.2rem] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/10 text-primary">
         <Search className="size-7" strokeWidth={1.5} />
       </div>
@@ -154,7 +154,7 @@ function EmptyArchaeologyCard() {
 function MemoryCard({ memory }: { memory: { title: string; note: string; photo?: string; date: string } }) {
   const text = memory.title.trim() || memory.note.trim() || "那天也好想你 ♡";
   return (
-    <Link to="/memories" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-white/80 bg-white/85 p-3 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
+    <Link to="/memories" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground p-3 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
       <div className="flex size-[5.2rem] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/10 text-primary">
         {memory.photo ? <StoredImage src={memory.photo} alt="" className="size-full object-cover" /> : <History className="size-7" strokeWidth={1.45} />}
       </div>
@@ -170,7 +170,7 @@ function MemoryCard({ memory }: { memory: { title: string; note: string; photo?:
 
 function EmptyMemoryCard() {
   return (
-    <Link to="/memories" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-white/80 bg-white/75 px-5 py-4 shadow-soft backdrop-blur-xl transition-transform active:scale-[0.99]">
+    <Link to="/memories" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/85 text-card-foreground px-5 py-4 shadow-soft backdrop-blur-xl transition-transform active:scale-[0.99]">
       <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary"><History className="size-6" strokeWidth={1.45} /></div>
       <div className="min-w-0 flex-1">
         <p className="text-[11px] font-medium text-primary">去年的今天</p>
@@ -181,7 +181,15 @@ function EmptyMemoryCard() {
   );
 }
 
-function Hero({ idol }: { idol: Idol }) {
+function Hero({
+  idol,
+  canSwitch,
+  onSwitch,
+}: {
+  idol: Idol;
+  canSwitch: boolean;
+  onSwitch: () => void;
+}) {
   const backdrop = idol.photo || idol.cutoutPhoto;
   return (
     <section className="relative mt-1 overflow-hidden rounded-[2rem] bg-gradient-to-b from-[#f6cddb] via-[#f9dfe7] to-[#fdf0f3] shadow-[0_18px_40px_rgba(176,102,130,0.16)]">
@@ -191,6 +199,16 @@ function Hero({ idol }: { idol: Idol }) {
       <span className="absolute left-5 top-24 text-xl text-primary/30">✧</span>
       <span className="absolute right-6 top-36 text-2xl text-primary/30">✦</span>
       <span className="absolute left-9 bottom-28 text-lg text-primary/35">♡</span>
+      {canSwitch ? (
+        <button
+          type="button"
+          onClick={onSwitch}
+          aria-label="切換首頁封面偶像"
+          className="absolute right-4 top-4 z-40 flex size-10 items-center justify-center rounded-full border border-white/70 bg-black/30 text-white shadow-lg backdrop-blur-md transition-transform active:scale-90"
+        >
+          <Repeat2 className="size-5" strokeWidth={1.8} />
+        </button>
+      ) : null}
       <Link to="/idols/$idolId" params={{ idolId: idol.id }} className="relative block h-[350px] overflow-hidden">
         {idol.cutoutPhoto ? (
           <StoredImage src={idol.cutoutPhoto} alt={`${idol.name} 的去背照片`} className="absolute inset-x-0 bottom-0 z-10 mx-auto h-[94%] w-full object-contain object-bottom" />
@@ -199,10 +217,10 @@ function Hero({ idol }: { idol: Idol }) {
         ) : (
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 text-muted-foreground"><ImageIcon className="size-8" strokeWidth={1.3} /><span className="text-sm">放一張你喜歡的照片 ♡</span></div>
         )}
-        <div className="absolute inset-x-0 bottom-0 z-20 h-48 bg-gradient-to-t from-[#fdf0f3] via-[#fdf0f3]/66 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 z-20 h-48 bg-gradient-to-t from-black/65 via-black/20 to-transparent" />
         <div className="absolute bottom-5 left-5 z-30">
-          <p className="font-display text-[28px] leading-tight text-primary/90">{timeGreeting()}</p>
-          <p className="mt-2 text-[16px] leading-relaxed text-foreground/85">{dailyAnimalLine(idol)}</p>
+          <p className="font-display text-[28px] leading-tight text-[#ffafc9] drop-shadow-[0_2px_5px_rgba(0,0,0,0.55)]">{timeGreeting()}</p>
+          <p className="mt-2 text-[16px] leading-relaxed text-white drop-shadow-[0_2px_5px_rgba(0,0,0,0.7)]">{dailyAnimalLine(idol)}</p>
         </div>
       </Link>
     </section>
@@ -210,11 +228,17 @@ function Hero({ idol }: { idol: Idol }) {
 }
 
 function HomePage() {
-  const { mainIdol, ready } = useIdolSource();
+  const {
+    idols,
+    homeIdol,
+    ready,
+    coverRotation,
+    setMainIdol,
+  } = useIdolSource();
   const { events } = useEventSource();
   const { items: archaeology } = useArchaeology();
   const { all: memories } = useMemorySource();
-  const main = mainIdol;
+  const main = homeIdol;
   const companionship = useMemo(
     () => (main ? daysSince(main.sinceDate) : null),
     [main],
@@ -255,7 +279,18 @@ function HomePage() {
         <div className="h-[31rem] rounded-[2rem] bg-surface/60" aria-hidden />
       ) : main ? (
         <>
-          <Hero idol={main} />
+          <Hero
+            idol={main}
+            canSwitch={idols.length > 1}
+            onSwitch={() => {
+              const currentIndex = Math.max(0, idols.findIndex((idol) => idol.id === main.id));
+              const next = idols[(currentIndex + 1) % idols.length];
+              if (next) void setMainIdol(next.id);
+            }}
+          />
+          {coverRotation && idols.length > 1 ? (
+            <p className="mt-2 px-2 text-right text-[11px] text-muted-foreground">每日輪換中・按右上角可立即指定另一位</p>
+          ) : null}
           {nextMainEvent ? <EventCard event={nextMainEvent} /> : null}
           {nextMainEvent ? (
             canUseFanWeather(nextMainEvent) ? (
@@ -268,7 +303,7 @@ function HomePage() {
           {memoryFromToday ? <MemoryCard memory={memoryFromToday} /> : <EmptyMemoryCard />}
 
           {companionship && !companionship.isFuture && companionship.days !== null ? (
-            <section className="relative mt-5 rounded-[1.8rem] border border-white/80 bg-white/80 px-5 py-4 text-center shadow-[0_12px_32px_rgba(157,91,116,0.10)] backdrop-blur-xl">
+            <section className="relative mt-5 rounded-[1.8rem] border border-border/70 bg-card/90 px-5 py-4 text-center text-card-foreground shadow-[0_12px_32px_rgba(157,91,116,0.10)] backdrop-blur-xl">
               <span aria-hidden className="absolute right-6 top-4 text-xl text-primary/55">♥</span>
               <p className="text-[13px] font-medium text-muted-foreground">陪伴總走過</p>
               <p className="mt-1 font-display text-[44px] leading-none text-foreground">
