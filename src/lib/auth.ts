@@ -100,3 +100,12 @@ export async function fetchMyProfile(userId: string): Promise<CloudProfile | nul
     theme: row.theme,
   };
 }
+
+/** 更新自己的顯示名稱。RLS 仍由 profiles 的 user_id 規則保護。 */
+export async function updateMyDisplayName(userId: string, displayName: string): Promise<void> {
+  const { error } = await supabase
+    .from("profiles")
+    .update({ display_name: displayName.trim() })
+    .eq("user_id", userId);
+  if (error) throw error;
+}
