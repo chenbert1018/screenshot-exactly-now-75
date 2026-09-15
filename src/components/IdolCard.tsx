@@ -1,18 +1,27 @@
 import { StoredImage } from "@/components/StoredImage";
 import { Link } from "@tanstack/react-router";
-import { ImageIcon, Plus } from "lucide-react";
+import { Check, Home, ImageIcon, Plus } from "lucide-react";
 import type { Idol } from "@/lib/idols";
 import { daysSince, primaryDay } from "@/lib/dates";
 
-export function IdolCard({ idol }: { idol: Idol }) {
+export function IdolCard({
+  idol,
+  isMain = false,
+  onSetMain,
+}: {
+  idol: Idol;
+  isMain?: boolean;
+  onSetMain?: () => void;
+}) {
   const day = primaryDay(idol);
   const since = daysSince(idol.sinceDate);
 
   return (
+    <article className="polaroid relative">
     <Link
       to="/idols/$idolId"
       params={{ idolId: idol.id }}
-      className="group polaroid block transition-all duration-300 active:scale-[0.98] hover:shadow-lift"
+      className="group block transition-all duration-300 active:scale-[0.98] hover:shadow-lift"
     >
       <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[0.6rem] bg-surface">
         {idol.photo ? (
@@ -51,6 +60,22 @@ export function IdolCard({ idol }: { idol: Idol }) {
         </div>
       </div>
     </Link>
+    {onSetMain ? (
+      <button
+        type="button"
+        onClick={onSetMain}
+        disabled={isMain}
+        className={`mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl border px-2 py-2 text-[12px] font-medium transition-colors ${
+          isMain
+            ? "border-primary/30 bg-primary/12 text-primary"
+            : "border-border/80 bg-card text-foreground hover:border-primary/40"
+        }`}
+      >
+        {isMain ? <Check className="size-3.5" /> : <Home className="size-3.5" />}
+        {isMain ? "首頁封面" : "設為首頁封面"}
+      </button>
+    ) : null}
+    </article>
   );
 }
 
