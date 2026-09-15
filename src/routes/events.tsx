@@ -263,6 +263,10 @@ function EventsPage() {
             type: detail.type,
             date,
             note: detail.note,
+            locationName: detail.locationName ?? "",
+            city: detail.city ?? "",
+            weatherEnabled: Boolean(detail.weatherEnabled),
+            weatherTone: detail.weatherTone ?? "SUNSHINE",
           });
           setDetailId(null);
         }}
