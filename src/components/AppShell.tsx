@@ -32,7 +32,7 @@ export function AppShell({
       >
         ♡
       </span>
-      <div className="relative mx-auto min-h-screen w-full max-w-md px-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-32">
+      <div className="relative mx-auto min-h-screen w-full max-w-md px-5 pt-3 pb-32">
         {showProfileShortcut ? (
           <div className="mb-3 flex justify-end">
             <Link
