@@ -5,12 +5,16 @@ export const MAX_IDOLS = 6;
 const STORAGE_KEY = "idoldays.idols.v1";
 
 export const REPRESENTATIVE_ANIMALS = [
-  { value: "DOG", emoji: "🐶", label: "陽光小狗" },
-  { value: "CAT", emoji: "🐱", label: "傲嬌貓" },
-  { value: "FOX", emoji: "🦊", label: "帥氣狐狸" },
-  { value: "RABBIT", emoji: "🐰", label: "溫柔兔子" },
-  { value: "WOLF", emoji: "🐺", label: "冷酷狼" },
-  { value: "LION", emoji: "🦁", label: "自信獅子" },
+  { value: "CAT", emoji: "🐱", label: "貓咪" },
+  { value: "DOG", emoji: "🐶", label: "小狗" },
+  { value: "RABBIT", emoji: "🐰", label: "兔子" },
+  { value: "FOX", emoji: "🦊", label: "狐狸" },
+  { value: "HAMSTER", emoji: "🐹", label: "倉鼠" },
+  { value: "TIGER", emoji: "🐯", label: "老虎" },
+  { value: "DEER", emoji: "🦌", label: "梅花鹿" },
+  { value: "CHIPMUNK", emoji: "🐿️", label: "花栗鼠" },
+  { value: "PENGUIN", emoji: "🐧", label: "企鵝" },
+  { value: "WOLF", emoji: "🐺", label: "狼" },
 ] as const;
 
 export type RepresentativeAnimal = (typeof REPRESENTATIVE_ANIMALS)[number]["value"];
