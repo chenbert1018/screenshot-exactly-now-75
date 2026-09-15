@@ -21,11 +21,11 @@ import { ArchaeologyFormSheet } from "@/components/ArchaeologyFormSheet";
 import { Input } from "@/components/ui/input";
 
 import {
-  useArchaeology,
   type ArchaeologyDraft,
   type ArchaeologyItem,
   type ArchaeologySource,
 } from "@/lib/archaeology";
+import { useArchaeologySource } from "@/lib/archaeology.source";
 
 export const Route = createFileRoute("/archaeology")({
   head: () => ({
@@ -67,7 +67,7 @@ function ArchaeologyPage() {
     updateItem,
     toggleFavorite,
     removeItem,
-  } = useArchaeology();
+  } = useArchaeologySource();
 
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] =
