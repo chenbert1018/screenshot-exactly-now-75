@@ -270,9 +270,9 @@ function HomePage() {
     <AppShell showProfileShortcut={false}>
       <header className="mb-3 flex items-center justify-between px-1">
         <p className="font-display text-[27px] tracking-[-0.03em] text-primary">IdolDays</p>
-        <Link to="/profile" aria-label="通知與個人設定" className="relative flex size-10 items-center justify-center rounded-full border border-white/75 bg-white/70 text-foreground shadow-soft backdrop-blur-md transition-transform active:scale-95">
+        <Link to="/profile" aria-label="通知與個人設定" className="relative flex size-10 items-center justify-center rounded-full border border-border/75 bg-card/85 text-card-foreground shadow-soft backdrop-blur-md transition-transform active:scale-95">
           <Bell className="size-5" strokeWidth={1.55} />
-          <span className="absolute right-0.5 top-0.5 size-2.5 rounded-full border-2 border-white bg-primary" />
+          <span className="absolute right-0.5 top-0.5 size-2.5 rounded-full border-2 border-card bg-primary" />
         </Link>
       </header>
 
