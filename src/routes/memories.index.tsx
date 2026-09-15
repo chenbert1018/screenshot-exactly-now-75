@@ -140,8 +140,8 @@ function MemoriesPage() {
         onOpenChange={setOpen}
         title="建立回憶資料夾"
         submitLabel="建立"
-        onSubmit={(draft) => {
-          void addFolder(draft);
+        onSubmit={async (draft) => {
+          await addFolder(draft);
           setOpen(false);
         }}
       />
