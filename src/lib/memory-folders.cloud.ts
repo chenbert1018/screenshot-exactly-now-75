@@ -38,7 +38,9 @@ function toRow(draft: MemoryFolderDraft) {
     idol_id: draft.idolId || null,
     title: draft.title,
     description: draft.description ?? "",
-    cover_photo: draft.coverPhoto ?? "",
+    cover_photo: draft.coverPhoto?.startsWith("data:image/")
+      ? ""
+      : draft.coverPhoto ?? "",
     start_date: draft.startDate || null,
     end_date: draft.endDate || null,
   };
