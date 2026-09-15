@@ -234,6 +234,7 @@ function HomePage() {
     ready,
     coverRotation,
     setMainIdol,
+    setCoverRotation,
   } = useIdolSource();
   const { events } = useEventSource();
   const { items: archaeology } = useArchaeology();
@@ -285,7 +286,10 @@ function HomePage() {
             onSwitch={() => {
               const currentIndex = Math.max(0, idols.findIndex((idol) => idol.id === main.id));
               const next = idols[(currentIndex + 1) % idols.length];
-              if (next) void setMainIdol(next.id);
+              if (next) {
+                setCoverRotation(false);
+                void setMainIdol(next.id);
+              }
             }}
           />
           {coverRotation && idols.length > 1 ? (
