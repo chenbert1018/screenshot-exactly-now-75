@@ -19,6 +19,7 @@ import { EventDetailSheet } from "@/components/EventDetailSheet";
 import { deleteMilestonesForEvent } from "@/lib/milestones";
 import { DEFAULT_DAYS_BEFORE, formatReminderSummary } from "@/lib/reminders";
 import { useReminderSource } from "@/lib/reminders.source";
+import { scheduleEventNotifications } from "@/lib/event-notifications";
 
 export const Route = createFileRoute("/events")({
   head: () => ({
@@ -288,8 +289,11 @@ function EventsPage() {
             reminderFor({ type: "EVENT", eventId: detail.id })?.daysBefore ?? DEFAULT_DAYS_BEFORE
           }
           onSave={(daysBefore) => {
-            void setReminderFor({ type: "EVENT", eventId: detail.id }, daysBefore);
-            setReminderOpen(false);
+            void (async () => {
+              await setReminderFor({ type: "EVENT", eventId: detail.id }, daysBefore);
+              await scheduleEventNotifications(detail, daysBefore);
+              setReminderOpen(false);
+            })();
           }}
         />
       ) : null}
