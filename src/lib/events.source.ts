@@ -1,10 +1,13 @@
 import {
   cancelEventNotifications,
+  scheduleEventNotifications,
 } from "./event-notifications";
 
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "./auth";
 import { useEvents, type EventDraft, type IdolEvent } from "./events";
+import { loadReminders } from "./reminders";
+import { listReminders } from "./reminders.cloud";
 import {
   createCloudEvent,
   deleteCloudEvent,
@@ -24,6 +27,14 @@ import {
   getMilestoneMigrationRecord,
   migrateLocalMilestones,
 } from "./milestones.source";
+
+async function rescheduleDdayNotification(event: IdolEvent, cloud: boolean) {
+  const reminders = cloud ? await listReminders() : loadReminders();
+  const reminder = reminders.find(
+    (item) => item.type === "EVENT" && item.eventId === event.id && item.enabled,
+  );
+  await scheduleEventNotifications(event, reminder?.daysBefore ?? null);
+}
 
 /**
  * Event 資料來源切換層。
@@ -333,6 +344,7 @@ export function useEventSource(): EventSource {
           updatedEvent,
           { cancelStaleBeforeRefresh: true },
         );
+        void rescheduleDdayNotification(updatedEvent, true);
 
         reload();
         return;
@@ -352,6 +364,7 @@ export function useEventSource(): EventSource {
           updatedEvent,
           { cancelStaleBeforeRefresh: true },
         );
+        void rescheduleDdayNotification(updatedEvent, false);
       }
     },
     [isCloud, local, reload],
