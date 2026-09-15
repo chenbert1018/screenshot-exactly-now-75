@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { emptyFolderDraft, type MemoryFolderDraft } from "@/lib/memory-folders";
-import { useIdols } from "@/lib/idols";
+import { useIdolSource } from "@/lib/idols.source";
 
 export function MemoryFolderFormSheet({
   open,
@@ -26,17 +26,19 @@ export function MemoryFolderFormSheet({
   initial?: MemoryFolderDraft | undefined;
   title: string;
   submitLabel: string;
-  onSubmit: (draft: MemoryFolderDraft) => void;
+  onSubmit: (draft: MemoryFolderDraft) => void | Promise<void>;
 }) {
-  const { idols } = useIdols();
+  const { idols } = useIdolSource();
   const [draft, setDraft] = useState<MemoryFolderDraft>(emptyFolderDraft);
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (open) {
       setDraft(initial ?? emptyFolderDraft);
       setError("");
+      setSaving(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
@@ -48,10 +50,18 @@ export function MemoryFolderFormSheet({
     reader.readAsDataURL(file);
   }
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!draft.title.trim()) return setError("幫這個資料夾取一個名字");
-    onSubmit({ ...draft, title: draft.title.trim() });
+    setSaving(true);
+    setError("");
+    try {
+      await onSubmit({ ...draft, title: draft.title.trim() });
+    } catch {
+      setError("回憶資料夾建立失敗，請稍後再試");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -199,9 +209,10 @@ export function MemoryFolderFormSheet({
             </button>
             <button
               type="submit"
-              className="flex-1 rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+              disabled={saving}
+              className="flex-1 rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95 disabled:opacity-60"
             >
-              {submitLabel}
+              {saving ? "儲存中…" : submitLabel}
             </button>
           </div>
         </form>
