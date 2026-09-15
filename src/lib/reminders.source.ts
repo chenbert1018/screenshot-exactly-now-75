@@ -280,11 +280,19 @@ export function useReminderSource(): ReminderSource {
       }
       const existing = findReminder(cloudReminders, target);
       if (daysBefore === null) {
-        if (existing) await deleteCloudReminder(existing.id);
+        if (existing) {
+          await deleteCloudReminder(existing.id);
+          setCloudReminders((list) => list.filter((item) => item.id !== existing.id));
+        }
       } else if (existing) {
         await updateCloudReminder(existing.id, { daysBefore, enabled: true });
+        setCloudReminders((list) =>
+          list.map((item) =>
+            item.id === existing.id ? { ...item, daysBefore, enabled: true } : item,
+          ),
+        );
       } else {
-        await createReminder(
+        const created = await createReminder(
           {
             type: target.type,
             daysBefore,
@@ -294,6 +302,7 @@ export function useReminderSource(): ReminderSource {
           },
           userId,
         );
+        setCloudReminders((list) => [...list, created]);
       }
       reload();
     },
@@ -304,6 +313,9 @@ export function useReminderSource(): ReminderSource {
     async (id: string, patch: { enabled?: boolean; daysBefore?: number }) => {
       if (isCloud) {
         await updateCloudReminder(id, patch);
+        setCloudReminders((list) =>
+          list.map((item) => (item.id === id ? { ...item, ...patch } : item)),
+        );
         reload();
         return;
       }
@@ -316,6 +328,7 @@ export function useReminderSource(): ReminderSource {
     async (id: string) => {
       if (isCloud) {
         await deleteCloudReminder(id);
+        setCloudReminders((list) => list.filter((item) => item.id !== id));
         reload();
         return;
       }
