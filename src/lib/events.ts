@@ -36,8 +36,27 @@ export type WeatherReminderTone =
 export function weatherToneForAnimal(
   animal?: RepresentativeAnimal,
 ): WeatherReminderTone {
-  if (!animal || animal === "DOG") return "SUNSHINE";
-  return animal;
+  switch (animal) {
+    case "CAT":
+    case "FOX":
+    case "RABBIT":
+    case "WOLF":
+    case "LION":
+      return animal;
+    case "HAMSTER":
+      return "RABBIT";
+    case "TIGER":
+      return "LION";
+    case "DEER":
+      return "SUNSHINE";
+    case "CHIPMUNK":
+      return "FOX";
+    case "PENGUIN":
+      return "WOLF";
+    case "DOG":
+    default:
+      return "SUNSHINE";
+  }
 }
 
 export type IdolEvent = {
