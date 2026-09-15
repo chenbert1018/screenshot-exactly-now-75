@@ -279,7 +279,7 @@ export function useIdolSource(): IdolSource {
       setCloudIdols([]);
       setCloudReady(false);
       setError(null);
-      setMainIdolId(null);
+      setMainIdolId(readScopedPreference(LOCAL_MAIN_IDOL_KEY, scope));
       setAliasMap({});
       return;
     }
