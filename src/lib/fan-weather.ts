@@ -145,8 +145,17 @@ export function generateFanWeatherReminder(
     };
   }
 
-  const content = REMINDER_CONTENT[result.scenario][tone];
+  if (isExtendedTone(tone)) {
+    return {
+      scenario: result.scenario,
+      tone,
+      safetyFirst: false,
+      lines: EXTENDED_TONE_LINES[result.scenario][tone],
+      checklist: SCENARIO_CHECKLIST[result.scenario],
+    };
+  }
 
+  const content = REMINDER_CONTENT[result.scenario][tone];
   return {
     scenario: result.scenario,
     tone,
@@ -161,9 +170,55 @@ type ToneContent = {
   checklist: string[];
 };
 
+type ExtendedTone = "RABBIT" | "WOLF" | "LION";
+type NonSevereScenario = Exclude<FanWeatherScenario, "SEVERE">;
+
+function isExtendedTone(tone: WeatherReminderTone): tone is ExtendedTone {
+  return tone === "RABBIT" || tone === "WOLF" || tone === "LION";
+}
+
+const EXTENDED_TONE_LINES: Record<
+  NonSevereScenario,
+  Record<ExtendedTone, string[]>
+> = {
+  HEAVY_RAIN: {
+    RABBIT: ["明天雨會有點大。", "雨具和防水袋慢慢準備好，別讓自己和珍藏淋濕 ♡"],
+    WOLF: ["明天有大雨。", "雨具、防水收納和備用襪一次備齊，穩穩到場。"],
+    LION: ["大雨也別慌。", "裝備準備完整、路線先確認好，自信安全地出發。"],
+  },
+  COLD: {
+    RABBIT: ["明天會冷冷的。", "外套和暖暖包帶好，把自己照顧得暖暖的 ♡"],
+    WOLF: ["明天低溫。", "保暖層、暖暖包和熱飲準備好，別讓寒冷影響行程。"],
+    LION: ["明天氣溫偏低。", "保暖做好再出發，精神和氣勢都要保持最佳狀態。"],
+  },
+  HOT: {
+    RABBIT: ["明天會很熱。", "水和防曬記得帶，累了就到陰涼處休息一下 ♡"],
+    WOLF: ["明天高溫。", "補水、防曬、小風扇備齊，保存體力再進場。"],
+    LION: ["明天很熱也要漂亮應戰。", "水分、防曬和休息都安排好，自信到場。"],
+  },
+  WINDY: {
+    RABBIT: ["明天風有點大。", "帽子、手幅和小卡都收好，別讓重要的東西飛走 ♡"],
+    WOLF: ["明天強風。", "手幅與隨身物固定好，外套選防風一點的。"],
+    LION: ["明天風不小。", "裝備固定好、步伐站穩，照樣帥氣出發。"],
+  },
+  COMFORTABLE: {
+    RABBIT: ["明天天氣很舒服。", "票券、手燈和好心情帶著，溫柔地去見喜歡的人吧 ♡"],
+    WOLF: ["明天天氣狀況不錯。", "基本裝備最後確認，準時、穩穩地出發。"],
+    LION: ["明天天氣很給力。", "票券、手燈、行動電源確認好，自信迎接重要日子。"],
+  },
+};
+
+const SCENARIO_CHECKLIST: Record<NonSevereScenario, string[]> = {
+  HEAVY_RAIN: ["雨衣／雨傘", "小卡／手幅防水袋", "防水鞋／替換襪", "票券防水收納", "行動電源"],
+  COLD: ["保暖外套", "暖暖包", "熱飲／保溫瓶", "護唇膏", "票券／手燈"],
+  HOT: ["飲用水", "防曬用品", "小風扇", "毛巾", "行動電源"],
+  WINDY: ["防風外套", "固定帽子／手幅", "小卡收納", "飲用水", "票券／證件"],
+  COMFORTABLE: ["票券／入場憑證", "證件", "手燈", "小卡／應援物", "行動電源", "飲用水"],
+};
+
 const REMINDER_CONTENT: Record<
   Exclude<FanWeatherScenario, "SEVERE">,
-  Record<WeatherReminderTone, ToneContent>
+  Record<Exclude<WeatherReminderTone, ExtendedTone>, ToneContent>
 > = {
   HEAVY_RAIN: {
     SUNSHINE: {
@@ -356,7 +411,7 @@ export function generateFanWeatherNotificationCopy(
 
   const bodies: Record<
     Exclude<FanWeatherScenario, "SEVERE">,
-    Record<WeatherReminderTone, string>
+    Record<Exclude<WeatherReminderTone, ExtendedTone>, string>
   > = {
     HEAVY_RAIN: {
       SUNSHINE: `${eventTitle} 可能有大雨，小卡、手幅和雨具都先準備好，人跟周邊都不要淋濕 ♡`,
@@ -385,8 +440,41 @@ export function generateFanWeatherNotificationCopy(
     },
   };
 
+  const extendedBodies: Record<
+    NonSevereScenario,
+    Record<ExtendedTone, string>
+  > = {
+    HEAVY_RAIN: {
+      RABBIT: `${eventTitle} 明天可能有大雨，雨具和防水袋準備好，平安到場最重要 ♡`,
+      WOLF: `${eventTitle} 明天有大雨。雨具、防水收納和備用襪一次備齊。`,
+      LION: `${eventTitle} 明天大雨。裝備與路線確認好，自信也要安全地出發。`,
+    },
+    COLD: {
+      RABBIT: `${eventTitle} 明天冷冷的，外套和暖暖包記得帶，把自己照顧暖一點 ♡`,
+      WOLF: `${eventTitle} 明天低溫。保暖層、暖暖包和熱飲準備好。`,
+      LION: `${eventTitle} 明天偏冷。保暖做好，精神和氣勢保持最佳狀態。`,
+    },
+    HOT: {
+      RABBIT: `${eventTitle} 明天很熱，水、防曬和小風扇要帶，累了就休息 ♡`,
+      WOLF: `${eventTitle} 明天高溫。補水、防曬、小風扇備齊，保存體力。`,
+      LION: `${eventTitle} 明天很熱。水分、防曬與休息安排好，自信到場。`,
+    },
+    WINDY: {
+      RABBIT: `${eventTitle} 明天風大，帽子、手幅和小卡都要收好 ♡`,
+      WOLF: `${eventTitle} 明天強風。手幅與隨身物固定好，穿防風外套。`,
+      LION: `${eventTitle} 明天風不小。裝備固定好、步伐站穩再出發。`,
+    },
+    COMFORTABLE: {
+      RABBIT: `${eventTitle} 明天天氣舒服，帶著票券、手燈和好心情出發吧 ♡`,
+      WOLF: `${eventTitle} 明天天氣不錯。基本裝備最後確認，穩穩出發。`,
+      LION: `${eventTitle} 明天天氣很給力。裝備確認好，自信迎接重要日子。`,
+    },
+  };
+
   return {
     title,
-    body: bodies[result.scenario][tone],
+    body: isExtendedTone(tone)
+      ? extendedBodies[result.scenario][tone]
+      : bodies[result.scenario][tone],
   };
 }
