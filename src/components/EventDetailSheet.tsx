@@ -310,7 +310,10 @@ export function EventDetailSheet({
 
             <button
               type="button"
-              onClick={() => setPaywallOpen(true)}
+              onClick={() => {
+                if (isPlus) onEdit();
+                else setPaywallOpen(true);
+              }}
               className="mt-3 w-full rounded-xl bg-primary px-3 py-2.5 text-center text-xs font-medium text-primary-foreground shadow-soft transition-transform active:scale-95"
             >
               {isPlus ? "設定追星天氣" : "立即訂閱"}
