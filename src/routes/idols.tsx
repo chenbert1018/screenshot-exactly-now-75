@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, useMatches } from "@tanstack/react-router";
 import { useState } from "react";
-import { Heart, Plus } from "lucide-react";
+import { Heart, Plus, RefreshCw } from "lucide-react";
 import { AppShell, PageHeader, EmptyState } from "@/components/AppShell";
 import { IdolCard, EmptySlot } from "@/components/IdolCard";
 import { IdolFormSheet } from "@/components/IdolFormSheet";
@@ -29,7 +29,16 @@ function IdolsLayout() {
 }
 
 function IdolsPage() {
-  const { idols, ready, addIdol, error } = useIdolSource();
+  const {
+    idols,
+    ready,
+    addIdol,
+    error,
+    mainIdol,
+    coverRotation,
+    setMainIdol,
+    setCoverRotation,
+  } = useIdolSource();
   const [open, setOpen] = useState(false);
   const [paywall, setPaywall] = useState(false);
   const { idolLimit, isPlus } = useSubscription();
@@ -72,6 +81,27 @@ function IdolsPage() {
         </p>
       ) : null}
 
+      {ready && idols.length > 1 ? (
+        <div className="mb-5 flex items-center justify-between gap-4 rounded-2xl border border-border/70 bg-card/90 px-4 py-3 text-card-foreground shadow-soft">
+          <div className="min-w-0">
+            <p className="flex items-center gap-1.5 text-sm font-medium">
+              <RefreshCw className="size-4 text-primary" />
+              每日輪換封面偶像
+            </p>
+            <p className="mt-0.5 text-xs text-muted-foreground">每天自動換一位，只影響首頁封面</p>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={coverRotation}
+            onClick={() => setCoverRotation(!coverRotation)}
+            className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${coverRotation ? "bg-primary" : "bg-muted"}`}
+          >
+            <span className={`absolute top-1 size-5 rounded-full bg-white shadow transition-transform ${coverRotation ? "translate-x-5" : "translate-x-1"}`} />
+          </button>
+        </div>
+      ) : null}
+
       {ready && idols.length === 0 ? (
         <EmptyState
           icon={<Heart className="size-5" strokeWidth={1.6} />}
@@ -91,7 +121,12 @@ function IdolsPage() {
       ) : (
         <div className="grid grid-cols-2 gap-4">
           {idols.map((idol) => (
-            <IdolCard key={idol.id} idol={idol} />
+            <IdolCard
+              key={idol.id}
+              idol={idol}
+              isMain={mainIdol?.id === idol.id}
+              onSetMain={() => void setMainIdol(idol.id)}
+            />
           ))}
           {Array.from({ length: slots }).map((_, i) => (
             <EmptySlot key={`slot-${i}`} onClick={openAdd} />
