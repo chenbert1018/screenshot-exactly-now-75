@@ -200,7 +200,7 @@ export function EventDetailSheet({
 
           {/* Photo, then separate D-Day cards — never cover the idol */}
           <section className="mt-1">
-            <div className="relative h-[300px] overflow-hidden rounded-[2rem] bg-gradient-to-b from-[#eec9df] via-[#f8dce8] to-[#fdeef2] shadow-[0_16px_36px_rgba(176,102,130,0.13)]">
+            <div className="relative h-[300px] overflow-hidden bg-gradient-to-b from-[#eec9df] via-[#f8dce8] to-[#fdeef2]">
               {idol?.photo ? (
                 <StoredImage
                   src={idol.photo}
@@ -215,7 +215,7 @@ export function EventDetailSheet({
               <span className="absolute right-8 top-16 text-2xl text-white/70">✦</span>
             </div>
 
-            <div className="mt-4 rounded-[1.45rem] border border-white/80 bg-white/85 px-4 py-3 text-center shadow-[0_12px_28px_rgba(126,74,96,0.13)]">
+            <div className="mt-4 rounded-[1.45rem] border border-[#f2dce4] bg-[#fffafb] px-4 py-3 text-center text-[#493c43] shadow-[0_12px_28px_rgba(126,74,96,0.13)]">
               <p className="font-display text-[18px] font-semibold">{event.title}</p>
               <p className="mt-1 text-[10px] font-medium tracking-[0.12em] text-primary uppercase">{meta.label}</p>
               {c?.status === "COMPLETED" ? (
@@ -229,7 +229,7 @@ export function EventDetailSheet({
             </div>
 
             {since && !since.isFuture && since.days !== null ? (
-              <div className="mt-3 rounded-[1.45rem] border border-white/75 bg-white/80 px-5 py-3 text-center shadow-[0_10px_24px_rgba(126,74,96,0.10)]">
+              <div className="mt-3 rounded-[1.45rem] border border-[#f2dce4] bg-[#fffafb] px-5 py-3 text-center text-[#493c43] shadow-[0_10px_24px_rgba(126,74,96,0.10)]">
                 <p className="text-[11px] font-medium text-muted-foreground">陪伴總走過</p>
                 <p className="mt-0.5 font-display text-[30px] leading-none text-foreground">
                   {since.days}<span className="ml-1 text-sm">天</span>
