@@ -46,18 +46,14 @@ function getYouTubeVideoId(value: string) {
       return url.pathname.split("/").filter(Boolean)[0] || "";
     }
 
-    if (
-      host === "youtube.com" ||
-      host === "m.youtube.com" ||
-      host === "music.youtube.com"
-    ) {
+    if (host === "youtube.com" || host === "m.youtube.com" || host === "music.youtube.com") {
       if (url.pathname === "/watch") {
         return url.searchParams.get("v") || "";
       }
 
       const parts = url.pathname.split("/").filter(Boolean);
 
-      if (["shorts", "embed", "live"].includes(parts[0])) {
+      if (parts[0] && ["shorts", "embed", "live"].includes(parts[0])) {
         return parts[1] || "";
       }
     }
@@ -70,9 +66,7 @@ function getYouTubeVideoId(value: string) {
 
 function getYouTubeThumbnail(value: string) {
   const videoId = getYouTubeVideoId(value);
-  return videoId
-    ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
-    : "";
+  return videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : "";
 }
 
 async function imageFileToCover(file: File): Promise<string> {
@@ -99,19 +93,16 @@ export function ArchaeologyFormSheet({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  initial?: ArchaeologyDraft;
+  initial?: ArchaeologyDraft | undefined;
   title?: string;
   submitLabel?: string;
   onSubmit: (draft: ArchaeologyDraft) => void;
 }) {
-  const [draft, setDraft] =
-    useState<ArchaeologyDraft>(emptyArchaeologyDraft);
+  const [draft, setDraft] = useState<ArchaeologyDraft>(emptyArchaeologyDraft);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const [tagInput, setTagInput] = useState("");
   const [error, setError] = useState("");
-  const [previewState, setPreviewState] = useState<
-    "idle" | "loading" | "done" | "error"
-  >("idle");
+  const [previewState, setPreviewState] = useState<"idle" | "loading" | "done" | "error">("idle");
 
   useEffect(() => {
     if (!open) return;
@@ -132,9 +123,7 @@ export function ArchaeologyFormSheet({
     setPreviewState("idle");
   }, [open, initial]);
 
-  const source = draft.url.trim()
-    ? detectArchaeologySource(draft.url)
-    : null;
+  const source = draft.url.trim() ? detectArchaeologySource(draft.url) : null;
 
   useEffect(() => {
     if (!open) return;
@@ -149,10 +138,7 @@ export function ArchaeologyFormSheet({
     try {
       const parsed = new URL(value);
 
-      if (
-        parsed.protocol !== "http:" &&
-        parsed.protocol !== "https:"
-      ) {
+      if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
         setPreviewState("idle");
         return;
       }
@@ -167,15 +153,11 @@ export function ArchaeologyFormSheet({
       setPreviewState("loading");
 
       try {
-        const response = await fetch(
-          `/api/link-preview?url=${encodeURIComponent(value)}`,
-          {
-            signal: controller.signal,
-          },
-        );
+        const response = await fetch(`/api/link-preview?url=${encodeURIComponent(value)}`, {
+          signal: controller.signal,
+        });
 
-        const data =
-          (await response.json()) as LinkPreviewResponse;
+        const data = (await response.json()) as LinkPreviewResponse;
 
         if (!response.ok || !data.ok) {
           throw new Error(data.error || "preview failed");
@@ -202,25 +184,16 @@ export function ArchaeologyFormSheet({
             ...current,
 
             // Threads 優先用貼文內容，而不是「作者 (@id) on Threads」
-            title:
-              current.title.trim() ||
-              threadsTitle ||
-              data.title?.trim() ||
-              "",
+            title: current.title.trim() || threadsTitle || data.title?.trim() || "",
 
             // 不覆蓋手動封面，也不覆蓋 YouTube 自動縮圖
-            imageUrl:
-              current.imageUrl?.trim() ||
-              previewImageUrl,
+            imageUrl: current.imageUrl?.trim() || previewImageUrl,
           };
         });
 
         setPreviewState("done");
       } catch (previewError) {
-        if (
-          previewError instanceof Error &&
-          previewError.name === "AbortError"
-        ) {
+        if (previewError instanceof Error && previewError.name === "AbortError") {
           return;
         }
 
@@ -235,9 +208,7 @@ export function ArchaeologyFormSheet({
   }, [open, draft.url]);
 
   function addTag() {
-    const value = tagInput
-      .trim()
-      .replace(/^#/, "");
+    const value = tagInput.trim().replace(/^#/, "");
 
     if (!value) return;
 
@@ -254,9 +225,7 @@ export function ArchaeologyFormSheet({
   function removeTag(tag: string) {
     setDraft((current) => ({
       ...current,
-      tags: current.tags.filter(
-        (item) => item !== tag,
-      ),
+      tags: current.tags.filter((item) => item !== tag),
     }));
   }
 
@@ -274,10 +243,7 @@ export function ArchaeologyFormSheet({
     try {
       const parsed = new URL(url);
 
-      if (
-        parsed.protocol !== "http:" &&
-        parsed.protocol !== "https:"
-      ) {
+      if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
         throw new Error("invalid");
       }
     } catch {
@@ -301,34 +267,22 @@ export function ArchaeologyFormSheet({
   }
 
   return (
-    <Sheet
-      open={open}
-      onOpenChange={onOpenChange}
-    >
+    <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
         className="mx-auto max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-3xl border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
       >
         <SheetHeader className="px-0 text-left">
-          <SheetTitle className="text-xl">
-            {title}
-          </SheetTitle>
+          <SheetTitle className="text-xl">{title}</SheetTitle>
 
-          <SheetDescription>
-            把散落在飯圈各處的寶藏收回來 ♡
-          </SheetDescription>
+          <SheetDescription>把散落在飯圈各處的寶藏收回來 ♡</SheetDescription>
         </SheetHeader>
 
-        <form
-          onSubmit={submit}
-          className="space-y-5 pt-1"
-        >
+        <form onSubmit={submit} className="space-y-5 pt-1">
           <div className="space-y-1.5">
             <Label htmlFor="archaeology-url">
               原文連結
-              <span className="ml-1 text-primary">
-                *
-              </span>
+              <span className="ml-1 text-primary">*</span>
             </Label>
 
             <div className="relative">
@@ -365,15 +319,11 @@ export function ArchaeologyFormSheet({
             </div>
 
             {source ? (
-              <p className="text-xs text-muted-foreground">
-                來源：{SOURCE_LABELS[source]}
-              </p>
+              <p className="text-xs text-muted-foreground">來源：{SOURCE_LABELS[source]}</p>
             ) : null}
 
             {previewState === "loading" ? (
-              <p className="text-xs text-muted-foreground">
-                正在讀取連結預覽…
-              </p>
+              <p className="text-xs text-muted-foreground">正在讀取連結預覽…</p>
             ) : null}
 
             {previewState === "error" ? (
@@ -386,9 +336,7 @@ export function ArchaeologyFormSheet({
           <div className="space-y-1.5">
             <Label htmlFor="archaeology-title">
               標題
-              <span className="ml-1 text-primary">
-                *
-              </span>
+              <span className="ml-1 text-primary">*</span>
             </Label>
 
             <Input
@@ -407,9 +355,7 @@ export function ArchaeologyFormSheet({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="archaeology-image">
-              封面圖
-            </Label>
+            <Label htmlFor="archaeology-image">封面圖</Label>
             <Input
               id="archaeology-image"
               type="text"
@@ -436,12 +382,8 @@ export function ArchaeologyFormSheet({
                 event.target.value = "";
                 if (!file) return;
                 void imageFileToCover(file)
-                  .then((imageUrl) =>
-                    setDraft((current) => ({ ...current, imageUrl })),
-                  )
-                  .catch(() =>
-                    setError("封面圖片讀取失敗，請換一張圖片再試"),
-                  );
+                  .then((imageUrl) => setDraft((current) => ({ ...current, imageUrl })))
+                  .catch(() => setError("封面圖片讀取失敗，請換一張圖片再試"));
               }}
             />
             <button
@@ -470,9 +412,7 @@ export function ArchaeologyFormSheet({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="archaeology-collection">
-              收藏集
-            </Label>
+            <Label htmlFor="archaeology-collection">收藏集</Label>
 
             <Input
               id="archaeology-collection"
@@ -487,15 +427,11 @@ export function ArchaeologyFormSheet({
               className="rounded-xl bg-surface/50"
             />
 
-            <p className="text-xs text-muted-foreground">
-              可以之後再整理
-            </p>
+            <p className="text-xs text-muted-foreground">可以之後再整理</p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="archaeology-tag">
-              Tags
-            </Label>
+            <Label htmlFor="archaeology-tag">Tags</Label>
 
             {draft.tags.length > 0 ? (
               <div className="flex flex-wrap gap-2">
@@ -507,10 +443,7 @@ export function ArchaeologyFormSheet({
                     className="flex items-center gap-1 rounded-full bg-surface px-3 py-1.5 text-xs"
                   >
                     #{tag}
-                    <X
-                      className="size-3"
-                      strokeWidth={1.8}
-                    />
+                    <X className="size-3" strokeWidth={1.8} />
                   </button>
                 ))}
               </div>
@@ -521,9 +454,7 @@ export function ArchaeologyFormSheet({
                 id="archaeology-tag"
                 value={tagInput}
                 placeholder="糖點、名場面、CP..."
-                onChange={(e) =>
-                  setTagInput(e.target.value)
-                }
+                onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
@@ -539,18 +470,13 @@ export function ArchaeologyFormSheet({
                 className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-surface text-muted-foreground"
                 aria-label="加入 Tag"
               >
-                <Plus
-                  className="size-4"
-                  strokeWidth={1.8}
-                />
+                <Plus className="size-4" strokeWidth={1.8} />
               </button>
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="archaeology-note">
-              我的備註
-            </Label>
+            <Label htmlFor="archaeology-note">我的備註</Label>
 
             <Textarea
               id="archaeology-note"
@@ -567,11 +493,7 @@ export function ArchaeologyFormSheet({
             />
           </div>
 
-          {error ? (
-            <p className="text-sm text-destructive">
-              {error}
-            </p>
-          ) : null}
+          {error ? <p className="text-sm text-destructive">{error}</p> : null}
 
           <div className="flex gap-3 pt-1">
             <button

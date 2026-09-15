@@ -18,6 +18,7 @@ import { Route as EventsRouteImport } from './routes/events'
 import { Route as HeartRouteImport } from './routes/heart'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as IdolsRouteImport } from './routes/idols'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as WidgetRouteImport } from './routes/widget'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
@@ -80,6 +81,11 @@ const HomeRoute = HomeRouteImport.update({
 const IdolsRoute = IdolsRouteImport.update({
   id: '/idols',
   path: '/idols',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileRoute = ProfileRouteImport.update({
@@ -183,6 +189,7 @@ export interface FileRoutesByFullPath {
   '/heart': typeof HeartRoute
   '/home': typeof HomeRoute
   '/idols': typeof IdolsRouteWithChildren
+  '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/widget': typeof WidgetRoute
   '/admin/events': typeof AdminEventsRoute
@@ -211,6 +218,7 @@ export interface FileRoutesByTo {
   '/heart': typeof HeartRoute
   '/home': typeof HomeRoute
   '/idols': typeof IdolsRouteWithChildren
+  '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/widget': typeof WidgetRoute
   '/admin/events': typeof AdminEventsRoute
@@ -241,6 +249,7 @@ export interface FileRoutesById {
   '/heart': typeof HeartRoute
   '/home': typeof HomeRoute
   '/idols': typeof IdolsRouteWithChildren
+  '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/widget': typeof WidgetRoute
   '/admin/events': typeof AdminEventsRoute
@@ -272,6 +281,7 @@ export interface FileRouteTypes {
     | '/heart'
     | '/home'
     | '/idols'
+    | '/privacy'
     | '/profile'
     | '/widget'
     | '/admin/events'
@@ -300,6 +310,7 @@ export interface FileRouteTypes {
     | '/heart'
     | '/home'
     | '/idols'
+    | '/privacy'
     | '/profile'
     | '/widget'
     | '/admin/events'
@@ -329,6 +340,7 @@ export interface FileRouteTypes {
     | '/heart'
     | '/home'
     | '/idols'
+    | '/privacy'
     | '/profile'
     | '/widget'
     | '/admin/events'
@@ -359,6 +371,7 @@ export interface RootRouteChildren {
   HeartRoute: typeof HeartRoute
   HomeRoute: typeof HomeRoute
   IdolsRoute: typeof IdolsRouteWithChildren
+  PrivacyRoute: typeof PrivacyRoute
   ProfileRoute: typeof ProfileRoute
   WidgetRoute: typeof WidgetRoute
   ApiLinkPreviewRoute: typeof ApiLinkPreviewRoute
@@ -433,6 +446,13 @@ declare module '@tanstack/react-router' {
       path: '/idols'
       fullPath: '/idols'
       preLoaderRoute: typeof IdolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile': {
@@ -608,6 +628,7 @@ const rootRouteChildren: RootRouteChildren = {
   HeartRoute: HeartRoute,
   HomeRoute: HomeRoute,
   IdolsRoute: IdolsRouteWithChildren,
+  PrivacyRoute: PrivacyRoute,
   ProfileRoute: ProfileRoute,
   WidgetRoute: WidgetRoute,
   ApiLinkPreviewRoute: ApiLinkPreviewRoute,

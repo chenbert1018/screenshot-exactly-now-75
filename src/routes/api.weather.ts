@@ -55,13 +55,8 @@ function getTaiwanDate(time?: string) {
   return time.slice(0, 10);
 }
 
-function getElement(
-  location: CwaLocation,
-  name: string,
-) {
-  return location.WeatherElement?.find(
-    (element) => element.ElementName === name,
-  );
+function getElement(location: CwaLocation, name: string) {
+  return location.WeatherElement?.find((element) => element.ElementName === name);
 }
 
 function getNumericValuesForDate(
@@ -72,9 +67,7 @@ function getNumericValuesForDate(
   if (!element?.Time) return [];
 
   return element.Time.flatMap((time) => {
-    const timeDate = getTaiwanDate(
-      time.DataTime ?? time.StartTime,
-    );
+    const timeDate = getTaiwanDate(time.DataTime ?? time.StartTime);
 
     if (timeDate !== date) return [];
 
@@ -93,9 +86,7 @@ function getDescriptionsForDate(
   if (!element?.Time) return [];
 
   return element.Time.flatMap((time) => {
-    const timeDate = getTaiwanDate(
-      time.DataTime ?? time.StartTime,
-    );
+    const timeDate = getTaiwanDate(time.DataTime ?? time.StartTime);
 
     if (timeDate !== date) return [];
 
@@ -105,15 +96,8 @@ function getDescriptionsForDate(
   });
 }
 
-function normalizeFanWeather(
-  location: CwaLocation,
-  date: string,
-): FanWeatherInput | null {
-  const temperatures = getNumericValuesForDate(
-    getElement(location, "溫度"),
-    date,
-    "Temperature",
-  );
+function normalizeFanWeather(location: CwaLocation, date: string): FanWeatherInput | null {
+  const temperatures = getNumericValuesForDate(getElement(location, "溫度"), date, "Temperature");
 
   const rainProbabilities = getNumericValuesForDate(
     getElement(location, "3小時降雨機率"),
@@ -121,11 +105,7 @@ function normalizeFanWeather(
     "ProbabilityOfPrecipitation",
   );
 
-  const windSpeeds = getNumericValuesForDate(
-    getElement(location, "風速"),
-    date,
-    "WindSpeed",
-  );
+  const windSpeeds = getNumericValuesForDate(getElement(location, "風速"), date, "WindSpeed");
 
   const weatherDescriptions = getDescriptionsForDate(
     getElement(location, "天氣預報綜合描述"),
@@ -133,11 +113,7 @@ function normalizeFanWeather(
     "WeatherDescription",
   );
 
-  const weatherTexts = getDescriptionsForDate(
-    getElement(location, "天氣現象"),
-    date,
-    "Weather",
-  );
+  const weatherTexts = getDescriptionsForDate(getElement(location, "天氣現象"), date, "Weather");
 
   if (temperatures.length === 0) {
     return null;
@@ -149,22 +125,11 @@ function normalizeFanWeather(
 
     // Fan Weather cares about the worst rain/wind condition
     // during the event day.
-    rainProbability:
-      rainProbabilities.length > 0
-        ? Math.max(...rainProbabilities)
-        : 0,
+    rainProbability: rainProbabilities.length > 0 ? Math.max(...rainProbabilities) : 0,
 
-    windSpeed:
-      windSpeeds.length > 0
-        ? Math.max(...windSpeeds)
-        : 0,
+    windSpeed: windSpeeds.length > 0 ? Math.max(...windSpeeds) : 0,
 
-    weatherDescription: Array.from(
-  new Set([
-    ...weatherTexts,
-    ...weatherDescriptions,
-  ]),
-).join(" "),
+    weatherDescription: Array.from(new Set([...weatherTexts, ...weatherDescriptions])).join(" "),
   };
 }
 
@@ -174,11 +139,9 @@ export const Route = createFileRoute("/api/weather")({
       GET: async ({ request }) => {
         const requestUrl = new URL(request.url);
 
-        const rawCity =
-          requestUrl.searchParams.get("city")?.trim() ?? "";
+        const rawCity = requestUrl.searchParams.get("city")?.trim() ?? "";
 
-        const requestedDate =
-          requestUrl.searchParams.get("date")?.trim() ?? "";
+        const requestedDate = requestUrl.searchParams.get("date")?.trim() ?? "";
 
         if (!rawCity) {
           return Response.json(
@@ -191,7 +154,7 @@ export const Route = createFileRoute("/api/weather")({
         }
 
         const city = normalizeCity(rawCity);
-        const apiKey = process.env.CWA_API_KEY;
+        const apiKey = process.env["CWA_API_KEY"];
 
         if (!apiKey) {
           return Response.json(
@@ -203,9 +166,7 @@ export const Route = createFileRoute("/api/weather")({
           );
         }
 
-        const cwaUrl = new URL(
-          "https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-089",
-        );
+        const cwaUrl = new URL("https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-D0047-089");
 
         cwaUrl.searchParams.set("LocationName", city);
 
@@ -227,13 +188,11 @@ export const Route = createFileRoute("/api/weather")({
           );
         }
 
-        const data =
-          (await response.json()) as CwaResponse;
+        const data = (await response.json()) as CwaResponse;
 
-        const location =
-          data.records?.Locations?.[0]?.Location?.find(
-            (item) => item.LocationName === city,
-          );
+        const location = data.records?.Locations?.[0]?.Location?.find(
+          (item) => item.LocationName === city,
+        );
 
         if (!location) {
           return Response.json(
@@ -250,14 +209,9 @@ export const Route = createFileRoute("/api/weather")({
          * When no date is supplied we use the first forecast date.
          * The Fan Weather page will normally supply the event date.
          */
-        const firstForecastTime =
-          getElement(location, "溫度")
-            ?.Time?.[0]?.DataTime;
+        const firstForecastTime = getElement(location, "溫度")?.Time?.[0]?.DataTime;
 
-        const forecastDate =
-          requestedDate ||
-          getTaiwanDate(firstForecastTime) ||
-          "";
+        const forecastDate = requestedDate || getTaiwanDate(firstForecastTime) || "";
 
         if (!forecastDate) {
           return Response.json(
@@ -270,10 +224,7 @@ export const Route = createFileRoute("/api/weather")({
           );
         }
 
-        const weather = normalizeFanWeather(
-          location,
-          forecastDate,
-        );
+        const weather = normalizeFanWeather(location, forecastDate);
 
         if (!weather) {
           return Response.json(

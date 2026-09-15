@@ -12,12 +12,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
 
-        registerIdolDaysWidgetBridge()
+        registerNativePlugins()
 
         return true
     }
 
-    private func registerIdolDaysWidgetBridge(
+    private func registerNativePlugins(
         attempt: Int = 0
     ) {
         DispatchQueue.main.asyncAfter(
@@ -34,7 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 let bridge = bridgeViewController.bridge
             else {
                 if attempt < 12 {
-                    self.registerIdolDaysWidgetBridge(
+                    self.registerNativePlugins(
                         attempt: attempt + 1
                     )
                 } else {
@@ -48,9 +48,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             bridge.registerPluginInstance(
                 IdolDaysWidgetBridgePlugin()
             )
+            bridge.registerPluginInstance(
+                IdolDaysStoreKitPlugin()
+            )
+            bridge.registerPluginInstance(
+                SubjectCutoutPlugin()
+            )
 
             print(
-                "✅ IdolDaysWidgetBridge native plugin registered"
+                "✅ IdolDays native plugins registered"
             )
         }
     }

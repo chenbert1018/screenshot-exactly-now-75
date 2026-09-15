@@ -2,21 +2,15 @@ import { useCallback, useEffect, useState } from "react";
 
 const STORAGE_KEY = "idoldays.archaeology.v1";
 
-export type ArchaeologySource =
-  | "THREADS"
-  | "X"
-  | "YOUTUBE"
-  | "TIKTOK"
-  | "INSTAGRAM"
-  | "WEB";
+export type ArchaeologySource = "THREADS" | "X" | "YOUTUBE" | "TIKTOK" | "INSTAGRAM" | "WEB";
 
 export type ArchaeologyItem = {
   id: string;
   url: string;
   title: string;
-  imageUrl?: string;
+  imageUrl?: string | undefined;
   source: ArchaeologySource;
-  idolId?: string;
+  idolId?: string | undefined;
   collection: string;
   tags: string[];
   note: string;
@@ -27,8 +21,8 @@ export type ArchaeologyItem = {
 export type ArchaeologyDraft = {
   url: string;
   title: string;
-  imageUrl?: string;
-  idolId?: string;
+  imageUrl?: string | undefined;
+  idolId?: string | undefined;
   collection: string;
   tags: string[];
   note: string;
@@ -44,34 +38,21 @@ export const emptyArchaeologyDraft: ArchaeologyDraft = {
 };
 
 function makeId() {
-  return `archaeology_${Date.now()}_${Math.random()
-    .toString(36)
-    .slice(2, 8)}`;
+  return `archaeology_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
-export function detectArchaeologySource(
-  url: string,
-): ArchaeologySource {
+export function detectArchaeologySource(url: string): ArchaeologySource {
   const value = url.trim().toLowerCase();
 
-  if (
-    value.includes("threads.net") ||
-    value.includes("threads.com")
-  ) {
+  if (value.includes("threads.net") || value.includes("threads.com")) {
     return "THREADS";
   }
 
-  if (
-    value.includes("twitter.com") ||
-    value.includes("x.com")
-  ) {
+  if (value.includes("twitter.com") || value.includes("x.com")) {
     return "X";
   }
 
-  if (
-    value.includes("youtube.com") ||
-    value.includes("youtu.be")
-  ) {
+  if (value.includes("youtube.com") || value.includes("youtu.be")) {
     return "YOUTUBE";
   }
 
@@ -103,33 +84,19 @@ function normalize(raw: unknown): ArchaeologyItem | null {
     id: item.id,
     url: item.url,
     title: item.title,
-    imageUrl:
-      typeof item.imageUrl === "string" && item.imageUrl.trim()
-        ? item.imageUrl
-        : undefined,
+    imageUrl: typeof item.imageUrl === "string" && item.imageUrl.trim() ? item.imageUrl : undefined,
     source:
       typeof item.source === "string"
-        ? item.source as ArchaeologySource
+        ? (item.source as ArchaeologySource)
         : detectArchaeologySource(item.url),
-    idolId:
-      typeof item.idolId === "string"
-        ? item.idolId
-        : undefined,
-    collection:
-      typeof item.collection === "string"
-        ? item.collection
-        : "",
+    idolId: typeof item.idolId === "string" ? item.idolId : undefined,
+    collection: typeof item.collection === "string" ? item.collection : "",
     tags: Array.isArray(item.tags)
-      ? item.tags.filter(
-          (tag): tag is string => typeof tag === "string",
-        )
+      ? item.tags.filter((tag): tag is string => typeof tag === "string")
       : [],
     note: typeof item.note === "string" ? item.note : "",
     favorite: Boolean(item.favorite),
-    createdAt:
-      typeof item.createdAt === "string"
-        ? item.createdAt
-        : new Date().toISOString(),
+    createdAt: typeof item.createdAt === "string" ? item.createdAt : new Date().toISOString(),
   };
 }
 
@@ -143,11 +110,7 @@ export function loadArchaeologyItems(): ArchaeologyItem[] {
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
 
-    return parsed
-      .map(normalize)
-      .filter(
-        (item): item is ArchaeologyItem => item !== null,
-      );
+    return parsed.map(normalize).filter((item): item is ArchaeologyItem => item !== null);
   } catch {
     return [];
   }
@@ -157,18 +120,13 @@ function write(items: ArchaeologyItem[]) {
   if (typeof window === "undefined") return;
 
   try {
-    window.localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(items),
-    );
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   } catch {
     // Storage unavailable: keep current in-memory state.
   }
 }
 
-const listeners = new Set<
-  (items: ArchaeologyItem[]) => void
->();
+const listeners = new Set<(items: ArchaeologyItem[]) => void>();
 
 function emit(items: ArchaeologyItem[]) {
   write(items);
@@ -178,12 +136,8 @@ function emit(items: ArchaeologyItem[]) {
   }
 }
 
-export function sortArchaeologyItems(
-  items: ArchaeologyItem[],
-) {
-  return [...items].sort((a, b) =>
-    b.createdAt.localeCompare(a.createdAt),
-  );
+export function sortArchaeologyItems(items: ArchaeologyItem[]) {
+  return [...items].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
 export function useArchaeology() {
@@ -205,61 +159,49 @@ export function useArchaeology() {
     };
   }, []);
 
-  const addItem = useCallback(
-    (draft: ArchaeologyDraft) => {
-      const item: ArchaeologyItem = {
-        id: makeId(),
-        url: draft.url.trim(),
-        title: draft.title.trim(),
-        imageUrl: draft.imageUrl?.trim() || undefined,
-        source: detectArchaeologySource(draft.url),
-        idolId: draft.idolId,
-        collection: draft.collection.trim(),
-        tags: draft.tags
-          .map((tag) => tag.trim())
-          .filter(Boolean),
-        note: draft.note.trim(),
-        favorite: false,
-        createdAt: new Date().toISOString(),
-      };
+  const addItem = useCallback((draft: ArchaeologyDraft) => {
+    const item: ArchaeologyItem = {
+      id: makeId(),
+      url: draft.url.trim(),
+      title: draft.title.trim(),
+      imageUrl: draft.imageUrl?.trim() || undefined,
+      source: detectArchaeologySource(draft.url),
+      idolId: draft.idolId,
+      collection: draft.collection.trim(),
+      tags: draft.tags.map((tag) => tag.trim()).filter(Boolean),
+      note: draft.note.trim(),
+      favorite: false,
+      createdAt: new Date().toISOString(),
+    };
 
-      emit([item, ...loadArchaeologyItems()]);
-      return item;
-    },
-    [],
-  );
+    emit([item, ...loadArchaeologyItems()]);
+    return item;
+  }, []);
 
-  const updateItem = useCallback(
-    (id: string, draft: ArchaeologyDraft) => {
-      const next = loadArchaeologyItems().map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              url: draft.url.trim(),
-              title: draft.title.trim(),
-              imageUrl: draft.imageUrl?.trim() || undefined,
-              source: detectArchaeologySource(draft.url),
-              idolId: draft.idolId,
-              collection: draft.collection.trim(),
-              tags: draft.tags
-                .map((tag) => tag.trim())
-                .filter(Boolean),
-              note: draft.note.trim(),
-            }
-          : item,
-      );
+  const updateItem = useCallback((id: string, draft: ArchaeologyDraft) => {
+    const next = loadArchaeologyItems().map((item) =>
+      item.id === id
+        ? {
+            ...item,
+            url: draft.url.trim(),
+            title: draft.title.trim(),
+            imageUrl: draft.imageUrl?.trim() || undefined,
+            source: detectArchaeologySource(draft.url),
+            idolId: draft.idolId,
+            collection: draft.collection.trim(),
+            tags: draft.tags.map((tag) => tag.trim()).filter(Boolean),
+            note: draft.note.trim(),
+          }
+        : item,
+    );
 
-      emit(next);
-    },
-    [],
-  );
+    emit(next);
+  }, []);
 
   const toggleFavorite = useCallback((id: string) => {
     emit(
       loadArchaeologyItems().map((item) =>
-        item.id === id
-          ? { ...item, favorite: !item.favorite }
-          : item,
+        item.id === id ? { ...item, favorite: !item.favorite } : item,
       ),
     );
   }, []);

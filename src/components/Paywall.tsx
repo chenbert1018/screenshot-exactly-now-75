@@ -31,7 +31,7 @@ export function Paywall({
   feature?: PremiumFeature;
   onSubscribed?: () => void;
 }) {
-  const { subscribe, restorePurchases } = useSubscription();
+  const { subscribe, restorePurchases, localizedPrice } = useSubscription();
   const copy = feature ? PREMIUM_FEATURE_COPY[feature] : null;
 
   const [isPurchasing, setIsPurchasing] = useState(false);
@@ -111,18 +111,17 @@ export function Paywall({
             </div>
           ) : null}
 
-          <p className="font-display text-[26px] leading-tight">{PLUS_PRICE_LABEL}</p>
+          <p className="font-display text-[26px] leading-tight">
+            {localizedPrice ? `${localizedPrice}／月` : PLUS_PRICE_LABEL}
+          </p>
+          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+            每月自動續訂，可隨時於 Apple ID 訂閱設定取消。
+          </p>
 
           <ul className="mt-4 grid grid-cols-1 gap-2">
             {PLUS_BENEFITS.map((b) => (
-              <li
-                key={b}
-                className="flex items-start gap-2 text-sm text-muted-foreground"
-              >
-                <Check
-                  className="mt-0.5 size-4 shrink-0 text-primary"
-                  strokeWidth={2}
-                />
+              <li key={b} className="flex items-start gap-2 text-sm text-muted-foreground">
+                <Check className="mt-0.5 size-4 shrink-0 text-primary" strokeWidth={2} />
 
                 <div>
                   <div>{b}</div>
@@ -138,9 +137,7 @@ export function Paywall({
           </ul>
 
           {message ? (
-            <p className="mt-4 text-center text-xs text-muted-foreground">
-              {message}
-            </p>
+            <p className="mt-4 text-center text-xs text-muted-foreground">{message}</p>
           ) : null}
 
           <button
@@ -169,6 +166,23 @@ export function Paywall({
           >
             {PLUS_SECONDARY_CTA}
           </button>
+
+          <p className="mt-4 text-center text-[11px] leading-relaxed text-muted-foreground">
+            訂閱將由 Apple ID 帳號扣款，並會在目前訂閱期結束前 24 小時內自動續訂。
+            <br />
+            <a
+              href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
+              target="_blank"
+              rel="noreferrer"
+              className="underline"
+            >
+              使用條款
+            </a>
+            <span aria-hidden> ・ </span>
+            <a href="/privacy" className="underline">
+              隱私權政策
+            </a>
+          </p>
         </div>
       </SheetContent>
     </Sheet>

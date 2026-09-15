@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./auth";
 import {
   getIdolDaysPlusEntitlement,
+  getIdolDaysPlusProduct,
   isStoreKitAvailable,
   purchaseIdolDaysPlus,
   restoreIdolDaysPlus,
@@ -41,13 +42,9 @@ export const PLUS_IDOL_LIMIT = 6;
 /** IdolDays+ 解鎖項目（Paywall 清單） */
 export const PLUS_BENEFITS = [
   "👤 最多 6 位偶像",
-  "⏳ 進階倒數日",
-  "🎨 專屬主題",
   "📱 專屬桌面小工具",
-  "📖 回憶 Plus",
   "💌 私人相簿分享",
-  "🍬 嗑糖 Plus",
-  "🔔 進階提醒",
+  "🔔 追星天氣與進階提醒",
 ] as const;
 
 export type PremiumFeature =
@@ -61,43 +58,41 @@ export type PremiumFeature =
   | "PREMIUM_COMPANION";
 
 /** 各 Premium 功能的 Paywall 文案 */
-export const PREMIUM_FEATURE_COPY: Record<
-  PremiumFeature,
-  { title: string; description: string }
-> = {
-  IDOL_SLOT: {
-    title: "想收藏更多本命嗎？♡",
-    description: "IdolDays+ 最多可以收藏 6 位偶像。",
-  },
-  PREMIUM_THEME: {
-    title: "換一個更像你的追星基地。",
-    description: "",
-  },
-  PREMIUM_WIDGET: {
-    title: "讓本命每天都出現在你的桌面。",
-    description: "",
-  },
-  MEMORY_PLUS: {
-    title: "把一路追星的日子，整理成一本年鑑。",
-    description: "",
-  },
-  MEMORY_SHARE: {
-    title: "這段回憶，只想和一起經歷的人分享。",
-    description: "",
-  },
-  SUGAR_PLUS: {
-    title: "這顆糖值得收藏得更完整。",
-    description: "",
-  },
-  CUSTOM_REMINDER: {
-    title: "重要的日子，不想錯過。",
-    description: "",
-  },
-  PREMIUM_COMPANION: {
-    title: "每天多一點陪伴。",
-    description: "",
-  },
-};
+export const PREMIUM_FEATURE_COPY: Record<PremiumFeature, { title: string; description: string }> =
+  {
+    IDOL_SLOT: {
+      title: "想收藏更多本命嗎？♡",
+      description: "IdolDays+ 最多可以收藏 6 位偶像。",
+    },
+    PREMIUM_THEME: {
+      title: "換一個更像你的追星基地。",
+      description: "",
+    },
+    PREMIUM_WIDGET: {
+      title: "讓本命每天都出現在你的桌面。",
+      description: "",
+    },
+    MEMORY_PLUS: {
+      title: "把一路追星的日子，整理成一本年鑑。",
+      description: "",
+    },
+    MEMORY_SHARE: {
+      title: "這段回憶，只想和一起經歷的人分享。",
+      description: "",
+    },
+    SUGAR_PLUS: {
+      title: "這顆糖值得收藏得更完整。",
+      description: "",
+    },
+    CUSTOM_REMINDER: {
+      title: "重要的日子，不想錯過。",
+      description: "",
+    },
+    PREMIUM_COMPANION: {
+      title: "每天多一點陪伴。",
+      description: "",
+    },
+  };
 
 export function isPlusActive(state: SubscriptionState): boolean {
   return state.status === "ACTIVE";
@@ -140,6 +135,7 @@ export function useSubscription() {
   const [state, setState] = useState<SubscriptionState>(defaultSubscription);
   const [ready, setReady] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [localizedPrice, setLocalizedPrice] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -157,8 +153,7 @@ export function useSubscription() {
       }
 
       try {
-        const entitlement =
-          await getIdolDaysPlusEntitlement();
+        const entitlement = await getIdolDaysPlusEntitlement();
 
         if (cancelled) return;
 
@@ -168,28 +163,36 @@ export function useSubscription() {
             : localState.status === "ACTIVE"
               ? "EXPIRED"
               : localState.status,
-          startedAt: entitlement.active
-            ? localState.startedAt ?? new Date().toISOString()
-            : null,
+          startedAt: entitlement.active ? (localState.startedAt ?? new Date().toISOString()) : null,
         };
 
         write(next);
         emit(next);
       } catch (error) {
-        console.error(
-          "IdolDays+ entitlement check failed",
-          error,
-        );
+        console.error("IdolDays+ entitlement check failed", error);
       } finally {
         if (!cancelled) setReady(true);
       }
     };
 
     void syncEntitlement();
+    void getIdolDaysPlusProduct()
+      .then((product) => {
+        if (!cancelled) setLocalizedPrice(product.displayPrice);
+      })
+      .catch(() => {
+        if (!cancelled) setLocalizedPrice(null);
+      });
+
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === "visible") void syncEntitlement();
+    };
+    document.addEventListener("visibilitychange", refreshWhenVisible);
 
     return () => {
       cancelled = true;
       listeners.delete(fn);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
     };
   }, []);
 
@@ -266,5 +269,6 @@ export function useSubscription() {
     restorePurchases,
     expire,
     setStatus,
+    localizedPrice,
   };
 }

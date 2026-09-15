@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { StoredImage } from "@/components/StoredImage";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ImageIcon, Plus } from "lucide-react";
@@ -7,6 +7,8 @@ import { useIdolSource } from "@/lib/idols.source";
 import { useEventSource } from "@/lib/events.source";
 import { useWidgetPreferenceSource } from "@/lib/widget-preferences.source";
 import { updateNativeWidget } from "@/lib/widget-native-bridge";
+import { Paywall } from "@/components/Paywall";
+import { useSubscription } from "@/lib/subscription";
 import { resolveImageUrl } from "@/lib/storage";
 import {
   getWidgetCompanionContent,
@@ -36,9 +38,7 @@ const CONTENT_LABELS: Record<WidgetContentType, string> = {
   COUNTDOWN: "重要日子",
 };
 
-type WidgetCompanionContent = ReturnType<
-  typeof getWidgetCompanionContent
->;
+type WidgetCompanionContent = ReturnType<typeof getWidgetCompanionContent>;
 
 async function imageUrlToDataUrl(url: string): Promise<string> {
   if (!url) {
@@ -107,10 +107,7 @@ function WidgetNativeSync({
             imageData = converted;
           }
         } catch (error) {
-          console.error(
-            "[IdolDays Widget] Photo sync failed:",
-            error,
-          );
+          console.error("[IdolDays Widget] Photo sync failed:", error);
         }
       }
 
@@ -150,6 +147,8 @@ function WidgetPage() {
   const { idols, ready } = useIdolSource();
   const { events } = useEventSource();
   const { prefs, update: updatePrefs } = useWidgetPreferenceSource();
+  const { isPlus } = useSubscription();
+  const [paywallOpen, setPaywallOpen] = useState(false);
 
   if (!ready || !prefs) {
     return (
@@ -199,11 +198,26 @@ function WidgetPage() {
 
   return (
     <AppShell>
-      <WidgetNativeSync
-        content={content}
-        enabledContents={prefs.enabledContents}
-      />
+      {isPlus ? (
+        <WidgetNativeSync content={content} enabledContents={prefs.enabledContents} />
+      ) : null}
       <PageHeader title="桌面陪伴" subtitle="讓他每天出現在你的桌面。" />
+
+      {!isPlus ? (
+        <SoftCard className="mb-5 px-5 py-5 text-center">
+          <p className="text-sm font-medium">IdolDays+ 專屬桌面小工具</p>
+          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+            你可以先預覽版面，訂閱後即可同步到 iPhone 桌面。
+          </p>
+          <button
+            type="button"
+            onClick={() => setPaywallOpen(true)}
+            className="mt-4 rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-soft"
+          >
+            訂閱 IdolDays+
+          </button>
+        </SoftCard>
+      ) : null}
 
       <p className="mb-3 text-[13px] tracking-wide text-muted-foreground">你的桌面陪伴</p>
 
@@ -305,6 +319,7 @@ function WidgetPage() {
       <p className="mt-6 text-center text-xs text-muted-foreground">
         每天都會依照日期、心情與重要日子換一個樣子 ♡
       </p>
+      <Paywall open={paywallOpen} onOpenChange={setPaywallOpen} feature="PREMIUM_WIDGET" />
     </AppShell>
   );
 }

@@ -13,7 +13,7 @@ function isPrivateIpv4(hostname: string) {
     return false;
   }
 
-  const [a, b] = parts;
+  const [a = -1, b = -1] = parts;
 
   return (
     a === 10 ||
@@ -116,18 +116,13 @@ function readMeta(html: string, names: string[]) {
 }
 
 function readTitle(html: string) {
-  const socialTitle = readMeta(html, [
-    "og:title",
-    "twitter:title",
-  ]);
+  const socialTitle = readMeta(html, ["og:title", "twitter:title"]);
 
   if (socialTitle) return socialTitle;
 
   const match = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
 
-  return match?.[1]
-    ? decodeHtml(match[1].replace(/\s+/g, " "))
-    : "";
+  return match?.[1] ? decodeHtml(match[1].replace(/\s+/g, " ")) : "";
 }
 
 function toAbsoluteUrl(value: string, baseUrl: string) {
@@ -149,10 +144,7 @@ function toPreviewImageUrl(value: string, baseUrl: string) {
     const url = new URL(absolute);
     const hostname = url.hostname.toLowerCase();
 
-    if (
-      hostname === "cdninstagram.com" ||
-      hostname.endsWith(".cdninstagram.com")
-    ) {
+    if (hostname === "cdninstagram.com" || hostname.endsWith(".cdninstagram.com")) {
       return `/api/link-preview-image?url=${encodeURIComponent(absolute)}`;
     }
   } catch {
@@ -170,8 +162,7 @@ async function fetchPreviewPage(initialUrl: URL) {
       redirect: "manual",
       headers: {
         Accept: "text/html,application/xhtml+xml",
-        "User-Agent":
-          "Mozilla/5.0 (compatible; IdolDaysLinkPreview/1.0)",
+        "User-Agent": "Mozilla/5.0 (compatible; IdolDaysLinkPreview/1.0)",
       },
     });
 
@@ -186,9 +177,7 @@ async function fetchPreviewPage(initialUrl: URL) {
         throw new Error("TOO_MANY_REDIRECTS");
       }
 
-      currentUrl = validateRemoteUrl(
-        new URL(location, currentUrl).toString(),
-      );
+      currentUrl = validateRemoteUrl(new URL(location, currentUrl).toString());
 
       continue;
     }
@@ -197,19 +186,13 @@ async function fetchPreviewPage(initialUrl: URL) {
       throw new Error(`REMOTE_${response.status}`);
     }
 
-    const contentType =
-      response.headers.get("content-type")?.toLowerCase() ?? "";
+    const contentType = response.headers.get("content-type")?.toLowerCase() ?? "";
 
-    if (
-      !contentType.includes("text/html") &&
-      !contentType.includes("application/xhtml+xml")
-    ) {
+    if (!contentType.includes("text/html") && !contentType.includes("application/xhtml+xml")) {
       throw new Error("NOT_HTML");
     }
 
-    const contentLength = Number(
-      response.headers.get("content-length") ?? "0",
-    );
+    const contentLength = Number(response.headers.get("content-length") ?? "0");
 
     if (contentLength > MAX_HTML_BYTES) {
       throw new Error("TOO_LARGE");
@@ -231,8 +214,7 @@ export const Route = createFileRoute("/api/link-preview")({
     handlers: {
       GET: async ({ request }) => {
         const requestUrl = new URL(request.url);
-        const rawUrl =
-          requestUrl.searchParams.get("url")?.trim() ?? "";
+        const rawUrl = requestUrl.searchParams.get("url")?.trim() ?? "";
 
         if (!rawUrl) {
           return Response.json(
@@ -276,9 +258,7 @@ export const Route = createFileRoute("/api/link-preview")({
             "description",
           ]);
 
-          const siteName = readMeta(result.html, [
-            "og:site_name",
-          ]);
+          const siteName = readMeta(result.html, ["og:site_name"]);
 
           return Response.json({
             ok: true,
@@ -290,10 +270,7 @@ export const Route = createFileRoute("/api/link-preview")({
             siteName,
           });
         } catch (error) {
-          const message =
-            error instanceof Error
-              ? error.message
-              : "FETCH_FAILED";
+          const message = error instanceof Error ? error.message : "FETCH_FAILED";
 
           return Response.json(
             {
