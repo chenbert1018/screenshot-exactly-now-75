@@ -103,6 +103,10 @@ function normalize(raw: unknown): ArchaeologyItem | null {
     id: item.id,
     url: item.url,
     title: item.title,
+    imageUrl:
+      typeof item.imageUrl === "string" && item.imageUrl.trim()
+        ? item.imageUrl
+        : undefined,
     source:
       typeof item.source === "string"
         ? item.source as ArchaeologySource
@@ -207,6 +211,7 @@ export function useArchaeology() {
         id: makeId(),
         url: draft.url.trim(),
         title: draft.title.trim(),
+        imageUrl: draft.imageUrl?.trim() || undefined,
         source: detectArchaeologySource(draft.url),
         idolId: draft.idolId,
         collection: draft.collection.trim(),
@@ -232,6 +237,7 @@ export function useArchaeology() {
               ...item,
               url: draft.url.trim(),
               title: draft.title.trim(),
+              imageUrl: draft.imageUrl?.trim() || undefined,
               source: detectArchaeologySource(draft.url),
               idolId: draft.idolId,
               collection: draft.collection.trim(),
