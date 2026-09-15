@@ -24,6 +24,32 @@ import {
 
 const MIGRATION_KEY = "idoldays.cloudMigration.idols.v1";
 const ANIMAL_PREFERENCES_KEY = "idoldays.cloudIdolAnimals.v1";
+const LOCAL_MAIN_IDOL_KEY = "idoldays.mainIdol.v1";
+const COVER_ROTATION_KEY = "idoldays.coverRotation.v1";
+
+function preferenceScope(userId: string | null) {
+  return userId ?? "local";
+}
+
+function readScopedPreference(key: string, scope: string): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const store = JSON.parse(window.localStorage.getItem(key) ?? "{}") as Record<string, string>;
+    return store[scope] ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function writeScopedPreference(key: string, scope: string, value: string) {
+  if (typeof window === "undefined") return;
+  try {
+    const store = JSON.parse(window.localStorage.getItem(key) ?? "{}") as Record<string, string>;
+    window.localStorage.setItem(key, JSON.stringify({ ...store, [scope]: value }));
+  } catch {
+    /* 偏好儲存失敗不影響主要資料 */
+  }
+}
 
 type AnimalPreferenceStore = Record<string, Record<string, RepresentativeAnimal>>;
 
@@ -215,8 +241,13 @@ export type IdolSource = {
   error: string | null;
   /** 依 id 找偶像；已登入時同時支援搬移前的本機 id */
   findIdol: (id: string | undefined) => Idol | undefined;
-  /** 本命：雲端使用 profile.main_idol_id，其次為第一位 */
+  /** 手動指定的主封面偶像。 */
   mainIdol: Idol | undefined;
+  /** 首頁實際顯示的偶像；開啟每日輪換時依本地日期輪換。 */
+  homeIdol: Idol | undefined;
+  coverRotation: boolean;
+  setMainIdol: (id: string) => Promise<void>;
+  setCoverRotation: (enabled: boolean) => void;
   addIdol: (draft: IdolDraft) => Promise<void>;
   updateIdol: (id: string, draft: IdolDraft) => Promise<void>;
   removeIdol: (id: string) => Promise<void>;
@@ -231,10 +262,17 @@ export function useIdolSource(): IdolSource {
   const [cloudReady, setCloudReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mainIdolId, setMainIdolId] = useState<string | null>(null);
+  const [coverRotation, setCoverRotationState] = useState(false);
   const [aliasMap, setAliasMap] = useState<Record<string, string>>({});
   const [tick, setTick] = useState(0);
 
   const userId = user?.id ?? null;
+  const scope = preferenceScope(userId);
+
+  useEffect(() => {
+    setCoverRotationState(readScopedPreference(COVER_ROTATION_KEY, scope) === "true");
+    if (!userId) setMainIdolId(readScopedPreference(LOCAL_MAIN_IDOL_KEY, scope));
+  }, [scope, userId]);
 
   useEffect(() => {
     if (!userId) {
@@ -268,7 +306,7 @@ export function useIdolSource(): IdolSource {
           .eq("user_id", userId)
           .maybeSingle();
         if (!active) return;
-        setMainIdolId(data?.main_idol_id ?? null);
+        setMainIdolId(data?.main_idol_id ?? readScopedPreference(LOCAL_MAIN_IDOL_KEY, scope));
 
         setError(null);
         setCloudReady(true);
@@ -283,7 +321,7 @@ export function useIdolSource(): IdolSource {
     return () => {
       active = false;
     };
-  }, [userId, tick]);
+  }, [userId, tick, scope]);
 
   const reload = useCallback(() => setTick((n) => n + 1), []);
 
@@ -302,9 +340,30 @@ export function useIdolSource(): IdolSource {
     [idols, aliasMap],
   );
 
-  const mainIdol = isCloud
-    ? (idols.find((i) => i.id === mainIdolId) ?? idols[0])
-    : idols[0];
+  const mainIdol = idols.find((i) => i.id === mainIdolId) ?? idols[0];
+  const rotationIndex = (() => {
+    const now = new Date();
+    const daySeed = Math.floor(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 86400000);
+    return idols.length ? daySeed % idols.length : 0;
+  })();
+  const homeIdol = coverRotation && idols.length > 1 ? idols[rotationIndex] : mainIdol;
+
+  const setMainIdol = useCallback(async (id: string) => {
+    setMainIdolId(id);
+    writeScopedPreference(LOCAL_MAIN_IDOL_KEY, scope, id);
+    if (isCloud && userId) {
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ main_idol_id: id })
+        .eq("user_id", userId);
+      if (updateError) throw updateError;
+    }
+  }, [isCloud, scope, userId]);
+
+  const setCoverRotation = useCallback((enabled: boolean) => {
+    setCoverRotationState(enabled);
+    writeScopedPreference(COVER_ROTATION_KEY, scope, String(enabled));
+  }, [scope]);
 
   const addIdol = useCallback(
     async (draft: IdolDraft) => {
@@ -359,6 +418,10 @@ export function useIdolSource(): IdolSource {
     error,
     findIdol,
     mainIdol,
+    homeIdol,
+    coverRotation,
+    setMainIdol,
+    setCoverRotation,
     addIdol,
     updateIdol: updateIdolFn,
     removeIdol,
