@@ -47,7 +47,9 @@ function toRow(draft: ArchaeologyDraft) {
     idol_id: draft.idolId || null,
     url: draft.url.trim(),
     title: draft.title.trim(),
-    image_url: draft.imageUrl?.trim() ?? "",
+    image_url: draft.imageUrl?.startsWith("data:image/")
+      ? ""
+      : draft.imageUrl?.trim() ?? "",
     source: detectSource(draft.url),
     collection: draft.collection.trim(),
     tags: draft.tags.map((tag) => tag.trim()).filter(Boolean),
