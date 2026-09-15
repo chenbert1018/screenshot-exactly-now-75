@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { EVENT_TYPES, emptyEventDraft, type EventDraft, type EventType } from "@/lib/events";
+import { EVENT_TYPES, emptyEventDraft, weatherToneForAnimal, type EventDraft, type EventType } from "@/lib/events";
 import { Paywall } from "@/components/Paywall";
 import { useSubscription } from "@/lib/subscription";
 import type { Idol } from "@/lib/idols";
@@ -40,7 +40,13 @@ export function EventFormSheet({
   useEffect(() => {
     if (open) {
       const base = initial ?? emptyEventDraft;
-      setDraft({ ...base, idolId: base.idolId || (idols[0]?.id ?? "") });
+      const idolId = base.idolId || (idols[0]?.id ?? "");
+      const selectedIdol = idols.find((idol) => idol.id === idolId);
+      setDraft({
+        ...base,
+        idolId,
+        weatherTone: weatherToneForAnimal(selectedIdol?.representativeAnimal),
+      });
       setError("");
     }
   }, [open, initial, idols]);
@@ -93,7 +99,13 @@ export function EventFormSheet({
                     <button
                       key={idol.id}
                       type="button"
-                      onClick={() => setDraft((d) => ({ ...d, idolId: idol.id }))}
+                      onClick={() =>
+                        setDraft((d) => ({
+                          ...d,
+                          idolId: idol.id,
+                          weatherTone: weatherToneForAnimal(idol.representativeAnimal),
+                        }))
+                      }
                       className={`rounded-full border px-4 py-2 text-sm transition-colors ${
                         active
                           ? "border-primary bg-primary text-primary-foreground"
