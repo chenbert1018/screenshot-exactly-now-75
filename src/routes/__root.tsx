@@ -13,8 +13,13 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { useEventSource } from "../lib/events.source";
+import { useIdolSource } from "../lib/idols.source";
 import { useFanWeatherLifecycle } from "../lib/fan-weather-lifecycle";
 import { useNotificationNavigation } from "../lib/notification-navigation";
+import { useWidgetPreferenceSource } from "../lib/widget-preferences.source";
+import { getWidgetCompanionContent } from "../lib/widget";
+import { useNativeWidgetSync } from "../lib/widget-native-sync";
+import { useSubscription } from "../lib/subscription";
 
 function NotFoundComponent() {
   return (
@@ -131,10 +136,23 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
-  const { events, ready } = useEventSource();
+  const { events, ready: eventsReady } = useEventSource();
+  const { idols, ready: idolsReady } = useIdolSource();
+  const { prefs, ready: prefsReady } = useWidgetPreferenceSource();
+  const { isPlus, ready: subscriptionReady } = useSubscription();
+  const widgetContent = getWidgetCompanionContent({
+    idols,
+    events,
+    ...(prefs ? { preferences: prefs } : {}),
+  });
 
-  useFanWeatherLifecycle(events, ready);
+  useFanWeatherLifecycle(events, eventsReady);
   useNotificationNavigation(router);
+  useNativeWidgetSync({
+    content: widgetContent,
+    enabledContents: prefs?.enabledContents ?? [],
+    active: idolsReady && eventsReady && prefsReady && subscriptionReady && isPlus,
+  });
 
   return (
     <QueryClientProvider client={queryClient}>
