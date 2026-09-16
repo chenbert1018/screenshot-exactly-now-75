@@ -33,6 +33,19 @@ const features = [
   { Icon: Smartphone, title: "桌面陪伴", body: "一打開手機，就知道離見面還有幾天。" },
 ];
 
+function IdolDaysMark({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 128 128" fill="none" aria-hidden="true" className={className}>
+      <g transform="translate(64 64) scale(1.44) translate(-62.5 -53.5)">
+        <path d="M64 28c3 14.2 7 18.2 21.5 21.5-14.5 3.1-18.5 7.2-21.5 21.5-3.2-14.3-7.2-18.4-21.5-21.5 14.3-3.3 18.3-7.3 21.5-21.5Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="3.4" />
+        <path d="M80 25v10M75 30h10" stroke="currentColor" strokeLinecap="round" strokeWidth="3.2" />
+        <circle cx="45" cy="78" r="4.4" stroke="currentColor" strokeWidth="3.4" />
+        <path d="M49 74.5c2.7-5.1 6.3-8.1 11.1-9.4" stroke="currentColor" strokeLinecap="round" strokeWidth="3.4" />
+      </g>
+    </svg>
+  );
+}
+
 function IdolDaysIntro() {
   return (
     <main className="min-h-screen overflow-hidden bg-[#f7fbff] text-[#1f3f6b]">
@@ -65,7 +78,7 @@ function IdolDaysIntro() {
               <div className="overflow-hidden rounded-[2.2rem] bg-gradient-to-b from-[#dcecff] via-[#f8fbff] to-[#e4ddff] px-4 pb-5 pt-12">
                 <div className="flex items-center justify-between text-xs font-semibold text-[#315b8d]"><span>IdolDays</span><BellRing className="size-4" /></div>
                 <div className="mt-4 h-48 rounded-[1.6rem] bg-[radial-gradient(circle_at_55%_28%,rgba(255,255,255,.95),transparent_20%),linear-gradient(145deg,#83b4ef,#b2cdfb_52%,#d9ccfb)] p-5 text-white shadow-inner">
-                  <div className="flex justify-end"><Sparkles className="size-6" /></div>
+                  <div className="flex justify-end text-white"><IdolDaysMark className="size-9" /></div>
                   <div className="mt-16"><p className="text-xs tracking-[0.14em] uppercase text-white/80">오늘도 우리예요</p><p className="mt-1 text-xl font-semibold">帶著好心情，<br />去見喜歡的人吧。</p></div>
                 </div>
                 <div className="mt-3 rounded-3xl bg-white/90 p-4 shadow-[0_10px_25px_rgb(74_144_226_/_0.12)]"><p className="text-[10px] font-semibold tracking-[0.14em] text-[#6d87a7] uppercase">Next D-Day</p><div className="mt-1 flex items-center justify-between"><div><p className="font-semibold text-[#274d7d]">台北演唱會</p><p className="mt-1 text-xs text-[#6d87a7]">2026.09.17</p></div><p className="text-3xl font-semibold text-[#4a90e2]">D-1</p></div></div>
