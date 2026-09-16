@@ -796,15 +796,23 @@ struct IdolDaysWidgetEntryView: View {
         alignment: Alignment
     ) -> some View {
         if let image = loadSharedIdolImage() {
-            Image(uiImage: image)
-                .resizable()
-                .scaledToFill()
-                .frame(
-                    width: width,
-                    height: height,
-                    alignment: alignment
-                )
-                .clipped()
+            ZStack {
+                // 用模糊背景填滿比例差，保留人物原始構圖，不裁切臉或身體。
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: width, height: height)
+                    .blur(radius: 18)
+                    .opacity(0.45)
+                    .clipped()
+
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: width, height: height)
+            }
+            .frame(width: width, height: height, alignment: alignment)
+            .clipped()
         } else {
             ZStack {
                 LinearGradient(
