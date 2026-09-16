@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { UserRound, Settings, Bell, Palette, Sparkles, ChevronRight, Cloud, PanelsTopLeft } from "lucide-react";
 import {
@@ -16,6 +16,8 @@ import { eventTypeMeta } from "@/lib/events";
 import { useEventSource } from "@/lib/events.source";
 import { Paywall } from "@/components/Paywall";
 import { PLUS_NAME, PLUS_PRICE_LABEL, useSubscription } from "@/lib/subscription";
+import { fetchMyProfile, type CloudProfile, useAuth } from "@/lib/auth";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -44,6 +46,48 @@ function ProfilePage() {
   const { reminders, updateReminder, removeReminder } = useReminderSource();
   const { idols } = useIdolSource();
   const { events } = useEventSource();
+  const { user, loading: authLoading } = useAuth();
+  const [cloudProfile, setCloudProfile] = useState<CloudProfile | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    if (!user?.id) {
+      setCloudProfile(null);
+      return () => { active = false; };
+    }
+
+    void fetchMyProfile(user.id)
+      .then((profile) => {
+        if (active) setCloudProfile(profile);
+      })
+      .catch(() => {
+        // A profile lookup failure must not make an authenticated user look signed out.
+        if (active) setCloudProfile(null);
+      });
+
+    return () => { active = false; };
+  }, [user?.id]);
+
+  const displayName =
+    cloudProfile?.displayName.trim() ||
+    user?.user_metadata?.display_name ||
+    "尚未設定名稱";
+
+  async function editDisplayName() {
+    if (!user?.id) return;
+    const next = window.prompt("顯示名稱", cloudProfile?.displayName || "");
+    if (next === null) return;
+
+    const { error } = await supabase
+      .from("profiles")
+      .update({ display_name: next.trim() })
+      .eq("user_id", user.id);
+
+    if (!error) {
+      const refreshed = await fetchMyProfile(user.id).catch(() => null);
+      if (refreshed) setCloudProfile(refreshed);
+    }
+  }
 
   const reminderRows = reminders.map((r) => {
     const event = r.eventId ? events.find((e) => e.id === r.eventId) : undefined;
@@ -73,10 +117,23 @@ function ProfilePage() {
         <div className="flex size-16 items-center justify-center rounded-full bg-surface text-muted-foreground">
           <UserRound className="size-7" strokeWidth={1.5} />
         </div>
-        <div>
-          <p className="text-[17px] font-medium">尚未設定名稱</p>
-          <p className="mt-1 text-sm text-muted-foreground">歡迎來到 IdolDays</p>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[17px] font-medium">
+            {authLoading ? "讀取帳號中…" : displayName}
+          </p>
+          <p className="mt-1 truncate text-sm text-muted-foreground">
+            {user?.email ?? "歡迎來到 IdolDays"}
+          </p>
         </div>
+        {user && !authLoading ? (
+          <button
+            type="button"
+            onClick={() => void editDisplayName()}
+            className="rounded-full bg-surface px-3 py-2 text-xs text-muted-foreground active:scale-95"
+          >
+            設定名稱
+          </button>
+        ) : null}
       </SoftCard>
 
       <Section title="雲端帳號">
@@ -86,7 +143,14 @@ function ProfilePage() {
             className="flex w-full items-center gap-3 px-5 py-4 text-left transition-colors active:bg-surface/70"
           >
             <Cloud className="size-[18px] text-muted-foreground" strokeWidth={1.6} />
-            <span className="flex-1 text-sm">登入／註冊雲端帳號</span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm">
+                {authLoading ? "讀取帳號中…" : user ? "已登入雲端帳號" : "登入／註冊雲端帳號"}
+              </span>
+              {user?.email ? (
+                <span className="mt-0.5 block truncate text-xs text-muted-foreground">{user.email}</span>
+              ) : null}
+            </span>
             <ChevronRight className="size-4 text-muted-foreground" strokeWidth={1.6} />
           </Link>
         </SoftCard>
