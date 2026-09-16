@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="bg" x1="14" y1="8" x2="116" y2="124" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#d9ccff"/>
+      <stop offset=".45" stop-color="#92b9f5"/>
+      <stop offset="1" stop-color="#4d72b5"/>
+    </linearGradient>
+    <linearGradient id="door" x1="45" y1="30" x2="82" y2="96" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff"/>
+      <stop offset="1" stop-color="#eaf4ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="29" fill="url(#bg)"/>
+  <path d="M29 69c14-17 43-25 66-16 15 6 15 18 1 27-22 13-54 9-69-5-6-6-4-10 2-16Z" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="4" opacity=".96"/>
+  <path d="m49 34 31 13v50L49 84Z" fill="url(#door)"/>
+  <path d="M49 34v50M80 47v50" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="3"/>
+  <path d="M64.5 53c2.1 8.8 4.3 11 13 13-8.7 2-10.9 4.2-13 13-2.1-8.8-4.3-11-13-13 8.7-2 10.9-4.2 13-13Z" fill="#fff"/>
+  <path d="M93 21c1.7 7 3.4 8.8 10.4 10.4-7 1.7-8.7 3.4-10.4 10.4-1.7-7-3.4-8.7-10.4-10.4 7-1.6 8.7-3.4 10.4-10.4Z" fill="#fff"/>
+  <path d="M36 38c1.1 4.7 2.3 5.8 7 7-4.7 1.1-5.9 2.3-7 7-1.2-4.7-2.3-5.9-7-7 4.7-1.2 5.8-2.3 7-7Z" fill="#fff" opacity=".9"/>
+</svg>
