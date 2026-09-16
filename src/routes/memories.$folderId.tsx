@@ -1,15 +1,14 @@
 import { StoredImage } from "@/components/StoredImage";
-import { useMemo, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Heart, Plus } from "lucide-react";
-import { toast } from "sonner";
+import { useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { ChevronLeft, Plus, MoreHorizontal, Images } from "lucide-react";
 import { AppShell, EmptyState, SoftCard } from "@/components/AppShell";
-import { HeartFormSheet } from "@/components/HeartFormSheet";
 import {
-  HeartDetailSheet,
-  SugarPlaceholder,
-  dotDate,
-} from "@/components/HeartDetailSheet";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,59 +19,353 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { AlbumShareSheet } from "@/components/AlbumShareSheet";
+import { MemoryFolderFormSheet } from "@/components/MemoryFolderFormSheet";
+import { MemoryFormSheet } from "@/components/MemoryFormSheet";
+import { useMemoryFolderSource } from "@/lib/memory-folders.source";
 import {
-  heartTypeLabel,
-  heartWhisper,
-  HEART_TYPES,
-  sortHeartItemsByCollected,
-  type HeartDraft,
-  type HeartItem,
-  type HeartItemType,
-} from "@/lib/heart";
-import { type Idol } from "@/lib/idols";
+  groupMemoriesByDate,
+  type Memory,
+  type MemoryDraft,
+} from "@/lib/memories";
+import { useMemorySource } from "@/lib/memories.source";
 import { useIdolSource } from "@/lib/idols.source";
-import { useSugarSource } from "@/lib/sugar.source";
+import { parseLocalDate } from "@/lib/dates";
 
-export const Route = createFileRoute("/heart")({
+export const Route = createFileRoute("/memories/$folderId")({
   head: () => ({
     meta: [
-      { title: "å—‘ç³–ï½œIdolDays" },
-      { name: "description", content: "æ”¶è—é‚£äº›è®“æˆ‘å¿ä¸ä½å˜´è§’ä¸Šæšçš„ç¬é–“ã€‚" },
-      { property: "og:title", content: "å—‘ç³–ï½œIdolDays" },
-      { property: "og:description", content: "æ”¶è—é‚£äº›è®“æˆ‘å¿ä¸ä½å˜´è§’ä¸Šæšçš„ç¬é–“ ğŸ¬" },
-      { property: "og:type", content: "website" },
+      { title: "å›æ†¶è³‡æ–™å¤¾ï½œIdolDays" },
+      { name: "description", content: "ç”¨æ™‚é–“è»¸ç¿»é–±é€™æ®µè¿½æ˜Ÿæ™‚å…‰çš„ç…§ç‰‡èˆ‡å¿ƒå¾—ã€‚" },
+      { property: "og:title", content: "å›æ†¶è³‡æ–™å¤¾ï½œIdolDays" },
+      { property: "og:description", content: "ç”¨æ™‚é–“è»¸ç¿»é–±é€™æ®µè¿½æ˜Ÿæ™‚å…‰çš„ç…§ç‰‡èˆ‡å¿ƒå¾—ã€‚" },
+      { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: HeartPage,
+  component: FolderDetailPage,
 });
 
-function toDraft(item: HeartItem): HeartDraft {
-  return {
-    idolId: item.idolId,
-    title: item.title,
-    date: item.date,
-    type: item.type,
-    note: item.note ?? "",
-    image: item.image ?? "",
-    imagePosition: item.imagePosition ?? 50,
-    link: item.link ?? "",
-  };
+function dotDate(value?: string) {
+  const p = parseLocalDate(value);
+  if (!p) return "æœªæ¨™è¨˜æ—¥æœŸ";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${p.y}.${pad(p.m)}.${pad(p.d)}`;
 }
 
-function HeartCard({
-  item,
-  idolName,
-  onOpen,
-}: {
-  item: HeartItem;
-  idolName: string;
-  onOpen: () => void;
-}) {
+function FolderDetailPage() {
+  const { folderId } = Route.useParams();
+  const navigate = useNavigate();
+  const { folders, ready, updateFolder, removeFolder, mode } = useMemoryFolderSource();
+  const { memories, addMemory, updateMemory, removeMemory } = useMemorySource(folderId);
+  const { idols } = useIdolSource();
+
+  const folder = folders.find((f) => f.id === folderId);
+  const idol = folder?.idolId ? idols.find((i) => i.id === folder.idolId) : undefined;
+
+  const [editFolder, setEditFolder] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [deleteFolder, setDeleteFolder] = useState(false);
+  const [memoryOpen, setMemoryOpen] = useState(false);
+  const [editing, setEditing] = useState<Memory | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<Memory | null>(null);
+
+  if (ready && !folder) {
+    return (
+      <AppShell>
+        <EmptyState
+          title="æ‰¾ä¸åˆ°é€™å€‹è³‡æ–™å¤¾"
+          description="å®ƒå¯èƒ½å·²ç¶“è¢«åˆªé™¤äº†ã€‚"
+          action={
+            <Link
+              to="/memories"
+              className="rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-soft"
+            >
+              å›åˆ°å›æ†¶
+            </Link>
+          }
+        />
+      </AppShell>
+    );
+  }
+
+  const groups = groupMemoriesByDate(memories);
+
+  const editDraft: MemoryDraft | undefined = editing
+    ? {
+        title: editing.title,
+        date: editing.date,
+        note: editing.note,
+        photo: editing.photo ?? "",
+        photoPosition: editing.photoPosition,
+      }
+    : undefined;
+
   return (
-    <button type="button" onClick={onOpen} className="w-full text-left">
-      <SoftCard className="overflow-hidden p-0 transition-transform duration-300 active:scale-[0.98]">
-        {item.image ? (
-          <StoredImage
-            src={item.image}
-            al}ı÷[h‘éì¶»§q«^u•áĞµÍ´™½¹Ğµµ•‘¥Õ´Ñ•áĞµÁÉ¥µ…Éäµ™½É•É½Õ¹Í¡…‘½ÜµÍ½™Ğˆ(€€€€€€€€€€ø(€€€€€€€€€€€ƒ–n{–"Ãš"Gj–Û–<(€€€€€€€€€€ğ½1¥¹¬ø(€€€€€€€€ğ½‘¥Øø(€€€€€€ğ½ÁÁM¡•±°ø(€€€€¤ì(€ô((€…Íå¹Œ™Õ¹Ñ¥½¸¡…¹‘±•M…Ù”¡‘É…™Ğè%‘½±É…™Ğ¤ì(€€€¥˜€ …¥‘½°¤É•ÑÕÉ¸ì(€€€…İ…¥ĞÕÁ‘…Ñ•%‘½°¡¥‘½°¹¥°‘É…™Ğ¤ì(€€€Í•Ñ‘¥Ñ¥¹œ¡™…±Í”¤ì(€ô((€…Íå¹Œ™Õ¹Ñ¥½¸¡…¹‘±••±•Ñ” ¤ì(€€€¥˜€ …¥‘½°¤É•ÑÕÉ¸ì(€€€…İ…¥ĞÉ•µ½Ù•I•µ¥¹‘•ÉÍ½É%‘½°¡¥‘½±%¤ì(€€€…İ…¥ĞÉ•µ½Ù•%‘½°¡¥‘½°¹¥¤ì(€€€Í•Ñ½¹™¥Éµ¥¹œ¡™…±Í”¤ì(€€€Í•Ñ‘¥Ñ¥¹œ¡™…±Í”¤ì(€€€¹…Ù¥…Ñ”¡ìÑ¼è€ˆ½¥‘½±Ìˆô¤ì(€ô((€½¹ÍĞì¥è}¥°€¸¸¹‘É…™Ğô€ô¥‘½°ì(€½¹ÍĞ‘…ä€ôÁÉ¥µ…Éå…ä¡¥‘½°¤ì(€½¹ÍĞÍ¥¹”€ô‘…åÍM¥¹”¡¥‘½°¹Í¥¹•…Ñ”¤ì(€½¹ÍĞ‘•‰ÕĞ€ô¹•áÑ¹¹¥Ù•ÉÍ…Éä¡¥‘½°¹‘•‰ÕÑ…Ñ”¤ì(€½¹ÍĞ‰¥ÉÑ¡‘…åI•µ¥¹‘•È€ôÉ•µ¥¹‘•É½È¡ìÑåÁ”è€‰	%IQ!dˆ°¥‘½±%ô¤ì(€½¹ÍĞ‘•‰ÕÑI•µ¥¹‘•È€ôÉ•µ¥¹‘•É½È¡ìÑåÁ”è€‰99%YIMIdˆ°¥‘½±%ô¤ì((€É•ÑÕÉ¸€ (€€€€ñÁÁM¡•±°ø(€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰µˆ´Ô™±•à¥Ñ•µÌµ•¹Ñ•È©ÕÍÑ¥™äµ‰•Ñİ••¸ˆø(€€€€€€€€ñ1¥¹¬(€€€€€€€€€Ñ¼ôˆ½¥‘½±Ìˆ(€€€€€€€€€±…ÍÍ9…µ”ô‰¥¹±¥¹”µ™±•à¥Ñ•µÌµ•¹Ñ•È…À´ÄÑ•áĞµÍ´Ñ•áĞµµÕÑ•µ™½É•É½Õ¹ˆ(€€€€€€€€ø(€€€€€€€€€€ñ¡•ÙÉ½¹1•™Ğ±…ÍÍ9…µ”ô‰Í¥é”´ĞˆÍÑÉ½­•]¥‘Ñ õìÄ¸áô€¼ø(€€€€€€€€€ƒš"Gj–Û–<(€€€€€€€€ğ½1¥¹¬ø(€€€€€€€€ñ‰ÕÑÑ½¸(€€€€€€€€€ÑåÁ”ô‰‰ÕÑÑ½¸ˆ(€€€€€€€€€½¹±¥¬õì ¤€ôøÍ•Ñ‘¥Ñ¥¹œ¡ÑÉÕ”¥ô(€€€€€€€€€±…ÍÍ9…µ”ô‰¥¹±¥¹”µ™±•à¥Ñ•µÌµ•¹Ñ•È…À´Ä¸ÔÉ½Õ¹‘•µ™Õ±°‰½É‘•È‰½É‘•Èµ‰½É‘•È¼ÜÀÁà´Ì¸ÔÁä´Ä¸ÔÑ•áĞµÍ´ÑÉ…¹Í¥Ñ¥½¸µÑÉ…¹Í™½É´‘ÕÉ…Ñ¥½¸´ÌÀÀ…Ñ¥Ù”éÍ…±”´äÔˆ(€€€€€€€€ø(€€€€€€€€€€ñA•¹¥°±…ÍÍ9…µ”ô‰Í¥é”´Ì¸ÔˆÍÑÉ½­•]¥‘Ñ õìÄ¸áô€¼ø(€€€€€€€€€ƒŞ£¢ò¼(€€€€€€€€ğ½‰ÕÑÑ½¸ø(€€€€€€ğ½‘¥Øø((€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰½Ù•É™±½Üµ¡¥‘‘•¸É½Õ¹‘•´Íá°‰½É‘•È‰½É‘•Èµ‰½É‘•È¼ØÀ‰œµ…ÉÍ¡…‘½ÜµÍ½™Ğˆø(€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰…ÍÁ•ĞµlĞ¼ÕtÜµ™Õ±°‰œµÍÕÉ™…”ˆø(€€€€€€€€€í¥‘½°¹Á¡½Ñ¼€ü€ (€€€€€€€€€€€€ñMÑ½É•‘%µ…”(€€€€€€€€€€€€€ÍÉŒõí¥‘½°¹Á¡½Ñ½ô(€€€€€€€€€€€€€…±Ğõí€‘í¥‘½°¹¹…µ•ôƒjŸ&ô(€€€€€€€€€€€€€±…ÍÍ9…µ”ô‰Í¥é”µ™Õ±°½‰©•Ğµ½Ù•Èˆ(€€€€€€€€€€€€€ÍÑå±”õíì½‰©•ÑA½Í¥Ñ¥½¸è€ÔÀ”€‘í¥‘½°¹Á¡½Ñ½A½Í¥Ñ¥½¸€üü€ÔÁô•€õô(€€€€€€€€€€€€¼ø(€€€€€€€€€€¤€è€ (€€€€€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰™±•àÍ¥é”µ™Õ±°™±•àµ½°¥Ñ•µÌµ•¹Ñ•È©ÕÍÑ¥™äµ•¹Ñ•È…À´ÈÑ•áĞµµÕÑ•µ™½É•É½Õ¹ˆø(€€€€€€€€€€€€€€ñ%µ…•%½¸±…ÍÍ9…µ”ô‰Í¥é”´ÜˆÍÑÉ½­•]¥‘Ñ õìÄ¸Íô€¼ø(€€€€€€€€€€€€€€ñÍÁ…¸±…ÍÍ9…µ”ô‰Ñ•áĞµáÌˆûšRû’â–ò×’öƒšr–Zsš¶‡jŸ&ğ½ÍÁ…¸ø(€€€€€€€€€€€€ğ½‘¥Øø(€€€€€€€€€€¥ô(€€€€€€€€ğ½‘¥Øø(€€€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰Áà´ØÁä´ØÑ•áĞµ•¹Ñ•Èˆø(€€€€€€€€€€ñ Ä±…ÍÍ9…µ”ô‰Ñ•áĞ´Éá°™½¹ĞµÍ•µ¥‰½±ˆùí¥‘½°¹¹…µ•ôğ½ Äø(€€€€€€€€€í¥‘½°¹É½ÕÁ9…µ”€ü€ (€€€€€€€€€€€€ñÀ±…ÍÍ9…µ”ô‰µĞ´Ä¸ÔÑ•áĞµÍ´Ñ•áĞµµÕÑ•µ™½É•É½Õ¹ˆùí¥‘½°¹É½ÕÁ9…µ•ôğ½Àø(€€€€€€€€€€¤€è¹Õ±±ô(€€€€€€€€ğ½‘¥Øø(€€€€€€ğ½‘¥Øø((€€€€€€ñ‘¥Ø±…ÍÍ9…µ”ô‰µĞ´ÔÉ¥É¥µ½±Ì´È…À´Ğˆø(€€€€€€€€ñM½™Ñ…É±…ÍÍ9…µ”ô‰Áà´ĞÁä´ÔÑ•áĞµ•¹Ñ•Èˆø(€€€€€€€€€€ñÀ±…ÍÍ9…µ”ô‰Ñ•áĞµáÌÑ•áĞµµÕÑ•µ™½É•É½Õ¹ˆùí‘…ä€ü‘…ä¹Ñ¥Ñ±”€è€‰µ…ä‰ôğ½Àø(€€€€€€€€€€ñÀ±…ÍÍ9…µ”ô‰µĞ´ÈÑ•áĞ´Éá°™½¹ĞµÍ•µ¥‰½±Ñ•áĞµÁÉ¥µ…Éäˆø(€€€€€€€€€€€í‘…ä€ü‘…ä¹‘‘…å1…‰•°€è€‹ŠP‰ô(€€€€€€€€€€ğ½Àø(€€€€€€€€€€ñÀ±…ÍÍ9…µ”ô‰µĞ´ÄÑ•áĞµáÌÑ•áĞµµÕÑ•µ™½É•É½Õ¹ˆø(€€€€€€€€€€€í‘…ä€ü‘…ä¹¡Õµ…¹1…‰•°€è€‹¢¢·–ºk’â–/¦7¢šš^—–¶@‰ô(€€€€€€€€€€ğ½Àø(€€€€€€€€ğ½M½™Ñ…Éø(€€€€€€€€ñM½™Ñ…É±…ÍÍ9…µ”ô‰Áà´ĞÁä´ÔÑ•áĞµ•¹Ñ•Èˆø(€€€€€€€€€€ñÀ±…ÍÍ9…µ”ô‰Ñ•áĞµáÌÑ•áĞµµÕÑ•µ™½É•É½Õ¹ˆû¦f«’òÓjš^—–¶@ğ½Àø(€€€€€€€€€€ñÀ±…ÍÍ9…µ”ô‰µĞ´ÈÑ•áĞ´Éá°™½¹ĞµÍ•µ¥‰½±Ñ•áĞµÁÉ¥µ…Éäˆø(€€€€€€€€€€€íÍ¥¹”€üÍ¥¹”¹‘‘…å1…‰•°€è€‹ŠP‰ô(€€€€€€€€€€ğ½Àø(€€€€€€€€€€ñÀ±…ÍÍ9…µ”ô‰µĞ´ÄÑ•áĞµáÌÑ•áĞµµÕÑ•µ™½É•É½Õ¹ˆø(€€€€€€€€€€€íÍ¥¹”€üÍ¥¹”¹¡Õµ…¹1…‰•°€è€‹¢¢·–ºk–Zsš¶‡’î[jš^—šr|‰ô(€€€€€€€€€€ğ½Àø(€€€€€€€€ğ½M½™Ñ…Éø(€€€€€€ğ½‘¥Øø((€€€€€€ñM½™Ñ…É±…ÍÍ9…µ”ô‰µĞ´ÔÁà´ÔÁä´Èˆø(€€€€€€€€ñI½Ü±…‰•°ô‹Rš^”ˆÙ…±Õ”õí¥‘½°¹‰¥ÉÑ¡‘…åô€¼ø(€€€€€€€€ñI½Ü(€€€€€€€€€±…‰•°ô‹–ë¦Oš^—šr|ˆ(€€€€€€€€€Ù…±Õ”õì(€€€€€€€€€€€¥‘½°¹‘•‰ÕÑ…Ñ”(€€€€€€€€€€€€€€ü€‘í¥‘½°¹‘•‰ÕÑ…Ñ•÷¾ò ‘í‘•‰ÕĞü¹‘…åÍU¹Ñ¥°€ôôô€À€ü€‹’î+–’§šb¿–ë¦OÒ–ş×š^”ˆ€èƒ–ë¦OÒ–ş×š^”€‘í‘•‰ÕĞü¹‘‘…å1…‰•±õ÷¾ò%€(€€€€€€€€€€€€€€è€ˆˆ(€€€€€€€€€ô(€€€€€€€€¼ø(€€€€€€€€ñI½Ü±…‰•°ô‹Ê'ÖË–B7¢ÄˆÙ…±Õ”õí¥‘½°¹™…¹9…µ•ô€¼ø(€€€€€€€€ñI½Ü±…‰•°ô‹š"G–Zsš¶‡’î[jš^—šr|ˆÙ…±Õ”õí¥‘½°¹Í¥¹•…Ñ•ô€¼ø(€€€€€€ğ½M½™Ñ…Éø((€€€€€í¥‘½°¹‰¥ÉÑ¡‘…äñğ¥‘½°¹‘•‰ÕÑ…Ñ”€ü€ (€€€€€€€€ñM½™Ñ…É±…ÍÍ9…µ”ô‰µĞ´Ô‘¥Ù¥‘”µä‘¥Ù¥‘”µ‰½É‘•È¼ØÀˆø(€€€€€€€€€í¥‘½°¹‰¥ÉÑ¡‘…ä€ü€ (€€€€€€€€€€€€ñ‰ÕÑÑ½¸(€€€€€€€€€€€€€ÑåÁ”ô‰‰ÕÑÑ½¸ˆ(€€€€€€€€€€€€€½¹±¥¬õì ¤€ôøÍ•ÑI•µ¥¹‘•É-¥¹ ‰	%IQ!dˆ¥ô(€€€€€€€€€€€€€±…ÍÍ9…µ”ô‰™±•àÜµ™Õ±°¥Ñ•µÌµ•¹Ñ•È…À´ÌÁà´ÔÁä´ĞÑ•áĞµ±•™ĞÑÉ…¹Í¥Ñ¥½¸µ½±½ÉÌ…Ñ¥Ù”é‰œµÍÕÉ™…”¼ÜÀˆ(€€€€€€€€€€€€ø(€€€€€€€€€€€€€€ñ	•±°±…ÍÍ9…µ”ô‰Í¥é”µlÄáÁátÑ•áĞµµÕÑ•µ™½É•É½Õ¹ˆÍÑÉ½­•]¥‘Ñ õìÄ¸Ùô€¼ø(€€€€€€€€€€€€€€ñÍÁ…¸±…ÍÍ9…µ”ô‰™±•à´ÄÑ•áĞµÍ´ˆûRš^—š>C¦Hğ½ÍÁ…¸ø(€€€€€€€€€€€€€€ñÍÁ…¸±…ÍÍ9…µ”ô‰Ñ•áĞµÍ´Ñ•áĞµµÕÑ•µ™½É•É½Õ¹ˆø(€€€€€€€€€€€€€€€í‰¥ÉÑ¡‘…åI•µ¥¹‘•È€ü™½Éµ…Ñ…åÍ	•™½É”¡‰¥ÉÑ¡‘…åI•µ¥¹‘•È¹‘…åÍ	•™½É”¤€è€‹’â7š>C¦H‰ô(€€€€€€€€€€€€€€ğ½ÍÁ…¸ø(€€€€€€€€€€€€ğ½‰ÕÑÑ½¸ø(€€€€€€€€€€¤€è¹Õ±±ô(€€€€€€€€€í¥‘½°¹‘•‰ÕÑ…Ñ”€ü€ (€€€€€€€€€€€€ñ‰ÕÑÑ½¸(€€€€€€€€€€€€€ÑåÁ”ô‰‰ÕÑÑ½¸ˆ(€€€€€€€€€€€€€½¹±¥¬õì ¤€ôøÍ•ÑI•µ¥¹‘•É-¥¹ ‰99%YIMIdˆ¥ô(€€€€€€€€€€€€€±…ÍÍ9…µ”ô‰™±•àÜµ™Õ±°¥Ñ•µÌµ•¹Ñ•È…À´ÌÁà´ÔÁä´ĞÑ•áĞµ±•™ĞÑÉ…¹Í¥Ñ¥½¸µ½±½ÉÌ…Ñ¥Ù”é‰œµÍÕÉ™…”¼ÜÀˆ(€€€€€€€€€€€€ø(€€€€€€€€€€€€€€ñ	•±°±…ÍÍ9…µ”ô‰Í¥é”µlÄáÁátÑ•áĞµµÕÑ•µ™½É•É½Õ¹ˆÍÑÉ½­•]¥‘Ñ õìÄ¸Ùô€¼ø(€€€€€€€€€€€€€€ñÍÁ…¸±…ÍÍ9…µ”ô‰™±•à´ÄÑ•áĞµÍ´ˆû–ë¦OÒ–ş×š^—š>C¦Hğ½ÍÁ…¸ø(€€€€€€€€€€€€€€ñÍÁ…¸±…ÍÍ9…µ”ô‰Ñ•áĞµÍ´Ñ•áĞµµÕÑ•µ™½É•É½Õ¹ˆø(€€€€€€€€€€€€€€€í‘•‰ÕÑI•µ¥¹‘•È€ü™½Éµ…Ñ…åÍ	•™½É”¡‘•‰ÕÑI•µ¥¹‘•È¹‘…åÍ	•™½É”¤€è€‹’â7š>C¦H‰ô(€€€€€€€€€€€€€€ğ½ÍÁ…¸ø(€€€€€€€€€€€€ğ½‰ÕÑÑ½¸ø(€€€€€€€€€€¤€è¹Õ±±ô(€€€€€€€€ğ½M½™Ñ…Éø(€€€€€€¤€è¹Õ±±ô((€€€€€€ñI•µ¥¹‘•ÉM¡••Ğ(€€€€€€€½Á•¸õíÉ•µ¥¹‘•É-¥¹€„ôô¹Õ±±ô(€€€€€€€½¹=Á•¹¡…¹”õì¡¼¤€ôøì(€€€€€€€€€¥˜€ …¼¤Í•ÑI•µ¥¹‘•É-¥¹¡¹Õ±°¤ì(€€€€€€€õô(€€€€€€€•Ù•¹Ñ1…‰•°õí¥‘½°¹¹…µ•ô(€€€€€€€•Ù•¹ÑQ¥Ñ±”õíÉ•µ¥¹‘•É-¥¹€ôôô€‰99%YIMIdˆ€ü€‹–ë¦OÒ–ş×š^”ˆ€è€‹Rš^”‰ô(€€€€€€€•Ù•¹Ñ…Ñ”õì¡É•µ¥¹‘•É-¥¹€ôôô€‰99%YIMIdˆ€ü¥‘½°¹‘•‰ÕÑ…Ñ”€è¥‘½°¹‰¥ÉÑ¡‘…ä¤ñğ€ˆ‰ô(€€€€€€€¥¹¥Ñ¥…±…åÍ	•™½É”õì(€€€€€€€€€É•µ¥¹‘•É-¥¹€ôôô€‰99%YIMIdˆ(€€€€€€€€€€€€ü€¡‘•‰ÕÑI•µ¥¹‘•Èü¹‘…åÍ	•™½É”€üüU1Q}eM}	=I¤(€€€€€€€€€€€€è€¡‰¥ÉÑ¡‘…åI•µ¥¹‘•Èü¹‘…åÍ	•™½É”€üüU1Q}eM}	=I¤(€€€€€€€ô(€€€€€€€½¹M…Ù”õì¡‘…åÍ	•™½É”¤€ôøì(€€€€€€€€€¥˜€ …É•µ¥¹‘•É-¥¹¤É•ÑÕÉ¸ì(€€€€€€€€€Ù½¥Í•ÑI•µ¥¹‘•É½È¡ìÑåÁ”èÉ•µ¥¹‘•É-¥¹°¥‘½±%ô°‘…åÍ	•™½É”¤ì(€€€€€€€€€½¹ÍĞ‘…Ñ”€ôÉ•µ¥¹‘•É-¥¹€ôôô€‰99%YIMIdˆ€ü¥‘½°¹‘•‰ÕÑ…Ñ”€è¥‘½°¹‰¥ÉÑ¡‘…äì(€€€€€€€€€Ù½¥Í¡•‘Õ±•%‘½±¹¹¥Ù•ÉÍ…Éå9½Ñ¥™¥…Ñ¥½¸¡ì(€€€€€€€€€€€¥‘½±%°(€€€€€€€€€€€¥‘½±9…µ”è¥‘½°¹¹…µ”°(€€€€€€€€€€€ÑåÁ”èÉ•µ¥¹‘•É-¥¹…Ì€‰	%IQ!dˆğ€‰99%YIMIdˆ°(€€€€€€€€€€€‘…Ñ”°(€€€€€€€€€€€‘…åÍ	•™½É”°(€€€€€€€€€ô¤ì(€€€€€€€€€Í•ÑI•µ¥¹‘•É-¥¹¡¹Õ±°¤ì(€€€€€€€õô(€€€€€€¼ø((€€€€€€ñ%‘½±½ÉµM¡••Ğ(€€€€€€€½Á•¸õí•‘¥Ñ¥¹ô(€€€€€€€½¹=Á•¹¡…¹”õíÍ•Ñ‘¥Ñ¥¹ô(€€€€€€€¥¹¥Ñ¥…°õí‘É…™Ñô(€€€€€€€Ñ¥Ñ±”ô‹Ş£¢ò¿–Û–<ˆ(€€€€€€€ÍÕ‰µ¥Ñ1…‰•°ô‹–Ë–¶`ˆ(€€€€€€€½¹MÕ‰µ¥Ğõí¡…¹‘±•M…Ù•ô(€€€€€€€™½½Ñ•Èõì(€€€€€€€€€€ñ‰ÕÑÑ½¸(€€€€€€€€€€€ÑåÁ”ô‰‰ÕÑÑ½¸ˆ(€€€€€€€€€€€½¹±¥¬õì ¤€ôøÍ•Ñ½¹™¥Éµ¥¹œ¡ÑÉÕ”¥ô(€€€€€€€€€€€±…ÍÍ9…µ”ô‰Üµ™Õ±°É½Õ¹‘•µ™Õ±°Áä´ÌÑ•áĞµÍ´Ñ•áĞµ‘•ÍÑÉÕÑ¥Ù”ÑÉ…¹Í¥Ñ¥½¸µÑÉ…¹Í™½É´‘ÕÉ…Ñ¥½¸´ÌÀÀ…Ñ¥Ù”éÍ…±”´äÔˆ(€€€€€€€€€€ø(€€€€€€€€€€€ƒ–"«¦f“–Û–<(€€€€€€€€€€ğ½‰ÕÑÑ½¸ø(€€€€€€€ô(€€€€€€¼ø((€€€€€€ñ±•ÉÑ¥…±½œ½Á•¸õí½¹™¥Éµ¥¹ô½¹=Á•¹¡…¹”õíÍ•Ñ½¹™¥Éµ¥¹ôø(€€€€€€€€ñ±•ÉÑ¥…±½½¹Ñ•¹Ğ±…ÍÍ9…µ”ô‰µ…àµÜµlÈÁÉ•µtÉ½Õ¹‘•´Éá°ˆø(€€€€€€€€€€ñ±•ÉÑ¥…±½!•…‘•Èø(€€€€€€€€€€€€ñ±•ÉÑ¥…±½Q¥Ñ±”ûŠë–ºk¢šï¦f“¦g’ö7–Û–?–^;¾ò|ğ½±•ÉÑ¥…±½Q¥Ñ±”ø(€€€€€€€€€€€€ñ±•ÉÑ¥…±½•ÍÉ¥ÁÑ¥½¸ûï¦f“–ú3n»–&7jšr³–rÃ¢ÎšZg–ÂšršÚ#–’Çğ½±•ÉÑ¥…±½•ÍÉ¥ÁÑ¥½¸ø(€€€€€€€€€€ğ½±•ÉÑ¥…±½!•…‘•Èø(€€€€€€€€€€ñ±•ÉÑ¥…±½½½Ñ•Èø(€€€€€€€€€€€€ñ±•ÉÑ¥…±½…¹•°û–>[šÚ ğ½±•ÉÑ¥…±½…¹•°ø(€€€€€€€€€€€€ñ±•ÉÑ¥…±½Ñ¥½¸½¹±¥¬õí¡…¹‘±••±•Ñ•ôûŠë¢ª7ï¦fğ½±•ÉÑ¥…±½Ñ¥½¸ø(€€€€€€€€€€ğ½±•ÉÑ¥…±½½½Ñ•Èø(€€€€€€€€ğ½±•ÉÑ¥…±½½¹Ñ•¹Ğø(€€€€€€ğ½±•ÉÑ¥…±½œø(€€€€ğ½ÁÁM¡•±°ø(€€¤ì)ô(
+    <AppShell>
+      <div className="mb-5 flex items-center justify-between">
+        <Link
+          to="/memories"
+          className="inline-flex items-center gap-1 rounded-full bg-card/70 px-3 py-1.5 text-sm text-muted-foreground shadow-soft"
+        >
+          <ChevronLeft className="size-4" strokeWidth={1.8} />
+          å›æ†¶
+        </Link>
+        {folder ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              aria-label="è³‡æ–™å¤¾é¸å–®"
+              className="rounded-full bg-card/70 p-2 text-muted-foreground shadow-soft"
+            >
+              <MoreHorizontal className="size-4" strokeWidth={1.8} />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onSelect={() => setEditFolder(true)}>ç·¨è¼¯è³‡æ–™å¤¾</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => setShareOpen(true)}>åˆ†äº«è¨­å®š</DropdownMenuItem>
+              <DropdownMenuItem
+                className="text-destructive focus:text-destructive"
+                onSelect={() => setDeleteFolder(true)}
+              >
+                åˆªé™¤è³‡æ–™å¤¾
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : null}
+      </div>
+
+      {folder ? (
+        <header className="mb-8">
+          {folder.coverPhoto ? (
+            <StoredImage
+              src={folder.coverPhoto}
+              alt={folder.title}
+              className="mb-4 aspect-[16/9] w-full rounded-3xl object-cover shadow-soft"
+              style={{ objectPosition: `50% ${folder.coverPhotoPosition ?? 50}%` }}
+            />
+          ) : null}
+          <h1 className="font-display text-[26px] leading-snug font-medium">{folder.title}</h1>
+          {folder.description ? (
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{folder.description}</p>
+          ) : null}
+          <div className="mt-3 flex flex-wrap items-center gap-2 text-[13px] text-muted-foreground">
+            {folder.startDate || folder.endDate ? (
+              <span className="rounded-full bg-surface px-2.5 py-1 tracking-wide">
+                {dotDate(folder.startDate)}
+                {folder.endDate ? ` â€“ ${dotDate(folder.endDate)}` : ""}
+              </span>
+            ) : null}
+            <span className="rounded-full bg-surface px-2.5 py-1">{memories.length} å‰‡å›æ†¶</span>
+            {idol ? (
+              <span className="rounded-full bg-accent/40 px-2.5 py-1 text-primary">â™¡ {idol.name}</span>
+            ) : null}
+          </div>
+        </header>
+      ) : null}
+
+      <div className="mb-5 flex items-baseline justify-between">
+        <h2 className="font-display text-[15px] font-medium tracking-[0.08em]">å›æ†¶æ™‚é–“è»¸</h2>
+        {memories.length > 0 ? (
+          <button
+            onClick={() => {
+              setEditing(null);
+              setMemoryOpen(true);
+            }}
+            className="inline-flex items-center gap-1 rounded-full bg-primary px-3.5 py-1.5 text-xs font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+          >
+            <Plus className="size-3.5" strokeWidth={2} />
+            ç•™ä¸‹å›æ†¶
+          </button>
+        ) : null}
+      </div>
+
+      {memories.length === 0 ? (
+        <EmptyState
+          icon={<Images className="size-5" strokeWidth={1.6} />}
+          title="é‚„æ²’æœ‰å›æ†¶ï¼Œå…ˆå¾ç¬¬ä¸€å¼µé–‹å§‹å§ â™¡"
+          description="æŠŠé€™ä¸€å¤©ç•™ä¸‹ä¾† ğŸ“¸ ä¹‹å¾Œå°±èƒ½æ…¢æ…¢ç¿»ã€‚"
+          action={
+            <button
+              onClick={() => {
+                setEditing(null);
+                setMemoryOpen(true);
+              }}
+              className="inline-flex items-center gap-1.5 rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+            >
+              <Plus className="size-4" strokeWidth={2} />
+              ç•™ä¸‹å›æ†¶
+            </button>
+          }
+        />
+      ) : (
+        <div className="relative pl-6">
+          <span
+            aria-hidden
+            className="pointer-events-none absolute top-2 bottom-2 left-[7px] w-px bg-border/70"
+          />
+          <div className="space-y-8">
+            {groups.map((g) => (
+              <div key={g.date} className="relative">
+                <span
+                  aria-hidden
+                  className="absolute top-1.5 -left-6 size-[15px] rounded-full border-2 border-primary/60 bg-card"
+                />
+                <p className="font-display text-[13px] tracking-[0.14em] text-muted-foreground">
+                  {dotDate(g.date)}
+                </p>
+                <div className="mt-3 space-y-4">
+                  {g.items.map((m) => (
+                    <SoftCard key={m.id} className="overflow-hidden p-0">
+                      {m.photo ? (
+                        <StoredImage
+                          src={m.photo}
+                          alt={m.title}
+                          className="aspect-[4/3] w-full object-cover"
+                          style={{ objectPosition: `50% ${m.photoPosition}%` }}
+                        />
+                      ) : (
+                        <div className="flex aspect-[16/7] w-full items-center justify-center bg-accent/20 text-primary/40">
+                          <span className="text-lg select-none">â™¡</span>
+                        </div>
+                      )}
+                      <div className="flex items-start gap-3 px-5 py-4">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[15px] font-medium">{m.title || "æœªå‘½åçš„å›æ†¶"}</p>
+                          {m.note ? (
+                            <p className="mt-1.5 text-sm leading-relaxed whitespace-pre-wrap text-muted-foreground">
+                              {m.note}
+                            </p>
+                          ) : null}
+                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger
+                            aria-label="å›æ†¶é¸å–®"
+                            className="-mr-1 shrink-0 rounded-full p-1.5 text-muted-foreground"
+                          >
+                            <MoreHorizontal className="size-4" strokeWidth={1.8} />
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onSelect={() => {
+                                setEditing(m);
+                                setMemoryOpen(true);
+                              }}
+                            >
+                              ç·¨è¼¯
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="text-destructive focus:text-destructive"
+                              onSelect={() => setPendingDelete(m)}
+                            >
+                              åˆªé™¤
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </SoftCard>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {folder ? (
+        <MemoryFolderFormSheet
+          open={editFolder}
+          onOpenChange={setEditFolder}
+          initial={{
+            idolId: folder.idolId ?? "",
+            title: folder.title,
+            description: folder.description ?? "",
+            coverPhoto: folder.coverPhoto ?? "",
+            coverPhotoPosition: folder.coverPhotoPosition ?? 50,
+            startDate: folder.startDate ?? "",
+            endDate: folder.endDate ?? "",
+          }}
+          title="ç·¨è¼¯è³‡æ–™å¤¾"
+          submitLabel="å„²å­˜"
+          onSubmit={(draft) => {
+            void updateFolder(folder.id, draft);
+            setEditFolder(false);
+          }}
+        />
+      ) : null}
+
+      <AlbumShareSheet
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+        folderId={folderId}
+        folderTitle={folder?.title ?? ""}
+      />
+
+      <MemoryFormSheet
+        open={memoryOpen}
+        onOpenChange={(o) => {
+          setMemoryOpen(o);
+          if (!o) setEditing(null);
+        }}
+        initial={editDraft}
+        title={editing ? "ç·¨è¼¯å›æ†¶" : "æŠŠé€™ä¸€å¤©ç•™ä¸‹ä¾† ğŸ“¸"}
+        submitLabel={editing ? "å„²å­˜" : "ç•™ä¸‹ä¾†"}
+        onSubmit={(draft) => {
+          if (editing) void updateMemory(editing.id, draft);
+          else void addMemory(folderId, draft, folder?.idolId);
+          setMemoryOpen(false);
+          setEditing(null);
+        }}
+      />
+
+      <AlertDialog open={deleteFolder} onOpenChange={setDeleteFolder}>
+        <AlertDialogContent className="max-w-[20rem] rounded-3xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>è¦åˆªé™¤é€™å€‹è³‡æ–™å¤¾å—ï¼Ÿ</AlertDialogTitle>
+            <AlertDialogDescription>
+              è£¡é¢çš„å›æ†¶ä¹Ÿæœƒä¸€èµ·è¢«åˆªé™¤ï¼Œé€™å€‹å‹•ä½œç„¡æ³•å¾©åŸã€‚
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-full">å–æ¶ˆ</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-full bg-destructive text-destructive-foreground"
+              onClick={() => {
+                void (async () => {
+                  // é›²ç«¯æœƒä¸€ä½µåˆªé™¤è³‡æ–™å¤¾åº•ä¸‹çš„å›æ†¶ï¼›æœ¬æ©Ÿå‰‡æ‰‹å‹•æ¸…é™¤
+                  if (mode === "local") {
+                    const { deleteMemoriesForFolder } = await import("@/lib/memories");
+                    deleteMemoriesForFolder(folderId);
+                  }
+                  await removeFolder(folderId);
+                  navigate({ to: "/memories" });
+                })();
+              }}
+            >
+              åˆªé™¤
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={pendingDelete !== null} onOpenChange={(o) => !o && setPendingDelete(null)}>
+        <AlertDialogContent className="max-w-[20rem] rounded-3xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>é€™å¼µçœŸçš„è¦åˆªæ‰å—â€¦â€¦ğŸ¥¹</AlertDialogTitle>
+            <AlertDialogDescription>åˆªæ‰ä¹‹å¾Œå°±çœŸçš„æ‰¾ä¸å›ä¾†äº†ã€‚</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-full">å–æ¶ˆ</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-full bg-destructive text-destructive-foreground"
+              onClick={() => {
+                if (pendingDelete) void removeMemory(pendingDelete.id);
+                setPendingDelete(null);
+              }}
+            >
+              åˆªé™¤
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </AppShell>
+  );
+}

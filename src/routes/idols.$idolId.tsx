@@ -1,112 +1,274 @@
-import { useCallback, useEffect, useState } from "react";
+import { StoredImage } from "@/components/StoredImage";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { ChevronLeft, ImageIcon, Pencil } from "lucide-react";
+import { AppShell, SoftCard } from "@/components/AppShell";
+import { IdolFormSheet } from "@/components/IdolFormSheet";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import type { IdolDraft } from "@/lib/idols";
+import { useIdolSource } from "@/lib/idols.source";
+import { ReminderSheet } from "@/components/ReminderSheet";
+import { DEFAULT_DAYS_BEFORE, formatDaysBefore, type ReminderType } from "@/lib/reminders";
+import { useReminderSource } from "@/lib/reminders.source";
+import { Bell } from "lucide-react";
+import { daysSince, primaryDay, nextAnniversary } from "@/lib/dates";
+import { scheduleIdolAnniversaryNotification } from "@/lib/event-notifications";
 
-const STORAGE_KEY = "idoldays.memoryFolders.v1";
+export const Route = createFileRoute("/idols/$idolId")({
+  head: () => ({
+    meta: [
+      { title: "偶像日子｜IdolDays" },
+      { name: "description", content: "查看這位偶像的生日、出道日與你喜歡他的日子。" },
+      { property: "og:title", content: "偶像日子｜IdolDays" },
+      { property: "og:description", content: "查看這位偶像的生日、出道日與你喜歡他的日子。" },
+    ],
+  }),
+  component: IdolDetailPage,
+});
 
-export type MemoryFolder = {
-  id: string;
-  idolId?: string | undefined;
-  title: string;
-  description?: string | undefined;
-  coverPhoto?: string | undefined;
-  coverPhotoPosition: number;
-  startDate?: string | undefined;
-  endDate?: string | undefined;
-  createdAt: string;
-};
+function Row({ label, value }: { label: string; value?: string }) {
+  return (
+    <div className="flex items-baseline justify-between border-b border-border/50 py-3 last:border-b-0">
+      <span className="text-sm text-muted-foreground">{label}</span>
+      <span className="text-[15px]">{value || "未填寫"}</span>
+    </div>
+  );
+}
 
-export type MemoryFolderDraft = {
-  idolId: string;
-  title: string;
-  description: string;
-  coverPhoto: string;
-  coverPhotoPosition: number;
-  startDate: string;
-  endDate: string;
-};
+function IdolDetailPage() {
+  const { idolId } = Route.useParams();
+  const navigate = useNavigate();
+  const { ready, updateIdol, removeIdol, findIdol } = useIdolSource();
+  const [editing, setEditing] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const [reminderKind, setReminderKind] = useState<ReminderType | null>(null);
+  const { reminderFor, setReminderFor, removeRemindersForIdol } = useReminderSource();
 
-export const emptyFolderDraft: MemoryFolderDraft = {
-  idolId: "",
-  title: "",
-  description: "",
-  coverPhoto: "",
-  coverPhotoPosition: 50,
-  startDate: "",
-  endDate: "",
-};
+  const idol = findIdol(idolId);
 
-function read(): MemoryFolder[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
-    return (parsed as MemoryFolder[]).filter((f) => f && typeof f.id === "string");
-  } catch {
-    return [];
+  if (!ready) {
+    return (
+      <AppShell>
+        <div className="h-40" />
+      </AppShell>
+    );
   }
-}
 
-function write(list: MemoryFolder[]) {
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-  } catch {
-    /* quota or unavailable storage */
+  if (!idol) {
+    return (
+      <AppShell>
+        <p className="mt-16 text-center text-sm text-muted-foreground">找不到這位偶像</p>
+        <div className="mt-5 flex justify-center">
+          <Link
+            to="/idols"
+            className="rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-soft"
+          >
+            回到我的偶像
+          </Link>
+        </div>
+      </AppShell>
+    );
   }
-}
 
-const listeners = new Set<(list: MemoryFolder[]) => void>();
+  async function handleSave(draft: IdolDraft) {
+    if (!idol) return;
+    await updateIdol(idol.id, draft);
+    setEditing(false);
+  }
 
-function emit(list: MemoryFolder[]) {
-  write(list);
-  listeners.forEach((fn) => fn(list));
-}
+  async function handleDelete() {
+    if (!idol) return;
+    await removeRemindersForIdol(idolId);
+    await removeIdol(idol.id);
+    setConfirming(false);
+    setEditing(false);
+    navigate({ to: "/idols" });
+  }
 
-function newId() {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
-  return `folder_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-}
+  const { id: _id, ...draft } = idol;
+  const day = primaryDay(idol);
+  const since = daysSince(idol.sinceDate);
+  const debut = nextAnniversary(idol.debutDate);
+  const birthdayReminder = reminderFor({ type: "BIRTHDAY", idolId });
+  const debutReminder = reminderFor({ type: "ANNIVERSARY", idolId });
 
-export function sortFolders(list: MemoryFolder[]) {
-  return [...list].sort((a, b) => {
-    const ad = a.startDate ?? "";
-    const bd = b.startDate ?? "";
-    if (ad !== bd) return ad < bd ? 1 : -1;
-    return (b.createdAt ?? "").localeCompare(a.createdAt ?? "");
-  });
-}
+  return (
+    <AppShell>
+      <div className="mb-5 flex items-center justify-between">
+        <Link
+          to="/idols"
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground"
+        >
+          <ChevronLeft className="size-4" strokeWidth={1.8} />
+          我的偶像
+        </Link>
+        <button
+          type="button"
+          onClick={() => setEditing(true)}
+          className="inline-flex items-center gap-1.5 rounded-full border border-border/70 px-3.5 py-1.5 text-sm transition-transform duration-300 active:scale-95"
+        >
+          <Pencil className="size-3.5" strokeWidth={1.8} />
+          編輯
+        </button>
+      </div>
 
-export function useMemoryFolders() {
-  const [folders, setFolders] = useState<MemoryFolder[]>([]);
-  const [ready, setReady] = useState(false);
+      <div className="overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft">
+        <div className="aspect-[4/5] w-full bg-surface">
+          {idol.photo ? (
+            <StoredImage
+              src={idol.photo}
+              alt={`${idol.name} 的照片`}
+              className="size-full object-cover"
+              style={{ objectPosition: `50% ${idol.photoPosition ?? 50}%` }}
+            />
+          ) : (
+            <div className="flex size-full flex-col items-center justify-center gap-2 text-muted-foreground">
+              <ImageIcon className="size-7" strokeWidth={1.3} />
+              <span className="text-xs">放一張你最喜歡的照片</span>
+            </div>
+          )}
+        </div>
+        <div className="px-6 py-6 text-center">
+          <h1 className="text-2xl font-semibold">{idol.name}</h1>
+          {idol.groupName ? (
+            <p className="mt-1.5 text-sm text-muted-foreground">{idol.groupName}</p>
+          ) : null}
+        </div>
+      </div>
 
-  useEffect(() => {
-    setFolders(read());
-    setReady(true);
-    const fn = (list: MemoryFolder[]) => setFolders(list);
-    listeners.add(fn);
-    return () => {
-      listeners.delete(fn);
-    };
-  }, []);
+      <div className="mt-5 grid grid-cols-2 gap-4">
+        <SoftCard className="px-4 py-5 text-center">
+          <p className="text-xs text-muted-foreground">{day ? day.title : "D-Day"}</p>
+          <p className="mt-2 text-2xl font-semibold text-primary">
+            {day ? day.ddayLabel : "—"}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {day ? day.humanLabel : "設定一個重要日子"}
+          </p>
+        </SoftCard>
+        <SoftCard className="px-4 py-5 text-center">
+          <p className="text-xs text-muted-foreground">陪伴的日子</p>
+          <p className="mt-2 text-2xl font-semibold text-primary">
+            {since ? since.ddayLabel : "—"}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {since ? since.humanLabel : "設定喜歡他的日期"}
+          </p>
+        </SoftCard>
+      </div>
 
-  const addFolder = useCallback((draft: MemoryFolderDraft) => {
-    const folder: MemoryFolder = {
-      ...draft,
-      id: newId(),
-      createdAt: new Date().toISOString(),
-    };
-    emit([...read(), folder]);
-    return folder;
-  }, []);
+      <SoftCard className="mt-5 px-5 py-2">
+        <Row label="生日" value={idol.birthday} />
+        <Row
+          label="出道日期"
+          value={
+            idol.debutDate
+              ? `${idol.debutDate}（${debut?.daysUntil === 0 ? "今天是出道紀念日" : `出道紀念日 ${debut?.ddayLabel}`}）`
+              : ""
+          }
+        />
+        <Row label="粉絲名稱" value={idol.fanName} />
+        <Row label="我喜歡他的日期" value={idol.sinceDate} />
+      </SoftCard>
 
-  const updateFolder = useCallback((id: string, draft: MemoryFolderDraft) => {
-    emit(read().map((f) => (f.id === id ? { ...f, ...draft } : f)));
-  }, []);
+      {idol.birthday || idol.debutDate ? (
+        <SoftCard className="mt-5 divide-y divide-border/60">
+          {idol.birthday ? (
+            <button
+              type="button"
+              onClick={() => setReminderKind("BIRTHDAY")}
+              className="flex w-full items-center gap-3 px-5 py-4 text-left transition-colors active:bg-surface/70"
+            >
+              <Bell className="size-[18px] text-muted-foreground" strokeWidth={1.6} />
+              <span className="flex-1 text-sm">生日提醒</span>
+              <span className="text-sm text-muted-foreground">
+                {birthdayReminder ? formatDaysBefore(birthdayReminder.daysBefore) : "不提醒"}
+              </span>
+            </button>
+          ) : null}
+          {idol.debutDate ? (
+            <button
+              type="button"
+              onClick={() => setReminderKind("ANNIVERSARY")}
+              className="flex w-full items-center gap-3 px-5 py-4 text-left transition-colors active:bg-surface/70"
+            >
+              <Bell className="size-[18px] text-muted-foreground" strokeWidth={1.6} />
+              <span className="flex-1 text-sm">出道紀念日提醒</span>
+              <span className="text-sm text-muted-foreground">
+                {debutReminder ? formatDaysBefore(debutReminder.daysBefore) : "不提醒"}
+              </span>
+            </button>
+          ) : null}
+        </SoftCard>
+      ) : null}
 
-  const removeFolder = useCallback((id: string) => {
-    emit(read().filter((f) => f.id !== id));
-  }, []);
+      <ReminderSheet
+        open={reminderKind !== null}
+        onOpenChange={(o) => {
+          if (!o) setReminderKind(null);
+        }}
+        eventLabel={idol.name}
+        eventTitle={reminderKind === "ANNIVERSARY" ? "出道紀念日" : "生日"}
+        eventDate={(reminderKind === "ANNIVERSARY" ? idol.debutDate : idol.birthday) || ""}
+        initialDaysBefore={
+          reminderKind === "ANNIVERSARY"
+            ? (debutReminder?.daysBefore ?? DEFAULT_DAYS_BEFORE)
+            : (birthdayReminder?.daysBefore ?? DEFAULT_DAYS_BEFORE)
+        }
+        onSave={(daysBefore) => {
+          if (!reminderKind) return;
+          void setReminderFor({ type: reminderKind, idolId }, daysBefore);
+          const date = reminderKind === "ANNIVERSARY" ? idol.debutDate : idol.birthday;
+          void scheduleIdolAnniversaryNotification({
+            idolId,
+            idolName: idol.name,
+            type: reminderKind as "BIRTHDAY" | "ANNIVERSARY",
+            date,
+            daysBefore,
+          });
+          setReminderKind(null);
+        }}
+      />
 
-  return { folders: sortFolders(folders), ready, addFolder, updateFolder, removeFolder };
+      <IdolFormSheet
+        open={editing}
+        onOpenChange={setEditing}
+        initial={draft}
+        title="編輯偶像"
+        submitLabel="儲存"
+        onSubmit={handleSave}
+        footer={
+          <button
+            type="button"
+            onClick={() => setConfirming(true)}
+            className="w-full rounded-full py-3 text-sm text-destructive transition-transform duration-300 active:scale-95"
+          >
+            刪除偶像
+          </button>
+        }
+      />
+
+      <AlertDialog open={confirming} onOpenChange={setConfirming}>
+        <AlertDialogContent className="max-w-[20rem] rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>確定要移除這位偶像嗎？</AlertDialogTitle>
+            <AlertDialogDescription>移除後目前的本地資料將會消失。</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete}>確認移除</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </AppShell>
+  );
 }

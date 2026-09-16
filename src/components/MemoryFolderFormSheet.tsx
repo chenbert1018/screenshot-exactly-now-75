@@ -11,49 +11,36 @@ import {
 } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { emptyHeartDraft, HEART_TYPES, type HeartDraft } from "@/lib/heart";
-import type { Idol } from "@/lib/idols";
+import { emptyFolderDraft, type MemoryFolderDraft } from "@/lib/memory-folders";
+import { useIdolSource } from "@/lib/idols.source";
 
-function todayValue() {
-  const n = new Date();
-  const pad = (x: number) => String(x).padStart(2, "0");
-  return `${n.getFullYear()}-${pad(n.getMonth() + 1)}-${pad(n.getDate())}`;
-}
-
-export function HeartFormSheet({
+export function MemoryFolderFormSheet({
   open,
   onOpenChange,
-  idols,
   initial,
-  defaultIdolId,
   title,
   submitLabel,
   onSubmit,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  idols: Idol[];
-  initial?: HeartDraft | undefined;
-  defaultIdolId?: string | undefined;
+  initial?: MemoryFolderDraft | undefined;
   title: string;
   submitLabel: string;
-  onSubmit: (draft: HeartDraft) => void;
+  onSubmit: (draft: MemoryFolderDraft) => void | Promise<void>;
 }) {
-  const [draft, setDraft] = useState<HeartDraft>(emptyHeartDraft);
+  const { idols } = useIdolSource();
+  const [draft, setDraft] = useState<MemoryFolderDraft>(emptyFolderDraft);
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (!open) return;
-    setDraft(
-      initial ? { ...emptyHeartDraft, ...initial } : {
-        ...emptyHeartDraft,
-        date: todayValue(),
-        idolId: defaultIdolId ?? idols[0]?.id ?? "",
-      },
-    );
-    setError("");
+    if (open) {
+      setDraft({ ...emptyFolderDraft, ...initial });
+      setError("");
+      setSaving(false);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
@@ -61,60 +48,41 @@ export function HeartFormSheet({
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () =>
-      setDraft((d) => ({ ...d, image: String(reader.result ?? ""), imagePosition: 50 }));
+      setDraft((d) => ({ ...d, coverPhoto: String(reader.result ?? ""), coverPhotoPosition: 50 }));
     reader.readAsDataURL(file);
   }
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!draft.idolId) return setError("請選擇一位偶像");
-    if (!draft.title.trim()) return setError("幫這個瞬間取一個名字");
-    if (!draft.date) return setError("請選擇日期");
-    onSubmit({ ...draft, title: draft.title.trim() });
+    if (!draft.title.trim()) return setError("幫這個資料夾取一個名字");
+    setSaving(true);
+    setError("");
+    try {
+      await onSubmit({ ...draft, title: draft.title.trim() });
+    } catch {
+      setError("回憶資料夾建立失敗，請稍後再試");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
-        className="mx-auto max-h-[92vh] w-full max-w-md overflow-x-hidden overflow-y-auto rounded-t-3xl border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
+        className="mx-auto max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-3xl border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
       >
         <SheetHeader className="px-0 text-left">
           <SheetTitle className="text-xl">{title}</SheetTitle>
-          <SheetDescription>收藏那些讓我嗑到的瞬間 ♡</SheetDescription>
+          <SheetDescription>把一段時光收在同一個地方 ♡</SheetDescription>
         </SheetHeader>
 
         <form onSubmit={submit} className="space-y-5 pt-1">
           <div>
-            <p className="mb-2 text-sm font-medium">
-              偶像<span className="ml-1 text-primary">*</span>
-            </p>
-            <div className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1">
-              {idols.map((idol) => {
-                const active = draft.idolId === idol.id;
-                return (
-                  <button
-                    key={idol.id}
-                    type="button"
-                    onClick={() => setDraft((d) => ({ ...d, idolId: idol.id }))}
-                    className={`shrink-0 rounded-full border px-4 py-2 text-sm transition-colors ${
-                      active
-                        ? "border-primary/50 bg-accent/50 text-primary"
-                        : "border-border/70 text-muted-foreground"
-                    }`}
-                  >
-                    {idol.name || "未命名"}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div>
-            <p className="mb-2 text-sm font-medium">照片</p>
-            {draft.image ? (
+            <p className="mb-2 text-sm font-medium">封面照片</p>
+            {draft.coverPhoto ? (
               <div className="relative overflow-hidden rounded-2xl border border-border/60">
-                <PhotoCropPreview src={draft.image} alt="嗑糖照片預覽" position={draft.imagePosition} aspectClass="aspect-[4/3]" />
+                <PhotoCropPreview src={draft.coverPhoto} alt="封面預覽" position={draft.coverPhotoPosition} aspectClass="aspect-[4/3]" />
                 <div className="absolute right-3 bottom-3 flex gap-2">
                   <button
                     type="button"
@@ -125,18 +93,18 @@ export function HeartFormSheet({
                   </button>
                   <button
                     type="button"
-                    onClick={() => setDraft((d) => ({ ...d, image: "" }))}
+                    onClick={() => setDraft((d) => ({ ...d, coverPhoto: "" }))}
                     className="rounded-full bg-card/90 p-1.5 shadow-soft"
-                    aria-label="移除照片"
+                    aria-label="移除封面"
                   >
                     <X className="size-4" strokeWidth={1.8} />
                   </button>
                 </div>
                 <div className="absolute right-3 bottom-14 left-3">
                   <PhotoCropPositionControl
-                    id="heart-image-position"
-                    value={draft.imagePosition}
-                    onChange={(imagePosition) => setDraft((d) => ({ ...d, imagePosition }))}
+                    id="folder-cover-position"
+                    value={draft.coverPhotoPosition}
+                    onChange={(coverPhotoPosition) => setDraft((d) => ({ ...d, coverPhotoPosition }))}
                   />
                 </div>
               </div>
@@ -147,7 +115,7 @@ export function HeartFormSheet({
                 className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-surface/50 text-muted-foreground"
               >
                 <ImagePlus className="size-6" strokeWidth={1.4} />
-                <span className="text-sm">放一張讓你嗑到的照片（可略過）</span>
+                <span className="text-sm">選一張代表這段回憶的照片</span>
               </button>
             )}
             <input
@@ -163,80 +131,79 @@ export function HeartFormSheet({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="heart-title">
-              標題<span className="ml-1 text-primary">*</span>
+            <Label htmlFor="folder-title">
+              資料夾名稱<span className="ml-1 text-primary">*</span>
             </Label>
             <Input
-              id="heart-title"
+              id="folder-title"
               value={draft.title}
-              placeholder="例如：那個轉身的瞬間"
+              placeholder="例如：2026 巡迴演唱會"
               onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))}
               className="rounded-xl bg-surface/50"
             />
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="heart-date">
-              日期<span className="ml-1 text-primary">*</span>
-            </Label>
+            <Label htmlFor="folder-desc">描述</Label>
             <Input
-              id="heart-date"
-              type="date"
-              value={draft.date}
-              onChange={(e) => setDraft((d) => ({ ...d, date: e.target.value }))}
+              id="folder-desc"
+              value={draft.description}
+              placeholder="想留給自己的一句話"
+              onChange={(e) => setDraft((d) => ({ ...d, description: e.target.value }))}
               className="rounded-xl bg-surface/50"
             />
           </div>
 
-          <div>
-            <p className="mb-2 text-sm font-medium">
-              類型<span className="ml-1 text-primary">*</span>
-            </p>
-            <div className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1">
-              {HEART_TYPES.map((t) => {
-                const active = draft.type === t.value;
-                return (
-                  <button
-                    key={t.value}
-                    type="button"
-                    onClick={() => setDraft((d) => ({ ...d, type: t.value }))}
-                    className={`shrink-0 rounded-full border px-4 py-2 text-sm transition-colors ${
-                      active
-                        ? "border-primary/50 bg-accent/50 text-primary"
-                        : "border-border/70 text-muted-foreground"
-                    }`}
-                  >
-                    <span aria-hidden className="mr-1">
-                      {t.emoji}
-                    </span>
-                    {t.label}
-                  </button>
-                );
-              })}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="folder-start">開始日期</Label>
+              <Input
+                id="folder-start"
+                type="date"
+                value={draft.startDate}
+                onChange={(e) => setDraft((d) => ({ ...d, startDate: e.target.value }))}
+                className="rounded-xl bg-surface/50"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="folder-end">結束日期</Label>
+              <Input
+                id="folder-end"
+                type="date"
+                value={draft.endDate}
+                onChange={(e) => setDraft((d) => ({ ...d, endDate: e.target.value }))}
+                className="rounded-xl bg-surface/50"
+              />
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="heart-note">心情筆記</Label>
-            <Textarea
-              id="heart-note"
-              rows={4}
-              value={draft.note}
-              placeholder="看到這一幕的時候⋯"
-              onChange={(e) => setDraft((d) => ({ ...d, note: e.target.value }))}
-              className="rounded-xl bg-surface/50"
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="heart-link">連結（可選）</Label>
-            <Input
-              id="heart-link"
-              value={draft.link}
-              placeholder="https://"
-              onChange={(e) => setDraft((d) => ({ ...d, link: e.target.value }))}
-              className="rounded-xl bg-surface/50"
-            />
+            <Label>關聯偶像</Label>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => setDraft((d) => ({ ...d, idolId: "" }))}
+                className={`rounded-full border px-3.5 py-1.5 text-sm transition-colors ${
+                  draft.idolId === "" ? "border-primary bg-primary/10" : "border-border/70 bg-surface/40"
+                }`}
+              >
+                不指定
+              </button>
+              {idols.map((i) => (
+                <button
+                  key={i.id}
+                  type="button"
+                  onClick={() => setDraft((d) => ({ ...d, idolId: i.id }))}
+                  className={`rounded-full border px-3.5 py-1.5 text-sm transition-colors ${
+                    draft.idolId === i.id
+                      ? "border-primary bg-primary/10"
+                      : "border-border/70 bg-surface/40"
+                  }`}
+                >
+                  {i.name}
+                </button>
+              ))}
+            </div>
           </div>
 
           {error ? <p className="text-sm text-destructive">{error}</p> : null}
@@ -251,9 +218,10 @@ export function HeartFormSheet({
             </button>
             <button
               type="submit"
-              className="flex-1 rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+              disabled={saving}
+              className="flex-1 rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95 disabled:opacity-60"
             >
-              {submitLabel}
+              {saving ? "儲存中…" : submitLabel}
             </button>
           </div>
         </form>
