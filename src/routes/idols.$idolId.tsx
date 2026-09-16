@@ -21,6 +21,7 @@ import { DEFAULT_DAYS_BEFORE, formatDaysBefore, type ReminderType } from "@/lib/
 import { useReminderSource } from "@/lib/reminders.source";
 import { Bell } from "lucide-react";
 import { daysSince, primaryDay, nextAnniversary } from "@/lib/dates";
+import { scheduleIdolAnniversaryNotification } from "@/lib/event-notifications";
 
 export const Route = createFileRoute("/idols/$idolId")({
   head: () => ({
@@ -221,6 +222,14 @@ function IdolDetailPage() {
         onSave={(daysBefore) => {
           if (!reminderKind) return;
           void setReminderFor({ type: reminderKind, idolId }, daysBefore);
+          const date = reminderKind === "ANNIVERSARY" ? idol.debutDate : idol.birthday;
+          void scheduleIdolAnniversaryNotification({
+            idolId,
+            idolName: idol.name,
+            type: reminderKind as "BIRTHDAY" | "ANNIVERSARY",
+            date,
+            daysBefore,
+          });
           setReminderKind(null);
         }}
       />
