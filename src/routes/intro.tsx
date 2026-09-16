@@ -26,12 +26,12 @@ export const Route = createFileRoute("/intro")({
 });
 
 const features = [
-  { Icon: CalendarDays, title: "重要日子倒數", body: "演唱會、回歸、生日、簽售與見面會，所有期待都不錯過。" },
-  { Icon: CloudSun, title: "追星天氣", body: "出發前先看活動地點的溫度與降雨機率，幫你準備好見面的那一天。" },
-  { Icon: Archive, title: "粉絲考古", body: "把 Threads、舞台、名場面與影片連結，收成自己的追星收藏庫。" },
-  { Icon: Images, title: "回憶夾", body: "用照片、日期與心得，留下每一次現場和心動。" },
-  { Icon: BellRing, title: "iPhone 提醒", body: "把重要日子直接排進本機通知，不讓期待悄悄錯過。" },
-  { Icon: Smartphone, title: "桌面陪伴", body: "本命、D-Day、每日一句，讓追星的陪伴留在 iPhone 桌面。" },
+  { Icon: CalendarDays, title: "重要日子倒數", body: "回歸、生日、搶票日、演唱會倒數，這次不再錯過。" },
+  { Icon: CloudSun, title: "追星天氣", body: "去見他的那天，天氣、穿搭、雨傘都先幫你想好。" },
+  { Icon: Archive, title: "粉絲考古", body: "那支直拍、那句話、那個讓你反覆重看的瞬間，都收好。" },
+  { Icon: Images, title: "回憶夾", body: "把每一次「我真的見到他了」留在這裡。" },
+  { Icon: BellRing, title: "iPhone 提醒", body: "重要的日子，讓 IdolDays 跟你一起記得。" },
+  { Icon: Smartphone, title: "桌面陪伴", body: "一打開手機，就知道離見面還有幾天。" },
 ];
 
 function IdolDaysIntro() {
@@ -53,7 +53,7 @@ function IdolDaysIntro() {
             <div>
               <p className="inline-flex items-center gap-2 rounded-full border border-[#cddfff] bg-white/75 px-3 py-1.5 text-xs font-semibold tracking-[0.12em] text-[#4a90e2] uppercase"><Sparkles className="size-3.5" /> Your private fandom diary</p>
               <h1 className="mt-5 max-w-xl text-4xl font-semibold leading-[1.18] tracking-tight text-[#1f3f6b] sm:text-5xl">把喜歡一個人的<br /><span className="bg-gradient-to-r from-[#4a90e2] via-[#7d92e8] to-[#bd8be4] bg-clip-text text-transparent">每一天留下來。</span></h1>
-              <p className="mt-5 max-w-lg text-lg leading-8 text-[#547393]">IdolDays 是為 K-POP 粉絲打造的私人追星陪伴 App。從下一個 D-Day，到多年後回看的回憶，每一份心動都有地方安放。</p>
+              <p className="mt-5 max-w-lg text-lg leading-8 text-[#547393]">IdolDays 是為 K-POP 粉絲打造的私人追星陪伴 App。從下一個 D-Day，到多年後回看的回憶，這些只有你懂的心動，都有地方安放。</p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link to="/" className="inline-flex items-center gap-2 rounded-full bg-[#4a90e2] px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_rgb(74_144_226_/_0.28)] transition hover:-translate-y-0.5">開始收藏我的日子 <ArrowRight className="size-4" /></Link>
                 <a href="#features" className="rounded-full border border-[#c8dcf6] bg-white/75 px-5 py-3 text-sm font-semibold text-[#315b8d] transition hover:bg-white">看看功能</a>
