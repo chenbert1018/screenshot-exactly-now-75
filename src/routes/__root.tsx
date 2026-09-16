@@ -105,7 +105,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css",
       },
 
-      { rel: "icon", href: "/idoldays-icon.svg", type: "image/svg+xml" },
+      { rel: "icon", href: "/idoldays-icon.svg?v=20260916-564eaf3", type: "image/svg+xml" },
     ],
   }),
   shellComponent: RootShell,
