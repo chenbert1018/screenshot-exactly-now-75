@@ -127,6 +127,38 @@
   --softblue: #33404c;
 }
 
+/* Sky Blue — clear, airy companion theme. Kept separate from the dark
+ * modifier so every existing component that consumes semantic tokens follows it. */
+.sky {
+  --background: #f7fbff;
+  --foreground: #1f3f6b;
+  --card: #ffffff;
+  --card-foreground: #1f3f6b;
+  --popover: #ffffff;
+  --popover-foreground: #1f3f6b;
+  --primary: #4a90e2;
+  --primary-foreground: #ffffff;
+  --secondary: #edf5ff;
+  --secondary-foreground: #315b8d;
+  --muted: #eef5ff;
+  --muted-foreground: #6d87a7;
+  --accent: #dcecff;
+  --accent-foreground: #285787;
+  --destructive: #d96478;
+  --destructive-foreground: #ffffff;
+  --border: #d7e6fa;
+  --input: #cfdef2;
+  --ring: #4a90e2;
+  --surface: #f1f7ff;
+  --surface-foreground: #1f3f6b;
+  --lavender: #d8c9ff;
+  --peach: #e1edff;
+  --softblue: #a7c7ff;
+  --shadow-soft: 0 1px 2px rgb(74 144 226 / 0.08), 0 10px 28px rgb(74 144 226 / 0.12);
+  --shadow-lift: 0 2px 6px rgb(74 144 226 / 0.1), 0 20px 46px rgb(74 144 226 / 0.16);
+  --shadow-polaroid: 0 2px 3px rgb(31 63 107 / 0.05), 0 14px 34px rgb(74 144 226 / 0.18);
+}
+
 @layer base {
   * {
     border-color: var(--color-border);

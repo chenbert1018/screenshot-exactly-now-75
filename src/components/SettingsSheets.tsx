@@ -19,6 +19,7 @@ import { formatDaysBefore } from "@/lib/reminders";
 import { useReminderSource } from "@/lib/reminders.source";
 import { eventTypeMeta } from "@/lib/events";
 import { useEventSource } from "@/lib/events.source";
+import { scheduleEventNotifications } from "@/lib/event-notifications";
 
 function SheetShell({
   open,
@@ -180,15 +181,33 @@ export function NotificationSettingsSheet({
       idolName: idol?.name ?? "已刪除的偶像",
       daysBefore: r.daysBefore,
       enabled: r.enabled,
+      event,
     };
   });
+
+  async function setReminderEnabled(
+    row: (typeof rows)[number],
+    enabled: boolean,
+  ) {
+    await updateReminder(row.id, { enabled });
+    if (row.event) {
+      await scheduleEventNotifications(row.event, enabled ? row.daysBefore : null);
+    }
+  }
+
+  async function deleteReminder(row: (typeof rows)[number]) {
+    await removeReminder(row.id);
+    if (row.event) {
+      await scheduleEventNotifications(row.event, null);
+    }
+  }
 
   return (
     <SheetShell
       open={open}
       onOpenChange={onOpenChange}
       title="提醒通知"
-      description="已開啟的提醒會同步到 App，並在 iPhone 排程通知。"
+      description="活動倒數提醒會同步到 App 並在 iPhone 排程；其他提醒會安全保留在帳號設定中。"
     >
       {rows.length === 0 ? (
         <p className="rounded-2xl bg-surface/60 px-4 py-4 text-sm text-muted-foreground">
@@ -207,12 +226,12 @@ export function NotificationSettingsSheet({
               <Switch
                 checked={row.enabled}
                 aria-label={`${row.title} 提醒開關`}
-                onCheckedChange={(v) => void updateReminder(row.id, { enabled: v })}
+                onCheckedChange={(v) => void setReminderEnabled(row, v)}
               />
               <button
                 type="button"
                 aria-label={`刪除 ${row.title} 提醒`}
-                onClick={() => void removeReminder(row.id)}
+                onClick={() => void deleteReminder(row)}
                 className="rounded-full p-2 text-muted-foreground transition-transform duration-300 active:scale-90"
               >
                 <Trash2 className="size-4" strokeWidth={1.6} />
@@ -239,7 +258,7 @@ export function ThemeSettingsSheet({
       open={open}
       onOpenChange={onOpenChange}
       title="外觀主題"
-      description="選擇喜歡的介面亮度。"
+      description="選擇喜歡的介面風格；Sky Blue 是清爽的雲朵藍色系。"
     >
       <div className="space-y-2">
         {THEME_OPTIONS.map((o) => (
