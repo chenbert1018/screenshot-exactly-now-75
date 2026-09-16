@@ -1,512 +1,709 @@
-import { StoredImage } from "@/components/StoredImage";
-import { useEffect, useMemo, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import {
-  ArrowRight,
-  Bell,
-  CalendarHeart,
-  CloudSun,
+  Bookmark,
+  ExternalLink,
+  FolderHeart,
   Heart,
-  History,
-  ImageIcon,
+  MoreHorizontal,
+  Pencil,
   Plus,
-  Repeat2,
   Search,
+  Trash2,
 } from "lucide-react";
-import { AppShell, EmptyState, Section } from "@/components/AppShell";
-import type { Idol } from "@/lib/idols";
-import { useIdolSource } from "@/lib/idols.source";
-import { canUseFanWeather, eventCountdown, nextEvent, type IdolEvent } from "@/lib/events";
-import { useEventSource } from "@/lib/events.source";
-import { useArchaeologySource } from "@/lib/archaeology.source";
-import { useMemorySource } from "@/lib/memories.source";
-import { daysSince } from "@/lib/dates";
-import { classifyFanWeather, type FanWeatherInput } from "@/lib/fan-weather";
 
-export const Route = createFileRoute("/")({
+import {
+  AppShell,
+  PageHeader,
+  SoftCard,
+} from "@/components/AppShell";
+import { ArchaeologyFormSheet } from "@/components/ArchaeologyFormSheet";
+import { StoredImage } from "@/components/StoredImage";
+import { Input } from "@/components/ui/input";
+
+import {
+  type ArchaeologyDraft,
+  type ArchaeologyItem,
+  type ArchaeologySource,
+} from "@/lib/archaeology";
+import { useArchaeologySource } from "@/lib/archaeology.source";
+
+export const Route = createFileRoute("/archaeology")({
   head: () => ({
     meta: [
-      { title: "IdolDays｜偶像專屬倒數日" },
+      { title: "考古｜IdolDays" },
       {
         name: "description",
-        content: "IdolDays 是為 KPOP 粉絲打造的私人陪伴 App，收藏你喜歡一個人的日子。",
+        content: "把散落在飯圈各處的寶藏收回來。",
       },
-      { property: "og:title", content: "IdolDays｜偶像專屬倒數日" },
-      { property: "og:description", content: "不是在倒數日子，而是在收藏我喜歡一個人的日子。" },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
+      {
+        property: "og:title",
+        content: "考古｜IdolDays",
+      },
+      {
+        property: "og:description",
+        content: "把散落在飯圈各處的寶藏收回來。",
+      },
     ],
   }),
-  component: HomePage,
+  component: ArchaeologyPage,
 });
 
-function dotDate(value: string) {
-  return value.replaceAll("-", ".");
-}
+type ViewMode = "RECENT" | "FAVORITES" | "COLLECTIONS";
 
-function timeGreeting() {
-  const hour = new Date().getHours();
-  if (hour < 12) return "좋은 아침이에요 ♡";
-  if (hour < 18) return "좋은 오후예요 ♡";
-  return "좋은 밤이에요 ♡";
-}
+const SOURCE_LABELS: Record<ArchaeologySource, string> = {
+  THREADS: "Threads",
+  X: "X",
+  YOUTUBE: "YouTube",
+  TIKTOK: "TikTok",
+  INSTAGRAM: "Instagram",
+  WEB: "網頁",
+};
 
-const ANIMAL_DAILY_LINES = {
-  CAT: ["不准忘記照顧自己，追星也要漂亮從容。", "行程帶好，其他交給期待就好。"],
-  DOG: ["今天也要元氣滿滿地出發！", "走吧，今天也一起發光。"],
-  RABBIT: ["慢慢準備也沒關係，今天會是可愛的一天。", "帶著好心情，溫柔地去見喜歡的人吧。"],
-  FOX: ["行程確認好，漂亮地去見喜歡的人吧。", "票券、手燈、心意，全部準備得剛剛好。"],
-  HAMSTER: ["小小的期待也要裝滿，今天會很療癒。", "補充好心情和體力，再開心出發吧。"],
-  TIGER: ["把最強的氣勢留給今天，全力應援吧。", "準備好了就出發，今天的舞台值得期待。"],
-  LION: ["抬頭出發，今天也帶著王者般的自信。", "安靜蓄力，到了舞台就盡情發光。"],
-  DEER: ["帶著清澈的好心情，輕輕走向期待。", "今天也溫柔閃亮地去見喜歡的人吧。"],
-  CHIPMUNK: ["期待和小點心都裝好，元氣出發！", "先補滿能量，今天也要開心收藏回憶。"],
-  PENGUIN: ["照自己的步調慢慢走，也會可愛地抵達。", "外表冷靜，心裡的期待要好好帶上。"],
-  WOLF: ["帶好裝備，安靜地把期待做到最好。", "今天也穩穩地，奔向你想見的人。"],
-} as const;
+function ArchaeologyPage() {
+  const {
+    items,
+    ready,
+    addItem,
+    updateItem,
+    toggleFavorite,
+    removeItem,
+  } = useArchaeologySource();
 
-/** 依本地日期輪換；優先使用這位偶像的代表動物。 */
-function dailyAnimalLine(idol: Idol) {
-  const date = new Date();
-  const seed = date.getFullYear() * 372 + (date.getMonth() + 1) * 31 + date.getDate();
-  const animal = idol.representativeAnimal ?? "DOG";
-  const lines = ANIMAL_DAILY_LINES[animal];
-  return lines[seed % lines.length] ?? lines[0] ?? "今天也一起好好喜歡他 ♡";
-}
+  const [formOpen, setFormOpen] = useState(false);
+  const [editing, setEditing] =
+    useState<ArchaeologyItem | null>(null);
+  const [pendingDelete, setPendingDelete] =
+    useState<ArchaeologyItem | null>(null);
 
-function dayLabel(event: IdolEvent) {
-  const days = eventCountdown(event.date)?.daysUntil ?? 0;
-  return days === 0 ? "TODAY" : `D - ${Math.max(0, days)}`;
-}
+  const [query, setQuery] = useState("");
+  const [view, setView] = useState<ViewMode>("RECENT");
+  const [activeCollection, setActiveCollection] =
+    useState<string | null>(null);
 
-function EventCard({ event }: { event: IdolEvent }) {
-  return (
-    <Link
-      to="/events"
-      className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground px-5 py-4 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]"
-    >
-      <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-        <CalendarHeart className="size-6" strokeWidth={1.55} />
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="text-[11px] font-medium tracking-[0.12em] text-primary uppercase">
-          Next D-Day
-        </p>
-        <p className="mt-1 truncate text-[17px] font-medium">{event.title}</p>
-        <p className="mt-1 text-xs text-muted-foreground">{dotDate(event.date)}</p>
-      </div>
-      <p className="shrink-0 font-display text-[35px] leading-none text-primary">
-        {dayLabel(event)}
-      </p>
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
-        <ArrowRight className="size-4" strokeWidth={2} />
-      </span>
-    </Link>
-  );
-}
+  const collections = useMemo(() => {
+    const counts = new Map<string, number>();
 
-type HomeWeatherResponse = { ok: true; weather: FanWeatherInput } | { ok: false; error?: string };
+    for (const item of items) {
+      const name = item.collection.trim();
+      if (!name) continue;
 
-function FanWeatherCard({ event }: { event: IdolEvent }) {
-  const days = eventCountdown(event.date)?.daysUntil ?? 0;
-  const timing = days === 0 ? "今天" : `${Math.max(0, days)} 天後`;
-  const place = event.locationName?.trim() || event.city?.trim() || event.title;
-  const [input, setInput] = useState<FanWeatherInput | null>(null);
-  const [status, setStatus] = useState<"loading" | "ready" | "waiting" | "error">("loading");
-
-  useEffect(() => {
-    if (!event.city?.trim()) {
-      setStatus("error");
-      return;
+      counts.set(name, (counts.get(name) ?? 0) + 1);
     }
-    let cancelled = false;
-    setStatus("loading");
-    const params = new URLSearchParams({
-      city: event.city.trim(),
-      date: event.date.slice(0, 10),
-    });
-    void fetch(`/api/weather?${params.toString()}`, {
-      headers: { "Cache-Control": "no-cache" },
-    })
-      .then(async (response) => {
-        const data = (await response.json()) as HomeWeatherResponse;
-        if (cancelled) return;
-        if (response.ok && data.ok) {
-          setInput(data.weather);
-          setStatus("ready");
-        } else {
-          setInput(null);
-          setStatus(
-            !data.ok && data.error === "forecast date is outside available range"
-              ? "waiting"
-              : "error",
-          );
-        }
-      })
-      .catch(() => {
-        if (!cancelled) setStatus("error");
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [event.id, event.city, event.date]);
 
-  const result = input ? classifyFanWeather(input) : null;
-  const detail =
-    status === "ready" && input && result
-      ? `${result.emoji} ${result.label}・${input.minTemp}–${input.maxTemp}°C・降雨 ${input.rainProbability}%`
-      : status === "waiting"
-        ? "還沒到預報範圍，接近活動時會為你準備 ♡"
-        : status === "error"
-          ? `暫時看不到 ${place} 的天氣，晚點再看看 ♡`
-          : "正在確認活動當天的天氣…";
+    return Array.from(counts.entries())
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [items]);
+
+  const visibleItems = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+
+    return items.filter((item) => {
+      if (view === "FAVORITES" && !item.favorite) {
+        return false;
+      }
+
+      if (
+        activeCollection &&
+        item.collection !== activeCollection
+      ) {
+        return false;
+      }
+
+      if (!normalizedQuery) return true;
+
+      const haystack = [
+        item.title,
+        item.note,
+        item.collection,
+        item.source,
+        ...item.tags,
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      return haystack.includes(normalizedQuery);
+    });
+  }, [items, query, view, activeCollection]);
+
+  function selectView(next: ViewMode) {
+    setView(next);
+
+    if (next !== "COLLECTIONS") {
+      setActiveCollection(null);
+    }
+  }
+
+  function openCreate() {
+    setEditing(null);
+    setFormOpen(true);
+  }
+
+  function openEdit(item: ArchaeologyItem) {
+    setEditing(item);
+    setFormOpen(true);
+  }
+
+  const editDraft: ArchaeologyDraft | undefined = editing
+    ? {
+        url: editing.url,
+        title: editing.title,
+        imageUrl: editing.imageUrl ?? "",
+        imagePosition: editing.imagePosition,
+        isManualCover: editing.isManualCover,
+        idolId: editing.idolId,
+        collection: editing.collection,
+        tags: [...editing.tags],
+        note: editing.note,
+      }
+    : undefined;
 
   return (
-    <Link
-      to="/weather/$eventId"
-      params={{ eventId: event.id }}
-      className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 px-5 py-4 text-card-foreground shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]"
-    >
-      <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-[#e8e6ff] text-[#8b87cf]">
-        <CloudSun className="size-7" strokeWidth={1.45} />
+    <AppShell>
+      <PageHeader
+        title="考古"
+        subtitle="把散落在飯圈各處的寶藏收回來"
+      />
+
+      <div className="space-y-4">
+        <div className="relative">
+          <Search
+            className="absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground"
+            strokeWidth={1.6}
+          />
+
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="搜尋標題、收藏集、Tag..."
+            className="h-11 rounded-full bg-surface/60 pl-11"
+          />
+        </div>
+
+        <div className="flex gap-2 overflow-x-auto pb-0.5">
+          <FilterButton
+            active={view === "RECENT"}
+            label="最近收藏"
+            Icon={Bookmark}
+            onClick={() => selectView("RECENT")}
+          />
+
+          <FilterButton
+            active={view === "FAVORITES"}
+            label="最愛"
+            Icon={Heart}
+            onClick={() => selectView("FAVORITES")}
+          />
+
+          <FilterButton
+            active={view === "COLLECTIONS"}
+            label="收藏集"
+            Icon={FolderHeart}
+            onClick={() => selectView("COLLECTIONS")}
+          />
+        </div>
+
+        <button
+          type="button"
+          onClick={openCreate}
+          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-primary/20 bg-primary/8 px-4 py-3 text-sm font-medium text-primary transition-colors active:bg-primary/12"
+        >
+          <Plus className="size-4" strokeWidth={1.8} />
+          收進考古
+        </button>
+
+        {view === "COLLECTIONS" ? (
+          <section className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-medium">
+                我的收藏集
+              </h2>
+
+              {activeCollection ? (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setActiveCollection(null)
+                  }
+                  className="text-xs text-muted-foreground"
+                >
+                  顯示全部
+                </button>
+              ) : null}
+            </div>
+
+            {collections.length > 0 ? (
+              <div className="grid grid-cols-2 gap-3">
+                {collections.map((collection) => (
+                  <button
+                    key={collection.name}
+                    type="button"
+                    onClick={() =>
+                      setActiveCollection(
+                        activeCollection === collection.name
+                          ? null
+                          : collection.name,
+                      )
+                    }
+                    className={[
+                      "rounded-2xl border px-4 py-4 text-left transition-all",
+                      activeCollection === collection.name
+                        ? "border-primary/40 bg-primary/10"
+                        : "border-border/60 bg-surface/50",
+                    ].join(" ")}
+                  >
+                    <FolderHeart
+                      className="mb-3 size-5 text-primary"
+                      strokeWidth={1.5}
+                    />
+
+                    <p className="truncate text-sm font-medium">
+                      {collection.name}
+                    </p>
+
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {collection.count} 篇
+                    </p>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <SoftCard className="px-5 py-6 text-center">
+                <p className="text-sm font-medium">
+                  還沒有收藏集
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  收藏考古時，可以順手把它們分進收藏集。
+                </p>
+              </SoftCard>
+            )}
+          </section>
+        ) : null}
+
+        <section className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-medium">
+              {view === "FAVORITES"
+                ? "我的最愛"
+                : activeCollection
+                  ? activeCollection
+                  : "最近收藏"}
+            </h2>
+
+            {items.length > 0 ? (
+              <span className="text-xs text-muted-foreground">
+                {visibleItems.length} 篇
+              </span>
+            ) : null}
+          </div>
+
+          {!ready ? (
+            <SoftCard className="px-5 py-8 text-center text-sm text-muted-foreground">
+              載入中...
+            </SoftCard>
+          ) : visibleItems.length > 0 ? (
+            <div className="space-y-3">
+              {visibleItems.map((item) => (
+                <ArchaeologyCard
+                  key={item.id}
+                  item={item}
+                  onToggleFavorite={() =>
+                    toggleFavorite(item.id)
+                  }
+                  onEdit={() => openEdit(item)}
+                  onDelete={() => setPendingDelete(item)}
+                />
+              ))}
+            </div>
+          ) : items.length === 0 ? (
+            <SoftCard className="px-6 py-10 text-center">
+              <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-surface">
+                <Bookmark
+                  className="size-5 text-muted-foreground"
+                  strokeWidth={1.5}
+                />
+              </div>
+
+              <p className="mt-4 text-[15px] font-medium">
+                你的考古收藏還是空的
+              </p>
+
+              <p className="mx-auto mt-2 max-w-[250px] text-sm leading-relaxed text-muted-foreground">
+                下次在 Threads、X 或 YouTube
+                挖到寶藏，就把它收回來。
+              </p>
+
+              <button
+                type="button"
+                onClick={openCreate}
+                className="mt-5 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-soft"
+              >
+                ＋ 收進第一篇考古
+              </button>
+            </SoftCard>
+          ) : (
+            <SoftCard className="px-5 py-8 text-center">
+              <p className="text-sm font-medium">
+                沒找到這篇考古
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                換個關鍵字看看。
+              </p>
+            </SoftCard>
+          )}
+        </section>
       </div>
-      <div className="min-w-0 flex-1">
-        <p className="text-[11px] font-medium tracking-[0.08em] text-primary">
-          Fan Weather・{place}
-        </p>
-        <p className="mt-1 truncate text-[16px] font-medium">
-          {timing}・{event.title}
-        </p>
-        <p className="mt-1 truncate text-sm text-muted-foreground">{detail}</p>
-      </div>
-      <ArrowRight className="size-5 shrink-0 text-primary" strokeWidth={1.8} />
-    </Link>
+
+      <ArchaeologyFormSheet
+        open={formOpen}
+        onOpenChange={(open) => {
+          setFormOpen(open);
+
+          if (!open) {
+            setEditing(null);
+          }
+        }}
+        initial={editDraft}
+        title={editing ? "編輯考古" : "收進考古"}
+        submitLabel={editing ? "儲存修改" : "收進考古"}
+        onSubmit={(draft) => {
+          if (editing) {
+            updateItem(editing.id, draft);
+          } else {
+            addItem(draft);
+          }
+
+          setFormOpen(false);
+          setEditing(null);
+          setView("RECENT");
+          setActiveCollection(null);
+        }}
+      />
+
+      {pendingDelete ? (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/30 px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+          <div className="w-full max-w-md rounded-3xl bg-card p-5 shadow-xl">
+            <div className="flex size-11 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+              <Trash2
+                className="size-5"
+                strokeWidth={1.7}
+              />
+            </div>
+
+            <h2 className="mt-4 text-lg font-medium">
+              刪除這篇考古？
+            </h2>
+
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              「{pendingDelete.title}」會從你的考古收藏中移除。
+              原始貼文不會受到影響。
+            </p>
+
+            <div className="mt-5 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setPendingDelete(null)}
+                className="flex-1 rounded-full border border-border/70 py-3 text-sm"
+              >
+                取消
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  removeItem(pendingDelete.id);
+                  setPendingDelete(null);
+                }}
+                className="flex-1 rounded-full bg-destructive py-3 text-sm font-medium text-destructive-foreground"
+              >
+                刪除
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </AppShell>
   );
 }
 
-function FanWeatherSetupCard({ event }: { event: IdolEvent }) {
-  const days = eventCountdown(event.date)?.daysUntil ?? 0;
-  const timing = days === 0 ? "今天" : `${Math.max(0, days)} 天後`;
+function FilterButton({
+  active,
+  label,
+  Icon,
+  onClick,
+}: {
+  active: boolean;
+  label: string;
+  Icon: typeof Bookmark;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={[
+        "flex shrink-0 items-center justify-center gap-1.5 rounded-full border px-3.5 py-2 text-xs transition-all",
+        active
+          ? "border-primary/30 bg-primary/10 text-foreground"
+          : "border-border/60 bg-surface/40 text-muted-foreground",
+      ].join(" ")}
+    >
+      <Icon
+        className="size-4"
+        strokeWidth={active ? 1.9 : 1.5}
+      />
+      {label}
+    </button>
+  );
+}
+
+const PREVIEW_VIDEO_SOURCES: ArchaeologySource[] = [
+  "THREADS",
+  "INSTAGRAM",
+  "TIKTOK",
+  "X",
+  "YOUTUBE",
+];
+
+function isVideoPreviewSource(source: ArchaeologySource) {
+  return PREVIEW_VIDEO_SOURCES.includes(source);
+}
+
+function VideoFallback({
+  source,
+  url,
+}: {
+  source: ArchaeologySource;
+  url: string;
+}) {
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="mb-3 flex aspect-[16/9] w-full flex-col items-center justify-center rounded-2xl bg-surface/70 text-muted-foreground transition-opacity active:opacity-70"
+    >
+      <div className="flex size-11 items-center justify-center rounded-full bg-background/90 text-primary shadow-sm">
+        <span className="ml-0.5 text-lg">▶</span>
+      </div>
+
+      <p className="mt-2 text-xs">
+        {SOURCE_LABELS[source]} 影片
+      </p>
+
+      <p className="mt-1 text-[11px] text-muted-foreground/70">
+        點一下回原文觀看
+      </p>
+    </a>
+  );
+}
+
+function ArchaeologyCover({
+  imageUrl,
+  title,
+  source,
+  url,
+  imagePosition,
+  isManualCover,
+}: {
+  imageUrl: string;
+  title: string;
+  source: ArchaeologySource;
+  url: string;
+  imagePosition: number;
+  isManualCover: boolean;
+}) {
+  const [failed, setFailed] = useState(false);
+  const showPlay = isVideoPreviewSource(source);
+
+  if (failed) {
+    return showPlay ? (
+      <VideoFallback source={source} url={url} />
+    ) : null;
+  }
 
   return (
-    <Link
-      to="/events"
-      className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/85 text-card-foreground px-5 py-4 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]"
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="relative mb-3 block overflow-hidden rounded-2xl bg-surface"
     >
-      <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-[#e8e6ff] text-[#8b87cf]">
-        <CloudSun className="size-7" strokeWidth={1.45} />
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="text-[11px] font-medium tracking-[0.08em] text-primary">Fan Weather</p>
-        <p className="mt-1 truncate text-[16px] font-medium">
-          {timing}・{event.title}
-        </p>
-        <p className="mt-1 truncate text-sm text-muted-foreground">
-          設定地點與城市，幫你準備追星天氣 ♡
-        </p>
-      </div>
-      <ArrowRight className="size-5 shrink-0 text-primary" strokeWidth={1.8} />
-    </Link>
+      <StoredImage
+        src={imageUrl}
+        alt={title}
+        className="aspect-[16/9] w-full object-cover"
+        style={isManualCover ? { objectPosition: `50% ${imagePosition}%` } : undefined}
+        onError={() => setFailed(true)}
+      />
+
+      {showPlay ? (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="flex size-11 items-center justify-center rounded-full bg-background/90 text-primary shadow-sm">
+            <span className="ml-0.5 text-lg">▶</span>
+          </div>
+        </div>
+      ) : null}
+    </a>
   );
 }
 
 function ArchaeologyCard({
   item,
+  onToggleFavorite,
+  onEdit,
+  onDelete,
 }: {
-  item: { title: string; imageUrl?: string | undefined; createdAt: string; collection: string };
+  item: ArchaeologyItem;
+  onToggleFavorite: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
 }) {
-  return (
-    <Link
-      to="/archaeology"
-      className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground p-3 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]"
-    >
-      <div className="flex size-[5.2rem] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/10 text-primary">
-        {item.imageUrl ? (
-          <StoredImage src={item.imageUrl} alt="" className="size-full object-cover" />
-        ) : (
-          <Search className="size-7" strokeWidth={1.5} />
-        )}
-      </div>
-      <div className="min-w-0 flex-1 py-1">
-        <p className="text-[11px] font-medium text-primary">▣ 最近收進考古</p>
-        <p className="mt-1 truncate text-[17px] font-medium">{item.title}</p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {dotDate(item.createdAt.slice(0, 10))}
-          {item.collection ? `・${item.collection}` : ""}
-        </p>
-      </div>
-      <ArrowRight className="mr-1 size-5 shrink-0 text-primary" strokeWidth={1.8} />
-    </Link>
-  );
-}
+  const [menuOpen, setMenuOpen] = useState(false);
 
-function EmptyArchaeologyCard() {
   return (
-    <Link
-      to="/archaeology"
-      className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/85 text-card-foreground p-3 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]"
-    >
-      <div className="flex size-[5.2rem] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/10 text-primary">
-        <Search className="size-7" strokeWidth={1.5} />
-      </div>
-      <div className="min-w-0 flex-1 py-1">
-        <p className="text-[11px] font-medium text-primary">▣ 最近收進考古</p>
-        <p className="mt-1 text-[16px] font-medium">還沒有收進考古</p>
-        <p className="mt-1 truncate text-sm text-muted-foreground">把第一筆珍貴片段收藏起來吧 ♡</p>
-      </div>
-      <ArrowRight className="mr-1 size-5 shrink-0 text-primary" strokeWidth={1.8} />
-    </Link>
-  );
-}
-
-function MemoryCard({
-  memory,
-}: {
-  memory: { title: string; note: string; photo?: string | undefined; date: string };
-}) {
-  const text = memory.title.trim() || memory.note.trim() || "那天也好想你 ♡";
-  return (
-    <Link
-      to="/memories"
-      className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground p-3 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]"
-    >
-      <div className="flex size-[5.2rem] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/10 text-primary">
-        {memory.photo ? (
-          <StoredImage src={memory.photo} alt="" className="size-full object-cover" />
-        ) : (
-          <History className="size-7" strokeWidth={1.45} />
-        )}
-      </div>
-      <div className="min-w-0 flex-1 py-1">
-        <p className="text-[11px] font-medium text-primary">▣ 去年的今天</p>
-        <p className="mt-1 text-[17px] font-medium">{dotDate(memory.date)}</p>
-        <p className="mt-1 truncate text-sm text-muted-foreground">{text}</p>
-      </div>
-      <ArrowRight className="mr-1 size-5 shrink-0 text-primary" strokeWidth={1.8} />
-    </Link>
-  );
-}
-
-function EmptyMemoryCard() {
-  return (
-    <Link
-      to="/memories"
-      className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/85 text-card-foreground px-5 py-4 shadow-soft backdrop-blur-xl transition-transform active:scale-[0.99]"
-    >
-      <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-        <History className="size-6" strokeWidth={1.45} />
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="text-[11px] font-medium text-primary">去年的今天</p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          今天還沒有去年的回憶，繼續把喜歡收藏起來吧 ♡
-        </p>
-      </div>
-      <ArrowRight className="size-5 shrink-0 text-primary" strokeWidth={1.8} />
-    </Link>
-  );
-}
-
-function Hero({
-  idol,
-  canSwitch,
-  onSwitch,
-}: {
-  idol: Idol;
-  canSwitch: boolean;
-  onSwitch: () => void;
-}) {
-  const backdrop = idol.photo || idol.cutoutPhoto;
-  return (
-    <section className="relative mt-0 overflow-hidden rounded-[1.7rem] bg-gradient-to-b from-[#f6cddb] via-[#f9dfe7] to-[#fdf0f3] shadow-[0_18px_40px_rgba(176,102,130,0.16)]">
-      {backdrop ? (
-        <StoredImage
-          src={backdrop}
-          alt=""
-          aria-hidden
-          className="absolute inset-0 size-full scale-110 object-cover opacity-20 blur-3xl"
+    <SoftCard className="px-4 py-3.5">
+      {item.imageUrl ? (
+        <ArchaeologyCover
+          imageUrl={item.imageUrl}
+          title={item.title}
+          source={item.source}
+          url={item.url}
+          imagePosition={item.imagePosition}
+          isManualCover={item.isManualCover}
+        />
+      ) : isVideoPreviewSource(item.source) ? (
+        <VideoFallback
+          source={item.source}
+          url={item.url}
         />
       ) : null}
-      <div className="absolute -left-16 top-12 size-56 rounded-full bg-white/40 blur-3xl" />
-      <div className="absolute -right-20 bottom-12 size-60 rounded-full bg-primary/20 blur-3xl" />
-      <span className="absolute left-5 top-24 text-xl text-primary/30">✧</span>
-      <span className="absolute right-6 top-36 text-2xl text-primary/30">✦</span>
-      <span className="absolute left-9 bottom-28 text-lg text-primary/35">♡</span>
-      {canSwitch ? (
-        <button
-          type="button"
-          onClick={onSwitch}
-          aria-label="切換首頁封面偶像"
-          className="absolute right-4 top-4 z-40 flex size-10 items-center justify-center rounded-full border border-white/70 bg-black/30 text-white shadow-lg backdrop-blur-md transition-transform active:scale-90"
-        >
-          <Repeat2 className="size-5" strokeWidth={1.8} />
-        </button>
-      ) : null}
-      <Link
-        to="/idols/$idolId"
-        params={{ idolId: idol.id }}
-        className="relative block h-[300px] overflow-hidden"
-      >
-        {idol.cutoutPhoto ? (
-          <StoredImage
-            src={idol.cutoutPhoto}
-            alt={`${idol.name} 的去背照片`}
-            className="absolute inset-x-0 bottom-0 z-10 mx-auto h-[94%] w-full object-contain object-bottom"
-          />
-        ) : idol.photo ? (
-          <StoredImage
-            src={idol.photo}
-            alt={`${idol.name} 的照片`}
-            className="absolute inset-0 z-10 size-full object-cover object-[72%_center]"
-          />
-        ) : (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 text-muted-foreground">
-            <ImageIcon className="size-8" strokeWidth={1.3} />
-            <span className="text-sm">放一張你喜歡的照片 ♡</span>
+
+      <div className="flex items-start gap-3">
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="rounded-full bg-surface px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
+              {SOURCE_LABELS[item.source]}
+            </span>
+
+            {item.collection ? (
+              <span className="text-[11px] text-muted-foreground">
+                {item.collection}
+              </span>
+            ) : null}
           </div>
-        )}
-        <div className="absolute inset-x-0 bottom-0 z-20 h-48 bg-gradient-to-t from-black/65 via-black/20 to-transparent" />
-        <div className="absolute bottom-5 left-5 z-30">
-          <p className="font-display text-[28px] leading-tight text-[#ffafc9] drop-shadow-[0_2px_5px_rgba(0,0,0,0.55)]">
-            {timeGreeting()}
+
+          <p className="mt-2.5 pr-1 text-[15px] font-medium leading-snug">
+            {item.title}
           </p>
-          <p className="mt-2 text-[16px] leading-relaxed text-white drop-shadow-[0_2px_5px_rgba(0,0,0,0.7)]">
-            {dailyAnimalLine(idol)}
-          </p>
-        </div>
-      </Link>
-    </section>
-  );
-}
 
-function HomePage() {
-  const { idols, homeIdol, ready, coverRotation, setMainIdol, setCoverRotation } = useIdolSource();
-  const { events } = useEventSource();
-  const { items: archaeology } = useArchaeologySource();
-  const { all: memories } = useMemorySource();
-  const main = homeIdol;
-  const companionship = useMemo(() => (main ? daysSince(main.sinceDate) : null), [main]);
+          {item.tags.length > 0 ? (
+            <div className="mt-2 flex flex-wrap gap-x-2 gap-y-1">
+              {item.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="text-xs text-primary/80"
+                >
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          ) : null}
 
-  const nextMainEvent = useMemo(
-    () => (main ? nextEvent(events.filter((event) => event.idolId === main.id)) : undefined),
-    [events, main],
-  );
-  const latestArchaeology = useMemo(() => {
-    if (!main) return undefined;
-    const linked = archaeology.filter((item) => item.idolId === main.id);
-    const candidates = linked.length > 0 ? linked : archaeology.filter((item) => !item.idolId);
-    return [...candidates].sort((a, b) => {
-      if (a.favorite !== b.favorite) return a.favorite ? -1 : 1;
-      if (Boolean(a.imageUrl) !== Boolean(b.imageUrl)) {
-        return a.imageUrl ? -1 : 1;
-      }
-      return b.createdAt.localeCompare(a.createdAt);
-    })[0];
-  }, [archaeology, main]);
-  const memoryFromToday = useMemo(() => {
-    if (!main) return undefined;
-    const today = new Date();
-    const monthDay = `-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-    const currentYear = today.getFullYear();
-    return memories
-      .filter((memory) => {
-        const year = Number(memory.date.slice(0, 4));
-        return memory.idolId === main.id && memory.date.endsWith(monthDay) && year < currentYear;
-      })
-      .sort((a, b) => b.date.localeCompare(a.date))[0];
-  }, [main, memories]);
-
-  return (
-    <AppShell showProfileShortcut={false}>
-      <header className="mb-2 flex items-center justify-between px-1">
-        <p className="font-display text-[27px] tracking-[-0.03em] text-primary">IdolDays</p>
-        <Link
-          to="/profile"
-          aria-label="通知與個人設定"
-          className="relative flex size-10 items-center justify-center rounded-full border border-border/75 bg-card/85 text-card-foreground shadow-soft backdrop-blur-md transition-transform active:scale-95"
-        >
-          <Bell className="size-5" strokeWidth={1.55} />
-          <span className="absolute right-0.5 top-0.5 size-2.5 rounded-full border-2 border-card bg-primary" />
-        </Link>
-      </header>
-
-      {!ready ? (
-        <div className="h-[31rem] rounded-[2rem] bg-surface/60" aria-hidden />
-      ) : main ? (
-        <>
-          <Hero
-            idol={main}
-            canSwitch={idols.length > 1}
-            onSwitch={() => {
-              const currentIndex = Math.max(
-                0,
-                idols.findIndex((idol) => idol.id === main.id),
-              );
-              const next = idols[(currentIndex + 1) % idols.length];
-              if (next) {
-                setCoverRotation(false);
-                void setMainIdol(next.id);
-              }
-            }}
-          />
-          {coverRotation && idols.length > 1 ? (
-            <p className="mt-2 px-2 text-right text-[11px] text-muted-foreground">
-              每日輪換中・按右上角可立即指定另一位
+          {item.note ? (
+            <p className="mt-2.5 whitespace-pre-wrap text-[13px] leading-relaxed text-muted-foreground">
+              {item.note}
             </p>
           ) : null}
-          {nextMainEvent ? <EventCard event={nextMainEvent} /> : null}
-          {nextMainEvent ? (
-            canUseFanWeather(nextMainEvent) ? (
-              <FanWeatherCard event={nextMainEvent} />
-            ) : (
-              <FanWeatherSetupCard event={nextMainEvent} />
-            )
-          ) : null}
-          {latestArchaeology ? (
-            <ArchaeologyCard item={latestArchaeology} />
-          ) : (
-            <EmptyArchaeologyCard />
-          )}
-          {memoryFromToday ? <MemoryCard memory={memoryFromToday} /> : <EmptyMemoryCard />}
+        </div>
 
-          {companionship && !companionship.isFuture && companionship.days !== null ? (
-            <section className="relative mt-5 rounded-[1.8rem] border border-border/70 bg-card/90 px-5 py-4 text-center text-card-foreground shadow-[0_12px_32px_rgba(157,91,116,0.10)] backdrop-blur-xl">
-              <span aria-hidden className="absolute right-6 top-4 text-xl text-primary/55">
-                ♥
-              </span>
-              <p className="text-[13px] font-medium text-muted-foreground">陪伴總走過</p>
-              <p className="mt-1 font-display text-[44px] leading-none text-foreground">
-                {companionship.days}
-                <span className="ml-1 text-[20px]">天</span>
-              </p>
-              <p className="mt-2 text-sm text-muted-foreground">一起走過的每一天都很珍貴 ♡</p>
-            </section>
-          ) : null}
-
-          <p className="mt-8 px-8 text-center font-display text-[16px] leading-relaxed text-muted-foreground/80">
-            一起走過的每一天，
-            <br />
-            都是珍貴的回憶 ♡
-          </p>
-        </>
-      ) : (
-        <Section title="我的偶像">
-          <EmptyState
-            icon={<Heart className="size-5" strokeWidth={1.6} />}
-            title="還沒有你的第一位偶像"
-            description="今天也可以從一個名字開始，收藏屬於你的追星日子。"
-            action={
-              <Link
-                to="/idols"
-                className="inline-flex items-center gap-1.5 rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
-              >
-                <Plus className="size-4" strokeWidth={2} />
-                加入第一位偶像
-              </Link>
+        <div className="relative flex shrink-0 gap-1">
+          <button
+            type="button"
+            onClick={onToggleFavorite}
+            className="flex size-9 items-center justify-center rounded-full bg-surface"
+            aria-label={
+              item.favorite ? "取消最愛" : "加入最愛"
             }
+          >
+            <Heart
+              className={[
+                "size-4",
+                item.favorite
+                  ? "fill-primary text-primary"
+                  : "text-muted-foreground",
+              ].join(" ")}
+              strokeWidth={1.7}
+            />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setMenuOpen((open) => !open)}
+            className="flex size-9 items-center justify-center rounded-full bg-surface text-muted-foreground"
+            aria-label="更多操作"
+          >
+            <MoreHorizontal
+              className="size-4"
+              strokeWidth={1.7}
+            />
+          </button>
+
+          {menuOpen ? (
+            <div className="absolute top-11 right-0 z-20 w-36 overflow-hidden rounded-2xl border border-border/60 bg-card shadow-lg">
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  onEdit();
+                }}
+                className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm"
+              >
+                <Pencil
+                  className="size-4"
+                  strokeWidth={1.6}
+                />
+                編輯
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  onDelete();
+                }}
+                className="flex w-full items-center gap-2 border-t border-border/50 px-4 py-3 text-left text-sm text-destructive"
+              >
+                <Trash2
+                  className="size-4"
+                  strokeWidth={1.6}
+                />
+                刪除
+              </button>
+            </div>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="mt-3 flex items-center justify-between border-t border-border/50 pt-2.5">
+        <span className="text-[11px] text-muted-foreground">
+          {new Date(item.createdAt).toLocaleDateString("zh-TW")}
+        </span>
+
+        <a
+          href={item.url}
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center gap-1.5 text-xs font-medium text-primary"
+        >
+          回原文
+          <ExternalLink
+            className="size-3.5"
+            strokeWidth={1.7}
           />
-        </Section>
-      )}
-    </AppShell>
+        </a>
+      </div>
+    </SoftCard>
   );
 }

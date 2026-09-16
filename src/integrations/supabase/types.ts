@@ -1,679 +1,321 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+import { StoredImage } from "@/components/StoredImage";
+import { PhotoCropPositionControl, PhotoCropPreview } from "@/components/PhotoCropControls";
+import { useEffect, useRef, useState } from "react";
+import { ImagePlus, Sparkles, X } from "lucide-react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { emptyDraft, REPRESENTATIVE_ANIMALS, type IdolDraft } from "@/lib/idols";
+import { saveCutoutImage } from "@/lib/cutout-image-store";
+import { resolveImageUrl } from "@/lib/storage";
+import {
+  createNativeSubjectCutout,
+  isNativeSubjectCutoutAvailable,
+} from "@/lib/subject-cutout-native";
 
-export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "14.5"
+const fields: { key: keyof IdolDraft; label: string; type?: string }[] = [
+  { key: "name", label: "偶像名稱" },
+  { key: "groupName", label: "團體名稱" },
+  { key: "birthday", label: "生日", type: "date" },
+  { key: "debutDate", label: "出道日期", type: "date" },
+  { key: "fanName", label: "粉絲名稱" },
+  { key: "sinceDate", label: "我喜歡他的日期", type: "date" },
+];
+
+
+async function imageSourceToDataUrl(source: string): Promise<string> {
+  if (source.startsWith("data:image/")) {
+    return source;
   }
-  public: {
-    Tables: {
-      album_share_recipients: {
-        Row: {
-          created_at: string
-          id: string
-          recipient_email: string
-          share_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          recipient_email: string
-          share_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          recipient_email?: string
-          share_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "album_share_recipients_share_id_fkey"
-            columns: ["share_id"]
-            isOneToOne: false
-            referencedRelation: "album_shares"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      album_shares: {
-        Row: {
-          created_at: string
-          folder_id: string
-          id: string
-          mode: string
-          public_token: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          folder_id: string
-          id?: string
-          mode?: string
-          public_token?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          folder_id?: string
-          id?: string
-          mode?: string
-          public_token?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "album_shares_folder_id_fkey"
-            columns: ["folder_id"]
-            isOneToOne: false
-            referencedRelation: "memory_folders"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      events: {
-        Row: {
-          city: string
-          created_at: string
-          date: string
-          id: string
-          idol_id: string
-          location_name: string
-          note: string
-          title: string
-          type: string
-          updated_at: string
-          user_id: string
-          weather_enabled: boolean
-          weather_tone: string
-        }
-        Insert: {
-          city?: string
-          created_at?: string
-          date: string
-          id?: string
-          idol_id: string
-          location_name?: string
-          note?: string
-          title: string
-          type?: string
-          updated_at?: string
-          user_id: string
-          weather_enabled?: boolean
-          weather_tone?: string
-        }
-        Update: {
-          city?: string
-          created_at?: string
-          date?: string
-          id?: string
-          idol_id?: string
-          location_name?: string
-          note?: string
-          title?: string
-          type?: string
-          updated_at?: string
-          user_id?: string
-          weather_enabled?: boolean
-          weather_tone?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "events_idol_id_fkey"
-            columns: ["idol_id"]
-            isOneToOne: false
-            referencedRelation: "idols"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      idols: {
-        Row: {
-          birthday: string | null
-          created_at: string
-          debut_date: string | null
-          fan_name: string
-          favorite_color: string
-          group_name: string
-          id: string
-          name: string
-          photo: string
-          representative_animal: string
-          since_date: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          birthday?: string | null
-          created_at?: string
-          debut_date?: string | null
-          fan_name?: string
-          favorite_color?: string
-          group_name?: string
-          id?: string
-          name: string
-          photo?: string
-          representative_animal?: string
-          since_date?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          birthday?: string | null
-          created_at?: string
-          debut_date?: string | null
-          fan_name?: string
-          favorite_color?: string
-          group_name?: string
-          id?: string
-          name?: string
-          photo?: string
-          representative_animal?: string
-          since_date?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      memories: {
-        Row: {
-          created_at: string
-          date: string | null
-          folder_id: string
-          id: string
-          idol_id: string | null
-          note: string
-          photo: string
-          title: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          date?: string | null
-          folder_id: string
-          id?: string
-          idol_id?: string | null
-          note?: string
-          photo?: string
-          title?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          date?: string | null
-          folder_id?: string
-          id?: string
-          idol_id?: string | null
-          note?: string
-          photo?: string
-          title?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "memories_folder_id_fkey"
-            columns: ["folder_id"]
-            isOneToOne: false
-            referencedRelation: "memory_folders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "memories_idol_id_fkey"
-            columns: ["idol_id"]
-            isOneToOne: false
-            referencedRelation: "idols"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      memory_folders: {
-        Row: {
-          cover_photo: string
-          created_at: string
-          description: string
-          end_date: string | null
-          id: string
-          idol_id: string | null
-          start_date: string | null
-          title: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          cover_photo?: string
-          created_at?: string
-          description?: string
-          end_date?: string | null
-          id?: string
-          idol_id?: string | null
-          start_date?: string | null
-          title: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          cover_photo?: string
-          created_at?: string
-          description?: string
-          end_date?: string | null
-          id?: string
-          idol_id?: string | null
-          start_date?: string | null
-          title?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "memory_folders_idol_id_fkey"
-            columns: ["idol_id"]
-            isOneToOne: false
-            referencedRelation: "idols"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      milestones: {
-        Row: {
-          completed: boolean
-          created_at: string
-          date: string | null
-          emoji: string
-          event_id: string
-          id: string
-          title: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          completed?: boolean
-          created_at?: string
-          date?: string | null
-          emoji?: string
-          event_id: string
-          id?: string
-          title: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          completed?: boolean
-          created_at?: string
-          date?: string | null
-          emoji?: string
-          event_id?: string
-          id?: string
-          title?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "milestones_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "events"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      profiles: {
-        Row: {
-          cover_rotation: boolean
-          created_at: string
-          date_format: string
-          display_name: string
-          id: string
-          language: string
-          main_idol_id: string | null
-          theme: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          cover_rotation?: boolean
-          created_at?: string
-          date_format?: string
-          display_name?: string
-          id?: string
-          language?: string
-          main_idol_id?: string | null
-          theme?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          cover_rotation?: boolean
-          created_at?: string
-          date_format?: string
-          display_name?: string
-          id?: string
-          language?: string
-          main_idol_id?: string | null
-          theme?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_main_idol_id_fkey"
-            columns: ["main_idol_id"]
-            isOneToOne: false
-            referencedRelation: "idols"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      reminders: {
-        Row: {
-          created_at: string
-          days_before: number
-          enabled: boolean
-          event_id: string | null
-          id: string
-          idol_id: string | null
-          type: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          days_before?: number
-          enabled?: boolean
-          event_id?: string | null
-          id?: string
-          idol_id?: string | null
-          type?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          days_before?: number
-          enabled?: boolean
-          event_id?: string | null
-          id?: string
-          idol_id?: string | null
-          type?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "reminders_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "events"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "reminders_idol_id_fkey"
-            columns: ["idol_id"]
-            isOneToOne: false
-            referencedRelation: "idols"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      sugar_items: {
-        Row: {
-          created_at: string
-          date: string | null
-          id: string
-          idol_id: string | null
-          image: string
-          link: string
-          note: string
-          title: string
-          type: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          date?: string | null
-          id?: string
-          idol_id?: string | null
-          image?: string
-          link?: string
-          note?: string
-          title?: string
-          type?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          date?: string | null
-          id?: string
-          idol_id?: string | null
-          image?: string
-          link?: string
-          note?: string
-          title?: string
-          type?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "sugar_items_idol_id_fkey"
-            columns: ["idol_id"]
-            isOneToOne: false
-            referencedRelation: "idols"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      user_roles: {
-        Row: {
-          created_at: string
-          id: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          role?: Database["public"]["Enums"]["app_role"]
-          user_id?: string
-        }
-        Relationships: []
-      }
-      widget_preferences: {
-        Row: {
-          created_at: string
-          enabled_contents: string[]
-          idol_id: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          enabled_contents?: string[]
-          idol_id?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          enabled_contents?: string[]
-          idol_id?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "widget_preferences_idol_id_fkey"
-            columns: ["idol_id"]
-            isOneToOne: false
-            referencedRelation: "idols"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
-    }
-    Enums: {
-      app_role: "admin" | "user"
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
+
+  const resolved = await resolveImageUrl(source);
+
+  if (!resolved) {
+    throw new Error("Unable to resolve image");
   }
+
+  const response = await fetch(resolved);
+
+  if (!response.ok) {
+    throw new Error("Unable to download image");
+  }
+
+  const blob = await response.blob();
+
+  return await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const result = String(reader.result ?? "");
+
+      if (!result.startsWith("data:image/")) {
+        reject(new Error("Invalid image data"));
+        return;
+      }
+
+      resolve(result);
+    };
+
+    reader.onerror = () =>
+      reject(reader.error ?? new Error("Unable to read image"));
+
+    reader.readAsDataURL(blob);
+  });
 }
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+export function IdolFormSheet({
+  open,
+  onOpenChange,
+  initial,
+  title,
+  submitLabel,
+  onSubmit,
+  footer,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  initial?: IdolDraft;
+  title: string;
+  submitLabel: string;
+  onSubmit: (draft: IdolDraft) => void;
+  footer?: React.ReactNode;
+}) {
+  const [draft, setDraft] = useState<IdolDraft>({ ...emptyDraft, ...initial });
+  const [error, setError] = useState("");
+  const [cutoutBusy, setCutoutBusy] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
-
-export type Tables<
-  DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never) = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
+  useEffect(() => {
+    if (open) {
+      setDraft({ ...emptyDraft, ...initial });
+      setError("");
+      setCutoutBusy(false);
     }
-    ? R
-    : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
-      }
-      ? R
-      : never
-    : never
+  }, [open, initial]);
 
-export type TablesInsert<
-  DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+  function pickPhoto(file?: File | null) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () =>
+      setDraft((d) => ({
+        ...d,
+        photo: String(reader.result ?? ""),
+        cutoutPhoto: "",
+        photoPosition: 50,
+      }));
+    reader.readAsDataURL(file);
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never) = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
+
+  async function createCutout() {
+    if (!draft.photo || cutoutBusy) return;
+
+    if (!isNativeSubjectCutoutAvailable()) {
+      setError("人物去背目前需在 iPhone App 內使用");
+      return;
     }
-    ? I
-    : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
-      }
-      ? I
-      : never
-    : never
 
-export type TablesUpdate<
-  DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never) = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
+    setCutoutBusy(true);
+    setError("");
+
+    try {
+      const nativeImageData =
+      await imageSourceToDataUrl(draft.photo);
+
+    const result =
+      await createNativeSubjectCutout(nativeImageData);
+
+      if (!result?.imageData) {
+        setError("找不到清楚的人物主體，請換一張照片再試");
+        return;
+      }
+
+      const cutoutRef = await saveCutoutImage(
+      result.imageData,
+      draft.cutoutPhoto,
+    );
+
+    setDraft((d) => ({
+      ...d,
+      cutoutPhoto: cutoutRef,
+    }));
+    } catch {
+      setError("人物去背失敗，請換一張人物較清楚的照片再試");
+    } finally {
+      setCutoutBusy(false);
     }
-    ? U
-    : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
-      }
-      ? U
-      : never
-    : never
-
-export type Enums<
-  DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never) = never,
-> = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
 
-export type CompositeTypes<
-  PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+  function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!draft.name.trim()) {
+      setError("請先幫這位偶像留下名字");
+      return;
+    }
+    onSubmit({
+      ...draft,
+      name: draft.name.trim(),
+      representativeAnimal: draft.representativeAnimal ?? "DOG",
+    });
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never) = never,
-> = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
 
-export const Constants = {
-  public: {
-    Enums: {
-      app_role: ["admin", "user"],
-    },
-  },
-} as const
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent
+        side="bottom"
+        className="mx-auto max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-3xl border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
+      >
+        <SheetHeader className="px-0 text-left">
+          <SheetTitle className="text-xl">{title}</SheetTitle>
+          <SheetDescription>只留下你想記得的部分就好</SheetDescription>
+        </SheetHeader>
+
+        <form onSubmit={submit} className="space-y-5 pt-2">
+          <div>
+            <p className="mb-2 text-sm font-medium">上傳偶像照片</p>
+            {draft.photo ? (
+              <>
+              <div className="relative overflow-hidden rounded-2xl border border-border/60">
+                {draft.cutoutPhoto ? (
+                  <StoredImage
+                    src={draft.cutoutPhoto}
+                    alt="偶像照片預覽"
+                    className="aspect-[3/4] w-full bg-gradient-to-b from-[#f8dce8] via-[#fae7ee] to-[#f7dfe7] object-contain"
+                  />
+                ) : (
+                  <PhotoCropPreview src={draft.photo} alt="偶像照片預覽" position={draft.photoPosition} aspectClass="aspect-[3/4]" />
+                )}
+                <div className="absolute right-3 bottom-3 flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => fileRef.current?.click()}
+                    className="rounded-full bg-card/90 px-3 py-1.5 text-xs shadow-soft"
+                  >
+                    重新選擇
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setDraft((d) => ({
+                        ...d,
+                        photo: "",
+                        cutoutPhoto: "",
+                      }))
+                    }
+                    className="rounded-full bg-card/90 p-1.5 shadow-soft"
+                    aria-label="移除照片"
+                  >
+                    <X className="size-4" strokeWidth={1.8} />
+                  </button>
+                </div>
+
+                {isNativeSubjectCutoutAvailable() ? (
+                  <button
+                    type="button"
+                    onClick={createCutout}
+                    disabled={cutoutBusy}
+                    className="absolute left-3 bottom-3 flex items-center gap-1.5 rounded-full bg-card/90 px-3 py-1.5 text-xs shadow-soft disabled:opacity-60"
+                  >
+                    <Sparkles className="size-3.5" strokeWidth={1.7} />
+                    {cutoutBusy
+                      ? "人物去背中…"
+                      : draft.cutoutPhoto
+                        ? "重新去背"
+                        : "人物去背"}
+                  </button>
+                ) : null}
+                {!draft.cutoutPhoto ? (
+                  <div className="absolute right-3 bottom-14 left-3">
+                    <PhotoCropPositionControl
+                      id="idol-photo-position"
+                      value={draft.photoPosition}
+                      onChange={(photoPosition) => setDraft((d) => ({ ...d, photoPosition }))}
+                    />
+                  </div>
+                ) : null}
+              </div>
+
+              {draft.cutoutPhoto ? (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  已完成本機人物去背，原始照片仍會保留。
+                </p>
+              ) : null}
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => fileRef.current?.click()}
+                className="flex aspect-[3/4] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-surface/50 text-muted-foreground"
+              >
+                <ImagePlus className="size-6" strokeWidth={1.4} />
+                <span className="text-sm">放一張你最喜歡的照片</span>
+              </button>
+            )}
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                pickPhoto(e.target.files?.[0]);
+                e.target.value = "";
+              }}
+            />
+          </div>
+
+          {fields.map((f) => (
+            <div key={f.key} className="space-y-1.5">
+              <Label htmlFor={f.key}>
+                {f.label}
+                {f.key === "name" ? <span className="ml-1 text-primary">*</span> : null}
+              </Label>
+              <Input
+                id={f.key}
+                type={f.type ?? "text"}
+                value={draft[f.key]}
+                onChange={(e) => setDraft((d) => ({ ...d, [f.key]: e.target.value }))}
+                className="rounded-xl bg-surface/50"
+              />
+            </div>
+          ))}
+
+          <div className="space-y-2">
+            <Label>偶像代表動物</Label>
+            <p className="text-xs leading-5 text-muted-foreground">
+              用來決定首頁與追星天氣的專屬口吻。
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              {REPRESENTATIVE_ANIMALS.map((animal) => {
+                const active = (draft.representativeAnimal ?? "DOG") === animal.value;
+                return (
+                  <button
+                    key={animal.value}
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() => setDraft((d) => ({ ...d, representativeAnimal: animal.value }))}
+                    className={`rounded-xl border px-2 py-2.5 text-xs transition-colors ${
+                      active
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border/70 bg-surface/50 text-muted-foreground"
+                    }`}
+                  >
+                    <span className="mr-1">{animal.emoji}</span>{animal.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {error ? <p className="text-sm text-destructive">{error}</p> : null}
+
+          <button
+            type="submit"
+            className="w-full rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+          >
+            {submitLabel}
+          </button>
+          {footer}
+        </form>
+      </SheetContent>
+    </Sheet>
+  );
+}

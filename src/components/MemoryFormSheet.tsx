@@ -1,177 +1,96 @@
 import { StoredImage } from "@/components/StoredImage";
-import { useEffect, useRef, useState } from "react";
-import { ImagePlus, X } from "lucide-react";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { emptyMemoryDraft, type MemoryDraft } from "@/lib/memories";
+import { Link } from "@tanstack/react-router";
+import { Check, Home, ImageIcon, Plus } from "lucide-react";
+import type { Idol } from "@/lib/idols";
+import { daysSince, primaryDay } from "@/lib/dates";
 
-function todayValue() {
-  const n = new Date();
-  const pad = (x: number) => String(x).padStart(2, "0");
-  return `${n.getFullYear()}-${pad(n.getMonth() + 1)}-${pad(n.getDate())}`;
-}
-
-export function MemoryFormSheet({
-  open,
-  onOpenChange,
-  initial,
-  title,
-  submitLabel,
-  onSubmit,
+export function IdolCard({
+  idol,
+  isMain = false,
+  onSetMain,
 }: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  initial?: MemoryDraft | undefined;
-  title: string;
-  submitLabel: string;
-  onSubmit: (draft: MemoryDraft) => void;
+  idol: Idol;
+  isMain?: boolean;
+  onSetMain?: () => void;
 }) {
-  const [draft, setDraft] = useState<MemoryDraft>(emptyMemoryDraft);
-  const [error, setError] = useState("");
-  const fileRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (open) {
-      setDraft(initial ?? { ...emptyMemoryDraft, date: todayValue() });
-      setError("");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
-
-  function pickPhoto(file?: File | null) {
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => setDraft((d) => ({ ...d, photo: String(reader.result ?? "") }));
-    reader.readAsDataURL(file);
-  }
-
-  function submit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!draft.title.trim()) return setError("幫這段回憶取一個名字");
-    if (!draft.date) return setError("請選擇日期");
-    onSubmit({ ...draft, title: draft.title.trim() });
-  }
+  const day = primaryDay(idol);
+  const since = daysSince(idol.sinceDate);
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent
-        side="bottom"
-        className="mx-auto max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-3xl border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
+    <article className="polaroid relative">
+    <Link
+      to="/idols/$idolId"
+      params={{ idolId: idol.id }}
+      className="group block transition-all duration-300 active:scale-[0.98] hover:shadow-lift"
+    >
+      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[0.6rem] bg-surface">
+        {idol.photo ? (
+          <StoredImage
+            src={idol.photo}
+            alt={`${idol.name} 的照片`}
+            loading="lazy"
+            className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            style={{ objectPosition: `50% ${idol.photoPosition ?? 50}%` }}
+          />
+        ) : (
+          <div className="flex size-full flex-col items-center justify-center gap-2 text-muted-foreground">
+            <ImageIcon className="size-6" strokeWidth={1.4} />
+            <span className="text-[13px]">還沒有照片</span>
+          </div>
+        )}
+        {day ? (
+          <span className="font-display absolute top-2.5 left-2.5 rounded-full bg-card/90 px-2.5 py-1 text-[13px] text-primary shadow-soft backdrop-blur">
+            {day.ddayLabel}
+          </span>
+        ) : null}
+        <span
+          aria-hidden
+          className="absolute top-2 right-2.5 text-[13px] text-primary/70 select-none"
+        >
+          ♡
+        </span>
+      </div>
+      <div className="px-1.5 pt-2.5">
+        <p className="font-display truncate text-[18px] font-bold">{idol.name}</p>
+        <p className="mt-0.5 truncate text-[13px] text-muted-foreground">
+          {idol.groupName || "　"}
+        </p>
+        <div className="mt-2 space-y-0.5 text-[13px] text-muted-foreground">
+          <p className="truncate">{day ? `${day.title}・${day.humanLabel}` : "設定一個重要日子"}</p>
+          <p className="truncate">{since ? since.humanLabel : "設定喜歡他的日期"}</p>
+        </div>
+      </div>
+    </Link>
+    {onSetMain ? (
+      <button
+        type="button"
+        onClick={onSetMain}
+        disabled={isMain}
+        className={`mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl border px-2 py-2 text-[12px] font-medium transition-colors ${
+          isMain
+            ? "border-primary/30 bg-primary/12 text-primary"
+            : "border-border/80 bg-card text-foreground hover:border-primary/40"
+        }`}
       >
-        <SheetHeader className="px-0 text-left">
-          <SheetTitle className="text-xl">{title}</SheetTitle>
-          <SheetDescription>把這一天的心情寫下來 ♡</SheetDescription>
-        </SheetHeader>
+        {isMain ? <Check className="size-3.5" /> : <Home className="size-3.5" />}
+        {isMain ? "首頁封面" : "設為首頁封面"}
+      </button>
+    ) : null}
+    </article>
+  );
+}
 
-        <form onSubmit={submit} className="space-y-5 pt-1">
-          <div>
-            <p className="mb-2 text-sm font-medium">照片</p>
-            {draft.photo ? (
-              <div className="relative overflow-hidden rounded-2xl border border-border/60">
-                <StoredImage src={draft.photo} alt="回憶照片預覽" className="aspect-[4/3] w-full object-cover" />
-                <div className="absolute right-3 bottom-3 flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => fileRef.current?.click()}
-                    className="rounded-full bg-card/90 px-3 py-1.5 text-xs shadow-soft"
-                  >
-                    重新選擇
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setDraft((d) => ({ ...d, photo: "" }))}
-                    className="rounded-full bg-card/90 p-1.5 shadow-soft"
-                    aria-label="移除照片"
-                  >
-                    <X className="size-4" strokeWidth={1.8} />
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <button
-                type="button"
-                onClick={() => fileRef.current?.click()}
-                className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-surface/50 text-muted-foreground"
-              >
-                <ImagePlus className="size-6" strokeWidth={1.4} />
-                <span className="text-sm">放一張那天的照片（可略過）</span>
-              </button>
-            )}
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => {
-                pickPhoto(e.target.files?.[0]);
-                e.target.value = "";
-              }}
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="memory-title">
-              標題<span className="ml-1 text-primary">*</span>
-            </Label>
-            <Input
-              id="memory-title"
-              value={draft.title}
-              placeholder="例如：演唱會 Day 1"
-              onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))}
-              className="rounded-xl bg-surface/50"
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="memory-date">日期</Label>
-            <Input
-              id="memory-date"
-              type="date"
-              value={draft.date}
-              onChange={(e) => setDraft((d) => ({ ...d, date: e.target.value }))}
-              className="rounded-xl bg-surface/50"
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="memory-note">心得</Label>
-            <Textarea
-              id="memory-note"
-              rows={4}
-              value={draft.note}
-              placeholder="今天真的見到他了⋯"
-              onChange={(e) => setDraft((d) => ({ ...d, note: e.target.value }))}
-              className="rounded-xl bg-surface/50"
-            />
-          </div>
-
-          {error ? <p className="text-sm text-destructive">{error}</p> : null}
-
-          <div className="flex gap-3 pt-1">
-            <button
-              type="button"
-              onClick={() => onOpenChange(false)}
-              className="flex-1 rounded-full border border-border/70 py-3 text-sm transition-transform duration-300 active:scale-95"
-            >
-              取消
-            </button>
-            <button
-              type="submit"
-              className="flex-1 rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
-            >
-              {submitLabel}
-            </button>
-          </div>
-        </form>
-      </SheetContent>
-    </Sheet>
+export function EmptySlot({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex aspect-[4/5] w-full flex-col items-center justify-center gap-2 rounded-[1rem] border border-dashed border-primary/30 bg-surface/40 text-muted-foreground transition-transform duration-300 active:scale-[0.98]"
+    >
+      <span className="flex size-9 items-center justify-center rounded-full bg-accent/40 text-primary">
+        <Plus className="size-4" strokeWidth={1.8} />
+      </span>
+      <span className="text-[13px]">加入本命 ♡</span>
+    </button>
   );
 }

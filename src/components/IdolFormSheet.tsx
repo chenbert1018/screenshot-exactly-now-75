@@ -1,309 +1,122 @@
 import { StoredImage } from "@/components/StoredImage";
-import { useEffect, useRef, useState } from "react";
-import { ImagePlus, Sparkles, X } from "lucide-react";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { emptyDraft, REPRESENTATIVE_ANIMALS, type IdolDraft } from "@/lib/idols";
-import { saveCutoutImage } from "@/lib/cutout-image-store";
-import { resolveImageUrl } from "@/lib/storage";
+import { ExternalLink, Pencil, Trash2 } from "lucide-react";
 import {
-  createNativeSubjectCutout,
-  isNativeSubjectCutoutAvailable,
-} from "@/lib/subject-cutout-native";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
+import { heartTypeLabel, type HeartItem } from "@/lib/heart";
+import { parseLocalDate } from "@/lib/dates";
 
-const fields: { key: keyof IdolDraft; label: string; type?: string }[] = [
-  { key: "name", label: "偶像名稱" },
-  { key: "groupName", label: "團體名稱" },
-  { key: "birthday", label: "生日", type: "date" },
-  { key: "debutDate", label: "出道日期", type: "date" },
-  { key: "fanName", label: "粉絲名稱" },
-  { key: "sinceDate", label: "我喜歡他的日期", type: "date" },
-];
+const pad = (n: number) => String(n).padStart(2, "0");
 
-
-async function imageSourceToDataUrl(source: string): Promise<string> {
-  if (source.startsWith("data:image/")) {
-    return source;
-  }
-
-  const resolved = await resolveImageUrl(source);
-
-  if (!resolved) {
-    throw new Error("Unable to resolve image");
-  }
-
-  const response = await fetch(resolved);
-
-  if (!response.ok) {
-    throw new Error("Unable to download image");
-  }
-
-  const blob = await response.blob();
-
-  return await new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      const result = String(reader.result ?? "");
-
-      if (!result.startsWith("data:image/")) {
-        reject(new Error("Invalid image data"));
-        return;
-      }
-
-      resolve(result);
-    };
-
-    reader.onerror = () =>
-      reject(reader.error ?? new Error("Unable to read image"));
-
-    reader.readAsDataURL(blob);
-  });
+/** 2026.09.04 */
+export function dotDate(value: string) {
+  const p = parseLocalDate(value);
+  if (!p) return "";
+  return `${p.y}.${pad(p.m)}.${pad(p.d)}`;
 }
 
-export function IdolFormSheet({
-  open,
-  onOpenChange,
-  initial,
-  title,
-  submitLabel,
-  onSubmit,
-  footer,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  initial?: IdolDraft;
-  title: string;
-  submitLabel: string;
-  onSubmit: (draft: IdolDraft) => void;
-  footer?: React.ReactNode;
-}) {
-  const [draft, setDraft] = useState<IdolDraft>(initial ?? emptyDraft);
-  const [error, setError] = useState("");
-  const [cutoutBusy, setCutoutBusy] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (open) {
-      setDraft(initial ?? emptyDraft);
-      setError("");
-      setCutoutBusy(false);
-    }
-  }, [open, initial]);
-
-  function pickPhoto(file?: File | null) {
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () =>
-      setDraft((d) => ({
-        ...d,
-        photo: String(reader.result ?? ""),
-        cutoutPhoto: "",
-      }));
-    reader.readAsDataURL(file);
-  }
-
-  async function createCutout() {
-    if (!draft.photo || cutoutBusy) return;
-
-    if (!isNativeSubjectCutoutAvailable()) {
-      setError("人物去背目前需在 iPhone App 內使用");
-      return;
-    }
-
-    setCutoutBusy(true);
-    setError("");
-
-    try {
-      const nativeImageData =
-      await imageSourceToDataUrl(draft.photo);
-
-    const result =
-      await createNativeSubjectCutout(nativeImageData);
-
-      if (!result?.imageData) {
-        setError("找不到清楚的人物主體，請換一張照片再試");
-        return;
-      }
-
-      const cutoutRef = await saveCutoutImage(
-      result.imageData,
-      draft.cutoutPhoto,
-    );
-
-    setDraft((d) => ({
-      ...d,
-      cutoutPhoto: cutoutRef,
-    }));
-    } catch {
-      setError("人物去背失敗，請換一張人物較清楚的照片再試");
-    } finally {
-      setCutoutBusy(false);
-    }
-  }
-
-  function submit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!draft.name.trim()) {
-      setError("請先幫這位偶像留下名字");
-      return;
-    }
-    onSubmit({
-      ...draft,
-      name: draft.name.trim(),
-      representativeAnimal: draft.representativeAnimal ?? "DOG",
-    });
-  }
-
+export function SugarPlaceholder({ item, name }: { item: HeartItem; name: string }) {
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 bg-surface/60">
+      <span className="flex size-12 items-center justify-center rounded-full bg-accent/50 font-display text-lg text-primary">
+        {name.slice(0, 1) || "♡"}
+      </span>
+      <span className="text-xs tracking-[0.2em] text-muted-foreground">
+        {heartTypeLabel(item.type)}
+      </span>
+    </div>
+  );
+}
+
+export function HeartDetailSheet({
+  item,
+  idolName,
+  onOpenChange,
+  onEdit,
+  onDelete,
+}: {
+  item: HeartItem | null;
+  idolName: string;
+  onOpenChange: (open: boolean) => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  return (
+    <Sheet open={!!item} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
-        className="mx-auto max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-3xl border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
+        className="mx-auto max-h-[92vh] w-full max-w-md overflow-x-hidden overflow-y-auto rounded-t-3xl border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
       >
-        <SheetHeader className="px-0 text-left">
-          <SheetTitle className="text-xl">{title}</SheetTitle>
-          <SheetDescription>只留下你想記得的部分就好</SheetDescription>
-        </SheetHeader>
+        {item ? (
+          <>
+            <SheetHeader className="px-0 text-left">
+              <SheetTitle className="sr-only">{item.title}</SheetTitle>
+              <SheetDescription className="sr-only">這顆糖的細節</SheetDescription>
+            </SheetHeader>
 
-        <form onSubmit={submit} className="space-y-5 pt-2">
-          <div>
-            <p className="mb-2 text-sm font-medium">上傳偶像照片</p>
-            {draft.photo ? (
-              <>
-              <div className="relative overflow-hidden rounded-2xl border border-border/60">
+            <div className="overflow-hidden rounded-2xl border border-border/60">
+              {item.image ? (
                 <StoredImage
-                  src={draft.cutoutPhoto || draft.photo}
-                  alt="偶像照片預覽"
-                  className={
-                    draft.cutoutPhoto
-                      ? "aspect-[3/4] w-full bg-gradient-to-b from-[#f8dce8] via-[#fae7ee] to-[#f7dfe7] object-contain"
-                      : "aspect-[3/4] w-full object-cover"
-                  }
+                  src={item.image}
+                  alt={item.title}
+                  className="aspect-[4/3] w-full object-cover"
+                  style={{ objectPosition: `50% ${item.imagePosition ?? 50}%` }}
                 />
-                <div className="absolute right-3 bottom-3 flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => fileRef.current?.click()}
-                    className="rounded-full bg-card/90 px-3 py-1.5 text-xs shadow-soft"
-                  >
-                    重新選擇
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setDraft((d) => ({
-                        ...d,
-                        photo: "",
-                        cutoutPhoto: "",
-                      }))
-                    }
-                    className="rounded-full bg-card/90 p-1.5 shadow-soft"
-                    aria-label="移除照片"
-                  >
-                    <X className="size-4" strokeWidth={1.8} />
-                  </button>
-                </div>
+              ) : (
+                <SugarPlaceholder item={item} name={idolName} />
+              )}
+            </div>
 
-                {isNativeSubjectCutoutAvailable() ? (
-                  <button
-                    type="button"
-                    onClick={createCutout}
-                    disabled={cutoutBusy}
-                    className="absolute left-3 bottom-3 flex items-center gap-1.5 rounded-full bg-card/90 px-3 py-1.5 text-xs shadow-soft disabled:opacity-60"
-                  >
-                    <Sparkles className="size-3.5" strokeWidth={1.7} />
-                    {cutoutBusy
-                      ? "人物去背中…"
-                      : draft.cutoutPhoto
-                        ? "重新去背"
-                        : "人物去背"}
-                  </button>
-                ) : null}
-              </div>
+            <span className="mt-5 inline-flex rounded-full bg-surface px-3 py-1 text-[13px] text-muted-foreground">
+              {heartTypeLabel(item.type)}
+            </span>
+            <h2 className="mt-2 font-display text-[22px] leading-snug">{item.title}</h2>
+            <p className="mt-2 text-xs text-muted-foreground">
+              {dotDate(item.date)}・{idolName}
+            </p>
 
-              {draft.cutoutPhoto ? (
-                <p className="mt-2 text-xs text-muted-foreground">
-                  已完成本機人物去背，原始照片仍會保留。
-                </p>
-              ) : null}
-              </>
-            ) : (
+            {item.note ? (
+              <p className="mt-4 rounded-2xl bg-surface/60 px-4 py-4 text-sm leading-relaxed whitespace-pre-wrap">
+                {item.note}
+              </p>
+            ) : null}
+
+            {item.link ? (
+              <a
+                href={item.link}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-4 flex items-center gap-2 rounded-2xl border border-border/60 px-4 py-3 text-sm break-all text-primary"
+              >
+                <ExternalLink className="size-4 shrink-0" strokeWidth={1.6} />
+                {item.link}
+              </a>
+            ) : null}
+
+            <div className="mt-6 flex gap-3">
               <button
                 type="button"
-                onClick={() => fileRef.current?.click()}
-                className="flex aspect-[3/4] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-surface/50 text-muted-foreground"
+                onClick={onEdit}
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-border/70 py-3 text-sm transition-transform duration-300 active:scale-95"
               >
-                <ImagePlus className="size-6" strokeWidth={1.4} />
-                <span className="text-sm">放一張你最喜歡的照片</span>
+                <Pencil className="size-4" strokeWidth={1.6} />
+                編輯
               </button>
-            )}
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => {
-                pickPhoto(e.target.files?.[0]);
-                e.target.value = "";
-              }}
-            />
-          </div>
-
-          {fields.map((f) => (
-            <div key={f.key} className="space-y-1.5">
-              <Label htmlFor={f.key}>
-                {f.label}
-                {f.key === "name" ? <span className="ml-1 text-primary">*</span> : null}
-              </Label>
-              <Input
-                id={f.key}
-                type={f.type ?? "text"}
-                value={draft[f.key]}
-                onChange={(e) => setDraft((d) => ({ ...d, [f.key]: e.target.value }))}
-                className="rounded-xl bg-surface/50"
-              />
+              <button
+                type="button"
+                onClick={onDelete}
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-destructive/30 py-3 text-sm text-destructive transition-transform duration-300 active:scale-95"
+              >
+                <Trash2 className="size-4" strokeWidth={1.6} />
+                刪除
+              </button>
             </div>
-          ))}
-
-          <div className="space-y-2">
-            <Label>偶像代表動物</Label>
-            <p className="text-xs leading-5 text-muted-foreground">
-              用來決定首頁與追星天氣的專屬口吻。
-            </p>
-            <div className="grid grid-cols-3 gap-2">
-              {REPRESENTATIVE_ANIMALS.map((animal) => {
-                const active = (draft.representativeAnimal ?? "DOG") === animal.value;
-                return (
-                  <button
-                    key={animal.value}
-                    type="button"
-                    aria-pressed={active}
-                    onClick={() => setDraft((d) => ({ ...d, representativeAnimal: animal.value }))}
-                    className={`rounded-xl border px-2 py-2.5 text-xs transition-colors ${
-                      active
-                        ? "border-primary bg-primary/10 text-primary"
-                        : "border-border/70 bg-surface/50 text-muted-foreground"
-                    }`}
-                  >
-                    <span className="mr-1">{animal.emoji}</span>{animal.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {error ? <p className="text-sm text-destructive">{error}</p> : null}
-
-          <button
-            type="submit"
-            className="w-full rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
-          >
-            {submitLabel}
-          </button>
-          {footer}
-        </form>
+          </>
+        ) : null}
       </SheetContent>
     </Sheet>
   );
