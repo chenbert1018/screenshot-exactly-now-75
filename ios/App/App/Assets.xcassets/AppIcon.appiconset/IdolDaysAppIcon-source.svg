@@ -31,7 +31,6 @@
   <rect width="1024" height="1024" fill="url(#blue)"/>
   <circle cx="753" cy="200" r="94" fill="#fff" opacity=".14" filter="url(#glow)"/>
   <circle cx="266" cy="775" r="105" fill="#d8f1ff" opacity=".16" filter="url(#glow)"/>
-  <rect x="130" y="130" width="764" height="764" rx="180" fill="url(#glass)" stroke="#fff" stroke-opacity=".32" stroke-width="5"/>
   <path d="M315 527C388 405 620 354 754 418C853 466 828 576 738 632C614 710 387 686 285 606C245 574 266 549 315 527Z" fill="none" stroke="#fff" stroke-width="28" stroke-linecap="round" opacity=".94"/>
   <path d="M422 290L640 378V734L422 646Z" fill="url(#door)"/>
   <path d="M422 290V646" fill="none" stroke="#fff" stroke-width="17" stroke-linecap="round"/>
