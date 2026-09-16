@@ -8,7 +8,6 @@ import {
   Heart,
   Images,
   Sparkles,
-  Stars,
   Smartphone,
 } from "lucide-react";
 
@@ -43,7 +42,7 @@ function IdolDaysIntro() {
         <div className="mx-auto max-w-5xl">
           <nav className="flex items-center justify-between">
             <Link to="/intro" className="flex items-center gap-2 text-xl font-semibold tracking-tight text-[#3265ae]">
-              <span className="grid size-8 place-items-center rounded-xl bg-gradient-to-br from-[#a7c7ff] via-[#d8c9ff] to-[#5b7fc9] text-white shadow-[0_8px_22px_rgb(74_144_226_/_0.25)]"><Stars className="size-4" /></span>
+              <img src="/idoldays-icon.svg?v=20260916-564eaf3" alt="" className="size-8 rounded-xl shadow-[0_8px_22px_rgb(74_144_226_/_0.25)]" />
               IdolDays
             </Link>
             <Link to="/" className="rounded-full border border-[#cfe0f7] bg-white/80 px-4 py-2 text-sm font-medium text-[#315b8d] backdrop-blur transition hover:bg-white">開啟 App</Link>
