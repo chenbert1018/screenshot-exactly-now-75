@@ -22,6 +22,9 @@ struct IdolDaysEntry: TimelineEntry {
     let decorationEmoji: String
     let decorationLabel: String
     let enabledContents: [String]
+    // Widget Gallery 尚未有使用者資料時使用的通用預覽。
+    // 這個狀態絕不讀取 App Group 內的舊照片，避免顯示固定藝人。
+    let isPlaceholder: Bool
 
     func enabled(_ type: String) -> Bool {
         enabledContents.contains(type)
@@ -136,19 +139,20 @@ struct IdolDaysProvider: TimelineProvider {
             moodLabel: snapshot.moodLabel ?? "",
             decorationEmoji: snapshot.decorationEmoji ?? "",
             decorationLabel: snapshot.decorationLabel ?? "",
-            enabledContents: enabled
+            enabledContents: enabled,
+            isPlaceholder: false
         )
     }
 
     private var mockEntry: IdolDaysEntry {
         IdolDaysEntry(
             date: Date(),
-            idolName: "JENNIE",
-            eventTitle: "DEADLINE WORLD TOUR",
-            dDay: "D-12",
-            eventDate: "SEP 21 · 19:30",
-            location: "Taipei Arena",
-            quote: "今天也離見面的那一天更近了一點 ♡",
+            idolName: "你的偶像",
+            eventTitle: "下一個重要日子",
+            dDay: "♡",
+            eventDate: "",
+            location: "",
+            quote: "把喜歡的日子留在桌面上 ♡",
             moodEmoji: "♡",
             moodLabel: "今天值得開心",
             decorationEmoji: "✦",
@@ -159,7 +163,8 @@ struct IdolDaysProvider: TimelineProvider {
                 "DECORATION",
                 "MOOD",
                 "COUNTDOWN"
-            ]
+            ],
+            isPlaceholder: true
         )
     }
 }
@@ -793,7 +798,7 @@ struct IdolDaysWidgetEntryView: View {
         height: CGFloat,
         alignment: Alignment
     ) -> some View {
-        if let image = loadSharedIdolImage() {
+        if !entry.isPlaceholder, let image = loadSharedIdolImage() {
             ZStack {
                 // 用模糊背景填滿比例差，保留人物原始構圖，不裁切臉或身體。
                 Image(uiImage: image)
@@ -923,12 +928,12 @@ struct IdolDaysWidget: Widget {
 
 private let previewEntry = IdolDaysEntry(
     date: .now,
-    idolName: "JENNIE",
-    eventTitle: "DEADLINE WORLD TOUR",
-    dDay: "D-12",
-    eventDate: "SEP 21 · 19:30",
-    location: "Taipei Arena",
-    quote: "今天也離見面的那一天更近了一點 ♡",
+    idolName: "你的偶像",
+    eventTitle: "下一個重要日子",
+    dDay: "♡",
+    eventDate: "",
+    location: "",
+    quote: "把喜歡的日子留在桌面上 ♡",
     moodEmoji: "♡",
     moodLabel: "今天值得開心",
     decorationEmoji: "✦",
@@ -939,5 +944,6 @@ private let previewEntry = IdolDaysEntry(
         "DECORATION",
         "MOOD",
         "COUNTDOWN"
-    ]
+    ],
+    isPlaceholder: true
 )
