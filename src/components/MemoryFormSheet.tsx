@@ -96,7 +96,7 @@ export function MemoryFormSheet({
                     <X className="size-4" strokeWidth={1.8} />
                   </button>
                 </div>
-                <div className="absolute right-3 bottom-14 left-3">
+                <div className="relative mx-3 mt-3 mb-3">
                   <PhotoCropPositionControl
                     id="memory-photo-position"
                     value={draft.photoPosition}

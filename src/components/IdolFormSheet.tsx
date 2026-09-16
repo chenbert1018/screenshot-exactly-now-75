@@ -224,7 +224,7 @@ export function IdolFormSheet({
                   </button>
                 ) : null}
                 {!draft.cutoutPhoto ? (
-                  <div className="absolute right-3 bottom-14 left-3">
+                  <div className="relative mx-3 mt-3 mb-3">
                     <PhotoCropPositionControl
                       id="idol-photo-position"
                       value={draft.photoPosition}

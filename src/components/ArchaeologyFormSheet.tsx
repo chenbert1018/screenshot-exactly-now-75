@@ -11,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { PhotoCropPositionControl, PhotoCropPreview } from "@/components/PhotoCropControls";
 
 import {
   detectArchaeologySource,
@@ -188,6 +189,7 @@ export function ArchaeologyFormSheet({
 
             // 不覆蓋手動封面，也不覆蓋 YouTube 自動縮圖
             imageUrl: current.imageUrl?.trim() || previewImageUrl,
+            isManualCover: current.isManualCover,
           };
         });
 
@@ -310,6 +312,7 @@ export function ArchaeologyFormSheet({
                       youtubeThumbnail && !current.imageUrl?.trim()
                         ? youtubeThumbnail
                         : current.imageUrl,
+                    isManualCover: current.isManualCover,
                   }));
 
                   setError("");
@@ -382,7 +385,14 @@ export function ArchaeologyFormSheet({
                 event.target.value = "";
                 if (!file) return;
                 void imageFileToCover(file)
-                  .then((imageUrl) => setDraft((current) => ({ ...current, imageUrl })))
+                  .then((imageUrl) =>
+                    setDraft((current) => ({
+                      ...current,
+                      imageUrl,
+                      imagePosition: 50,
+                      isManualCover: true,
+                    })),
+                  )
                   .catch(() => setError("封面圖片讀取失敗，請換一張圖片再試"));
               }}
             />
@@ -395,15 +405,26 @@ export function ArchaeologyFormSheet({
               從相簿選擇影片截圖
             </button>
             {draft.imageUrl?.trim() ? (
-              <div className="overflow-hidden rounded-2xl border border-border/50 bg-surface/40">
-                <img
-                  src={draft.imageUrl.trim()}
-                  alt="封面預覽"
-                  className="aspect-[16/9] w-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                  }}
-                />
+              <div className="relative overflow-hidden rounded-2xl border border-border/50 bg-surface/40">
+                {draft.isManualCover ? (
+                  <>
+                    <PhotoCropPreview src={draft.imageUrl.trim()} alt="封面預覽" position={draft.imagePosition} aspectClass="aspect-[16/9]" />
+                    <div className="relative mx-3 mt-3 mb-3">
+                      <PhotoCropPositionControl
+                        id="archaeology-cover-position"
+                        value={draft.imagePosition}
+                        onChange={(imagePosition) => setDraft((current) => ({ ...current, imagePosition }))}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <img
+                    src={draft.imageUrl.trim()}
+                    alt="封面預覽"
+                    className="aspect-[16/9] w-full object-cover"
+                    onError={(e) => { e.currentTarget.style.display = "none"; }}
+                  />
+                )}
               </div>
             ) : null}
             <p className="text-xs text-muted-foreground">
