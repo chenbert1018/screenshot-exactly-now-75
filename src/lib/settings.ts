@@ -4,6 +4,7 @@ import { useAuth } from "./auth";
 import { getMigrationRecord } from "./idols.source";
 
 const STORAGE_KEY = "idoldays.settings.v1";
+const SKY_DEFAULT_MIGRATION_KEY = "idoldays.skyDefault.v1";
 
 export type ThemeMode = "system" | "light" | "dark" | "sky";
 export type DateFormatMode = "dot" | "slash" | "zh";
@@ -20,7 +21,7 @@ export const defaultSettings: AppSettings = {
   primaryIdolId: null,
   dateFormat: "dot",
   language: "zh-TW",
-  theme: "system",
+  theme: "sky",
 };
 
 export const DATE_FORMAT_OPTIONS: { value: DateFormatMode; label: string; sample: string }[] = [
@@ -50,6 +51,23 @@ function read(): AppSettings {
     return { ...defaultSettings, ...parsed };
   } catch {
     return defaultSettings;
+  }
+}
+
+/**
+ * Sky Blue is now IdolDays' default. Existing installations used `system` as
+ * the old default, so promote that legacy value once instead of leaving users
+ * unexpectedly on the former pink theme. They can still choose System again
+ * afterwards from 外觀主題.
+ */
+function migrateLegacySystemTheme(settings: AppSettings): AppSettings {
+  if (typeof window === "undefined" || settings.theme !== "system") return settings;
+  try {
+    if (window.localStorage.getItem(SKY_DEFAULT_MIGRATION_KEY)) return settings;
+    window.localStorage.setItem(SKY_DEFAULT_MIGRATION_KEY, "1");
+    return { ...settings, theme: "sky" };
+  } catch {
+    return settings;
   }
 }
 
@@ -108,7 +126,8 @@ export function useSettings() {
 
   useEffect(() => {
     let active = true;
-    const local = normalize(read());
+    const local = migrateLegacySystemTheme(normalize(read()));
+    write(local);
     setSettings(local);
     applyTheme(local.theme);
 
@@ -143,7 +162,7 @@ export function useSettings() {
             primaryIdolId: data?.main_idol_id ?? null,
             dateFormat: data?.date_format as DateFormatMode,
             language: data?.language as LanguageMode,
-            theme: data?.theme as ThemeMode,
+            theme: data?.theme === "system" ? "sky" : data?.theme as ThemeMode,
           })
         : { ...local, primaryIdolId: migratedPrimary };
 
@@ -155,6 +174,10 @@ export function useSettings() {
       // First signed-in use preserves the existing device preference in the profile.
       if (!hasCloudSettings) {
         void supabase.from("profiles").update(cloudPatch(next)).eq("user_id", user.id);
+      } else if (data?.theme === "system") {
+        // `system` was IdolDays' old default, not a separate visual identity.
+        // Promote it once so the blue default stays consistent across devices.
+        void supabase.from("profiles").update({ theme: "sky" }).eq("user_id", user.id);
       }
       setReady(true);
     })();
