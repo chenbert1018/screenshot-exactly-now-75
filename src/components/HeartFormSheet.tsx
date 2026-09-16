@@ -1,5 +1,4 @@
 import { StoredImage } from "@/components/StoredImage";
-import { PhotoCropPositionControl, PhotoCropPreview } from "@/components/PhotoCropControls";
 import { useEffect, useRef, useState } from "react";
 import { ImagePlus, X } from "lucide-react";
 import {
@@ -47,7 +46,7 @@ export function HeartFormSheet({
   useEffect(() => {
     if (!open) return;
     setDraft(
-      initial ? { ...emptyHeartDraft, ...initial } : {
+      initial ?? {
         ...emptyHeartDraft,
         date: todayValue(),
         idolId: defaultIdolId ?? idols[0]?.id ?? "",
@@ -60,8 +59,7 @@ export function HeartFormSheet({
   function pickPhoto(file?: File | null) {
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = () =>
-      setDraft((d) => ({ ...d, image: String(reader.result ?? ""), imagePosition: 50 }));
+    reader.onload = () => setDraft((d) => ({ ...d, image: String(reader.result ?? "") }));
     reader.readAsDataURL(file);
   }
 
@@ -114,7 +112,7 @@ export function HeartFormSheet({
             <p className="mb-2 text-sm font-medium">照片</p>
             {draft.image ? (
               <div className="relative overflow-hidden rounded-2xl border border-border/60">
-                <PhotoCropPreview src={draft.image} alt="嗑糖照片預覽" position={draft.imagePosition} aspectClass="aspect-[4/3]" />
+                <StoredImage src={draft.image} alt="嗑糖照片預覽" className="aspect-[4/3] w-full object-cover" />
                 <div className="absolute right-3 bottom-3 flex gap-2">
                   <button
                     type="button"
@@ -131,13 +129,6 @@ export function HeartFormSheet({
                   >
                     <X className="size-4" strokeWidth={1.8} />
                   </button>
-                </div>
-                <div className="relative mx-3 mt-3 mb-3">
-                  <PhotoCropPositionControl
-                    id="heart-image-position"
-                    value={draft.imagePosition}
-                    onChange={(imagePosition) => setDraft((d) => ({ ...d, imagePosition }))}
-                  />
                 </div>
               </div>
             ) : (

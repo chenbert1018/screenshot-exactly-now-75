@@ -1,9 +1,25 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { ChevronLeft, CloudRain, MapPin } from "lucide-react";
+import {
+  createFileRoute,
+  Link,
+} from "@tanstack/react-router";
+import {
+  useEffect,
+  useState,
+} from "react";
+import {
+  ChevronLeft,
+  CloudRain,
+  MapPin,
+} from "lucide-react";
 
-import { AppShell, SoftCard } from "@/components/AppShell";
-import { eventCountdown, eventTypeMeta } from "@/lib/events";
+import {
+  AppShell,
+  SoftCard,
+} from "@/components/AppShell";
+import {
+  eventCountdown,
+  eventTypeMeta,
+} from "@/lib/events";
 import { useEventSource } from "@/lib/events.source";
 import { useIdolSource } from "@/lib/idols.source";
 import {
@@ -26,7 +42,9 @@ type WeatherApiError = {
   error?: string;
 };
 
-type WeatherApiResponse = WeatherApiSuccess | WeatherApiError;
+type WeatherApiResponse =
+  | WeatherApiSuccess
+  | WeatherApiError;
 
 export const Route = createFileRoute("/weather/$eventId")({
   head: () => ({
@@ -48,13 +66,18 @@ function FanWeatherPage() {
   const { events, ready } = useEventSource();
   const { findIdol } = useIdolSource();
 
-  const event = events.find((item) => item.id === eventId);
+  const event = events.find(
+    (item) => item.id === eventId,
+  );
 
-  const [weatherInput, setWeatherInput] = useState<FanWeatherInput | null>(null);
+  const [weatherInput, setWeatherInput] =
+    useState<FanWeatherInput | null>(null);
 
-  const [weatherLoading, setWeatherLoading] = useState(false);
+  const [weatherLoading, setWeatherLoading] =
+    useState(false);
 
-  const [weatherError, setWeatherError] = useState<string | null>(null);
+  const [weatherError, setWeatherError] =
+    useState<string | null>(null);
 
   useEffect(() => {
     if (!ready || !event) {
@@ -67,9 +90,6 @@ function FanWeatherPage() {
       return;
     }
 
-    const eventCity = event.city;
-    const eventDate = event.date;
-
     let cancelled = false;
 
     async function loadWeather() {
@@ -79,27 +99,39 @@ function FanWeatherPage() {
 
       try {
         const params = new URLSearchParams({
-          city: eventCity,
-          date: eventDate.slice(0, 10),
+          city: event.city ?? "",
+          date: event.date.slice(0, 10),
         });
 
-        const response = await fetch(`/api/weather?${params.toString()}`, {
-          headers: {
-            "Cache-Control": "no-cache",
+        const response = await fetch(
+          `/api/weather?${params.toString()}`,
+          {
+            headers: {
+              "Cache-Control": "no-cache",
+            },
           },
-        });
+        );
 
-        const data = (await response.json()) as WeatherApiResponse;
+        const data =
+          (await response.json()) as WeatherApiResponse;
 
         if (cancelled) {
           return;
         }
 
         if (!response.ok || !data.ok) {
-          if ("error" in data && data.error === "forecast date is outside available range") {
-            setWeatherError("這個重要日子還超出目前可查詢的天氣預報範圍");
+          if (
+            "error" in data &&
+            data.error ===
+              "forecast date is outside available range"
+          ) {
+            setWeatherError(
+              "這個重要日子還超出目前可查詢的天氣預報範圍",
+            );
           } else {
-            setWeatherError("目前暫時無法取得這個地點的天氣");
+            setWeatherError(
+              "目前暫時無法取得這個地點的天氣",
+            );
           }
 
           return;
@@ -108,7 +140,9 @@ function FanWeatherPage() {
         setWeatherInput(data.weather);
       } catch {
         if (!cancelled) {
-          setWeatherError("目前暫時無法取得天氣，晚點再看看 ♡");
+          setWeatherError(
+            "目前暫時無法取得天氣，晚點再看看 ♡",
+          );
         }
       } finally {
         if (!cancelled) {
@@ -122,7 +156,12 @@ function FanWeatherPage() {
     return () => {
       cancelled = true;
     };
-  }, [ready, event]);
+  }, [
+    ready,
+    event?.id,
+    event?.city,
+    event?.date,
+  ]);
 
   if (!ready) {
     return (
@@ -136,7 +175,9 @@ function FanWeatherPage() {
     return (
       <AppShell>
         <div className="mt-16 text-center">
-          <p className="text-sm text-muted-foreground">找不到這個重要日子</p>
+          <p className="text-sm text-muted-foreground">
+            找不到這個重要日子
+          </p>
 
           <Link
             to="/events"
@@ -153,10 +194,15 @@ function FanWeatherPage() {
   const countdown = eventCountdown(event.date);
   const eventMeta = eventTypeMeta(event.type);
 
-  const weather = weatherInput ? classifyFanWeather(weatherInput) : null;
+  const weather = weatherInput
+    ? classifyFanWeather(weatherInput)
+    : null;
 
   const reminder = weatherInput
-    ? generateFanWeatherReminder(weatherInput, event.weatherTone ?? "SUNSHINE")
+    ? generateFanWeatherReminder(
+        weatherInput,
+        event.weatherTone ?? "SUNSHINE",
+      )
     : null;
 
   return (
@@ -166,7 +212,10 @@ function FanWeatherPage() {
           to="/events"
           className="mb-5 inline-flex items-center gap-1 text-sm text-muted-foreground"
         >
-          <ChevronLeft className="size-4" strokeWidth={1.8} />
+          <ChevronLeft
+            className="size-4"
+            strokeWidth={1.8}
+          />
           我的日子
         </Link>
 
@@ -174,9 +223,13 @@ function FanWeatherPage() {
           <div className="px-6 pb-6 pt-7">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-sm font-medium text-primary">☁️ 追星天氣</p>
+                <p className="text-sm font-medium text-primary">
+                  ☁️ 追星天氣
+                </p>
 
-                <p className="mt-1 text-xs text-muted-foreground">重要日子，也幫你看看天氣 ♡</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  重要日子，也幫你看看天氣 ♡
+                </p>
               </div>
 
               {countdown && (
@@ -197,16 +250,23 @@ function FanWeatherPage() {
 
               <p className="mt-2 text-sm text-muted-foreground">
                 {eventMeta.emoji} {eventMeta.label}
-                {countdown ? ` · ${countdown.dotDate}` : ""}
+                {countdown
+                  ? ` · ${countdown.dotDate}`
+                  : ""}
               </p>
 
               {event.locationName && (
                 <p className="mt-3 flex items-center gap-1.5 text-sm text-muted-foreground">
-                  <MapPin className="size-4" strokeWidth={1.7} />
+                  <MapPin
+                    className="size-4"
+                    strokeWidth={1.7}
+                  />
 
                   {event.locationName}
 
-                  {event.city ? ` · ${event.city}` : ""}
+                  {event.city
+                    ? ` · ${event.city}`
+                    : ""}
                 </p>
               )}
             </div>
@@ -215,19 +275,20 @@ function FanWeatherPage() {
 
         {weatherLoading && (
           <SoftCard className="mt-4 px-5 py-6">
-            <p className="text-sm font-medium">☁️ 正在看看活動那天的天氣…</p>
+            <p className="text-sm font-medium">
+              ☁️ 正在看看活動那天的天氣…
+            </p>
 
-            <p className="mt-1 text-xs text-muted-foreground">幫你確認出門前要準備什麼 ♡</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              幫你確認出門前要準備什麼 ♡
+            </p>
           </SoftCard>
         )}
 
         {!weatherLoading && weatherError && (
           <SoftCard className="mt-4 px-5 py-6">
             <p className="text-sm font-medium">
-              ☁️{" "}
-              {weatherError === "這個重要日子還超出目前可查詢的天氣預報範圍"
-                ? "天氣準備中"
-                : "天氣還看不到"}
+              ☁️ {weatherError === "這個重要日子還超出目前可查詢的天氣預報範圍" ? "天氣準備中" : "天氣還看不到"}
             </p>
 
             {weatherError === "這個重要日子還超出目前可查詢的天氣預報範圍" ? (
@@ -236,91 +297,118 @@ function FanWeatherPage() {
                   距離 {event.title} 還有一點時間，現在還沒有官方預報。
                   接近活動時再回來看看，我會幫你整理天氣與出門準備 ♡
                 </p>
-                <p className="mt-3 text-xs text-primary">預報通常會在活動前一週左右出現。</p>
+                <p className="mt-3 text-xs text-primary">
+                  預報通常會在活動前一週左右出現。
+                </p>
               </>
             ) : (
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">{weatherError}</p>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                {weatherError}
+              </p>
             )}
           </SoftCard>
         )}
 
-        {!weatherLoading && !weatherError && weather && weatherInput && (
-          <>
-            <SoftCard className="mt-4 px-5 py-5">
-              <div className="flex items-start justify-between gap-5">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <CloudRain className="size-5 text-primary" strokeWidth={1.7} />
+        {!weatherLoading &&
+          !weatherError &&
+          weather &&
+          weatherInput && (
+            <>
+              <SoftCard className="mt-4 px-5 py-5">
+                <div className="flex items-start justify-between gap-5">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <CloudRain
+                        className="size-5 text-primary"
+                        strokeWidth={1.7}
+                      />
 
-                    <p className="font-medium">
-                      {weather.emoji} {weather.label}
+                      <p className="font-medium">
+                        {weather.emoji}{" "}
+                        {weather.label}
+                      </p>
+                    </div>
+
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      活動當天的天氣
                     </p>
                   </div>
 
-                  <p className="mt-2 text-sm text-muted-foreground">活動當天的天氣</p>
+                  <div className="text-right">
+                    <p className="font-display text-2xl font-semibold">
+                      {weatherInput.minTemp}–
+                      {weatherInput.maxTemp}°C
+                    </p>
+
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      降雨{" "}
+                      {weatherInput.rainProbability}%
+                    </p>
+                  </div>
                 </div>
+              </SoftCard>
 
-                <div className="text-right">
-                  <p className="font-display text-2xl font-semibold">
-                    {weatherInput.minTemp}–{weatherInput.maxTemp}°C
-                  </p>
+              {reminder && (
+                <>
+                  <section className="mt-6">
+                    <div className="mb-3 px-1">
+                      <p className="text-xs tracking-wide text-muted-foreground">
+                        IdolDays 提醒
+                      </p>
+                    </div>
 
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    降雨 {weatherInput.rainProbability}%
-                  </p>
-                </div>
-              </div>
-            </SoftCard>
+                    <div className="space-y-2.5">
+                      {reminder.lines.map(
+                        (line, index) => (
+                          <div
+                            key={`${line}-${index}`}
+                            className="max-w-[88%] rounded-[22px] rounded-bl-md bg-surface px-4 py-3 text-[15px] leading-6"
+                          >
+                            {line}
+                          </div>
+                        ),
+                      )}
+                    </div>
+                  </section>
 
-            {reminder && (
-              <>
-                <section className="mt-6">
-                  <div className="mb-3 px-1">
-                    <p className="text-xs tracking-wide text-muted-foreground">IdolDays 提醒</p>
-                  </div>
+                  <SoftCard className="mt-7 px-5 py-5">
+                    <div>
+                      <p className="font-medium">
+                        🎒 出門別忘了
+                      </p>
 
-                  <div className="space-y-2.5">
-                    {reminder.lines.map((line, index) => (
-                      <div
-                        key={`${line}-${index}`}
-                        className="max-w-[88%] rounded-[22px] rounded-bl-md bg-surface px-4 py-3 text-[15px] leading-6"
-                      >
-                        {line}
-                      </div>
-                    ))}
-                  </div>
-                </section>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        出門前再確認一次 ♡
+                      </p>
+                    </div>
 
-                <SoftCard className="mt-7 px-5 py-5">
-                  <div>
-                    <p className="font-medium">🎒 出門別忘了</p>
+                    <div className="mt-4 space-y-3">
+                      {reminder.checklist.map(
+                        (item) => (
+                          <div
+                            key={item}
+                            className="flex items-center gap-3 border-b border-border/40 pb-3 last:border-b-0 last:pb-0"
+                          >
+                            <span className="flex size-5 shrink-0 rounded-md border border-border" />
 
-                    <p className="mt-1 text-xs text-muted-foreground">出門前再確認一次 ♡</p>
-                  </div>
+                            <span className="text-sm">
+                              {item}
+                            </span>
+                          </div>
+                        ),
+                      )}
+                    </div>
+                  </SoftCard>
+                </>
+              )}
 
-                  <div className="mt-4 space-y-3">
-                    {reminder.checklist.map((item) => (
-                      <div
-                        key={item}
-                        className="flex items-center gap-3 border-b border-border/40 pb-3 last:border-b-0 last:pb-0"
-                      >
-                        <span className="flex size-5 shrink-0 rounded-md border border-border" />
-
-                        <span className="text-sm">{item}</span>
-                      </div>
-                    ))}
-                  </div>
-                </SoftCard>
-              </>
-            )}
-
-            <p className="mt-5 text-center text-[11px] leading-5 text-muted-foreground">
-              天氣資料來自中央氣象署
-              <br />
-              實際天氣仍可能隨時間變化
-            </p>
-          </>
-        )}
+              <p className="mt-5 text-center text-[11px] leading-5 text-muted-foreground">
+                天氣資料來自中央氣象署
+                <br />
+                實際天氣仍可能隨時間變化
+              </p>
+            </>
+          )}
       </div>
     </AppShell>
   );

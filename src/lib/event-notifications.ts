@@ -8,7 +8,6 @@ import {
   eventTypeMeta,
   type IdolEvent,
 } from "./events";
-import type { ReminderType } from "./reminders";
 
 /**
  * IdolDays D-Day Local Notifications
@@ -253,35 +252,6 @@ export async function scheduleEventNotifications(
 
     return 0;
   }
-}
-
-/** 每年生日／出道紀念日通知（當地上午 09:00）。 */
-export async function scheduleIdolAnniversaryNotification(input: {
-  idolId: string;
-  idolName: string;
-  type: Extract<ReminderType, "BIRTHDAY" | "ANNIVERSARY">;
-  date: string;
-  daysBefore: number | null;
-}): Promise<number> {
-  if (!isIOSNative()) return 0;
-  const ids = REMINDER_DAYS.map((days) => ({ id: notificationId(`${input.type}:${input.idolId}`, days) }));
-  await LocalNotifications.cancel({ notifications: ids }).catch(() => undefined);
-  if (input.daysBefore === null || !/^\d{4}-\d{2}-\d{2}$/.test(input.date)) return 0;
-  if (!(await ensureNotificationPermission())) return 0;
-  const [, monthText, dayText] = input.date.split("-");
-  const month = Number(monthText);
-  const day = Number(dayText);
-  const at = new Date(new Date().getFullYear(), month - 1, day, NOTIFICATION_HOUR, 0, 0, 0);
-  at.setDate(at.getDate() - input.daysBefore);
-  const label = input.type === "BIRTHDAY" ? "生日" : "出道紀念日";
-  await LocalNotifications.schedule({ notifications: [{
-    id: notificationId(`${input.type}:${input.idolId}`, input.daysBefore),
-    title: input.daysBefore === 0 ? `🎉 今天是 ${input.idolName} 的${label}` : `✨ ${input.idolName} 的${label}快到了`,
-    body: input.daysBefore === 0 ? "今天也一起好好紀念吧 ♡" : `再 ${input.daysBefore} 天就是重要日子了 ♡`,
-    schedule: { at, repeats: true, allowWhileIdle: true },
-    extra: { idolId: input.idolId, reminderType: input.type, reminderDays: input.daysBefore },
-  }] });
-  return 1;
 }
 /* ----------------------- Fan Weather notifications ----------------------- */
 

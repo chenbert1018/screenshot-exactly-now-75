@@ -1,5 +1,4 @@
 import { StoredImage } from "@/components/StoredImage";
-import { PhotoCropPositionControl, PhotoCropPreview } from "@/components/PhotoCropControls";
 import { useEffect, useRef, useState } from "react";
 import { ImagePlus, X } from "lucide-react";
 import {
@@ -50,8 +49,7 @@ export function MemoryFormSheet({
   function pickPhoto(file?: File | null) {
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = () =>
-      setDraft((d) => ({ ...d, photo: String(reader.result ?? ""), photoPosition: 50 }));
+    reader.onload = () => setDraft((d) => ({ ...d, photo: String(reader.result ?? "") }));
     reader.readAsDataURL(file);
   }
 
@@ -78,7 +76,7 @@ export function MemoryFormSheet({
             <p className="mb-2 text-sm font-medium">照片</p>
             {draft.photo ? (
               <div className="relative overflow-hidden rounded-2xl border border-border/60">
-                <PhotoCropPreview src={draft.photo} alt="回憶照片預覽" position={draft.photoPosition} aspectClass="aspect-[4/3]" />
+                <StoredImage src={draft.photo} alt="回憶照片預覽" className="aspect-[4/3] w-full object-cover" />
                 <div className="absolute right-3 bottom-3 flex gap-2">
                   <button
                     type="button"
@@ -95,13 +93,6 @@ export function MemoryFormSheet({
                   >
                     <X className="size-4" strokeWidth={1.8} />
                   </button>
-                </div>
-                <div className="relative mx-3 mt-3 mb-3">
-                  <PhotoCropPositionControl
-                    id="memory-photo-position"
-                    value={draft.photoPosition}
-                    onChange={(photoPosition) => setDraft((d) => ({ ...d, photoPosition }))}
-                  />
                 </div>
               </div>
             ) : (

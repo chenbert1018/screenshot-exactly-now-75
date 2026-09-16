@@ -12,8 +12,6 @@ export type Memory = {
   date: string;
   note: string;
   photo?: string | undefined;
-  /** 0 = 照片上方，100 = 照片下方；供 4:3 回憶卡片裁切構圖使用 */
-  photoPosition: number;
   createdAt: string;
 };
 
@@ -22,16 +20,9 @@ export type MemoryDraft = {
   date: string;
   note: string;
   photo: string;
-  photoPosition: number;
 };
 
-export const emptyMemoryDraft: MemoryDraft = {
-  title: "",
-  date: "",
-  note: "",
-  photo: "",
-  photoPosition: 50,
-};
+export const emptyMemoryDraft: MemoryDraft = { title: "", date: "", note: "", photo: "" };
 
 /** 舊資料容錯：缺欄位時補上安全預設值，不刪除任何既有資料 */
 function normalize(raw: unknown): Memory | null {
@@ -46,10 +37,6 @@ function normalize(raw: unknown): Memory | null {
     date: typeof m.date === "string" ? m.date : "",
     note: typeof m.note === "string" ? m.note : "",
     photo: typeof m.photo === "string" ? m.photo : undefined,
-    photoPosition:
-      typeof m.photoPosition === "number" && Number.isFinite(m.photoPosition)
-        ? Math.max(0, Math.min(100, m.photoPosition))
-        : 50,
     createdAt: typeof m.createdAt === "string" ? m.createdAt : new Date(0).toISOString(),
   };
 }
@@ -134,7 +121,6 @@ export function useMemories(folderId?: string) {
       date: draft.date,
       note: draft.note,
       photo: draft.photo || undefined,
-      photoPosition: draft.photoPosition,
       createdAt: new Date().toISOString(),
     };
     emit([...read(), memory]);
@@ -144,14 +130,7 @@ export function useMemories(folderId?: string) {
     emit(
       read().map((m) =>
         m.id === id
-          ? {
-              ...m,
-              title: draft.title,
-              date: draft.date,
-              note: draft.note,
-              photo: draft.photo || undefined,
-              photoPosition: draft.photoPosition,
-            }
+          ? { ...m, title: draft.title, date: draft.date, note: draft.note, photo: draft.photo || undefined }
           : m,
       ),
     );

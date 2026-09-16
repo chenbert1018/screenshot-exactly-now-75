@@ -17,7 +17,6 @@ type Row = {
   favorite_color: string;
   since_date: string | null;
   photo: string;
-  photo_position: number | null;
   representative_animal: RepresentativeAnimal;
 };
 
@@ -32,7 +31,6 @@ function toIdol(row: Row): Idol {
     favoriteColor: row.favorite_color,
     sinceDate: row.since_date ?? "",
     photo: row.photo,
-    photoPosition: row.photo_position ?? 50,
     representativeAnimal: row.representative_animal,
   };
 }
@@ -47,13 +45,12 @@ function toRow(draft: IdolDraft) {
     favorite_color: draft.favoriteColor,
     since_date: draft.sinceDate || null,
     photo: draft.photo,
-    photo_position: draft.photoPosition,
     representative_animal: draft.representativeAnimal ?? "DOG",
   };
 }
 
 const COLUMNS =
-  "id, name, group_name, birthday, debut_date, fan_name, favorite_color, since_date, photo, photo_position, representative_animal, created_at";
+  "id, name, group_name, birthday, debut_date, fan_name, favorite_color, since_date, photo, representative_animal, created_at";
 
 export async function listCloudIdols(): Promise<Idol[]> {
   const { data, error } = await supabase

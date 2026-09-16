@@ -22,9 +22,6 @@ struct IdolDaysEntry: TimelineEntry {
     let decorationEmoji: String
     let decorationLabel: String
     let enabledContents: [String]
-    // Widget Gallery 尚未有使用者資料時使用的通用預覽。
-    // 這個狀態絕不讀取 App Group 內的舊照片，避免顯示固定藝人。
-    let isPlaceholder: Bool
 
     func enabled(_ type: String) -> Bool {
         enabledContents.contains(type)
@@ -61,15 +58,11 @@ struct IdolDaysProvider: TimelineProvider {
         in context: Context,
         completion: @escaping (IdolDaysEntry) -> Void
     ) {
-        // 「加入小工具」的 Gallery 是產品介紹，不是使用者的小工具實體。
-        // 始終使用無真人照片、無固定偶像的通用範例；避免 iOS 快取舊資料，
-        // 也不在未加入前洩漏或誤用 App Group 的個人內容。
         if context.isPreview {
             completion(mockEntry)
-            return
+        } else {
+            completion(loadSharedEntry() ?? mockEntry)
         }
-
-        completion(loadSharedEntry() ?? mockEntry)
     }
 
     func getTimeline(
@@ -145,20 +138,19 @@ struct IdolDaysProvider: TimelineProvider {
             moodLabel: snapshot.moodLabel ?? "",
             decorationEmoji: snapshot.decorationEmoji ?? "",
             decorationLabel: snapshot.decorationLabel ?? "",
-            enabledContents: enabled,
-            isPlaceholder: false
+            enabledContents: enabled
         )
     }
 
     private var mockEntry: IdolDaysEntry {
         IdolDaysEntry(
             date: Date(),
-            idolName: "你的偶像",
-            eventTitle: "下一個重要日子",
-            dDay: "♡",
-            eventDate: "",
-            location: "",
-            quote: "把喜歡的日子留在桌面上 ♡",
+            idolName: "JENNIE",
+            eventTitle: "DEADLINE WORLD TOUR",
+            dDay: "D-12",
+            eventDate: "SEP 21 · 19:30",
+            location: "Taipei Arena",
+            quote: "今天也離見面的那一天更近了一點 ♡",
             moodEmoji: "♡",
             moodLabel: "今天值得開心",
             decorationEmoji: "✦",
@@ -169,8 +161,7 @@ struct IdolDaysProvider: TimelineProvider {
                 "DECORATION",
                 "MOOD",
                 "COUNTDOWN"
-            ],
-            isPlaceholder: true
+            ]
         )
     }
 }
@@ -804,24 +795,16 @@ struct IdolDaysWidgetEntryView: View {
         height: CGFloat,
         alignment: Alignment
     ) -> some View {
-        if !entry.isPlaceholder, let image = loadSharedIdolImage() {
-            ZStack {
-                // 用模糊背景填滿比例差，保留人物原始構圖，不裁切臉或身體。
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: width, height: height)
-                    .blur(radius: 18)
-                    .opacity(0.45)
-                    .clipped()
-
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: width, height: height)
-            }
-            .frame(width: width, height: height, alignment: alignment)
-            .clipped()
+        if let image = loadSharedIdolImage() {
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFill()
+                .frame(
+                    width: width,
+                    height: height,
+                    alignment: alignment
+                )
+                .clipped()
         } else {
             ZStack {
                 LinearGradient(
@@ -934,12 +917,12 @@ struct IdolDaysWidget: Widget {
 
 private let previewEntry = IdolDaysEntry(
     date: .now,
-    idolName: "你的偶像",
-    eventTitle: "下一個重要日子",
-    dDay: "♡",
-    eventDate: "",
-    location: "",
-    quote: "把喜歡的日子留在桌面上 ♡",
+    idolName: "JENNIE",
+    eventTitle: "DEADLINE WORLD TOUR",
+    dDay: "D-12",
+    eventDate: "SEP 21 · 19:30",
+    location: "Taipei Arena",
+    quote: "今天也離見面的那一天更近了一點 ♡",
     moodEmoji: "♡",
     moodLabel: "今天值得開心",
     decorationEmoji: "✦",
@@ -950,6 +933,5 @@ private let previewEntry = IdolDaysEntry(
         "DECORATION",
         "MOOD",
         "COUNTDOWN"
-    ],
-    isPlaceholder: true
+    ]
 )

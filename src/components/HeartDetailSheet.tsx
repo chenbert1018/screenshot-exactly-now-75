@@ -64,7 +64,6 @@ export function HeartDetailSheet({
                   src={item.image}
                   alt={item.title}
                   className="aspect-[4/3] w-full object-cover"
-                  style={{ objectPosition: `50% ${item.imagePosition ?? 50}%` }}
                 />
               ) : (
                 <SugarPlaceholder item={item} name={idolName} />

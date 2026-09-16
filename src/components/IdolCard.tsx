@@ -30,7 +30,6 @@ export function IdolCard({
             alt={`${idol.name} 的照片`}
             loading="lazy"
             className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-            style={{ objectPosition: `50% ${idol.photoPosition ?? 50}%` }}
           />
         ) : (
           <div className="flex size-full flex-col items-center justify-center gap-2 text-muted-foreground">

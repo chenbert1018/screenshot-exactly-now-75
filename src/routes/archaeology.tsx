@@ -150,8 +150,6 @@ function ArchaeologyPage() {
         url: editing.url,
         title: editing.title,
         imageUrl: editing.imageUrl ?? "",
-        imagePosition: editing.imagePosition,
-        isManualCover: editing.isManualCover,
         idolId: editing.idolId,
         collection: editing.collection,
         tags: [...editing.tags],
@@ -504,15 +502,11 @@ function ArchaeologyCover({
   title,
   source,
   url,
-  imagePosition,
-  isManualCover,
 }: {
   imageUrl: string;
   title: string;
   source: ArchaeologySource;
   url: string;
-  imagePosition: number;
-  isManualCover: boolean;
 }) {
   const [failed, setFailed] = useState(false);
   const showPlay = isVideoPreviewSource(source);
@@ -534,7 +528,6 @@ function ArchaeologyCover({
         src={imageUrl}
         alt={title}
         className="aspect-[16/9] w-full object-cover"
-        style={isManualCover ? { objectPosition: `50% ${imagePosition}%` } : undefined}
         onError={() => setFailed(true)}
       />
 
@@ -570,8 +563,6 @@ function ArchaeologyCard({
           title={item.title}
           source={item.source}
           url={item.url}
-          imagePosition={item.imagePosition}
-          isManualCover={item.isManualCover}
         />
       ) : isVideoPreviewSource(item.source) ? (
         <VideoFallback

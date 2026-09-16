@@ -19,16 +19,24 @@ export interface WidgetNativePayload {
   decorationEmoji: string;
   decorationLabel: string;
   enabledContents: string[];
-  imageData?: string | undefined;
+  imageData?: string;
 }
 
-const WidgetBridge = registerPlugin<IdolDaysWidgetBridgePlugin>("IdolDaysWidgetBridge");
+const WidgetBridge =
+  registerPlugin<IdolDaysWidgetBridgePlugin>(
+    "IdolDaysWidgetBridge",
+  );
 
 export function isNativeWidgetAvailable(): boolean {
-  return Capacitor.isNativePlatform() && Capacitor.getPlatform() === "ios";
+  return (
+    Capacitor.isNativePlatform() &&
+    Capacitor.getPlatform() === "ios"
+  );
 }
 
-export async function updateNativeWidget(payload: WidgetNativePayload): Promise<boolean> {
+export async function updateNativeWidget(
+  payload: WidgetNativePayload,
+): Promise<boolean> {
   if (!isNativeWidgetAvailable()) {
     return false;
   }
@@ -37,7 +45,10 @@ export async function updateNativeWidget(payload: WidgetNativePayload): Promise<
     const result = await WidgetBridge.updateWidget(payload);
     return result.success === true;
   } catch (error) {
-    console.error("[IdolDays Widget] Native sync failed:", error);
+    console.error(
+      "[IdolDays Widget] Native sync failed:",
+      error,
+    );
     return false;
   }
 }

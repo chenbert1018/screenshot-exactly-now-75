@@ -8,7 +8,6 @@ export type MemoryFolder = {
   title: string;
   description?: string | undefined;
   coverPhoto?: string | undefined;
-  coverPhotoPosition: number;
   startDate?: string | undefined;
   endDate?: string | undefined;
   createdAt: string;
@@ -19,7 +18,6 @@ export type MemoryFolderDraft = {
   title: string;
   description: string;
   coverPhoto: string;
-  coverPhotoPosition: number;
   startDate: string;
   endDate: string;
 };
@@ -29,7 +27,6 @@ export const emptyFolderDraft: MemoryFolderDraft = {
   title: "",
   description: "",
   coverPhoto: "",
-  coverPhotoPosition: 50,
   startDate: "",
   endDate: "",
 };

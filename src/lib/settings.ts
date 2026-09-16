@@ -1,7 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "./auth";
-import { getMigrationRecord } from "./idols.source";
 
 const STORAGE_KEY = "idoldays.settings.v1";
 
@@ -60,30 +57,6 @@ function write(value: AppSettings) {
   }
 }
 
-function normalize(value: Partial<AppSettings>): AppSettings {
-  return {
-    primaryIdolId: value.primaryIdolId ?? null,
-    dateFormat: DATE_FORMAT_OPTIONS.some((option) => option.value === value.dateFormat)
-      ? value.dateFormat as DateFormatMode
-      : defaultSettings.dateFormat,
-    language: LANGUAGE_OPTIONS.some((option) => option.value === value.language)
-      ? value.language as LanguageMode
-      : defaultSettings.language,
-    theme: THEME_OPTIONS.some((option) => option.value === value.theme)
-      ? value.theme as ThemeMode
-      : defaultSettings.theme,
-  };
-}
-
-function cloudPatch(settings: AppSettings) {
-  return {
-    main_idol_id: settings.primaryIdolId,
-    date_format: settings.dateFormat,
-    language: settings.language,
-    theme: settings.theme,
-  };
-}
-
 const listeners = new Set<(s: AppSettings) => void>();
 
 export function applyTheme(theme: ThemeMode) {
@@ -96,80 +69,27 @@ export function applyTheme(theme: ThemeMode) {
 }
 
 export function useSettings() {
-  const { user, loading: authLoading } = useAuth();
   const [settings, setSettings] = useState<AppSettings>(defaultSettings);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    let active = true;
-    const local = normalize(read());
-    setSettings(local);
-    applyTheme(local.theme);
-
-    if (!user?.id) {
-      setReady(!authLoading);
-      return () => { active = false; };
-    }
-
-    void (async () => {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("main_idol_id, date_format, language, theme")
-        .eq("user_id", user.id)
-        .maybeSingle();
-      if (!active) return;
-
-      if (error) {
-        setReady(true);
-        return;
-      }
-
-      const localMap = getMigrationRecord(user.id).map;
-      const migratedPrimary = local.primaryIdolId
-        ? (localMap[local.primaryIdolId] ?? local.primaryIdolId)
-        : null;
-      const hasCloudSettings = Boolean(data?.main_idol_id) ||
-        data?.date_format !== defaultSettings.dateFormat ||
-        data?.language !== defaultSettings.language ||
-        data?.theme !== defaultSettings.theme;
-      const next = hasCloudSettings
-        ? normalize({
-            primaryIdolId: data?.main_idol_id ?? null,
-            dateFormat: data?.date_format as DateFormatMode,
-            language: data?.language as LanguageMode,
-            theme: data?.theme as ThemeMode,
-          })
-        : { ...local, primaryIdolId: migratedPrimary };
-
-      write(next);
-      applyTheme(next.theme);
-      setSettings(next);
-      listeners.forEach((fn) => fn(next));
-
-      // First signed-in use preserves the existing device preference in the profile.
-      if (!hasCloudSettings) {
-        void supabase.from("profiles").update(cloudPatch(next)).eq("user_id", user.id);
-      }
-      setReady(true);
-    })();
-
+    const initial = read();
+    setSettings(initial);
+    applyTheme(initial.theme);
+    setReady(true);
     const fn = (s: AppSettings) => setSettings(s);
     listeners.add(fn);
     return () => {
-      active = false;
       listeners.delete(fn);
     };
-  }, [user?.id, authLoading]);
+  }, []);
 
   const update = useCallback((patch: Partial<AppSettings>) => {
-    const next = normalize({ ...read(), ...patch });
+    const next = { ...read(), ...patch };
     write(next);
     if (patch.theme) applyTheme(next.theme);
     listeners.forEach((fn) => fn(next));
-    if (user?.id) {
-      void supabase.from("profiles").update(cloudPatch(next)).eq("user_id", user.id);
-    }
-  }, [user?.id]);
+  }, []);
 
   return { settings, ready, update };
 }

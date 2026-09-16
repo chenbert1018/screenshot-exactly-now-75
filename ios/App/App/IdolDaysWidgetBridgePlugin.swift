@@ -78,10 +78,6 @@ public class IdolDaysWidgetBridgePlugin: CAPPlugin, CAPBridgedPlugin {
                     imageDataString,
                     containerURL: containerURL
                 )
-            } else {
-                // 偶像移除照片或切換到沒有照片的偶像時，不能沿用舊 Widget 封面。
-                let imageURL = containerURL.appendingPathComponent("idol-photo.jpg")
-                try? FileManager.default.removeItem(at: imageURL)
             }
 
             WidgetCenter.shared.reloadTimelines(

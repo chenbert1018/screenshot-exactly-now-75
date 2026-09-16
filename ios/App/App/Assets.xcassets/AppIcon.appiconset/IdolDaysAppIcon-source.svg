@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="110" y1="70" x2="900" y2="1000" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#d8cbff"/>
+      <stop offset="0.38" stop-color="#9e8ce7"/>
+      <stop offset="0.7" stop-color="#7468bd"/>
+      <stop offset="1" stop-color="#383764"/>
+    </linearGradient>
+    <radialGradient id="pink" cx="0" cy="0" r="1" gradientTransform="translate(742 226) rotate(128) scale(590)">
+      <stop stop-color="#ffd2e8" stop-opacity=".92"/>
+      <stop offset="1" stop-color="#f2b7df" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="blue" cx="0" cy="0" r="1" gradientTransform="translate(216 824) rotate(-35) scale(660)">
+      <stop stop-color="#bce7ff" stop-opacity=".6"/>
+      <stop offset="1" stop-color="#a7d8ff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="glass" x1="275" y1="220" x2="738" y2="812" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff" stop-opacity=".25"/>
+      <stop offset=".45" stop-color="#fff" stop-opacity=".06"/>
+      <stop offset="1" stop-color="#d3c4ff" stop-opacity=".17"/>
+    </linearGradient>
+    <linearGradient id="door" x1="390" y1="266" x2="646" y2="744" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff"/>
+      <stop offset=".57" stop-color="#fdf9ff"/>
+      <stop offset="1" stop-color="#eee8ff"/>
+    </linearGradient>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="18"/></filter>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+  <rect width="1024" height="1024" fill="url(#pink)"/>
+  <rect width="1024" height="1024" fill="url(#blue)"/>
+  <circle cx="753" cy="200" r="94" fill="#fff" opacity=".14" filter="url(#glow)"/>
+  <circle cx="266" cy="775" r="105" fill="#d8f1ff" opacity=".16" filter="url(#glow)"/>
+  <rect x="130" y="130" width="764" height="764" rx="180" fill="url(#glass)" stroke="#fff" stroke-opacity=".32" stroke-width="5"/>
+  <path d="M315 527C388 405 620 354 754 418C853 466 828 576 738 632C614 710 387 686 285 606C245 574 266 549 315 527Z" fill="none" stroke="#fff" stroke-width="28" stroke-linecap="round" opacity=".94"/>
+  <path d="M422 290L640 378V734L422 646Z" fill="url(#door)"/>
+  <path d="M422 290V646" fill="none" stroke="#fff" stroke-width="17" stroke-linecap="round"/>
+  <path d="M640 378V734" fill="none" stroke="#e8e1ff" stroke-width="12" stroke-linecap="round"/>
+  <path d="M531 409C546 472 558 485 621 500C558 515 546 528 531 591C516 528 504 515 441 500C504 485 516 472 531 409Z" fill="#9c8be9"/>
+  <path d="M531 425C542 474 557 489 605 500C557 511 542 526 531 575C520 526 505 511 457 500C505 489 520 474 531 425Z" fill="#fff"/>
+  <path d="M716 206C728 255 742 269 791 281C742 293 728 307 716 356C704 307 690 293 641 281C690 269 704 255 716 206Z" fill="#fff"/>
+  <path d="M337 293C344 322 353 331 382 338C353 345 344 354 337 383C330 354 321 345 292 338C321 331 330 322 337 293Z" fill="#fff" opacity=".9"/>
+</svg>

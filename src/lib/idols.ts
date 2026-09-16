@@ -30,10 +30,9 @@ export type Idol = {
   favoriteColor: string;
   sinceDate: string;
   photo: string;
-  photoPosition: number;
   cutoutPhoto?: string;
   /** 偶像代表動物；舊資料未選擇時保持 undefined。 */
-  representativeAnimal?: RepresentativeAnimal | undefined;
+  representativeAnimal?: RepresentativeAnimal;
 };
 
 export type IdolDraft = Omit<Idol, "id">;
@@ -47,7 +46,6 @@ export const emptyDraft: IdolDraft = {
   favoriteColor: "",
   sinceDate: "",
   photo: "",
-  photoPosition: 50,
 };
 
 function read(): Idol[] {

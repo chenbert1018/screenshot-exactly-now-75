@@ -11,8 +11,6 @@ type Row = {
   url: string;
   title: string;
   image_url: string;
-  image_position: number | null;
-  is_manual_cover: boolean | null;
   source: string;
   collection: string;
   tags: string[];
@@ -22,7 +20,7 @@ type Row = {
 };
 
 const COLUMNS =
-  "id, idol_id, url, title, image_url, image_position, is_manual_cover, source, collection, tags, note, favorite, created_at";
+  "id, idol_id, url, title, image_url, source, collection, tags, note, favorite, created_at";
 
 function table() {
   return (supabase as any).from("archaeology_items");
@@ -35,8 +33,6 @@ function toItem(row: Row): ArchaeologyItem {
     url: row.url,
     title: row.title,
     imageUrl: row.image_url || undefined,
-    imagePosition: row.image_position ?? 50,
-    isManualCover: row.is_manual_cover ?? false,
     source: row.source as ArchaeologySource,
     collection: row.collection,
     tags: row.tags ?? [],
@@ -54,8 +50,6 @@ function toRow(draft: ArchaeologyDraft) {
     image_url: draft.imageUrl?.startsWith("data:image/")
       ? ""
       : draft.imageUrl?.trim() ?? "",
-    image_position: draft.imagePosition,
-    is_manual_cover: draft.isManualCover,
     source: detectSource(draft.url),
     collection: draft.collection.trim(),
     tags: draft.tags.map((tag) => tag.trim()).filter(Boolean),

@@ -25,7 +25,6 @@ export type HeartItem = {
   type: HeartItemType;
   note?: string;
   image?: string;
-  imagePosition: number;
   link?: string;
   createdAt: string;
 };
@@ -37,7 +36,6 @@ export type HeartDraft = {
   type: HeartItemType;
   note: string;
   image: string;
-  imagePosition: number;
   link: string;
 };
 
@@ -48,7 +46,6 @@ export const emptyHeartDraft: HeartDraft = {
   type: "MOMENT",
   note: "",
   image: "",
-  imagePosition: 50,
   link: "",
 };
 
@@ -110,7 +107,6 @@ export function addHeartItem(draft: HeartDraft) {
     createdAt: new Date().toISOString(),
     ...(draft.note.trim() ? { note: draft.note.trim() } : {}),
     ...(draft.image ? { image: draft.image } : {}),
-    imagePosition: draft.imagePosition,
     ...(draft.link.trim() ? { link: draft.link.trim() } : {}),
   };
   emit([...loadHeartItems(), item]);
@@ -130,7 +126,6 @@ export function updateHeartItem(id: string, draft: HeartDraft) {
             type: draft.type,
             ...(draft.note.trim() ? { note: draft.note.trim() } : {}),
             ...(draft.image ? { image: draft.image } : {}),
-            imagePosition: draft.imagePosition,
             ...(draft.link.trim() ? { link: draft.link.trim() } : {}),
           }
         : i,

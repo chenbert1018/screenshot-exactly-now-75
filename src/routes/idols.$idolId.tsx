@@ -21,7 +21,6 @@ import { DEFAULT_DAYS_BEFORE, formatDaysBefore, type ReminderType } from "@/lib/
 import { useReminderSource } from "@/lib/reminders.source";
 import { Bell } from "lucide-react";
 import { daysSince, primaryDay, nextAnniversary } from "@/lib/dates";
-import { scheduleIdolAnniversaryNotification } from "@/lib/event-notifications";
 
 export const Route = createFileRoute("/idols/$idolId")({
   head: () => ({
@@ -124,12 +123,7 @@ function IdolDetailPage() {
       <div className="overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft">
         <div className="aspect-[4/5] w-full bg-surface">
           {idol.photo ? (
-            <StoredImage
-              src={idol.photo}
-              alt={`${idol.name} 的照片`}
-              className="size-full object-cover"
-              style={{ objectPosition: `50% ${idol.photoPosition ?? 50}%` }}
-            />
+            <StoredImage src={idol.photo} alt={`${idol.name} 的照片`} className="size-full object-cover" />
           ) : (
             <div className="flex size-full flex-col items-center justify-center gap-2 text-muted-foreground">
               <ImageIcon className="size-7" strokeWidth={1.3} />
@@ -227,14 +221,6 @@ function IdolDetailPage() {
         onSave={(daysBefore) => {
           if (!reminderKind) return;
           void setReminderFor({ type: reminderKind, idolId }, daysBefore);
-          const date = reminderKind === "ANNIVERSARY" ? idol.debutDate : idol.birthday;
-          void scheduleIdolAnniversaryNotification({
-            idolId,
-            idolName: idol.name,
-            type: reminderKind as "BIRTHDAY" | "ANNIVERSARY",
-            date,
-            daysBefore,
-          });
           setReminderKind(null);
         }}
       />

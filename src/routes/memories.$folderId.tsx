@@ -97,7 +97,6 @@ function FolderDetailPage() {
         date: editing.date,
         note: editing.note,
         photo: editing.photo ?? "",
-        photoPosition: editing.photoPosition,
       }
     : undefined;
 
@@ -140,7 +139,6 @@ function FolderDetailPage() {
               src={folder.coverPhoto}
               alt={folder.title}
               className="mb-4 aspect-[16/9] w-full rounded-3xl object-cover shadow-soft"
-              style={{ objectPosition: `50% ${folder.coverPhotoPosition ?? 50}%` }}
             />
           ) : null}
           <h1 className="font-display text-[26px] leading-snug font-medium">{folder.title}</h1>
@@ -216,12 +214,7 @@ function FolderDetailPage() {
                   {g.items.map((m) => (
                     <SoftCard key={m.id} className="overflow-hidden p-0">
                       {m.photo ? (
-                        <StoredImage
-                          src={m.photo}
-                          alt={m.title}
-                          className="aspect-[4/3] w-full object-cover"
-                          style={{ objectPosition: `50% ${m.photoPosition}%` }}
-                        />
+                        <StoredImage src={m.photo} alt={m.title} className="aspect-[4/3] w-full object-cover" />
                       ) : (
                         <div className="flex aspect-[16/7] w-full items-center justify-center bg-accent/20 text-primary/40">
                           <span className="text-lg select-none">♡</span>
@@ -279,7 +272,6 @@ function FolderDetailPage() {
             title: folder.title,
             description: folder.description ?? "",
             coverPhoto: folder.coverPhoto ?? "",
-            coverPhotoPosition: folder.coverPhotoPosition ?? 50,
             startDate: folder.startDate ?? "",
             endDate: folder.endDate ?? "",
           }}

@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { EventDraft, EventType, IdolEvent, WeatherReminderTone } from "./events";
+import type { EventDraft, EventType, IdolEvent } from "./events";
 
 /**
  * 雲端 Event 資料層。
@@ -14,14 +14,10 @@ type Row = {
   type: string;
   date: string;
   note: string | null;
-  location_name: string | null;
-  city: string | null;
-  weather_enabled: boolean;
-  weather_tone: string;
   created_at: string;
 };
 
-const COLUMNS = "id, idol_id, title, type, date, note, location_name, city, weather_enabled, weather_tone, created_at";
+const COLUMNS = "id, idol_id, title, type, date, note, created_at";
 
 function toEvent(row: Row): IdolEvent {
   return {
@@ -31,10 +27,6 @@ function toEvent(row: Row): IdolEvent {
     type: row.type as EventType,
     date: row.date,
     note: row.note ?? "",
-    locationName: row.location_name ?? "",
-    city: row.city ?? "",
-    weatherEnabled: row.weather_enabled,
-    weatherTone: row.weather_tone as WeatherReminderTone,
     createdAt: new Date(row.created_at).getTime(),
   };
 }
@@ -46,10 +38,6 @@ function toRow(draft: EventDraft) {
     type: draft.type,
     date: draft.date,
     note: draft.note ?? "",
-    location_name: draft.locationName?.trim() || "",
-    city: draft.city?.trim() || "",
-    weather_enabled: Boolean(draft.weatherEnabled),
-    weather_tone: draft.weatherTone ?? "SUNSHINE",
   };
 }
 

@@ -83,49 +83,37 @@ export type Database = {
       }
       events: {
         Row: {
-          city: string
           created_at: string
           date: string
           id: string
           idol_id: string
-          location_name: string
           note: string
           title: string
           type: string
           updated_at: string
           user_id: string
-          weather_enabled: boolean
-          weather_tone: string
         }
         Insert: {
-          city?: string
           created_at?: string
           date: string
           id?: string
           idol_id: string
-          location_name?: string
           note?: string
           title: string
           type?: string
           updated_at?: string
           user_id: string
-          weather_enabled?: boolean
-          weather_tone?: string
         }
         Update: {
-          city?: string
           created_at?: string
           date?: string
           id?: string
           idol_id?: string
-          location_name?: string
           note?: string
           title?: string
           type?: string
           updated_at?: string
           user_id?: string
-          weather_enabled?: boolean
-          weather_tone?: string
         }
         Relationships: [
           {
@@ -148,7 +136,6 @@ export type Database = {
           id: string
           name: string
           photo: string
-          photo_position: number
           representative_animal: string
           since_date: string | null
           updated_at: string
@@ -164,7 +151,6 @@ export type Database = {
           id?: string
           name: string
           photo?: string
-          photo_position?: number
           representative_animal?: string
           since_date?: string | null
           updated_at?: string
@@ -180,7 +166,6 @@ export type Database = {
           id?: string
           name?: string
           photo?: string
-          photo_position?: number
           representative_animal?: string
           since_date?: string | null
           updated_at?: string
@@ -197,7 +182,6 @@ export type Database = {
           idol_id: string | null
           note: string
           photo: string
-          photo_position: number
           title: string
           updated_at: string
           user_id: string
@@ -210,7 +194,6 @@ export type Database = {
           idol_id?: string | null
           note?: string
           photo?: string
-          photo_position?: number
           title?: string
           updated_at?: string
           user_id: string
@@ -223,7 +206,6 @@ export type Database = {
           idol_id?: string | null
           note?: string
           photo?: string
-          photo_position?: number
           title?: string
           updated_at?: string
           user_id?: string
@@ -248,7 +230,6 @@ export type Database = {
       memory_folders: {
         Row: {
           cover_photo: string
-          cover_photo_position: number
           created_at: string
           description: string
           end_date: string | null
@@ -261,7 +242,6 @@ export type Database = {
         }
         Insert: {
           cover_photo?: string
-          cover_photo_position?: number
           created_at?: string
           description?: string
           end_date?: string | null
@@ -274,7 +254,6 @@ export type Database = {
         }
         Update: {
           cover_photo?: string
-          cover_photo_position?: number
           created_at?: string
           description?: string
           end_date?: string | null

@@ -1,18 +1,7 @@
 import { StoredImage } from "@/components/StoredImage";
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  Bell,
-  CalendarHeart,
-  CloudSun,
-  Heart,
-  History,
-  ImageIcon,
-  Plus,
-  Repeat2,
-  Search,
-} from "lucide-react";
+import { ArrowRight, Bell, CalendarHeart, CloudSun, Heart, History, ImageIcon, Plus, Repeat2, Search } from "lucide-react";
 import { AppShell, EmptyState, Section } from "@/components/AppShell";
 import type { Idol } from "@/lib/idols";
 import { useIdolSource } from "@/lib/idols.source";
@@ -27,10 +16,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "IdolDays｜偶像專屬倒數日" },
-      {
-        name: "description",
-        content: "IdolDays 是為 KPOP 粉絲打造的私人陪伴 App，收藏你喜歡一個人的日子。",
-      },
+      { name: "description", content: "IdolDays 是為 KPOP 粉絲打造的私人陪伴 App，收藏你喜歡一個人的日子。" },
       { property: "og:title", content: "IdolDays｜偶像專屬倒數日" },
       { property: "og:description", content: "不是在倒數日子，而是在收藏我喜歡一個人的日子。" },
       { property: "og:type", content: "website" },
@@ -71,33 +57,26 @@ function dailyAnimalLine(idol: Idol) {
   const seed = date.getFullYear() * 372 + (date.getMonth() + 1) * 31 + date.getDate();
   const animal = idol.representativeAnimal ?? "DOG";
   const lines = ANIMAL_DAILY_LINES[animal];
-  return lines[seed % lines.length] ?? lines[0] ?? "今天也一起好好喜歡他 ♡";
+  return lines[seed % lines.length];
 }
 
 function dayLabel(event: IdolEvent) {
-  const days = eventCountdown(event.date)?.daysUntil ?? 0;
+  const days = eventCountdown(event.date).daysUntil ?? 0;
   return days === 0 ? "TODAY" : `D - ${Math.max(0, days)}`;
 }
 
 function EventCard({ event }: { event: IdolEvent }) {
   return (
-    <Link
-      to="/events"
-      className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground px-5 py-4 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]"
-    >
+    <Link to="/events" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground px-5 py-4 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
       <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
         <CalendarHeart className="size-6" strokeWidth={1.55} />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-[11px] font-medium tracking-[0.12em] text-primary uppercase">
-          Next D-Day
-        </p>
+        <p className="text-[11px] font-medium tracking-[0.12em] text-primary uppercase">Next D-Day</p>
         <p className="mt-1 truncate text-[17px] font-medium">{event.title}</p>
         <p className="mt-1 text-xs text-muted-foreground">{dotDate(event.date)}</p>
       </div>
-      <p className="shrink-0 font-display text-[35px] leading-none text-primary">
-        {dayLabel(event)}
-      </p>
+      <p className="shrink-0 font-display text-[35px] leading-none text-primary">{dayLabel(event)}</p>
       <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
         <ArrowRight className="size-4" strokeWidth={2} />
       </span>
@@ -105,10 +84,12 @@ function EventCard({ event }: { event: IdolEvent }) {
   );
 }
 
-type HomeWeatherResponse = { ok: true; weather: FanWeatherInput } | { ok: false; error?: string };
+type HomeWeatherResponse =
+  | { ok: true; weather: FanWeatherInput }
+  | { ok: false; error?: string };
 
 function FanWeatherCard({ event }: { event: IdolEvent }) {
-  const days = eventCountdown(event.date)?.daysUntil ?? 0;
+  const days = eventCountdown(event.date).daysUntil ?? 0;
   const timing = days === 0 ? "今天" : `${Math.max(0, days)} 天後`;
   const place = event.locationName?.trim() || event.city?.trim() || event.title;
   const [input, setInput] = useState<FanWeatherInput | null>(null);
@@ -136,11 +117,7 @@ function FanWeatherCard({ event }: { event: IdolEvent }) {
           setStatus("ready");
         } else {
           setInput(null);
-          setStatus(
-            !data.ok && data.error === "forecast date is outside available range"
-              ? "waiting"
-              : "error",
-          );
+          setStatus(!data.ok && data.error === "forecast date is outside available range" ? "waiting" : "error");
         }
       })
       .catch(() => {
@@ -162,21 +139,13 @@ function FanWeatherCard({ event }: { event: IdolEvent }) {
           : "正在確認活動當天的天氣…";
 
   return (
-    <Link
-      to="/weather/$eventId"
-      params={{ eventId: event.id }}
-      className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 px-5 py-4 text-card-foreground shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]"
-    >
+    <Link to="/weather/$eventId" params={{ eventId: event.id }} className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 px-5 py-4 text-card-foreground shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
       <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-[#e8e6ff] text-[#8b87cf]">
         <CloudSun className="size-7" strokeWidth={1.45} />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-[11px] font-medium tracking-[0.08em] text-primary">
-          Fan Weather・{place}
-        </p>
-        <p className="mt-1 truncate text-[16px] font-medium">
-          {timing}・{event.title}
-        </p>
+        <p className="text-[11px] font-medium tracking-[0.08em] text-primary">Fan Weather・{place}</p>
+        <p className="mt-1 truncate text-[16px] font-medium">{timing}・{event.title}</p>
         <p className="mt-1 truncate text-sm text-muted-foreground">{detail}</p>
       </div>
       <ArrowRight className="size-5 shrink-0 text-primary" strokeWidth={1.8} />
@@ -184,68 +153,46 @@ function FanWeatherCard({ event }: { event: IdolEvent }) {
   );
 }
 
+
 function FanWeatherSetupCard({ event }: { event: IdolEvent }) {
-  const days = eventCountdown(event.date)?.daysUntil ?? 0;
+  const days = eventCountdown(event.date).daysUntil ?? 0;
   const timing = days === 0 ? "今天" : `${Math.max(0, days)} 天後`;
 
   return (
-    <Link
-      to="/events"
-      className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/85 text-card-foreground px-5 py-4 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]"
-    >
+    <Link to="/events" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/85 text-card-foreground px-5 py-4 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
       <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-[#e8e6ff] text-[#8b87cf]">
         <CloudSun className="size-7" strokeWidth={1.45} />
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-[11px] font-medium tracking-[0.08em] text-primary">Fan Weather</p>
-        <p className="mt-1 truncate text-[16px] font-medium">
-          {timing}・{event.title}
-        </p>
-        <p className="mt-1 truncate text-sm text-muted-foreground">
-          設定地點與城市，幫你準備追星天氣 ♡
-        </p>
+        <p className="mt-1 truncate text-[16px] font-medium">{timing}・{event.title}</p>
+        <p className="mt-1 truncate text-sm text-muted-foreground">設定地點與城市，幫你準備追星天氣 ♡</p>
       </div>
       <ArrowRight className="size-5 shrink-0 text-primary" strokeWidth={1.8} />
     </Link>
   );
 }
 
-function ArchaeologyCard({
-  item,
-}: {
-  item: { title: string; imageUrl?: string | undefined; createdAt: string; collection: string };
-}) {
+function ArchaeologyCard({ item }: { item: { title: string; imageUrl?: string; createdAt: string; collection: string } }) {
   return (
-    <Link
-      to="/archaeology"
-      className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground p-3 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]"
-    >
+    <Link to="/archaeology" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground p-3 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
       <div className="flex size-[5.2rem] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/10 text-primary">
-        {item.imageUrl ? (
-          <StoredImage src={item.imageUrl} alt="" className="size-full object-cover" />
-        ) : (
-          <Search className="size-7" strokeWidth={1.5} />
-        )}
+        {item.imageUrl ? <StoredImage src={item.imageUrl} alt="" className="size-full object-cover" /> : <Search className="size-7" strokeWidth={1.5} />}
       </div>
       <div className="min-w-0 flex-1 py-1">
         <p className="text-[11px] font-medium text-primary">▣ 最近收進考古</p>
         <p className="mt-1 truncate text-[17px] font-medium">{item.title}</p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {dotDate(item.createdAt.slice(0, 10))}
-          {item.collection ? `・${item.collection}` : ""}
-        </p>
+        <p className="mt-1 text-sm text-muted-foreground">{dotDate(item.createdAt.slice(0, 10))}{item.collection ? `・${item.collection}` : ""}</p>
       </div>
       <ArrowRight className="mr-1 size-5 shrink-0 text-primary" strokeWidth={1.8} />
     </Link>
   );
 }
 
+
 function EmptyArchaeologyCard() {
   return (
-    <Link
-      to="/archaeology"
-      className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/85 text-card-foreground p-3 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]"
-    >
+    <Link to="/archaeology" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/85 text-card-foreground p-3 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
       <div className="flex size-[5.2rem] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/10 text-primary">
         <Search className="size-7" strokeWidth={1.5} />
       </div>
@@ -259,28 +206,12 @@ function EmptyArchaeologyCard() {
   );
 }
 
-function MemoryCard({
-  memory,
-}: {
-  memory: { title: string; note: string; photo?: string | undefined; photoPosition?: number; date: string };
-}) {
+function MemoryCard({ memory }: { memory: { title: string; note: string; photo?: string; date: string } }) {
   const text = memory.title.trim() || memory.note.trim() || "那天也好想你 ♡";
   return (
-    <Link
-      to="/memories"
-      className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground p-3 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]"
-    >
+    <Link to="/memories" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground p-3 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
       <div className="flex size-[5.2rem] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/10 text-primary">
-        {memory.photo ? (
-          <StoredImage
-            src={memory.photo}
-            alt=""
-            className="size-full object-cover"
-            style={{ objectPosition: `50% ${memory.photoPosition ?? 50}%` }}
-          />
-        ) : (
-          <History className="size-7" strokeWidth={1.45} />
-        )}
+        {memory.photo ? <StoredImage src={memory.photo} alt="" className="size-full object-cover" /> : <History className="size-7" strokeWidth={1.45} />}
       </div>
       <div className="min-w-0 flex-1 py-1">
         <p className="text-[11px] font-medium text-primary">▣ 去年的今天</p>
@@ -294,18 +225,11 @@ function MemoryCard({
 
 function EmptyMemoryCard() {
   return (
-    <Link
-      to="/memories"
-      className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/85 text-card-foreground px-5 py-4 shadow-soft backdrop-blur-xl transition-transform active:scale-[0.99]"
-    >
-      <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-        <History className="size-6" strokeWidth={1.45} />
-      </div>
+    <Link to="/memories" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/85 text-card-foreground px-5 py-4 shadow-soft backdrop-blur-xl transition-transform active:scale-[0.99]">
+      <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary"><History className="size-6" strokeWidth={1.45} /></div>
       <div className="min-w-0 flex-1">
         <p className="text-[11px] font-medium text-primary">去年的今天</p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          今天還沒有去年的回憶，繼續把喜歡收藏起來吧 ♡
-        </p>
+        <p className="mt-1 text-sm text-muted-foreground">今天還沒有去年的回憶，繼續把喜歡收藏起來吧 ♡</p>
       </div>
       <ArrowRight className="size-5 shrink-0 text-primary" strokeWidth={1.8} />
     </Link>
@@ -324,14 +248,7 @@ function Hero({
   const backdrop = idol.photo || idol.cutoutPhoto;
   return (
     <section className="relative mt-0 overflow-hidden rounded-[1.7rem] bg-gradient-to-b from-[#f6cddb] via-[#f9dfe7] to-[#fdf0f3] shadow-[0_18px_40px_rgba(176,102,130,0.16)]">
-      {backdrop ? (
-        <StoredImage
-          src={backdrop}
-          alt=""
-          aria-hidden
-          className="absolute inset-0 size-full scale-110 object-cover opacity-20 blur-3xl"
-        />
-      ) : null}
+      {backdrop ? <StoredImage src={backdrop} alt="" aria-hidden className="absolute inset-0 size-full scale-110 object-cover opacity-20 blur-3xl" /> : null}
       <div className="absolute -left-16 top-12 size-56 rounded-full bg-white/40 blur-3xl" />
       <div className="absolute -right-20 bottom-12 size-60 rounded-full bg-primary/20 blur-3xl" />
       <span className="absolute left-5 top-24 text-xl text-primary/30">✧</span>
@@ -347,38 +264,18 @@ function Hero({
           <Repeat2 className="size-5" strokeWidth={1.8} />
         </button>
       ) : null}
-      <Link
-        to="/idols/$idolId"
-        params={{ idolId: idol.id }}
-        className="relative block h-[300px] overflow-hidden"
-      >
+      <Link to="/idols/$idolId" params={{ idolId: idol.id }} className="relative block h-[300px] overflow-hidden">
         {idol.cutoutPhoto ? (
-          <StoredImage
-            src={idol.cutoutPhoto}
-            alt={`${idol.name} 的去背照片`}
-            className="absolute inset-x-0 bottom-0 z-10 mx-auto h-[94%] w-full object-contain object-bottom"
-          />
+          <StoredImage src={idol.cutoutPhoto} alt={`${idol.name} 的去背照片`} className="absolute inset-x-0 bottom-0 z-10 mx-auto h-[94%] w-full object-contain object-bottom" />
         ) : idol.photo ? (
-          <StoredImage
-            src={idol.photo}
-            alt={`${idol.name} 的照片`}
-            className="absolute inset-0 z-10 size-full object-cover object-[72%_center]"
-            style={{ objectPosition: `50% ${idol.photoPosition ?? 50}%` }}
-          />
+          <StoredImage src={idol.photo} alt={`${idol.name} 的照片`} className="absolute inset-0 z-10 size-full object-cover object-[72%_center]" />
         ) : (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 text-muted-foreground">
-            <ImageIcon className="size-8" strokeWidth={1.3} />
-            <span className="text-sm">放一張你喜歡的照片 ♡</span>
-          </div>
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 text-muted-foreground"><ImageIcon className="size-8" strokeWidth={1.3} /><span className="text-sm">放一張你喜歡的照片 ♡</span></div>
         )}
         <div className="absolute inset-x-0 bottom-0 z-20 h-48 bg-gradient-to-t from-black/65 via-black/20 to-transparent" />
         <div className="absolute bottom-5 left-5 z-30">
-          <p className="font-display text-[28px] leading-tight text-[#ffafc9] drop-shadow-[0_2px_5px_rgba(0,0,0,0.55)]">
-            {timeGreeting()}
-          </p>
-          <p className="mt-2 text-[16px] leading-relaxed text-white drop-shadow-[0_2px_5px_rgba(0,0,0,0.7)]">
-            {dailyAnimalLine(idol)}
-          </p>
+          <p className="font-display text-[28px] leading-tight text-[#ffafc9] drop-shadow-[0_2px_5px_rgba(0,0,0,0.55)]">{timeGreeting()}</p>
+          <p className="mt-2 text-[16px] leading-relaxed text-white drop-shadow-[0_2px_5px_rgba(0,0,0,0.7)]">{dailyAnimalLine(idol)}</p>
         </div>
       </Link>
     </section>
@@ -386,12 +283,22 @@ function Hero({
 }
 
 function HomePage() {
-  const { idols, homeIdol, ready, coverRotation, setMainIdol, setCoverRotation } = useIdolSource();
+  const {
+    idols,
+    homeIdol,
+    ready,
+    coverRotation,
+    setMainIdol,
+    setCoverRotation,
+  } = useIdolSource();
   const { events } = useEventSource();
   const { items: archaeology } = useArchaeologySource();
   const { all: memories } = useMemorySource();
   const main = homeIdol;
-  const companionship = useMemo(() => (main ? daysSince(main.sinceDate) : null), [main]);
+  const companionship = useMemo(
+    () => (main ? daysSince(main.sinceDate) : null),
+    [main],
+  );
 
   const nextMainEvent = useMemo(
     () => (main ? nextEvent(events.filter((event) => event.idolId === main.id)) : undefined),
@@ -400,7 +307,10 @@ function HomePage() {
   const latestArchaeology = useMemo(() => {
     if (!main) return undefined;
     const linked = archaeology.filter((item) => item.idolId === main.id);
-    const candidates = linked.length > 0 ? linked : archaeology.filter((item) => !item.idolId);
+    const candidates =
+      linked.length > 0
+        ? linked
+        : archaeology.filter((item) => !item.idolId);
     return [...candidates].sort((a, b) => {
       if (a.favorite !== b.favorite) return a.favorite ? -1 : 1;
       if (Boolean(a.imageUrl) !== Boolean(b.imageUrl)) {
@@ -426,11 +336,7 @@ function HomePage() {
     <AppShell showProfileShortcut={false}>
       <header className="mb-2 flex items-center justify-between px-1">
         <p className="font-display text-[27px] tracking-[-0.03em] text-primary">IdolDays</p>
-        <Link
-          to="/profile"
-          aria-label="通知與個人設定"
-          className="relative flex size-10 items-center justify-center rounded-full border border-border/75 bg-card/85 text-card-foreground shadow-soft backdrop-blur-md transition-transform active:scale-95"
-        >
+        <Link to="/profile" aria-label="通知與個人設定" className="relative flex size-10 items-center justify-center rounded-full border border-border/75 bg-card/85 text-card-foreground shadow-soft backdrop-blur-md transition-transform active:scale-95">
           <Bell className="size-5" strokeWidth={1.55} />
           <span className="absolute right-0.5 top-0.5 size-2.5 rounded-full border-2 border-card bg-primary" />
         </Link>
@@ -444,10 +350,7 @@ function HomePage() {
             idol={main}
             canSwitch={idols.length > 1}
             onSwitch={() => {
-              const currentIndex = Math.max(
-                0,
-                idols.findIndex((idol) => idol.id === main.id),
-              );
+              const currentIndex = Math.max(0, idols.findIndex((idol) => idol.id === main.id));
               const next = idols[(currentIndex + 1) % idols.length];
               if (next) {
                 setCoverRotation(false);
@@ -456,9 +359,7 @@ function HomePage() {
             }}
           />
           {coverRotation && idols.length > 1 ? (
-            <p className="mt-2 px-2 text-right text-[11px] text-muted-foreground">
-              每日輪換中・按右上角可立即指定另一位
-            </p>
+            <p className="mt-2 px-2 text-right text-[11px] text-muted-foreground">每日輪換中・按右上角可立即指定另一位</p>
           ) : null}
           {nextMainEvent ? <EventCard event={nextMainEvent} /> : null}
           {nextMainEvent ? (
@@ -468,18 +369,12 @@ function HomePage() {
               <FanWeatherSetupCard event={nextMainEvent} />
             )
           ) : null}
-          {latestArchaeology ? (
-            <ArchaeologyCard item={latestArchaeology} />
-          ) : (
-            <EmptyArchaeologyCard />
-          )}
+          {latestArchaeology ? <ArchaeologyCard item={latestArchaeology} /> : <EmptyArchaeologyCard />}
           {memoryFromToday ? <MemoryCard memory={memoryFromToday} /> : <EmptyMemoryCard />}
 
           {companionship && !companionship.isFuture && companionship.days !== null ? (
             <section className="relative mt-5 rounded-[1.8rem] border border-border/70 bg-card/90 px-5 py-4 text-center text-card-foreground shadow-[0_12px_32px_rgba(157,91,116,0.10)] backdrop-blur-xl">
-              <span aria-hidden className="absolute right-6 top-4 text-xl text-primary/55">
-                ♥
-              </span>
+              <span aria-hidden className="absolute right-6 top-4 text-xl text-primary/55">♥</span>
               <p className="text-[13px] font-medium text-muted-foreground">陪伴總走過</p>
               <p className="mt-1 font-display text-[44px] leading-none text-foreground">
                 {companionship.days}
@@ -489,11 +384,7 @@ function HomePage() {
             </section>
           ) : null}
 
-          <p className="mt-8 px-8 text-center font-display text-[16px] leading-relaxed text-muted-foreground/80">
-            一起走過的每一天，
-            <br />
-            都是珍貴的回憶 ♡
-          </p>
+          <p className="mt-8 px-8 text-center font-display text-[16px] leading-relaxed text-muted-foreground/80">一起走過的每一天，<br />都是珍貴的回憶 ♡</p>
         </>
       ) : (
         <Section title="我的偶像">
@@ -501,15 +392,7 @@ function HomePage() {
             icon={<Heart className="size-5" strokeWidth={1.6} />}
             title="還沒有你的第一位偶像"
             description="今天也可以從一個名字開始，收藏屬於你的追星日子。"
-            action={
-              <Link
-                to="/idols"
-                className="inline-flex items-center gap-1.5 rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
-              >
-                <Plus className="size-4" strokeWidth={2} />
-                加入第一位偶像
-              </Link>
-            }
+            action={<Link to="/idols" className="inline-flex items-center gap-1.5 rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"><Plus className="size-4" strokeWidth={2} />加入第一位偶像</Link>}
           />
         </Section>
       )}

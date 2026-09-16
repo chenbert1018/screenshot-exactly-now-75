@@ -1,5 +1,4 @@
 import { StoredImage } from "@/components/StoredImage";
-import { PhotoCropPositionControl, PhotoCropPreview } from "@/components/PhotoCropControls";
 import { useEffect, useRef, useState } from "react";
 import { ImagePlus, X } from "lucide-react";
 import {
@@ -37,7 +36,7 @@ export function MemoryFolderFormSheet({
 
   useEffect(() => {
     if (open) {
-      setDraft({ ...emptyFolderDraft, ...initial });
+      setDraft(initial ?? emptyFolderDraft);
       setError("");
       setSaving(false);
     }
@@ -47,8 +46,7 @@ export function MemoryFolderFormSheet({
   function pickPhoto(file?: File | null) {
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = () =>
-      setDraft((d) => ({ ...d, coverPhoto: String(reader.result ?? ""), coverPhotoPosition: 50 }));
+    reader.onload = () => setDraft((d) => ({ ...d, coverPhoto: String(reader.result ?? "") }));
     reader.readAsDataURL(file);
   }
 
@@ -82,7 +80,7 @@ export function MemoryFolderFormSheet({
             <p className="mb-2 text-sm font-medium">封面照片</p>
             {draft.coverPhoto ? (
               <div className="relative overflow-hidden rounded-2xl border border-border/60">
-                <PhotoCropPreview src={draft.coverPhoto} alt="封面預覽" position={draft.coverPhotoPosition} aspectClass="aspect-[4/3]" />
+                <StoredImage src={draft.coverPhoto} alt="封面預覽" className="aspect-[4/3] w-full object-cover" />
                 <div className="absolute right-3 bottom-3 flex gap-2">
                   <button
                     type="button"
@@ -99,13 +97,6 @@ export function MemoryFolderFormSheet({
                   >
                     <X className="size-4" strokeWidth={1.8} />
                   </button>
-                </div>
-                <div className="relative mx-3 mt-3 mb-3">
-                  <PhotoCropPositionControl
-                    id="folder-cover-position"
-                    value={draft.coverPhotoPosition}
-                    onChange={(coverPhotoPosition) => setDraft((d) => ({ ...d, coverPhotoPosition }))}
-                  />
                 </div>
               </div>
             ) : (

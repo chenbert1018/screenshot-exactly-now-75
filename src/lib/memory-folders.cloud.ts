@@ -12,14 +12,13 @@ type Row = {
   title: string;
   description: string | null;
   cover_photo: string | null;
-  cover_photo_position: number | null;
   start_date: string | null;
   end_date: string | null;
   created_at: string;
 };
 
 const COLUMNS =
-  "id, idol_id, title, description, cover_photo, cover_photo_position, start_date, end_date, created_at";
+  "id, idol_id, title, description, cover_photo, start_date, end_date, created_at";
 
 function toFolder(row: Row): MemoryFolder {
   return {
@@ -28,7 +27,6 @@ function toFolder(row: Row): MemoryFolder {
     title: row.title,
     description: row.description ?? "",
     coverPhoto: row.cover_photo ?? "",
-    coverPhotoPosition: row.cover_photo_position ?? 50,
     startDate: row.start_date ?? "",
     endDate: row.end_date ?? "",
     createdAt: row.created_at,
@@ -43,7 +41,6 @@ function toRow(draft: MemoryFolderDraft) {
     cover_photo: draft.coverPhoto?.startsWith("data:image/")
       ? ""
       : draft.coverPhoto ?? "",
-    cover_photo_position: draft.coverPhotoPosition,
     start_date: draft.startDate || null,
     end_date: draft.endDate || null,
   };

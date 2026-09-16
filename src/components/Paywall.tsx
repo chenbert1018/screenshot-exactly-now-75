@@ -15,7 +15,6 @@ import {
   PLUS_SECONDARY_CTA,
   PLUS_TAGLINE,
   PREMIUM_FEATURE_COPY,
-  SUBSCRIPTIONS_AVAILABLE,
   useSubscription,
   type PremiumFeature,
 } from "@/lib/subscription";
@@ -32,7 +31,7 @@ export function Paywall({
   feature?: PremiumFeature;
   onSubscribed?: () => void;
 }) {
-  const { subscribe, restorePurchases, localizedPrice } = useSubscription();
+  const { subscribe, restorePurchases } = useSubscription();
   const copy = feature ? PREMIUM_FEATURE_COPY[feature] : null;
 
   const [isPurchasing, setIsPurchasing] = useState(false);
@@ -112,28 +111,18 @@ export function Paywall({
             </div>
           ) : null}
 
-          {SUBSCRIPTIONS_AVAILABLE ? (
-            <>
-              <p className="font-display text-[26px] leading-tight">
-                {localizedPrice ? `${localizedPrice}／月` : PLUS_PRICE_LABEL}
-              </p>
-              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                每月自動續訂，可隨時於 Apple ID 訂閱設定取消。
-              </p>
-            </>
-          ) : (
-            <div className="rounded-2xl bg-accent/60 px-4 py-4">
-              <p className="font-medium">IdolDays+ 正在準備中</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Apple 訂閱開通後會在這裡提供購買與恢復購買。
-              </p>
-            </div>
-          )}
+          <p className="font-display text-[26px] leading-tight">{PLUS_PRICE_LABEL}</p>
 
           <ul className="mt-4 grid grid-cols-1 gap-2">
             {PLUS_BENEFITS.map((b) => (
-              <li key={b} className="flex items-start gap-2 text-sm text-muted-foreground">
-                <Check className="mt-0.5 size-4 shrink-0 text-primary" strokeWidth={2} />
+              <li
+                key={b}
+                className="flex items-start gap-2 text-sm text-muted-foreground"
+              >
+                <Check
+                  className="mt-0.5 size-4 shrink-0 text-primary"
+                  strokeWidth={2}
+                />
 
                 <div>
                   <div>{b}</div>
@@ -149,19 +138,28 @@ export function Paywall({
           </ul>
 
           {message ? (
-            <p className="mt-4 text-center text-xs text-muted-foreground">{message}</p>
+            <p className="mt-4 text-center text-xs text-muted-foreground">
+              {message}
+            </p>
           ) : null}
 
-          {SUBSCRIPTIONS_AVAILABLE ? (
-            <>
-              <button type="button" onClick={handleSubscribe} disabled={isPurchasing || isRestoring} className="mt-6 w-full rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60">
-                {isPurchasing ? "正在連接 Apple…" : PLUS_CTA}
-              </button>
-              <button type="button" onClick={handleRestorePurchases} disabled={isPurchasing || isRestoring} className="mt-2 w-full rounded-full px-6 py-2.5 text-sm font-medium text-primary transition-colors active:bg-surface/70 disabled:cursor-not-allowed disabled:opacity-60">
-                {isRestoring ? "正在恢復購買…" : "恢復購買"}
-              </button>
-            </>
-          ) : null}
+          <button
+            type="button"
+            onClick={handleSubscribe}
+            disabled={isPurchasing || isRestoring}
+            className="mt-6 w-full rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isPurchasing ? "正在連接 Apple…" : PLUS_CTA}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleRestorePurchases}
+            disabled={isPurchasing || isRestoring}
+            className="mt-2 w-full rounded-full px-6 py-2.5 text-sm font-medium text-primary transition-colors active:bg-surface/70 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isRestoring ? "正在恢復購買…" : "恢復購買"}
+          </button>
 
           <button
             type="button"
@@ -171,23 +169,6 @@ export function Paywall({
           >
             {PLUS_SECONDARY_CTA}
           </button>
-
-          <p className="mt-4 text-center text-[11px] leading-relaxed text-muted-foreground">
-            訂閱將由 Apple ID 帳號扣款，並會在目前訂閱期結束前 24 小時內自動續訂。
-            <br />
-            <a
-              href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
-              target="_blank"
-              rel="noreferrer"
-              className="underline"
-            >
-              使用條款
-            </a>
-            <span aria-hidden> ・ </span>
-            <a href="/privacy" className="underline">
-              隱私權政策
-            </a>
-          </p>
         </div>
       </SheetContent>
     </Sheet>

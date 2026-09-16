@@ -1,5 +1,4 @@
 import { StoredImage } from "@/components/StoredImage";
-import { PhotoCropPositionControl, PhotoCropPreview } from "@/components/PhotoCropControls";
 import { useEffect, useRef, useState } from "react";
 import { ImagePlus, Sparkles, X } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
@@ -80,14 +79,14 @@ export function IdolFormSheet({
   onSubmit: (draft: IdolDraft) => void;
   footer?: React.ReactNode;
 }) {
-  const [draft, setDraft] = useState<IdolDraft>({ ...emptyDraft, ...initial });
+  const [draft, setDraft] = useState<IdolDraft>(initial ?? emptyDraft);
   const [error, setError] = useState("");
   const [cutoutBusy, setCutoutBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (open) {
-      setDraft({ ...emptyDraft, ...initial });
+      setDraft(initial ?? emptyDraft);
       setError("");
       setCutoutBusy(false);
     }
@@ -101,7 +100,6 @@ export function IdolFormSheet({
         ...d,
         photo: String(reader.result ?? ""),
         cutoutPhoto: "",
-        photoPosition: 50,
       }));
     reader.readAsDataURL(file);
   }
@@ -175,15 +173,15 @@ export function IdolFormSheet({
             {draft.photo ? (
               <>
               <div className="relative overflow-hidden rounded-2xl border border-border/60">
-                {draft.cutoutPhoto ? (
-                  <StoredImage
-                    src={draft.cutoutPhoto}
-                    alt="偶像照片預覽"
-                    className="aspect-[3/4] w-full bg-gradient-to-b from-[#f8dce8] via-[#fae7ee] to-[#f7dfe7] object-contain"
-                  />
-                ) : (
-                  <PhotoCropPreview src={draft.photo} alt="偶像照片預覽" position={draft.photoPosition} aspectClass="aspect-[3/4]" />
-                )}
+                <StoredImage
+                  src={draft.cutoutPhoto || draft.photo}
+                  alt="偶像照片預覽"
+                  className={
+                    draft.cutoutPhoto
+                      ? "aspect-[3/4] w-full bg-gradient-to-b from-[#f8dce8] via-[#fae7ee] to-[#f7dfe7] object-contain"
+                      : "aspect-[3/4] w-full object-cover"
+                  }
+                />
                 <div className="absolute right-3 bottom-3 flex gap-2">
                   <button
                     type="button"
@@ -222,15 +220,6 @@ export function IdolFormSheet({
                         ? "重新去背"
                         : "人物去背"}
                   </button>
-                ) : null}
-                {!draft.cutoutPhoto ? (
-                  <div className="relative mx-3 mt-3 mb-3">
-                    <PhotoCropPositionControl
-                      id="idol-photo-position"
-                      value={draft.photoPosition}
-                      onChange={(photoPosition) => setDraft((d) => ({ ...d, photoPosition }))}
-                    />
-                  </div>
                 ) : null}
               </div>
 
