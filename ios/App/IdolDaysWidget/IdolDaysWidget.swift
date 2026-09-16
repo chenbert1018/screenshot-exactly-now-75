@@ -61,8 +61,14 @@ struct IdolDaysProvider: TimelineProvider {
         in context: Context,
         completion: @escaping (IdolDaysEntry) -> Void
     ) {
-        // Widget Gallery 也優先讀取 App Group 的最新資料；只有第一次尚未開啟
-        // IdolDays 時才顯示樣板，避免預覽永遠停留在 JENNIE／D-12。
+        // 「加入小工具」的 Gallery 是產品介紹，不是使用者的小工具實體。
+        // 始終使用無真人照片、無固定偶像的通用範例；避免 iOS 快取舊資料，
+        // 也不在未加入前洩漏或誤用 App Group 的個人內容。
+        if context.isPreview {
+            completion(mockEntry)
+            return
+        }
+
         completion(loadSharedEntry() ?? mockEntry)
     }
 
