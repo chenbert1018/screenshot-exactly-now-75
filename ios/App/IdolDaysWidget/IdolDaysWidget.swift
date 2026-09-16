@@ -58,11 +58,9 @@ struct IdolDaysProvider: TimelineProvider {
         in context: Context,
         completion: @escaping (IdolDaysEntry) -> Void
     ) {
-        if context.isPreview {
-            completion(mockEntry)
-        } else {
-            completion(loadSharedEntry() ?? mockEntry)
-        }
+        // Widget Gallery 也優先讀取 App Group 的最新資料；只有第一次尚未開啟
+        // IdolDays 時才顯示樣板，避免預覽永遠停留在 JENNIE／D-12。
+        completion(loadSharedEntry() ?? mockEntry)
     }
 
     func getTimeline(
