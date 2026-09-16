@@ -48,6 +48,7 @@ function IdolVisual({ idol }: { idol?: Idol | undefined }) {
         src={idol.photo}
         alt={idol.name}
         className="size-28 rounded-full object-cover shadow-soft"
+        style={{ objectPosition: `50% ${idol.photoPosition ?? 50}%` }}
       />
     );
   }
@@ -214,6 +215,7 @@ export function EventDetailSheet({
                   src={idol.photo}
                   alt={idol.name}
                   className="absolute inset-0 size-full object-contain object-center"
+                  style={{ objectPosition: `50% ${idol.photoPosition ?? 50}%` }}
                 />
               ) : (
                 <div className="flex size-full items-center justify-center text-sm text-muted-foreground">{idolLabel}</div>

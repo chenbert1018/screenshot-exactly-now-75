@@ -262,7 +262,7 @@ function EmptyArchaeologyCard() {
 function MemoryCard({
   memory,
 }: {
-  memory: { title: string; note: string; photo?: string | undefined; date: string };
+  memory: { title: string; note: string; photo?: string | undefined; photoPosition?: number; date: string };
 }) {
   const text = memory.title.trim() || memory.note.trim() || "那天也好想你 ♡";
   return (
@@ -272,7 +272,12 @@ function MemoryCard({
     >
       <div className="flex size-[5.2rem] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/10 text-primary">
         {memory.photo ? (
-          <StoredImage src={memory.photo} alt="" className="size-full object-cover" />
+          <StoredImage
+            src={memory.photo}
+            alt=""
+            className="size-full object-cover"
+            style={{ objectPosition: `50% ${memory.photoPosition ?? 50}%` }}
+          />
         ) : (
           <History className="size-7" strokeWidth={1.45} />
         )}

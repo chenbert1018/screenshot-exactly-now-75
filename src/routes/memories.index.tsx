@@ -105,7 +105,12 @@ function MemoriesPage() {
               >
                 <SoftCard className="overflow-hidden p-0">
                   {f.coverPhoto ? (
-                    <StoredImage src={f.coverPhoto} alt={f.title} className="aspect-[16/9] w-full object-cover" />
+                    <StoredImage
+                      src={f.coverPhoto}
+                      alt={f.title}
+                      className="aspect-[16/9] w-full object-cover"
+                      style={{ objectPosition: `50% ${f.coverPhotoPosition ?? 50}%` }}
+                    />
                   ) : (
                     <div className="flex aspect-[16/9] w-full items-center justify-center bg-accent/25 text-primary/50">
                       <Images className="size-7" strokeWidth={1.3} />
