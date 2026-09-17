@@ -20,6 +20,7 @@ import { deleteMilestonesForEvent } from "@/lib/milestones";
 import { DEFAULT_DAYS_BEFORE, formatReminderSummary } from "@/lib/reminders";
 import { useReminderSource } from "@/lib/reminders.source";
 import { scheduleEventNotifications } from "@/lib/event-notifications";
+import { CloudRetryNotice } from "@/components/CloudRetryNotice";
 
 export const Route = createFileRoute("/events")({
   head: () => ({
@@ -87,7 +88,7 @@ function EventCard({
 
 function EventsPage() {
   const { idols, findIdol } = useIdolSource();
-  const { events, ready, addEvent, updateEvent, removeEvent, error } = useEventSource();
+  const { events, ready, addEvent, updateEvent, removeEvent, error, reload } = useEventSource();
 
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<IdolEvent | null>(null);
@@ -166,9 +167,9 @@ function EventsPage() {
       </div>
 
       {error ? (
-        <p className="mb-4 rounded-2xl border border-border/60 bg-surface/50 px-4 py-3 text-center text-xs text-muted-foreground">
+        <CloudRetryNotice onRetry={reload}>
           目前連不上雲端資料，你的日子沒有遺失，請稍後再試。
-        </p>
+        </CloudRetryNotice>
       ) : null}
 
       <div className="mb-5 rounded-2xl border border-border/60 bg-surface/50 px-4 py-4">
