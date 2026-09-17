@@ -80,15 +80,18 @@ function FanWeatherPage() {
     useState<string | null>(null);
 
   useEffect(() => {
-    if (!ready || !event) {
+    const currentEvent = event;
+    if (!ready || !currentEvent) {
       return;
     }
 
-    if (!event.city) {
+    if (!currentEvent.city) {
       setWeatherInput(null);
       setWeatherError("這個重要日子還沒有設定城市");
       return;
     }
+    const city = currentEvent.city;
+    const eventDate = currentEvent.date.slice(0, 10);
 
     let cancelled = false;
 
@@ -99,8 +102,8 @@ function FanWeatherPage() {
 
       try {
         const params = new URLSearchParams({
-          city: event.city ?? "",
-          date: event.date.slice(0, 10),
+          city,
+          date: eventDate,
         });
 
         const response = await fetch(
