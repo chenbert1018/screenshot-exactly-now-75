@@ -129,6 +129,9 @@ function MusicPage() {
   const [memoriesOpen, setMemoriesOpen] =
     useState(false);
 
+  const [recapOpen, setRecapOpen] =
+    useState(false);
+
   const [busy, setBusy] =
     useState("");
 
@@ -593,29 +596,98 @@ function MusicPage() {
           ) : null}
 
           {/* RECAP */}
+
           <SectionDivider />
 
-          <SectionLabel
-            eyebrow="RECAP ♡"
-            title="我們的音樂回顧"
-            description="一個月、一整年，原來都有自己的 BGM。"
-          />
+          <section>
 
-          <MonthlyMusicCard
-            idolName={
-              homeIdol.name || "他"
-            }
-            items={timelineItems}
-            ready={timelineReady}
-          />
+            <button
 
-          <YearInMusicCard
-            idolName={
-              homeIdol.name || "他"
-            }
-            items={timelineItems}
-            ready={timelineReady}
-          />
+              type="button"
+
+              onClick={() =>
+                setRecapOpen(
+                  (value) => !value,
+                )
+              }
+
+              className="flex w-full items-center gap-3 rounded-[1.6rem] bg-surface/55 px-4 py-4 text-left"
+
+            >
+
+              <div className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+
+                <Music2 className="size-4" />
+
+              </div>
+
+              <div className="min-w-0 flex-1">
+
+                <p className="text-[11px] font-medium tracking-[0.12em] text-primary">
+
+                  RECAP ♡
+
+                </p>
+
+                <p className="mt-1 font-display text-[15px] font-medium">
+
+                  我們的音樂回顧
+
+                </p>
+
+                <p className="mt-1 text-[11px] text-muted-foreground">
+
+                  這個月與這一年的歌，都替你留在這裡。
+
+                </p>
+
+              </div>
+
+              {recapOpen ? (
+
+                <ChevronUp className="size-4 text-muted-foreground" />
+
+              ) : (
+
+                <ChevronDown className="size-4 text-muted-foreground" />
+
+              )}
+
+            </button>
+
+            {recapOpen ? (
+
+              <div className="mt-4">
+
+                <MonthlyMusicCard
+
+                  idolName={
+                    homeIdol.name || "他"
+                  }
+
+                  items={timelineItems}
+
+                  ready={timelineReady}
+
+                />
+
+                <YearInMusicCard
+
+                  idolName={
+                    homeIdol.name || "他"
+                  }
+
+                  items={timelineItems}
+
+                  ready={timelineReady}
+
+                />
+
+              </div>
+
+            ) : null}
+
+          </section>
 
           {/* OUR SOUNDTRACK */}
           {songs.length > 0 ? (
