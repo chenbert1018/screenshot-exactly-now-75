@@ -286,6 +286,37 @@ export type Database = {
         Update: { user_id?: string; idol_id?: string; song_id?: string; role?: string }
         Relationships: []
       }
+      idol_song_journal_entries: {
+        Row: {
+          id: string
+          user_id: string
+          idol_id: string
+          song_id: string | null
+          entry_date: string
+          mood: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          idol_id: string
+          song_id?: string | null
+          entry_date: string
+          mood?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          user_id?: string
+          idol_id?: string
+          song_id?: string | null
+          entry_date?: string
+          mood?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       memory_folders: {
         Row: {
           cover_photo: string
