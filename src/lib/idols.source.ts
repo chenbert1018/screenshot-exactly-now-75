@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./auth";
+import { useSubscription } from "./subscription";
 import { MAX_IDOLS, useIdols, type Idol, type IdolDraft, type RepresentativeAnimal } from "./idols";
 import { ensureStorageMigration } from "./storage-migration";
 import { isDataUrl, uploadImage } from "./storage";
@@ -148,7 +149,7 @@ function sameIdol(a: Idol, b: Idol) {
 export type MigrationResult = {
   created: number;
   skipped: number;
-  /** 因為雲端已滿 5 位而無法搬移的本機偶像名稱 */
+  /** 因為目前方案的偶像槽位已滿而無法搬移的本機偶像名稱 */
   pending: string[];
 };
 
@@ -158,7 +159,8 @@ export type MigrationResult = {
  * - 雲端已存在同名同團同生日/出道日的不再建立
  * - 從不刪除或覆蓋任何資料
  */
-export async function migrateLocalIdols(userId: string): Promise<MigrationResult> {
+export async function migrateLocalIdols(userId: string, limit = MAX_IDOLS): Promise<MigrationResult> {
+  const allowed = Math.min(Math.max(1, limit), MAX_IDOLS);
   const record = getMigrationRecord(userId);
   const local = readLocalIdols();
   const cloud = await listCloudIdols();
@@ -179,12 +181,12 @@ export async function migrateLocalIdols(userId: string): Promise<MigrationResult
       result.skipped += 1;
       continue;
     }
-    if (cloudList.length >= MAX_IDOLS) {
+    if (cloudList.length >= allowed) {
       result.pending.push(item.name);
       continue;
     }
     const { id: _localId, ...draft } = item;
-    const created = await createCloudIdol(draft as IdolDraft, userId);
+    const created = await createCloudIdol(draft as IdolDraft, userId, allowed);
     cloudList.push(created);
     map[item.id] = created.id;
     result.created += 1;
@@ -205,14 +207,15 @@ export async function migrateLocalIdols(userId: string): Promise<MigrationResult
 const inflight = new Map<string, Promise<Record<string, string>>>();
 
 /** 確保偶像 migration 完成，回傳 local idol id → cloud idol id 對照；同時只會執行一次 */
-export function ensureIdolMigration(userId: string): Promise<Record<string, string>> {
-  const running = inflight.get(userId);
+export function ensureIdolMigration(userId: string, limit = MAX_IDOLS): Promise<Record<string, string>> {
+  const key = `${userId}:${limit}`;
+  const running = inflight.get(key);
   if (running) return running;
   const task = (async () => {
-    if (!getMigrationRecord(userId).done) await migrateLocalIdols(userId);
+    if (!getMigrationRecord(userId).done) await migrateLocalIdols(userId, limit);
     return getMigrationRecord(userId).map;
-  })().finally(() => inflight.delete(userId));
-  inflight.set(userId, task);
+  })().finally(() => inflight.delete(key));
+  inflight.set(key, task);
   return task;
 }
 
@@ -256,6 +259,7 @@ export type IdolSource = {
 
 export function useIdolSource(): IdolSource {
   const { user, loading: authLoading } = useAuth();
+  const { idolLimit } = useSubscription();
   const local = useIdols();
 
   const [cloudIdols, setCloudIdols] = useState<Idol[]>([]);
@@ -288,7 +292,7 @@ export function useIdolSource(): IdolSource {
     (async () => {
       try {
         // 先完成一次性 migration，再切換到雲端資料
-        const map = await ensureIdolMigration(userId);
+        const map = await ensureIdolMigration(userId, idolLimit);
         if (!active) return;
         setAliasMap(map);
 
@@ -332,7 +336,7 @@ export function useIdolSource(): IdolSource {
     return () => {
       active = false;
     };
-  }, [userId, tick, scope]);
+  }, [userId, tick, scope, idolLimit]);
 
   const reload = useCallback(() => setTick((n) => n + 1), []);
 
@@ -385,7 +389,7 @@ export function useIdolSource(): IdolSource {
   const addIdol = useCallback(
     async (draft: IdolDraft) => {
       if (isCloud && userId) {
-        const created = await createCloudIdol(draft, userId);
+        const created = await createCloudIdol(draft, userId, idolLimit);
         saveAnimalPreference(userId, created.id, draft.representativeAnimal);
         await storePhoto(userId, created.id, draft.photo, (photo) =>
           updateCloudIdol(created.id, { ...draft, photo }),
@@ -393,9 +397,12 @@ export function useIdolSource(): IdolSource {
         reload();
         return;
       }
+      if (local.idols.length >= idolLimit) {
+        throw new Error(`目前方案最多只能收藏 ${idolLimit} 位偶像`);
+      }
       local.addIdol(draft);
     },
-    [isCloud, userId, local, reload],
+    [isCloud, userId, local, reload, idolLimit],
   );
 
   const updateIdolFn = useCallback(
