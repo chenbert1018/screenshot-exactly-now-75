@@ -7,6 +7,7 @@ import { IdolFormSheet } from "@/components/IdolFormSheet";
 import { type IdolDraft } from "@/lib/idols";
 import { useIdolSource } from "@/lib/idols.source";
 import { Paywall } from "@/components/Paywall";
+import { CloudRetryNotice } from "@/components/CloudRetryNotice";
 import { useSubscription } from "@/lib/subscription";
 
 export const Route = createFileRoute("/idols")({
@@ -38,6 +39,7 @@ function IdolsPage() {
     coverRotation,
     setMainIdol,
     setCoverRotation,
+    reload,
   } = useIdolSource();
   const [open, setOpen] = useState(false);
   const [paywall, setPaywall] = useState(false);
@@ -74,9 +76,9 @@ function IdolsPage() {
       />
 
       {error ? (
-        <p className="mb-4 rounded-2xl border border-border/60 bg-surface/50 px-4 py-3 text-center text-xs text-muted-foreground">
+        <CloudRetryNotice onRetry={reload}>
           目前連不上雲端資料，你的資料沒有遺失，請稍後再試。
-        </p>
+        </CloudRetryNotice>
       ) : null}
 
       {ready && idols.length > 1 ? (
