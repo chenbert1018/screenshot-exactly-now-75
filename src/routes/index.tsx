@@ -61,7 +61,7 @@ function dailyAnimalLine(idol: Idol) {
 }
 
 function dayLabel(event: IdolEvent) {
-  const days = eventCountdown(event.date).daysUntil ?? 0;
+  const days = eventCountdown(event.date)?.daysUntil ?? 0;
   return days === 0 ? "TODAY" : `D - ${Math.max(0, days)}`;
 }
 
@@ -89,7 +89,7 @@ type HomeWeatherResponse =
   | { ok: false; error?: string };
 
 function FanWeatherCard({ event }: { event: IdolEvent }) {
-  const days = eventCountdown(event.date).daysUntil ?? 0;
+  const days = eventCountdown(event.date)?.daysUntil ?? 0;
   const timing = days === 0 ? "今天" : `${Math.max(0, days)} 天後`;
   const place = event.locationName?.trim() || event.city?.trim() || event.title;
   const [input, setInput] = useState<FanWeatherInput | null>(null);
@@ -155,7 +155,7 @@ function FanWeatherCard({ event }: { event: IdolEvent }) {
 
 
 function FanWeatherSetupCard({ event }: { event: IdolEvent }) {
-  const days = eventCountdown(event.date).daysUntil ?? 0;
+  const days = eventCountdown(event.date)?.daysUntil ?? 0;
   const timing = days === 0 ? "今天" : `${Math.max(0, days)} 天後`;
 
   return (
@@ -173,7 +173,7 @@ function FanWeatherSetupCard({ event }: { event: IdolEvent }) {
   );
 }
 
-function ArchaeologyCard({ item }: { item: { title: string; imageUrl?: string; createdAt: string; collection: string } }) {
+function ArchaeologyCard({ item }: { item: { title: string; imageUrl?: string | undefined; createdAt: string; collection: string } }) {
   return (
     <Link to="/archaeology" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground p-3 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
       <div className="flex size-[5.2rem] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/10 text-primary">
@@ -206,7 +206,7 @@ function EmptyArchaeologyCard() {
   );
 }
 
-function MemoryCard({ memory }: { memory: { title: string; note: string; photo?: string; date: string } }) {
+function MemoryCard({ memory }: { memory: { title: string; note: string; photo?: string | undefined; date: string } }) {
   const text = memory.title.trim() || memory.note.trim() || "那天也好想你 ♡";
   return (
     <Link to="/memories" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground p-3 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
