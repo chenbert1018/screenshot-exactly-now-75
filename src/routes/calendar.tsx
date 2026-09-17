@@ -26,6 +26,7 @@ import { useReminderSource } from "@/lib/reminders.source";
 import { ReminderSheet } from "@/components/ReminderSheet";
 import { deleteMilestonesForEvent } from "@/lib/milestones";
 import { toast } from "sonner";
+import { scheduleEventNotifications } from "@/lib/event-notifications";
 
 export const Route = createFileRoute("/calendar")({
   head: () => ({
@@ -679,8 +680,9 @@ function CalendarPage() {
               : (detail ? (eventCountdown(detail.date, base)?.dotDate ?? detail.date) : "")
           }
           initialDaysBefore={currentReminder?.enabled ? currentReminder.daysBefore : null}
-          onSave={(daysBefore) => {
-            void setReminderFor(reminderTarget, daysBefore);
+          onSave={async (daysBefore) => {
+            await setReminderFor(reminderTarget, daysBefore);
+            if (detail) await scheduleEventNotifications(detail, daysBefore);
             setReminderOpen(false);
           }}
         />
