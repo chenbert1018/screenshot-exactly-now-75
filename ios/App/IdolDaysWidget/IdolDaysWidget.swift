@@ -21,6 +21,8 @@ struct IdolDaysEntry: TimelineEntry {
     let moodLabel: String
     let decorationEmoji: String
     let decorationLabel: String
+    let songTitle: String
+    let songArtist: String
     let enabledContents: [String]
 
     func enabled(_ type: String) -> Bool {
@@ -41,6 +43,8 @@ struct WidgetSnapshot: Codable {
     let moodLabel: String?
     let decorationEmoji: String?
     let decorationLabel: String?
+    let songTitle: String?
+    let songArtist: String?
     let enabledContents: [String]?
 
     let updatedAt: String
@@ -138,6 +142,8 @@ struct IdolDaysProvider: TimelineProvider {
             moodLabel: snapshot.moodLabel ?? "",
             decorationEmoji: snapshot.decorationEmoji ?? "",
             decorationLabel: snapshot.decorationLabel ?? "",
+            songTitle: snapshot.songTitle ?? "",
+            songArtist: snapshot.songArtist ?? "",
             enabledContents: enabled
         )
     }
@@ -155,12 +161,15 @@ struct IdolDaysProvider: TimelineProvider {
             moodLabel: "今天值得開心",
             decorationEmoji: "✦",
             decorationLabel: "平常的一天，也很好",
+            songTitle: "You & Me",
+            songArtist: "JENNIE",
             enabledContents: [
                 "IDOL",
                 "MESSAGE",
                 "DECORATION",
                 "MOOD",
-                "COUNTDOWN"
+                "COUNTDOWN",
+                "SONG"
             ]
         )
     }
@@ -251,6 +260,11 @@ struct IdolDaysWidgetEntryView: View {
                     }
                 }
 
+                if hasSongOfDay {
+                    songOfDayLine(compact: true)
+                        .padding(.top, 4)
+                }
+
                 Spacer()
 
                 HStack(
@@ -276,6 +290,10 @@ struct IdolDaysWidgetEntryView: View {
                                 .foregroundStyle(.white)
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.6)
+                        }
+
+                        if hasSongOfDay {
+                            songOfDayLine(compact: true)
                         }
 
                         if entry.enabled("COUNTDOWN"),
@@ -698,6 +716,10 @@ struct IdolDaysWidgetEntryView: View {
                         )
                     }
 
+                    if hasSongOfDay {
+                        songOfDayLine(compact: false)
+                    }
+
                     if entry.enabled("MESSAGE"),
                        !entry.quote.trimmed.isEmpty {
                         HStack(spacing: 7) {
@@ -772,6 +794,41 @@ struct IdolDaysWidgetEntryView: View {
         }
 
         return emoji.isEmpty ? "💗" : emoji
+    }
+
+    private var hasSongOfDay: Bool {
+        entry.enabled("SONG") && !entry.songTitle.trimmed.isEmpty
+    }
+
+    @ViewBuilder
+    private func songOfDayLine(compact: Bool) -> some View {
+        HStack(spacing: compact ? 4 : 6) {
+            Image(systemName: "music.note")
+                .font(.system(size: compact ? 10 : 13, weight: .bold))
+
+            Text(entry.songTitle)
+                .lineLimit(1)
+
+            if !entry.songArtist.trimmed.isEmpty {
+                Text("· \(entry.songArtist)")
+                    .lineLimit(1)
+                    .opacity(0.78)
+            }
+        }
+        .font(
+            .system(
+                size: compact ? 9 : 12,
+                weight: .semibold,
+                design: .rounded
+            )
+        )
+        .foregroundStyle(.white)
+        .padding(.horizontal, compact ? 7 : 10)
+        .padding(.vertical, compact ? 4 : 6)
+        .background(.black.opacity(compact ? 0.22 : 0.20))
+        .clipShape(
+            Capsule()
+        )
     }
 
     // MARK: - Shared Photo
@@ -927,11 +984,14 @@ private let previewEntry = IdolDaysEntry(
     moodLabel: "今天值得開心",
     decorationEmoji: "✦",
     decorationLabel: "平常的一天，也很好",
+    songTitle: "You & Me",
+    songArtist: "JENNIE",
     enabledContents: [
         "IDOL",
         "MESSAGE",
         "DECORATION",
         "MOOD",
-        "COUNTDOWN"
+        "COUNTDOWN",
+        "SONG"
     ]
 )
