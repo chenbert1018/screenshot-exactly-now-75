@@ -31,6 +31,7 @@ import {
 import { useMemorySource } from "@/lib/memories.source";
 import { useIdolSource } from "@/lib/idols.source";
 import { useIdolMusicSource } from "@/lib/idol-music.source";
+import { streamingLink } from "@/lib/idol-music";
 import { toast } from "sonner";
 import { parseLocalDate } from "@/lib/dates";
 
@@ -233,9 +234,11 @@ function FolderDetailPage() {
                               {m.note}
                             </p>
                           ) : null}
-                          {m.songId ? (
-                            <p className="mt-2 text-xs text-primary">🎵 {songs.find((song) => song.id === m.songId)?.title ?? "已連結的歌曲"}</p>
-                          ) : null}
+                          {m.songId ? (() => {
+                            const song = songs.find((item) => item.id === m.songId);
+                            const link = song ? streamingLink(song) : "";
+                            return <div className="mt-3 rounded-xl bg-primary/8 px-3 py-2"><p className="text-xs text-primary">🎵 {song?.title ?? "已連結的歌曲"}</p>{link ? <a href={link} target="_blank" rel="noreferrer" className="mt-1 inline-block text-xs font-medium text-primary underline underline-offset-2">🎧 再聽一次</a> : <p className="mt-1 text-xs text-muted-foreground">到「我們的歌」補上合法串流連結</p>}</div>;
+                          })() : null}
                         </div>
                         <DropdownMenu>
                           <DropdownMenuTrigger
