@@ -15,6 +15,16 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { useEventSource } from "../lib/events.source";
 import { useFanWeatherLifecycle } from "../lib/fan-weather-lifecycle";
 import { useNotificationNavigation } from "../lib/notification-navigation";
+import { useSettings } from "../lib/settings";
+
+/**
+ * 主題必須在 App 首次掛載時就同步；不可等到「我的」頁才讀設定，
+ * 否則首頁會先顯示 CSS 預設色、切到個人頁後整個 App 才突然變色。
+ */
+function AppThemeSynchronizer() {
+  useSettings();
+  return null;
+}
 
 function NotFoundComponent() {
   return (
@@ -138,6 +148,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <AppThemeSynchronizer />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <Toaster position="top-center" />
