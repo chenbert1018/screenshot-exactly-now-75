@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { ExternalLink, Music2 } from "lucide-react";
+import { ExternalLink, Music2, Share2 } from "lucide-react";
 import { streamingLink } from "@/lib/idol-music";
 import {
   availableMusicYears,
   buildYearInMusic,
 } from "@/lib/year-in-music";
 import type { MusicTimelineItem } from "@/lib/music-timeline";
+import { shareYearInMusicCard } from "@/lib/year-in-music-share";
 
 type Props = {
   idolName: string;
@@ -25,6 +26,8 @@ export function YearInMusicCard({
 
   const [selectedYear, setSelectedYear] =
     useState<number | null>(null);
+  const [sharing, setSharing] = useState(false);
+  const [shareError, setShareError] = useState("");
 
   useEffect(() => {
     if (years.length === 0) {
@@ -64,6 +67,22 @@ export function YearInMusicCard({
   const listenUrl = remembered
     ? streamingLink(remembered.song)
     : "";
+
+  const share = async () => {
+    setSharing(true);
+    setShareError("");
+
+    try {
+      await shareYearInMusicCard(
+        idolName || "MY IDOL",
+        summary,
+      );
+    } catch {
+      setShareError("分享卡建立失敗，請再試一次。");
+    } finally {
+      setSharing(false);
+    }
+  };
 
   return (
     <section className="mt-7">
@@ -171,6 +190,27 @@ export function YearInMusicCard({
           <br />
           都有自己的 BGM。」
         </p>
+
+        <button
+          type="button"
+          disabled={sharing}
+          onClick={() => void share()}
+          className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground disabled:opacity-60"
+        >
+          <Share2 className="size-4" />
+          {sharing
+            ? "正在建立年度回顧…"
+            : `分享我的 ${summary.year} OUR MUSIC ♡`}
+        </button>
+
+        {shareError ? (
+          <p
+            role="alert"
+            className="mt-2 text-center text-xs text-destructive"
+          >
+            {shareError}
+          </p>
+        ) : null}
       </div>
     </section>
   );
