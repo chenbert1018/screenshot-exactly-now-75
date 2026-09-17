@@ -105,6 +105,7 @@ function HeartPage() {
   const [editing, setEditing] = useState<HeartItem | null>(null);
   const [detail, setDetail] = useState<HeartItem | null>(null);
   const [pendingDelete, setPendingDelete] = useState<HeartItem | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const idolName = (id: string) => idols.find((i) => i.id === id)?.name || "已刪除的偶像";
 
@@ -311,13 +312,23 @@ function HeartPage() {
             <AlertDialogCancel className="rounded-full">留下這顆糖</AlertDialogCancel>
             <AlertDialogAction
               className="rounded-full bg-destructive text-destructive-foreground"
-              onClick={() => {
-                if (pendingDelete) void remove(pendingDelete.id);
-                setPendingDelete(null);
-                setDetail(null);
+              disabled={deleting}
+              onClick={async (event) => {
+                event.preventDefault();
+                if (!pendingDelete || deleting) return;
+                setDeleting(true);
+                try {
+                  await remove(pendingDelete.id);
+                  setPendingDelete(null);
+                  setDetail(null);
+                } catch {
+                  toast.error("這顆糖沒有刪除成功，請確認網路後再試一次");
+                } finally {
+                  setDeleting(false);
+                }
               }}
             >
-              還是刪掉
+              {deleting ? "刪除中…" : "還是刪掉"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
