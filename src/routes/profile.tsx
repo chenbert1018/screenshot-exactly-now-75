@@ -70,7 +70,7 @@ function ProfilePage() {
 
   const displayName =
     cloudProfile?.displayName.trim() ||
-    user?.user_metadata?.display_name ||
+    user?.user_metadata?.["display_name"] ||
     "尚未設定名稱";
 
   async function editDisplayName() {
