@@ -61,14 +61,22 @@ export async function listCloudIdols(): Promise<Idol[]> {
   return (data ?? []).map((r) => toIdol(r as Row));
 }
 
-/** 保留免費 5 位槽位規則 */
-export async function createCloudIdol(draft: IdolDraft, userId: string): Promise<Idol> {
+/**
+ * 建立偶像時同時套用目前帳號可用的槽位上限。
+ * MAX_IDOLS 是系統硬上限；呼叫端提供的 limit 則反映免費／Plus 權限。
+ */
+export async function createCloudIdol(
+  draft: IdolDraft,
+  userId: string,
+  limit = MAX_IDOLS,
+): Promise<Idol> {
+  const allowed = Math.min(Math.max(1, limit), MAX_IDOLS);
   const { count, error: countError } = await supabase
     .from("idols")
     .select("id", { count: "exact", head: true });
   if (countError) throw countError;
-  if ((count ?? 0) >= MAX_IDOLS) {
-    throw new Error(`最多只能收藏 ${MAX_IDOLS} 位偶像`);
+  if ((count ?? 0) >= allowed) {
+    throw new Error(`目前方案最多只能收藏 ${allowed} 位偶像`);
   }
 
   const { data, error } = await supabase
