@@ -236,7 +236,7 @@ export function EventFormSheet({
                 </div>
 
                 <span className="shrink-0 rounded-full bg-card px-3 py-1.5 text-xs text-muted-foreground">
-                  🔒 Plus 專屬
+                  IdolDays Plus ♡
                 </span>
               </div>
 

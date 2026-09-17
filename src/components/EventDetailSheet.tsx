@@ -86,7 +86,7 @@ function MilestoneRow({
         onClick={onToggle}
         className={`relative z-10 mt-3 flex size-10 shrink-0 items-center justify-center rounded-full border transition-all ${
           done
-            ? "border-primary bg-primary text-primary-foreground shadow-[0_5px_14px_rgba(233,139,170,0.3)]"
+            ? "border-primary bg-primary text-primary-foreground shadow-soft"
             : "border-primary/35 bg-card text-primary"
         }`}
       >
