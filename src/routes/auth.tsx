@@ -33,7 +33,10 @@ function AuthPage() {
 
   return (
     <AppShell>
-      <PageHeader title="雲端帳號" subtitle="登入後，偶像收藏可以保存在雲端。" />
+      <PageHeader
+        title="把我們的日子收好 ♡"
+        subtitle="登入 IdolDays，讓喜歡的日子陪你留得更久。"
+      />
       {loading ? (
         <SoftCard className="px-5 py-6 text-sm text-muted-foreground">讀取中…</SoftCard>
       ) : user ? (
@@ -64,20 +67,41 @@ function SignedOut() {
   };
 
   return (
-    <SoftCard className="px-5 py-6">
-      <div className="mb-5 flex gap-2">
+    <SoftCard className="relative overflow-hidden px-5 py-6">
+      <span
+        aria-hidden
+        className="pointer-events-none absolute top-4 right-5 text-lg text-primary/25"
+      >
+        ✦
+      </span>
+
+      <div className="mb-6">
+        <p className="text-xs font-semibold tracking-[0.16em] text-primary">
+          IDOLDAYS CLOUD ♡
+        </p>
+        <p className="mt-2 font-display text-[20px] font-semibold">
+          {mode === "signin" ? "歡迎回來" : "開始收藏我們的日子"}
+        </p>
+        <p className="mt-1 text-sm leading-6 text-muted-foreground">
+          {mode === "signin"
+            ? "你的收藏與設定，都在這裡等你。"
+            : "建立帳號，把重要的追星日子留在雲端。"}
+        </p>
+      </div>
+
+      <div className="mb-5 grid grid-cols-2 rounded-full bg-surface/70 p-1">
         <Button
           type="button"
-          variant={mode === "signin" ? "default" : "secondary"}
-          className="flex-1"
+          variant="ghost"
+          className={`rounded-full ${mode === "signin" ? "bg-card text-primary shadow-soft hover:bg-card" : "text-muted-foreground"}`}
           onClick={() => setMode("signin")}
         >
           登入
         </Button>
         <Button
           type="button"
-          variant={mode === "signup" ? "default" : "secondary"}
-          className="flex-1"
+          variant="ghost"
+          className={`rounded-full ${mode === "signup" ? "bg-card text-primary shadow-soft hover:bg-card" : "text-muted-foreground"}`}
           onClick={() => setMode("signup")}
         >
           註冊
@@ -88,6 +112,7 @@ function SignedOut() {
           <Label htmlFor="auth-email">Email</Label>
           <Input
             id="auth-email"
+            className="min-h-12 rounded-2xl border-border/70 bg-card/70 px-4 shadow-none"
             type="email"
             autoComplete="email"
             required
@@ -99,6 +124,7 @@ function SignedOut() {
           <Label htmlFor="auth-password">密碼</Label>
           <Input
             id="auth-password"
+            className="min-h-12 rounded-2xl border-border/70 bg-card/70 px-4 shadow-none"
             type="password"
             autoComplete={mode === "signin" ? "current-password" : "new-password"}
             required
@@ -107,7 +133,11 @@ function SignedOut() {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <Button type="submit" className="w-full" disabled={busy}>
+        <Button
+          type="submit"
+          className="min-h-12 w-full rounded-full shadow-soft"
+          disabled={busy}
+        >
           {busy ? "處理中…" : mode === "signin" ? "登入" : "建立帳號"}
         </Button>
       </form>
@@ -117,7 +147,7 @@ function SignedOut() {
         </p>
       ) : null}
       <p className="mt-4 text-xs text-muted-foreground">
-        目前手機上的收藏仍然保存在這台裝置，登入不會改變或刪除它們。
+        登入不會刪除這台 iPhone 上原本保存的內容。
       </p>
     </SoftCard>
   );
@@ -183,8 +213,12 @@ function SignedIn({ email, userId }: { email: string; userId: string }) {
 
   return (
     <>
-      <SoftCard className="mb-8 px-5 py-6">
-        <p className="text-[15px] font-medium">已登入</p>
+      <SoftCard className="relative mb-8 overflow-hidden px-5 py-6">
+        <span aria-hidden className="absolute top-4 right-5 text-primary/25">♡</span>
+        <p className="text-xs font-semibold tracking-[0.14em] text-primary">
+          IDOLDAYS CLOUD
+        </p>
+        <p className="mt-2 text-[17px] font-medium">已經替你收好 ♡</p>
         <p className="mt-1 truncate text-sm text-muted-foreground">{email}</p>
         {profile ? (
           <p className="mt-1 text-xs text-muted-foreground">
@@ -194,21 +228,22 @@ function SignedIn({ email, userId }: { email: string; userId: string }) {
         <Button
           type="button"
           variant="secondary"
-          className="mt-4 w-full"
+          className="mt-5 min-h-11 w-full rounded-full"
           onClick={() => void signOut()}
         >
           登出
         </Button>
       </SoftCard>
 
-      <Section title="雲端偶像" hint={`${idols.length}／${MAX_IDOLS}`}>
+      <Section title="雲端收藏" hint={`${idols.length}／${MAX_IDOLS}`}>
         <SoftCard className="px-5 py-5">
           <p className="text-sm text-muted-foreground">
-            這裡是雲端保存的偶像，和手機上原本的收藏各自獨立，本階段還沒有互相搬移。
+            目前雲端收藏與這台 iPhone 的本機收藏各自保存。
           </p>
           <form onSubmit={add} className="mt-4 flex gap-2">
             <Input
               aria-label="偶像名字"
+              className="min-h-11 rounded-2xl border-border/70 bg-card/70"
               placeholder="偶像名字"
               value={name}
               onChange={(e) => setName(e.target.value)}

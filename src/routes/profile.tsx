@@ -111,10 +111,22 @@ function ProfilePage() {
 
   return (
     <AppShell>
-      <PageHeader title="我的" />
+      <PageHeader title="我的" subtitle="只屬於你的 IdolDays ♡" />
 
-      <SoftCard className="mb-8 flex items-center gap-4 px-5 py-6">
-        <div className="flex size-16 items-center justify-center rounded-full bg-surface text-muted-foreground">
+      <SoftCard className="relative mb-8 overflow-hidden px-5 py-6">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute top-4 right-5 text-lg text-primary/25"
+        >
+          ✦
+        </span>
+
+        <p className="mb-4 text-xs font-semibold tracking-[0.16em] text-primary">
+          MY IDOLDAYS ♡
+        </p>
+
+        <div className="flex items-center gap-4">
+        <div className="flex size-16 items-center justify-center rounded-full bg-accent/35 text-primary">
           <UserRound className="size-7" strokeWidth={1.5} />
         </div>
         <div className="min-w-0 flex-1">
@@ -129,20 +141,23 @@ function ProfilePage() {
           <button
             type="button"
             onClick={() => void editDisplayName()}
-            className="rounded-full bg-surface px-3 py-2 text-xs text-muted-foreground active:scale-95"
+            className="rounded-full border border-border/60 bg-card/70 px-3 py-2 text-xs text-muted-foreground transition-all duration-300 active:scale-95"
           >
             設定名稱
           </button>
         ) : null}
+        </div>
       </SoftCard>
 
-      <Section title="雲端帳號">
+      <Section title="我的帳號">
         <SoftCard className="divide-y divide-border/60">
           <Link
             to="/auth"
             className="flex w-full items-center gap-3 px-5 py-4 text-left transition-colors active:bg-surface/70"
           >
-            <Cloud className="size-[18px] text-muted-foreground" strokeWidth={1.6} />
+            <div className="flex size-9 items-center justify-center rounded-full bg-accent/30 text-primary">
+              <Cloud className="size-[17px]" strokeWidth={1.5} />
+            </div>
             <span className="min-w-0 flex-1">
               <span className="block text-sm">
                 {authLoading ? "讀取帳號中…" : user ? "已登入雲端帳號" : "登入／註冊雲端帳號"}
@@ -157,11 +172,13 @@ function ProfilePage() {
       </Section>
 
 
-      <Section title="提醒設定">
+      <Section title="替我記住的日子">
         <SoftCard className="px-5 py-5">
-          <p className="flex items-center gap-2 text-[15px] font-medium">🔔 重要日子提醒</p>
+          <p className="flex items-center gap-2 font-display text-[16px] font-medium">
+            重要日子提醒
+          </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            已開啟的提醒會同步到 App，並在 iPhone 排程通知。
+            到了重要的日子，IdolDays 會記得提醒你。
           </p>
           {reminderRows.length === 0 ? (
             <p className="mt-4 rounded-2xl bg-surface/60 px-4 py-4 text-sm text-muted-foreground">
@@ -197,7 +214,7 @@ function ProfilePage() {
         </SoftCard>
       </Section>
 
-      <Section title="設定">
+      <Section title="IdolDays 設定">
         <SoftCard className="divide-y divide-border/60">
           {settings.map(({ key, label, Icon }) => (
             <button
@@ -206,7 +223,9 @@ function ProfilePage() {
               onClick={() => setOpenSheet(key)}
               className="flex w-full items-center gap-3 px-5 py-4 text-left transition-colors active:bg-surface/70"
             >
-              <Icon className="size-[18px] text-muted-foreground" strokeWidth={1.6} />
+              <div className="flex size-9 items-center justify-center rounded-full bg-surface text-primary">
+                <Icon className="size-[17px]" strokeWidth={1.5} />
+              </div>
               <span className="flex-1 text-sm">{label}</span>
               <ChevronRight className="size-4 text-muted-foreground" strokeWidth={1.6} />
             </button>
@@ -216,21 +235,23 @@ function ProfilePage() {
             to="/widget"
             className="flex w-full items-center gap-3 px-5 py-4 text-left transition-colors active:bg-surface/70"
           >
-            <PanelsTopLeft className="size-[18px] text-muted-foreground" strokeWidth={1.6} />
+            <div className="flex size-9 items-center justify-center rounded-full bg-surface text-primary">
+              <PanelsTopLeft className="size-[17px]" strokeWidth={1.5} />
+            </div>
             <span className="flex-1 text-sm">桌面陪伴</span>
             <ChevronRight className="size-4 text-muted-foreground" strokeWidth={1.6} />
           </Link>
         </SoftCard>
       </Section>
 
-      <Section title="訂閱">
-        <SoftCard className="px-0 py-0">
+      <Section title="IdolDays Plus ♡">
+        <SoftCard className="overflow-hidden px-0 py-0">
           <button
             type="button"
             onClick={() => setPaywall(true)}
             className="flex w-full items-center gap-4 px-5 py-5 text-left transition-colors active:bg-surface/70"
           >
-            <div className="flex size-11 items-center justify-center rounded-full bg-accent text-accent-foreground">
+            <div className="flex size-11 items-center justify-center rounded-full bg-accent/40 text-primary">
               <Sparkles className="size-5" strokeWidth={1.6} />
             </div>
             <div className="flex-1">
@@ -251,7 +272,10 @@ function ProfilePage() {
 
       <Paywall open={paywall} onOpenChange={setPaywall} />
 
-      <p className="mt-10 text-center text-xs text-muted-foreground">版本 0.1.0（S0 Foundation）</p>
+      <div className="mt-10 text-center">
+        <p className="font-display text-[16px] text-primary">IdolDays ♡</p>
+        <p className="mt-1 text-xs text-muted-foreground">版本 0.1.0</p>
+      </div>
 
       <GeneralSettingsSheet
         open={openSheet === "general"}
