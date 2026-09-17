@@ -289,12 +289,10 @@ function EventsPage() {
           initialDaysBefore={
             reminderFor({ type: "EVENT", eventId: detail.id })?.daysBefore ?? DEFAULT_DAYS_BEFORE
           }
-          onSave={(daysBefore) => {
-            void (async () => {
-              await setReminderFor({ type: "EVENT", eventId: detail.id }, daysBefore);
-              await scheduleEventNotifications(detail, daysBefore);
-              setReminderOpen(false);
-            })();
+          onSave={async (daysBefore) => {
+            await setReminderFor({ type: "EVENT", eventId: detail.id }, daysBefore);
+            await scheduleEventNotifications(detail, daysBefore);
+            setReminderOpen(false);
           }}
         />
       ) : null}
