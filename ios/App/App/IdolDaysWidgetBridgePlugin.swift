@@ -37,6 +37,7 @@ public class IdolDaysWidgetBridgePlugin: CAPPlugin, CAPBridgedPlugin {
         let decorationLabel = call.getString("decorationLabel") ?? ""
         let songTitle = call.getString("songTitle") ?? ""
         let songArtist = call.getString("songArtist") ?? ""
+        let theme = call.getString("theme") ?? "sky"
         let enabledContents = call.getArray("enabledContents", String.self) ?? []
 
         guard !idolName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
@@ -58,6 +59,7 @@ public class IdolDaysWidgetBridgePlugin: CAPPlugin, CAPBridgedPlugin {
             "decorationLabel": decorationLabel,
             "songTitle": songTitle,
             "songArtist": songArtist,
+            "theme": theme,
             "enabledContents": enabledContents,
             "updatedAt": ISO8601DateFormatter().string(from: Date())
         ]

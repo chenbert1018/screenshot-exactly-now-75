@@ -567,7 +567,7 @@ struct IdolDaysWidgetEntryView: View {
                             Text(prettyDecorationEmoji)
                                 .font(.system(size: 30))
                                 .shadow(
-                                    color: Color.pink.opacity(0.35),
+                                    color: secondaryAccent.opacity(0.35),
                                     radius: 5,
                                     x: 0,
                                     y: 2
@@ -953,45 +953,3 @@ struct IdolDaysWidget: Widget {
         .contentMarginsDisabled()
     }
 }
-
-#Preview("Small", as: .systemSmall) {
-    IdolDaysWidget()
-} timeline: {
-    previewEntry
-}
-
-#Preview("Medium", as: .systemMedium) {
-    IdolDaysWidget()
-} timeline: {
-    previewEntry
-}
-
-#Preview("Large", as: .systemLarge) {
-    IdolDaysWidget()
-} timeline: {
-    previewEntry
-}
-
-private let previewEntry = IdolDaysEntry(
-    date: .now,
-    idolName: "JENNIE",
-    eventTitle: "DEADLINE WORLD TOUR",
-    dDay: "D-12",
-    eventDate: "SEP 21 · 19:30",
-    location: "Taipei Arena",
-    quote: "今天也離見面的那一天更近了一點 ♡",
-    moodEmoji: "♡",
-    moodLabel: "今天值得開心",
-    decorationEmoji: "✦",
-    decorationLabel: "平常的一天，也很好",
-    songTitle: "You & Me",
-    songArtist: "JENNIE",
-    enabledContents: [
-        "IDOL",
-        "MESSAGE",
-        "DECORATION",
-        "MOOD",
-        "COUNTDOWN",
-        "SONG"
-    ]
-)

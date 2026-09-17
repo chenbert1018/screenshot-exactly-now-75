@@ -1,13 +1,26 @@
 import { Capacitor, registerPlugin } from "@capacitor/core";
 
+export type WidgetTheme =
+  | "system"
+  | "light"
+  | "dark"
+  | "sky";
+
 interface IdolDaysWidgetBridgePlugin {
   updateWidget(options: WidgetNativePayload): Promise<{
     success: boolean;
     snapshotPath?: string | undefined;
   }>;
+
+  setTheme(options: {
+    theme: WidgetTheme;
+  }): Promise<{
+    success: boolean;
+  }>;
 }
 
 export interface WidgetNativePayload {
+  theme: WidgetTheme;
   idolName: string;
   eventTitle: string;
   dDay: string;
@@ -49,6 +62,25 @@ export async function updateNativeWidget(
   } catch (error) {
     console.error(
       "[IdolDays Widget] Native sync failed:",
+      error,
+    );
+    return false;
+  }
+}
+
+export async function setNativeWidgetTheme(
+  theme: WidgetTheme,
+): Promise<boolean> {
+  if (!isNativeWidgetAvailable()) {
+    return false;
+  }
+
+  try {
+    const result = await WidgetBridge.setTheme({ theme });
+    return result.success === true;
+  } catch (error) {
+    console.error(
+      "[IdolDays Widget] Native theme sync failed:",
       error,
     );
     return false;

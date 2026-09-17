@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./auth";
 import { getMigrationRecord } from "./idols.source";
+import { setNativeWidgetTheme } from "./widget-native-bridge";
 
 const STORAGE_KEY = "idoldays.settings.v1";
 const SKY_DEFAULT_MIGRATION_KEY = "idoldays.skyDefault.v1";
@@ -193,7 +194,10 @@ export function useSettings() {
   const update = useCallback((patch: Partial<AppSettings>) => {
     const next = normalize({ ...read(), ...patch });
     write(next);
-    if (patch.theme) applyTheme(next.theme);
+    if (patch.theme) {
+      applyTheme(next.theme);
+      void setNativeWidgetTheme(next.theme);
+    }
     listeners.forEach((fn) => fn(next));
     if (user?.id) {
       void supabase.from("profiles").update(cloudPatch(next)).eq("user_id", user.id);

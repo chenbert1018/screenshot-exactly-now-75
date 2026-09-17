@@ -8,6 +8,7 @@ import { useEventSource } from "@/lib/events.source";
 import { useWidgetPreferenceSource } from "@/lib/widget-preferences.source";
 import { useIdolMusicSource } from "@/lib/idol-music.source";
 import { updateNativeWidget } from "@/lib/widget-native-bridge";
+import { useSettings } from "@/lib/settings";
 import { resolveImageUrl } from "@/lib/storage";
 import {
   getWidgetCompanionContent,
@@ -131,6 +132,7 @@ function WidgetNativeSync({
         decorationLabel,
         songTitle,
         songArtist,
+        theme: settings.theme,
         enabledContents,
         imageData,
       });
@@ -148,6 +150,7 @@ function WidgetNativeSync({
     decorationLabel,
     songTitle,
     songArtist,
+    settings.theme,
     enabledContents,
   ]);
 
@@ -155,6 +158,7 @@ function WidgetNativeSync({
 }
 
 function WidgetPage() {
+  const { settings } = useSettings();
   const { idols, ready } = useIdolSource();
   const { events } = useEventSource();
   const { prefs, update: updatePrefs } = useWidgetPreferenceSource();
