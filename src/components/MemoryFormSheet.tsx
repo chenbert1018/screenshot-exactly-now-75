@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { emptyMemoryDraft, type MemoryDraft } from "@/lib/memories";
+import { prepareUserImage } from "@/lib/image-upload";
 
 function todayValue() {
   const n = new Date();
@@ -46,11 +47,16 @@ export function MemoryFormSheet({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  function pickPhoto(file?: File | null) {
+  async function pickPhoto(file?: File | null) {
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => setDraft((d) => ({ ...d, photo: String(reader.result ?? "") }));
-    reader.readAsDataURL(file);
+    setError("");
+
+    try {
+      const photo = await prepareUserImage(file);
+      setDraft((d) => ({ ...d, photo }));
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "照片讀取失敗，請換一張再試");
+    }
   }
 
   function submit(e: React.FormEvent) {
@@ -111,7 +117,7 @@ export function MemoryFormSheet({
               accept="image/*"
               className="hidden"
               onChange={(e) => {
-                pickPhoto(e.target.files?.[0]);
+                void pickPhoto(e.target.files?.[0]);
                 e.target.value = "";
               }}
             />
