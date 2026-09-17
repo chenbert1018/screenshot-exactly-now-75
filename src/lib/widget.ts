@@ -1,6 +1,7 @@
 import { daysSince, today } from "./dates";
 import { eventCountdown, eventTypeMeta, nextEvent, type IdolEvent } from "./events";
 import type { Idol } from "./idols";
+import type { IdolSong } from "./idol-music";
 
 const IDOLS_KEY = "idoldays.idols.v1";
 const EVENTS_KEY = "idoldays.events.v1";
@@ -106,6 +107,7 @@ export const WIDGET_CONTENT_TYPES = [
   "DECORATION",
   "MOOD",
   "COUNTDOWN",
+  "SONG",
 ] as const;
 
 export type WidgetContentType = (typeof WIDGET_CONTENT_TYPES)[number];
@@ -134,12 +136,14 @@ export type WidgetCompanionContent = {
   mood: WidgetMood;
   decoration: WidgetDecoration;
   importantDate: WidgetImportantDate | null;
+  todaySong: Pick<IdolSong, "id" | "title" | "artist"> | null;
   /** YYYY-MM-DD */
   generatedFor: string;
 };
 
 export function getDefaultWidgetPreferences(): WidgetPreferences {
-  return { enabledContents: [...WIDGET_CONTENT_TYPES] };
+  // 歌曲是可選內容；既有小工具不會因為更新而突然改版。
+  return { enabledContents: ["IDOL", "MESSAGE", "DECORATION", "MOOD", "COUNTDOWN"] };
 }
 
 function sanitizePreferences(value: unknown): WidgetPreferences {
@@ -281,12 +285,14 @@ export function getWidgetCompanionContent(
   input?: {
     idols?: Idol[];
     events?: IdolEvent[];
+    songs?: IdolSong[];
     date?: Date;
     preferences?: WidgetPreferences;
   },
 ): WidgetCompanionContent {
   const idols = input?.idols ?? readList<Idol>(IDOLS_KEY);
   const events = input?.events ?? readList<IdolEvent>(EVENTS_KEY);
+  const songs = input?.songs ?? [];
   const date = input?.date ?? today();
   const prefs = sanitizePreferences(input?.preferences ?? loadWidgetPreferences());
 
@@ -298,6 +304,9 @@ export function getWidgetCompanionContent(
     : null;
 
   const scoped = chosen ? events.filter((e) => e.idolId === chosen.id) : events;
+  const todaySong = chosen
+    ? songs.find((song) => song.idolId === chosen.id && song.isTodayPick) ?? null
+    : null;
   const upcoming = nextEvent(scoped, date);
   const countdown = upcoming ? eventCountdown(upcoming.date, date) : null;
 
@@ -319,6 +328,9 @@ export function getWidgetCompanionContent(
     mood: getWidgetMood(date),
     decoration: getWidgetDecoration({ date, idol: chosen, events: scoped }),
     importantDate,
+    todaySong: todaySong
+      ? { id: todaySong.id, title: todaySong.title, artist: todaySong.artist }
+      : null,
     generatedFor: toDateKey(date),
   };
 }
