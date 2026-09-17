@@ -57,7 +57,7 @@ function getYouTubeVideoId(value: string) {
 
       const parts = url.pathname.split("/").filter(Boolean);
 
-      if (["shorts", "embed", "live"].includes(parts[0])) {
+      if (parts[0] && ["shorts", "embed", "live"].includes(parts[0])) {
         return parts[1] || "";
       }
     }
@@ -99,7 +99,7 @@ export function ArchaeologyFormSheet({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  initial?: ArchaeologyDraft;
+  initial?: ArchaeologyDraft | undefined;
   title?: string;
   submitLabel?: string;
   onSubmit: (draft: ArchaeologyDraft) => void;
