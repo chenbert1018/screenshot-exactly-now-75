@@ -14,9 +14,9 @@ export type ArchaeologyItem = {
   id: string;
   url: string;
   title: string;
-  imageUrl?: string;
+  imageUrl?: string | undefined;
   source: ArchaeologySource;
-  idolId?: string;
+  idolId?: string | undefined;
   collection: string;
   tags: string[];
   note: string;
@@ -27,8 +27,8 @@ export type ArchaeologyItem = {
 export type ArchaeologyDraft = {
   url: string;
   title: string;
-  imageUrl?: string;
-  idolId?: string;
+  imageUrl?: string | undefined;
+  idolId?: string | undefined;
   collection: string;
   tags: string[];
   note: string;
