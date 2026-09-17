@@ -32,7 +32,7 @@ export function AppShell({
       >
         ♡
       </span>
-      <div className="relative mx-auto min-h-screen w-full max-w-md px-5 pt-3 pb-32">
+      <div className="relative mx-auto min-h-screen w-full max-w-md px-5 pt-[max(0.75rem,env(safe-area-inset-top))] pb-[calc(7rem+env(safe-area-inset-bottom))]">
         {showProfileShortcut ? (
           <div className="mb-3 flex justify-end">
             <Link
@@ -141,5 +141,44 @@ export function EmptyState({
       ) : null}
       {action ? <div className="mt-5 flex justify-center">{action}</div> : null}
     </SoftCard>
+  );
+}
+
+
+export function AppButton({
+  children,
+  variant = "primary",
+  className = "",
+  type = "button",
+  disabled = false,
+  onClick,
+}: {
+  children: ReactNode;
+  variant?: "primary" | "secondary" | "ghost" | "danger";
+  className?: string;
+  type?: "button" | "submit" | "reset";
+  disabled?: boolean;
+  onClick?: () => void;
+}) {
+  const variants = {
+    primary:
+      "bg-primary text-primary-foreground shadow-soft hover:bg-primary/90",
+    secondary:
+      "border border-border/70 bg-card/75 text-foreground backdrop-blur hover:bg-accent/30",
+    ghost:
+      "bg-transparent text-muted-foreground hover:bg-accent/30 hover:text-foreground",
+    danger:
+      "bg-destructive text-destructive-foreground shadow-soft hover:bg-destructive/90",
+  };
+
+  return (
+    <button
+      type={type}
+      disabled={disabled}
+      onClick={onClick}
+      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl px-5 py-2.5 text-sm font-medium transition-all duration-300 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 ${variants[variant]} ${className}`}
+    >
+      {children}
+    </button>
   );
 }
