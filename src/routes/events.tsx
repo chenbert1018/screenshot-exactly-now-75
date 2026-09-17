@@ -269,9 +269,9 @@ function EventsPage() {
         }}
         onDelete={async () => {
           if (!detail) return;
+          await removeEvent(detail.id);
           await removeRemindersForEvent(detail.id);
           deleteMilestonesForEvent(detail.id);
-          await removeEvent(detail.id);
           setDetailId(null);
         }}
         reminderSummary={detail ? formatReminderSummary(remindersFor(detail.id)) : ""}
