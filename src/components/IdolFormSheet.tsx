@@ -1,7 +1,13 @@
 import { StoredImage } from "@/components/StoredImage";
 import { useEffect, useRef, useState } from "react";
 import { ImagePlus, Sparkles, X } from "lucide-react";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { emptyDraft, REPRESENTATIVE_ANIMALS, type IdolDraft } from "@/lib/idols";
@@ -21,7 +27,6 @@ const fields: { key: keyof IdolDraft; label: string; type?: string }[] = [
   { key: "fanName", label: "粉絲名稱" },
   { key: "sinceDate", label: "我喜歡他的日期", type: "date" },
 ];
-
 
 async function imageSourceToDataUrl(source: string): Promise<string> {
   if (source.startsWith("data:image/")) {
@@ -56,8 +61,7 @@ async function imageSourceToDataUrl(source: string): Promise<string> {
       resolve(result);
     };
 
-    reader.onerror = () =>
-      reject(reader.error ?? new Error("Unable to read image"));
+    reader.onerror = () => reject(reader.error ?? new Error("Unable to read image"));
 
     reader.readAsDataURL(blob);
   });
@@ -119,26 +123,21 @@ export function IdolFormSheet({
     setError("");
 
     try {
-      const nativeImageData =
-      await imageSourceToDataUrl(draft.photo);
+      const nativeImageData = await imageSourceToDataUrl(draft.photo);
 
-    const result =
-      await createNativeSubjectCutout(nativeImageData);
+      const result = await createNativeSubjectCutout(nativeImageData);
 
       if (!result?.imageData) {
         setError("找不到清楚的人物主體，請換一張照片再試");
         return;
       }
 
-      const cutoutRef = await saveCutoutImage(
-      result.imageData,
-      draft.cutoutPhoto,
-    );
+      const cutoutRef = await saveCutoutImage(result.imageData, draft.cutoutPhoto);
 
-    setDraft((d) => ({
-      ...d,
-      cutoutPhoto: cutoutRef,
-    }));
+      setDraft((d) => ({
+        ...d,
+        cutoutPhoto: cutoutRef,
+      }));
     } catch {
       setError("人物去背失敗，請換一張人物較清楚的照片再試");
     } finally {
@@ -173,80 +172,82 @@ export function IdolFormSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
-        className="mx-auto max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-3xl border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
+        className="mx-auto max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-[2rem] border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
       >
         <SheetHeader className="px-0 text-left">
-          <SheetTitle className="text-xl">{title}</SheetTitle>
-          <SheetDescription>只留下你想記得的部分就好</SheetDescription>
+          <p className="text-[11px] font-semibold tracking-[0.16em] text-primary">MY IDOL ♡</p>
+          <SheetTitle className="font-display text-[22px]">{title}</SheetTitle>
+          <SheetDescription>不需要填很多，只留下你想記得的部分就好。</SheetDescription>
         </SheetHeader>
 
         <form onSubmit={submit} className="space-y-5 pt-2">
           <div>
-            <p className="mb-2 text-sm font-medium">上傳偶像照片</p>
+            <div className="mb-3">
+              <p className="text-sm font-medium">最喜歡的照片</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                這張照片會成為你和他的 IdolDays 主視覺。
+              </p>
+            </div>
             {draft.photo ? (
               <>
-              <div className="relative overflow-hidden rounded-2xl border border-border/60">
-                <StoredImage
-                  src={draft.cutoutPhoto || draft.photo}
-                  alt="偶像照片預覽"
-                  className={
-                    draft.cutoutPhoto
-                      ? "aspect-[3/4] w-full bg-gradient-to-b from-[#f8dce8] via-[#fae7ee] to-[#f7dfe7] object-contain"
-                      : "aspect-[3/4] w-full object-cover"
-                  }
-                />
-                <div className="absolute right-3 bottom-3 flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => fileRef.current?.click()}
-                    className="rounded-full bg-card/90 px-3 py-1.5 text-xs shadow-soft"
-                  >
-                    重新選擇
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setDraft((d) => ({
-                        ...d,
-                        photo: "",
-                        cutoutPhoto: "",
-                      }))
+                <div className="relative overflow-hidden rounded-[1.75rem] border border-border/60">
+                  <StoredImage
+                    src={draft.cutoutPhoto || draft.photo}
+                    alt="偶像照片預覽"
+                    className={
+                      draft.cutoutPhoto
+                        ? "aspect-[3/4] w-full bg-gradient-to-b from-accent/45 via-surface to-card object-contain"
+                        : "aspect-[3/4] w-full object-cover"
                     }
-                    className="rounded-full bg-card/90 p-1.5 shadow-soft"
-                    aria-label="移除照片"
-                  >
-                    <X className="size-4" strokeWidth={1.8} />
-                  </button>
+                  />
+                  <div className="absolute right-3 bottom-3 flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => fileRef.current?.click()}
+                      className="rounded-full bg-card/90 px-3 py-1.5 text-xs shadow-soft"
+                    >
+                      重新選擇
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setDraft((d) => ({
+                          ...d,
+                          photo: "",
+                          cutoutPhoto: "",
+                        }))
+                      }
+                      className="rounded-full bg-card/90 p-1.5 shadow-soft"
+                      aria-label="移除照片"
+                    >
+                      <X className="size-4" strokeWidth={1.8} />
+                    </button>
+                  </div>
+
+                  {isNativeSubjectCutoutAvailable() ? (
+                    <button
+                      type="button"
+                      onClick={createCutout}
+                      disabled={cutoutBusy}
+                      className="absolute left-3 bottom-3 flex items-center gap-1.5 rounded-full bg-card/90 px-3 py-1.5 text-xs shadow-soft disabled:opacity-60"
+                    >
+                      <Sparkles className="size-3.5" strokeWidth={1.7} />
+                      {cutoutBusy ? "人物去背中…" : draft.cutoutPhoto ? "重新去背" : "人物去背"}
+                    </button>
+                  ) : null}
                 </div>
 
-                {isNativeSubjectCutoutAvailable() ? (
-                  <button
-                    type="button"
-                    onClick={createCutout}
-                    disabled={cutoutBusy}
-                    className="absolute left-3 bottom-3 flex items-center gap-1.5 rounded-full bg-card/90 px-3 py-1.5 text-xs shadow-soft disabled:opacity-60"
-                  >
-                    <Sparkles className="size-3.5" strokeWidth={1.7} />
-                    {cutoutBusy
-                      ? "人物去背中…"
-                      : draft.cutoutPhoto
-                        ? "重新去背"
-                        : "人物去背"}
-                  </button>
+                {draft.cutoutPhoto ? (
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    已完成本機人物去背，原始照片仍會保留。
+                  </p>
                 ) : null}
-              </div>
-
-              {draft.cutoutPhoto ? (
-                <p className="mt-2 text-xs text-muted-foreground">
-                  已完成本機人物去背，原始照片仍會保留。
-                </p>
-              ) : null}
               </>
             ) : (
               <button
                 type="button"
                 onClick={() => fileRef.current?.click()}
-                className="flex aspect-[3/4] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-surface/50 text-muted-foreground"
+                className="flex aspect-[3/4] w-full flex-col items-center justify-center gap-2 rounded-[1.75rem] border border-dashed border-primary/25 bg-surface/40 text-muted-foreground"
               >
                 <ImagePlus className="size-6" strokeWidth={1.4} />
                 <span className="text-sm">放一張你最喜歡的照片</span>
@@ -275,15 +276,15 @@ export function IdolFormSheet({
                 type={f.type ?? "text"}
                 value={draft[f.key]}
                 onChange={(e) => setDraft((d) => ({ ...d, [f.key]: e.target.value }))}
-                className="rounded-xl bg-surface/50"
+                className="min-h-11 rounded-2xl border-border/70 bg-surface/50"
               />
             </div>
           ))}
 
           <div className="space-y-2">
-            <Label>偶像代表動物</Label>
+            <Label>他的代表動物</Label>
             <p className="text-xs leading-5 text-muted-foreground">
-              用來決定首頁與追星天氣的專屬口吻。
+              選一個最像他的角色，IdolDays 會用它調整陪伴與追星天氣的語氣。
             </p>
             <div className="grid grid-cols-3 gap-2">
               {REPRESENTATIVE_ANIMALS.map((animal) => {
@@ -294,13 +295,14 @@ export function IdolFormSheet({
                     type="button"
                     aria-pressed={active}
                     onClick={() => setDraft((d) => ({ ...d, representativeAnimal: animal.value }))}
-                    className={`rounded-xl border px-2 py-2.5 text-xs transition-colors ${
+                    className={`rounded-2xl border px-2 py-3 text-xs transition-colors ${
                       active
                         ? "border-primary bg-primary/10 text-primary"
                         : "border-border/70 bg-surface/50 text-muted-foreground"
                     }`}
                   >
-                    <span className="mr-1">{animal.emoji}</span>{animal.label}
+                    <span className="mr-1">{animal.emoji}</span>
+                    {animal.label}
                   </button>
                 );
               })}

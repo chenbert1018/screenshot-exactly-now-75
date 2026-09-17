@@ -60,20 +60,34 @@ function IdolsPage() {
 
   return (
     <AppShell>
-      <PageHeader
-        title="我的偶像"
-        subtitle="收藏那些讓你心動的名字"
-        action={
+      <header className="relative mb-7">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute top-0 right-2 text-xl text-primary/25"
+        >
+          ✦
+        </span>
+
+        <p className="text-xs font-semibold tracking-[0.18em] text-primary">MY IDOL ♡</p>
+
+        <div className="mt-2 flex items-end justify-between gap-4">
+          <div className="min-w-0">
+            <h1 className="font-display text-[28px] leading-snug font-semibold">我喜歡的那個人</h1>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              從一個名字開始，慢慢收藏我們的日子。
+            </p>
+          </div>
+
           <button
-              type="button"
-              onClick={openAdd}
-              className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
-            >
-              <Plus className="size-4" strokeWidth={2} />
-              新增偶像
+            type="button"
+            onClick={openAdd}
+            aria-label="新增偶像"
+            className="mb-1 flex size-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-soft transition-transform duration-300 active:scale-90"
+          >
+            <Plus className="size-4" strokeWidth={2} />
           </button>
-        }
-      />
+        </div>
+      </header>
 
       {error ? (
         <CloudRetryNotice onRetry={reload}>
@@ -82,13 +96,15 @@ function IdolsPage() {
       ) : null}
 
       {ready && idols.length > 1 ? (
-        <div className="mb-5 flex items-center justify-between gap-4 rounded-2xl border border-border/70 bg-card/90 px-4 py-3 text-card-foreground shadow-soft">
+        <div className="mb-6 flex items-center justify-between gap-4 rounded-[1.5rem] border border-border/60 bg-card/75 px-4 py-3.5 text-card-foreground shadow-soft">
           <div className="min-w-0">
             <p className="flex items-center gap-1.5 text-sm font-medium">
               <RefreshCw className="size-4 text-primary" />
               每日輪換封面偶像
             </p>
-            <p className="mt-0.5 text-xs text-muted-foreground">每天自動換一位，只影響首頁封面</p>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">
+              首頁每天自動換一位偶像，收藏內容不會改變。
+            </p>
           </div>
           <button
             type="button"
@@ -97,7 +113,9 @@ function IdolsPage() {
             onClick={() => setCoverRotation(!coverRotation)}
             className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${coverRotation ? "bg-primary" : "bg-muted"}`}
           >
-            <span className={`absolute top-1 size-5 rounded-full bg-white shadow transition-transform ${coverRotation ? "translate-x-5" : "translate-x-1"}`} />
+            <span
+              className={`absolute top-1 size-5 rounded-full bg-white shadow transition-transform ${coverRotation ? "translate-x-5" : "translate-x-1"}`}
+            />
           </button>
         </div>
       ) : null}
@@ -114,7 +132,7 @@ function IdolsPage() {
               className="inline-flex items-center gap-1.5 rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
             >
               <Plus className="size-4" strokeWidth={2} />
-              加入第一位偶像
+              加入喜歡的人
             </button>
           }
         />
@@ -135,7 +153,9 @@ function IdolsPage() {
       )}
 
       {isPlus ? (
-        <p className="mt-6 text-center text-xs text-muted-foreground">最多 6 位偶像</p>
+        <p className="mt-7 text-center text-xs text-muted-foreground">
+          MY IDOL COLLECTION ♡ · 最多收藏 6 位
+        </p>
       ) : (
         <button
           type="button"
@@ -149,8 +169,8 @@ function IdolsPage() {
       <IdolFormSheet
         open={open}
         onOpenChange={setOpen}
-        title="新增偶像"
-        submitLabel="建立偶像"
+        title="加入喜歡的人"
+        submitLabel="收進 IdolDays"
         onSubmit={handleCreate}
       />
 

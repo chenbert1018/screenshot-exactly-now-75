@@ -103,27 +103,34 @@ function IdolDetailPage() {
   return (
     <AppShell>
       <div className="mb-5 flex items-center justify-between">
-        <Link
-          to="/idols"
-          className="inline-flex items-center gap-1 text-sm text-muted-foreground"
-        >
+        <Link to="/idols" className="inline-flex items-center gap-1 text-sm text-muted-foreground">
           <ChevronLeft className="size-4" strokeWidth={1.8} />
           我的偶像
         </Link>
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="inline-flex items-center gap-1.5 rounded-full border border-border/70 px-3.5 py-1.5 text-sm transition-transform duration-300 active:scale-95"
+          className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-card/65 px-3.5 py-1.5 text-xs text-muted-foreground shadow-soft transition-transform duration-300 active:scale-95"
         >
           <Pencil className="size-3.5" strokeWidth={1.8} />
           編輯
         </button>
       </div>
 
-      <div className="overflow-hidden rounded-3xl border border-border/60 bg-card shadow-soft">
-        <div className="aspect-[4/5] w-full bg-surface">
+      <section className="relative overflow-hidden rounded-[2rem] border border-border/60 bg-card shadow-soft">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute top-4 right-5 z-10 text-xl text-primary/35"
+        >
+          ✦
+        </span>
+        <div className="aspect-[4/5] w-full bg-gradient-to-b from-accent/35 via-surface to-card">
           {idol.photo ? (
-            <StoredImage src={idol.photo} alt={`${idol.name} 的照片`} className="size-full object-cover" />
+            <StoredImage
+              src={idol.photo}
+              alt={`${idol.name} 的照片`}
+              className="size-full object-cover"
+            />
           ) : (
             <div className="flex size-full flex-col items-center justify-center gap-2 text-muted-foreground">
               <ImageIcon className="size-7" strokeWidth={1.3} />
@@ -132,50 +139,69 @@ function IdolDetailPage() {
           )}
         </div>
         <div className="px-6 py-6 text-center">
-          <h1 className="text-2xl font-semibold">{idol.name}</h1>
+          <p className="text-[11px] font-semibold tracking-[0.18em] text-primary">MY IDOL ♡</p>
+          <h1 className="mt-1.5 font-display text-[28px] font-semibold">{idol.name}</h1>
           {idol.groupName ? (
             <p className="mt-1.5 text-sm text-muted-foreground">{idol.groupName}</p>
           ) : null}
         </div>
-      </div>
+      </section>
 
       <div className="mt-5 grid grid-cols-2 gap-4">
-        <SoftCard className="px-4 py-5 text-center">
-          <p className="text-xs text-muted-foreground">{day ? day.title : "D-Day"}</p>
-          <p className="mt-2 text-2xl font-semibold text-primary">
+        <SoftCard className="relative overflow-hidden px-4 py-5 text-center">
+          <span aria-hidden className="absolute top-3 right-3 text-primary/15">
+            ✦
+          </span>
+          <p className="text-[10px] font-semibold tracking-[0.14em] text-muted-foreground">
+            NEXT DAY ♡
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">{day ? day.title : "下一個重要日子"}</p>
+          <p className="mt-2 font-display text-[28px] leading-none font-semibold text-primary">
             {day ? day.ddayLabel : "—"}
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {day ? day.humanLabel : "設定一個重要日子"}
+          <p className="mt-2 text-[11px] leading-4 text-muted-foreground">
+            {day ? day.humanLabel : "等你留下一個期待"}
           </p>
         </SoftCard>
         <SoftCard className="px-4 py-5 text-center">
-          <p className="text-xs text-muted-foreground">陪伴的日子</p>
-          <p className="mt-2 text-2xl font-semibold text-primary">
+          <p className="text-[10px] font-semibold tracking-[0.14em] text-muted-foreground">
+            TOGETHER ♡
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">我們一起走過</p>
+          <p className="mt-2 font-display text-[28px] leading-none font-semibold text-primary">
             {since ? since.ddayLabel : "—"}
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {since ? since.humanLabel : "設定喜歡他的日期"}
+          <p className="mt-2 text-[11px] leading-4 text-muted-foreground">
+            {since ? since.humanLabel : "從哪一天開始喜歡他？"}
           </p>
         </SoftCard>
       </div>
 
-      <SoftCard className="mt-5 px-5 py-2">
-        <Row label="生日" value={idol.birthday} />
-        <Row
-          label="出道日期"
-          value={
-            idol.debutDate
-              ? `${idol.debutDate}（${debut?.daysUntil === 0 ? "今天是出道紀念日" : `出道紀念日 ${debut?.ddayLabel}`}）`
-              : ""
-          }
-        />
-        <Row label="粉絲名稱" value={idol.fanName} />
-        <Row label="我喜歡他的日期" value={idol.sinceDate} />
-      </SoftCard>
+      <section className="mt-8">
+        <div className="mb-3">
+          <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground">
+            ABOUT HIM ♡
+          </p>
+          <h2 className="mt-1 font-display text-[18px] font-medium">想替他記住的事</h2>
+        </div>
+
+        <SoftCard className="px-5 py-2">
+          <Row label="生日" value={idol.birthday} />
+          <Row
+            label="出道日期"
+            value={
+              idol.debutDate
+                ? `${idol.debutDate}（${debut?.daysUntil === 0 ? "今天是出道紀念日" : `出道紀念日 ${debut?.ddayLabel}`}）`
+                : ""
+            }
+          />
+          <Row label="粉絲名稱" value={idol.fanName} />
+          <Row label="我喜歡他的日期" value={idol.sinceDate} />
+        </SoftCard>
+      </section>
 
       {idol.birthday || idol.debutDate ? (
-        <SoftCard className="mt-5 divide-y divide-border/60">
+        <SoftCard className="mt-5 divide-y divide-border/50 overflow-hidden">
           {idol.birthday ? (
             <button
               type="button"
@@ -183,7 +209,7 @@ function IdolDetailPage() {
               className="flex w-full items-center gap-3 px-5 py-4 text-left transition-colors active:bg-surface/70"
             >
               <Bell className="size-[18px] text-muted-foreground" strokeWidth={1.6} />
-              <span className="flex-1 text-sm">生日提醒</span>
+              <span className="flex-1 text-sm">替我記住他的生日</span>
               <span className="text-sm text-muted-foreground">
                 {birthdayReminder ? formatDaysBefore(birthdayReminder.daysBefore) : "不提醒"}
               </span>
@@ -196,7 +222,7 @@ function IdolDetailPage() {
               className="flex w-full items-center gap-3 px-5 py-4 text-left transition-colors active:bg-surface/70"
             >
               <Bell className="size-[18px] text-muted-foreground" strokeWidth={1.6} />
-              <span className="flex-1 text-sm">出道紀念日提醒</span>
+              <span className="flex-1 text-sm">替我記住出道紀念日</span>
               <span className="text-sm text-muted-foreground">
                 {debutReminder ? formatDaysBefore(debutReminder.daysBefore) : "不提醒"}
               </span>
