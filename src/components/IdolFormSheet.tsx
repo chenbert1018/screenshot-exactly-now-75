@@ -76,11 +76,12 @@ export function IdolFormSheet({
   initial?: IdolDraft;
   title: string;
   submitLabel: string;
-  onSubmit: (draft: IdolDraft) => void;
+  onSubmit: (draft: IdolDraft) => void | Promise<void>;
   footer?: React.ReactNode;
 }) {
   const [draft, setDraft] = useState<IdolDraft>(initial ?? emptyDraft);
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
   const [cutoutBusy, setCutoutBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -88,6 +89,7 @@ export function IdolFormSheet({
     if (open) {
       setDraft(initial ?? emptyDraft);
       setError("");
+      setSaving(false);
       setCutoutBusy(false);
     }
   }, [open, initial]);
@@ -143,17 +145,27 @@ export function IdolFormSheet({
     }
   }
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!draft.name.trim()) {
       setError("請先幫這位偶像留下名字");
       return;
     }
-    onSubmit({
-      ...draft,
-      name: draft.name.trim(),
-      representativeAnimal: draft.representativeAnimal ?? "DOG",
-    });
+
+    setSaving(true);
+    setError("");
+
+    try {
+      await onSubmit({
+        ...draft,
+        name: draft.name.trim(),
+        representativeAnimal: draft.representativeAnimal ?? "DOG",
+      });
+    } catch {
+      setError("偶像資料沒有儲存成功，請確認網路後再試一次");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -298,9 +310,10 @@ export function IdolFormSheet({
 
           <button
             type="submit"
-            className="w-full rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+            disabled={saving}
+            className="w-full rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95 disabled:opacity-60"
           >
-            {submitLabel}
+            {saving ? "儲存中…" : submitLabel}
           </button>
           {footer}
         </form>
