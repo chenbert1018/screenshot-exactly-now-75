@@ -18,6 +18,8 @@ export interface WidgetNativePayload {
   moodLabel: string;
   decorationEmoji: string;
   decorationLabel: string;
+  songTitle: string;
+  songArtist: string;
   enabledContents: string[];
   imageData?: string | undefined;
 }
