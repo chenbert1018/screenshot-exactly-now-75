@@ -62,16 +62,14 @@ function IdolsPage() {
         title="我的偶像"
         subtitle="收藏那些讓你心動的名字"
         action={
-          idols.length < 6 ? (
-            <button
+          <button
               type="button"
               onClick={openAdd}
               className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
             >
               <Plus className="size-4" strokeWidth={2} />
               新增偶像
-            </button>
-          ) : null
+          </button>
         }
       />
 
