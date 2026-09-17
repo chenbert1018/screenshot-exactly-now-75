@@ -95,3 +95,58 @@ export function useTodaySongJournal(idolId?: string, date = localDateKey()) {
 
   return useMemo(() => ({ entry, ready, error, save }), [entry, ready, error, save]);
 }
+
+/**
+ * 選定偶像的歷史音樂日記。
+ * Random Memory 使用；只讀目前登入使用者在 RLS 範圍內的資料。
+ */
+export function useSongJournalHistory(idolId?: string, limit = 60) {
+  const { user, loading: authLoading } = useAuth();
+  const [entries, setEntries] = useState<IdolSongJournalEntry[]>([]);
+  const [ready, setReady] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (authLoading) return;
+
+    if (!user || !idolId) {
+      setEntries([]);
+      setError(null);
+      setReady(true);
+      return;
+    }
+
+    let active = true;
+    setReady(false);
+
+    void supabase
+      .from("idol_song_journal_entries")
+      .select(COLUMNS)
+      .eq("idol_id", idolId)
+      .not("song_id", "is", null)
+      .order("entry_date", { ascending: false })
+      .limit(limit)
+      .then(({ data, error: queryError }) => {
+        if (!active) return;
+
+        if (queryError) {
+          setEntries([]);
+          setError(queryError.message);
+        } else {
+          setEntries(((data ?? []) as EntryRow[]).map(toEntry));
+          setError(null);
+        }
+
+        setReady(true);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [authLoading, user?.id, idolId, limit]);
+
+  return useMemo(
+    () => ({ entries, ready, error }),
+    [entries, ready, error],
+  );
+}

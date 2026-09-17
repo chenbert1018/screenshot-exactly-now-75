@@ -11,8 +11,9 @@ import { useArchaeologySource } from "@/lib/archaeology.source";
 import { useMemorySource } from "@/lib/memories.source";
 import { useIdolMusicSource } from "@/lib/idol-music.source";
 import { streamingLink, type IdolSong } from "@/lib/idol-music";
-import { useTodaySongJournal } from "@/lib/idol-song-journal.source";
+import { useSongJournalHistory, useTodaySongJournal } from "@/lib/idol-song-journal.source";
 import { SONG_MOOD_OPTIONS, type IdolSongJournalEntry, type SongMood } from "@/lib/idol-song-journal";
+import { RandomSongMemoryCard } from "@/components/RandomSongMemoryCard";
 import { daysSince } from "@/lib/dates";
 import { classifyFanWeather, type FanWeatherInput } from "@/lib/fan-weather";
 
@@ -386,6 +387,28 @@ function HomePage() {
   const main = homeIdol;
   const { songs } = useIdolMusicSource(main?.id);
   const todayJournal = useTodaySongJournal(main?.id);
+  const songHistory = useSongJournalHistory(main?.id);
+
+  const randomSongMemories = useMemo(() => {
+    return songHistory.entries.flatMap((entry) => {
+      if (!entry.songId) return [];
+
+      const song = songs.find((item) => item.id === entry.songId);
+      if (!song) return [];
+
+      return [{
+        id: entry.id,
+        songId: song.id,
+        title: song.title,
+        artist: song.artist,
+        date: entry.entryDate,
+        mood: entry.mood,
+        appleMusicUrl: song.appleMusicUrl,
+        spotifyUrl: song.spotifyUrl,
+      }];
+    });
+  }, [songHistory.entries, songs]);
+
   const companionship = useMemo(
     () => (main ? daysSince(main.sinceDate) : null),
     [main],
@@ -461,6 +484,14 @@ function HomePage() {
             )
           ) : null}
           <TodaySongCard idolName={main.name || "他"} songs={songs} entry={todayJournal.entry} save={todayJournal.save} />
+
+          <div className="mt-3">
+            <RandomSongMemoryCard
+              items={randomSongMemories}
+              ready={songHistory.ready}
+            />
+          </div>
+
           {latestArchaeology ? <ArchaeologyCard item={latestArchaeology} /> : <EmptyArchaeologyCard />}
           {memoryFromToday ? <MemoryCard memory={memoryFromToday} song={songs.find((song) => song.id === memoryFromToday.songId)} /> : <EmptyMemoryCard />}
 
