@@ -89,10 +89,11 @@ export function ArchaeologyFormSheet({
   initial?: ArchaeologyDraft | undefined;
   title?: string;
   submitLabel?: string;
-  onSubmit: (draft: ArchaeologyDraft) => void;
+  onSubmit: (draft: ArchaeologyDraft) => void | Promise<void>;
 }) {
   const [draft, setDraft] =
     useState<ArchaeologyDraft>(emptyArchaeologyDraft);
+  const [saving, setSaving] = useState(false);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const [tagInput, setTagInput] = useState("");
   const [error, setError] = useState("");
@@ -116,6 +117,7 @@ export function ArchaeologyFormSheet({
     );
     setTagInput("");
     setError("");
+    setSaving(false);
     setPreviewState("idle");
   }, [open, initial]);
 
@@ -247,7 +249,7 @@ export function ArchaeologyFormSheet({
     }));
   }
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
 
     const url = draft.url.trim();
@@ -277,14 +279,23 @@ export function ArchaeologyFormSheet({
       return;
     }
 
-    onSubmit({
-      ...draft,
-      url,
-      title: itemTitle,
-      imageUrl: draft.imageUrl?.trim() || "",
-      collection: draft.collection.trim(),
-      note: draft.note.trim(),
-    });
+    setSaving(true);
+    setError("");
+
+    try {
+      await onSubmit({
+        ...draft,
+        url,
+        title: itemTitle,
+        imageUrl: draft.imageUrl?.trim() || "",
+        collection: draft.collection.trim(),
+        note: draft.note.trim(),
+      });
+    } catch {
+      setError("考古沒有儲存成功，請確認網路後再試一次");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -571,9 +582,10 @@ export function ArchaeologyFormSheet({
 
             <button
               type="submit"
-              className="flex-1 rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+              disabled={saving}
+              className="flex-1 rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95 disabled:opacity-60"
             >
-              {submitLabel}
+              {saving ? "儲存中…" : submitLabel}
             </button>
           </div>
         </form>
