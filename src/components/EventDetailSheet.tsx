@@ -17,6 +17,7 @@ import type { Idol } from "@/lib/idols";
 import { daysSince, parseLocalDate, today } from "@/lib/dates";
 import { type Milestone, type MilestoneDraft } from "@/lib/milestones";
 import { useMilestoneSource } from "@/lib/milestones.source";
+import { ComebackDiaryCard } from "@/components/ComebackDiaryCard";
 
 /** 依倒數狀態選擇陪伴文案（App 的口吻，不是偶像本人發言） */
 function companionLine(status: string, daysUntil: number | null) {
@@ -259,6 +260,8 @@ export function EventDetailSheet({
               <p className="mt-2 text-[15px] leading-relaxed">{event.note}</p>
             </div>
           ) : null}
+
+          {event.type === "COMEBACK" ? <ComebackDiaryCard event={event} /> : null}
 
           {/* Reminder（S2-C Reminder 已建立時顯示入口） */}
           {reminderSummary ? (
