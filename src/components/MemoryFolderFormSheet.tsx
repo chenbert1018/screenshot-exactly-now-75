@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { emptyFolderDraft, type MemoryFolderDraft } from "@/lib/memory-folders";
 import { useIdolSource } from "@/lib/idols.source";
+import { prepareUserImage } from "@/lib/image-upload";
 
 export function MemoryFolderFormSheet({
   open,
@@ -43,11 +44,16 @@ export function MemoryFolderFormSheet({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  function pickPhoto(file?: File | null) {
+  async function pickPhoto(file?: File | null) {
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => setDraft((d) => ({ ...d, coverPhoto: String(reader.result ?? "") }));
-    reader.readAsDataURL(file);
+    setError("");
+
+    try {
+      const coverPhoto = await prepareUserImage(file);
+      setDraft((d) => ({ ...d, coverPhoto }));
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "封面讀取失敗，請換一張再試");
+    }
   }
 
   async function submit(e: React.FormEvent) {
@@ -115,7 +121,7 @@ export function MemoryFolderFormSheet({
               accept="image/*"
               className="hidden"
               onChange={(e) => {
-                pickPhoto(e.target.files?.[0]);
+                void pickPhoto(e.target.files?.[0]);
                 e.target.value = "";
               }}
             />
