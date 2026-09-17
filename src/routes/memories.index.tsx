@@ -9,6 +9,7 @@ import { useMemoryFolderSource } from "@/lib/memory-folders.source";
 import { useMemorySource } from "@/lib/memories.source";
 import { useIdolSource } from "@/lib/idols.source";
 import { parseLocalDate } from "@/lib/dates";
+import { CloudRetryNotice } from "@/components/CloudRetryNotice";
 
 export const Route = createFileRoute("/memories/")({
   head: () => ({
@@ -39,7 +40,7 @@ function rangeLabel(folder: MemoryFolder) {
 }
 
 function MemoriesPage() {
-  const { folders, ready, addFolder, error } = useMemoryFolderSource();
+  const { folders, ready, addFolder, error, reload } = useMemoryFolderSource();
   const { all } = useMemorySource();
   const { idols } = useIdolSource();
   const [open, setOpen] = useState(false);
@@ -68,9 +69,9 @@ function MemoriesPage() {
       </div>
 
       {error ? (
-        <p className="mb-4 rounded-2xl border border-border/60 bg-surface/50 px-4 py-3 text-center text-xs text-muted-foreground">
+        <CloudRetryNotice onRetry={reload}>
           目前連不上雲端資料，你的回憶沒有遺失，請稍後再試。
-        </p>
+        </CloudRetryNotice>
       ) : null}
 
       {!ready ? (
