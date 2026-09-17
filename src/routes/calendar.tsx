@@ -25,6 +25,7 @@ import { deleteReminders, formatDaysBefore } from "@/lib/reminders";
 import { useReminderSource } from "@/lib/reminders.source";
 import { ReminderSheet } from "@/components/ReminderSheet";
 import { deleteMilestonesForEvent } from "@/lib/milestones";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/calendar")({
   head: () => ({
@@ -98,6 +99,7 @@ function CalendarPage() {
   const [detailId, setDetailId] = useState<string | null>(null);
   const [annId, setAnnId] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deletingEvent, setDeletingEvent] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<IdolEvent | null>(null);
   const [prefillDate, setPrefillDate] = useState("");
@@ -562,16 +564,25 @@ function CalendarPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => {
-                        deleteReminders(detail.id);
-                        deleteMilestonesForEvent(detail.id);
-                        void removeEvent(detail.id);
-                        setConfirmDelete(false);
-                        setDetailId(null);
+                      disabled={deletingEvent}
+                      onClick={async () => {
+                        if (deletingEvent) return;
+                        setDeletingEvent(true);
+                        try {
+                          await removeEvent(detail.id);
+                          deleteReminders(detail.id);
+                          deleteMilestonesForEvent(detail.id);
+                          setConfirmDelete(false);
+                          setDetailId(null);
+                        } catch {
+                          toast.error("這個日子沒有刪除成功，請確認網路後再試一次");
+                        } finally {
+                          setDeletingEvent(false);
+                        }
                       }}
-                      className="flex-1 rounded-full bg-destructive py-2.5 text-sm text-destructive-foreground"
+                      className="flex-1 rounded-full bg-destructive py-2.5 text-sm text-destructive-foreground disabled:opacity-60"
                     >
-                      刪除
+                      {deletingEvent ? "刪除中…" : "刪除"}
                     </button>
                   </div>
                 </div>
