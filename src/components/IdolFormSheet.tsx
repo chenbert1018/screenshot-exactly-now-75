@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { emptyDraft, REPRESENTATIVE_ANIMALS, type IdolDraft } from "@/lib/idols";
 import { saveCutoutImage } from "@/lib/cutout-image-store";
 import { resolveImageUrl } from "@/lib/storage";
+import { prepareUserImage } from "@/lib/image-upload";
 import {
   createNativeSubjectCutout,
   isNativeSubjectCutoutAvailable,
@@ -94,16 +95,16 @@ export function IdolFormSheet({
     }
   }, [open, initial]);
 
-  function pickPhoto(file?: File | null) {
+  async function pickPhoto(file?: File | null) {
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () =>
-      setDraft((d) => ({
-        ...d,
-        photo: String(reader.result ?? ""),
-        cutoutPhoto: "",
-      }));
-    reader.readAsDataURL(file);
+    setError("");
+
+    try {
+      const photo = await prepareUserImage(file);
+      setDraft((d) => ({ ...d, photo, cutoutPhoto: "" }));
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "照片讀取失敗，請換一張再試");
+    }
   }
 
   async function createCutout() {
@@ -257,7 +258,7 @@ export function IdolFormSheet({
               accept="image/*"
               className="hidden"
               onChange={(e) => {
-                pickPhoto(e.target.files?.[0]);
+                void pickPhoto(e.target.files?.[0]);
                 e.target.value = "";
               }}
             />
