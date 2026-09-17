@@ -33,16 +33,18 @@ export function MemoryFormSheet({
   initial?: MemoryDraft | undefined;
   title: string;
   submitLabel: string;
-  onSubmit: (draft: MemoryDraft) => void;
+  onSubmit: (draft: MemoryDraft) => void | Promise<void>;
 }) {
   const [draft, setDraft] = useState<MemoryDraft>(emptyMemoryDraft);
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (open) {
       setDraft(initial ?? { ...emptyMemoryDraft, date: todayValue() });
       setError("");
+      setSaving(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
@@ -59,11 +61,21 @@ export function MemoryFormSheet({
     }
   }
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!draft.title.trim()) return setError("幫這段回憶取一個名字");
     if (!draft.date) return setError("請選擇日期");
-    onSubmit({ ...draft, title: draft.title.trim() });
+
+    setSaving(true);
+    setError("");
+
+    try {
+      await onSubmit({ ...draft, title: draft.title.trim() });
+    } catch {
+      setError("回憶沒有儲存成功，請確認網路後再試一次");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -171,9 +183,10 @@ export function MemoryFormSheet({
             </button>
             <button
               type="submit"
-              className="flex-1 rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+              disabled={saving}
+              className="flex-1 rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95 disabled:opacity-60"
             >
-              {submitLabel}
+              {saving ? "儲存中…" : submitLabel}
             </button>
           </div>
         </form>
