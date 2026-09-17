@@ -277,8 +277,8 @@ function FolderDetailPage() {
           }}
           title="編輯資料夾"
           submitLabel="儲存"
-          onSubmit={(draft) => {
-            void updateFolder(folder.id, draft);
+          onSubmit={async (draft) => {
+            await updateFolder(folder.id, draft);
             setEditFolder(false);
           }}
         />
