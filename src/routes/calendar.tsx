@@ -272,7 +272,23 @@ function CalendarPage() {
 
   return (
     <AppShell>
-      <PageHeader title="行事曆" subtitle="這個月有好多值得期待的日子。" />
+      <header className="relative mb-7">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute top-0 right-2 text-xl text-primary/25"
+        >
+          ✦
+        </span>
+        <p className="text-xs font-semibold tracking-[0.18em] text-primary">
+          OUR CALENDAR ♡
+        </p>
+        <h1 className="mt-2 font-display text-[28px] leading-snug font-semibold">
+          這個月，我們會遇見什麼？
+        </h1>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+          生日、回歸、演唱會，喜歡一個人的日子都在這裡。
+        </p>
+      </header>
 
       <div className="mb-4 flex items-center justify-between">
         <button
@@ -296,7 +312,7 @@ function CalendarPage() {
         </button>
       </div>
 
-      <SoftCard className="mb-8 px-3 py-5">
+      <SoftCard className="mb-8 overflow-hidden px-3 py-5">
         <div className="grid grid-cols-7 gap-y-1 text-center">
           {weekdays.map((w) => (
             <span key={w} className="pb-1 text-[13px] text-muted-foreground">
@@ -318,7 +334,7 @@ function CalendarPage() {
                 key={key}
                 type="button"
                 onClick={() => openDate(key)}
-                className="flex h-12 flex-col items-center justify-center gap-0.5 rounded-xl transition-transform duration-300 active:scale-90"
+                className="flex h-12 flex-col items-center justify-center gap-0.5 rounded-2xl transition-all duration-300 active:scale-90"
               >
                 <span
                   className={`flex size-7 items-center justify-center rounded-full text-sm ${
@@ -341,7 +357,14 @@ function CalendarPage() {
       </SoftCard>
 
       <section className="mb-8">
-        <h2 className="mb-3 text-[15px] font-medium tracking-wide">這個月有什麼大事 👀</h2>
+        <div className="mb-4">
+          <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground">
+            THIS MONTH ♡
+          </p>
+          <h2 className="mt-1 font-display text-[18px] font-medium">
+            這個月值得期待的日子
+          </h2>
+        </div>
 
         {monthItems.length === 0 ? (
           <SoftCard className="px-6 py-10 text-center">
@@ -367,15 +390,15 @@ function CalendarPage() {
                     onClick={() => setAnnId(a.id)}
                     className="w-full text-left transition-transform duration-300 active:scale-[0.99]"
                   >
-                    <SoftCard className="flex items-center gap-4 px-5 py-4">
-                      <span className="w-12 shrink-0 text-sm text-muted-foreground">
+                    <SoftCard className="flex items-center gap-4 px-5 py-4.5">
+                      <span className="w-12 shrink-0 font-display text-[13px] text-primary">
                         {pad(cursor.m)}/{pad(a.day)}
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-xs text-muted-foreground">
                           {annEmoji(a.kind)} {idolLabel(a.idol)}
                         </span>
-                        <span className="block truncate text-[15px]">{annTitle(a)}</span>
+                        <span className="mt-0.5 block truncate font-display text-[16px]">{annTitle(a)}</span>
                       </span>
                       <span className="shrink-0 font-display text-[17px] leading-none font-semibold text-primary">
                         ♡
@@ -398,15 +421,15 @@ function CalendarPage() {
                     done ? "opacity-55" : ""
                   }`}
                 >
-                  <SoftCard className="flex items-center gap-4 px-5 py-4">
-                    <span className="w-12 shrink-0 text-sm text-muted-foreground">
+                  <SoftCard className="flex items-center gap-4 px-5 py-4.5">
+                    <span className="w-12 shrink-0 font-display text-[13px] text-primary">
                       {p ? `${pad(p.m)}/${pad(p.d)}` : e.date}
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-xs text-muted-foreground">
                         {meta.emoji} {idolLabel(idolOf(e.idolId))}
                       </span>
-                      <span className="block truncate text-[15px]">{e.title}</span>
+                      <span className="mt-0.5 block truncate font-display text-[16px]">{e.title}</span>
                     </span>
                     <span
                       className={`shrink-0 font-display text-[17px] leading-none font-semibold ${
@@ -431,7 +454,7 @@ function CalendarPage() {
           if (!o) setSelectedDate(null);
         }}
       >
-        <DialogContent className="max-w-[22rem] rounded-3xl border-border/60 bg-card">
+        <DialogContent className="max-w-[22rem] rounded-[2rem] border-border/60 bg-card">
           {selectedDate ? (
             <>
               <DialogHeader className="items-center text-center">
@@ -459,7 +482,7 @@ function CalendarPage() {
                         <span className="block truncate text-xs text-muted-foreground">
                           {annEmoji(a.kind)} {idolLabel(a.idol)}
                         </span>
-                        <span className="block truncate text-[15px]">{annTitle(a)}</span>
+                        <span className="mt-0.5 block truncate font-display text-[16px]">{annTitle(a)}</span>
                       </span>
                       <span className="font-display text-[15px] font-semibold text-primary">♡</span>
                     </button>
@@ -486,7 +509,7 @@ function CalendarPage() {
                           <span className="block truncate text-xs text-muted-foreground">
                             {eventTypeMeta(e.type).emoji} {idolLabel(idolOf(e.idolId))}
                           </span>
-                          <span className="block truncate text-[15px]">{e.title}</span>
+                          <span className="mt-0.5 block truncate font-display text-[16px]">{e.title}</span>
                         </span>
                         <span
                           className={`font-display text-[15px] font-semibold ${
@@ -524,7 +547,7 @@ function CalendarPage() {
           }
         }}
       >
-        <DialogContent className="max-w-[22rem] rounded-3xl border-border/60 bg-card text-center">
+        <DialogContent className="max-w-[22rem] rounded-[2rem] border-border/60 bg-card text-center">
           {detail ? (
             <>
               <DialogHeader className="items-center">
@@ -622,7 +645,7 @@ function CalendarPage() {
           if (!o) setAnnId(null);
         }}
       >
-        <DialogContent className="max-w-[22rem] rounded-3xl border-border/60 bg-card text-center">
+        <DialogContent className="max-w-[22rem] rounded-[2rem] border-border/60 bg-card text-center">
           {annDetail ? (
             <>
               <DialogHeader className="items-center">

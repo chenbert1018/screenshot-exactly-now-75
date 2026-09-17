@@ -173,7 +173,7 @@ export function EventDetailSheet({
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent
           side="bottom"
-          className="mx-auto h-[94vh] w-full max-w-md overflow-y-auto rounded-t-3xl border-border/60 bg-background px-6 pb-[max(2rem,env(safe-area-inset-bottom))]"
+          className="mx-auto h-[94vh] w-full max-w-md overflow-y-auto rounded-t-[2rem] border-border/60 bg-background px-6 pb-[max(2rem,env(safe-area-inset-bottom))]"
         >
           <SheetHeader className="sr-only">
             <SheetTitle>{event.title}</SheetTitle>
@@ -215,7 +215,7 @@ export function EventDetailSheet({
 
           {/* Photo, then separate D-Day cards — never cover the idol */}
           <section className="mt-1">
-            <div className="relative h-[300px] overflow-hidden bg-gradient-to-b from-[#eec9df] via-[#f8dce8] to-[#fdeef2]">
+            <div className="relative h-[300px] overflow-hidden rounded-[2rem] bg-gradient-to-b from-accent/55 via-card to-background">
               {idol?.photo ? (
                 <StoredImage
                   src={idol.photo}
@@ -225,12 +225,13 @@ export function EventDetailSheet({
               ) : (
                 <div className="flex size-full items-center justify-center text-sm text-muted-foreground">{idolLabel}</div>
               )}
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#fdeef2]/80 to-transparent" />
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background/85 to-transparent" />
               <span className="absolute left-6 top-8 text-xl text-white/75">✧</span>
               <span className="absolute right-8 top-16 text-2xl text-white/70">✦</span>
             </div>
 
-            <div className="mt-4 rounded-[1.45rem] border border-border/70 bg-card px-4 py-3 text-center text-card-foreground shadow-[0_12px_28px_rgba(126,74,96,0.13)]">
+            <div className="relative mt-4 overflow-hidden rounded-[1.75rem] border border-border/70 bg-card/90 px-4 py-4 text-center text-card-foreground shadow-soft">
+              <span aria-hidden className="absolute top-3 right-4 text-primary/20">✦</span>
               <p className="font-display text-[18px] font-semibold">{event.title}</p>
               <p className="mt-1 text-[10px] font-medium tracking-[0.12em] text-primary uppercase">{meta.label}</p>
               {c?.status === "COMPLETED" ? (
@@ -244,7 +245,7 @@ export function EventDetailSheet({
             </div>
 
             {since && !since.isFuture && since.days !== null ? (
-              <div className="mt-3 rounded-[1.45rem] border border-border/70 bg-card px-5 py-3 text-center text-card-foreground shadow-[0_10px_24px_rgba(126,74,96,0.10)]">
+              <div className="mt-3 rounded-[1.75rem] border border-border/70 bg-card/80 px-5 py-4 text-center text-card-foreground shadow-soft">
                 <p className="text-[11px] font-medium text-muted-foreground">陪伴總走過</p>
                 <p className="mt-0.5 font-display text-[30px] leading-none text-foreground">
                   {since.days}<span className="ml-1 text-sm">天</span>
@@ -257,7 +258,9 @@ export function EventDetailSheet({
           {/* Note */}
           {event.note ? (
             <div className="mt-8">
-              <p className="text-xs tracking-widest text-muted-foreground">我的備註</p>
+              <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground">
+                MY NOTE ♡
+              </p>
               <p className="mt-2 text-[15px] leading-relaxed">{event.note}</p>
             </div>
           ) : null}
@@ -285,7 +288,7 @@ export function EventDetailSheet({
           ) : null}
 
           {/* Fan Weather — IdolDays+ preview */}
-          <div className="mt-4 rounded-2xl border border-border/60 bg-surface/40 px-4 py-4">
+          <div className="mt-5 rounded-[1.75rem] border border-border/60 bg-surface/40 px-4 py-4">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">

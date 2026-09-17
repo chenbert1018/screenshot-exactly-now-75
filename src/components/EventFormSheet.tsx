@@ -82,7 +82,7 @@ export function EventFormSheet({
       <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
-        className="mx-auto max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-3xl border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
+        className="mx-auto max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-[2rem] border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
       >
         <SheetHeader className="px-0 text-left">
           <SheetTitle className="text-xl">{title}</SheetTitle>
@@ -140,7 +140,7 @@ export function EventFormSheet({
                 value={draft.title}
                 placeholder="例如：台北演唱會"
                 onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))}
-                className="rounded-xl bg-surface/50"
+                className="min-h-11 rounded-2xl border-border/70 bg-surface/50"
               />
             </div>
 
@@ -176,7 +176,7 @@ export function EventFormSheet({
                 type="date"
                 value={draft.date}
                 onChange={(e) => setDraft((d) => ({ ...d, date: e.target.value }))}
-                className="rounded-xl bg-surface/50"
+                className="min-h-11 rounded-2xl border-border/70 bg-surface/50"
               />
             </div>
 
@@ -192,7 +192,7 @@ export function EventFormSheet({
                     locationName: e.target.value,
                   }))
                 }
-                className="rounded-xl bg-surface/50"
+                className="min-h-11 rounded-2xl border-border/70 bg-surface/50"
               />
               <p className="text-xs leading-5 text-muted-foreground">
                 演唱會、Fan Meeting、應援或追星旅行可以加入地點
@@ -211,14 +211,14 @@ export function EventFormSheet({
                     city: e.target.value,
                   }))
                 }
-                className="rounded-xl bg-surface/50"
+                className="min-h-11 rounded-2xl border-border/70 bg-surface/50"
               />
               <p className="text-xs leading-5 text-muted-foreground">
                 追星天氣會依這個地區取得活動當地的天氣
               </p>
             </div>
 
-            <div className="rounded-2xl border border-border/60 bg-surface/40 px-4 py-4">
+            <div className="rounded-[1.75rem] border border-border/60 bg-surface/40 px-4 py-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
@@ -241,16 +241,16 @@ export function EventFormSheet({
               </div>
 
               <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
-                <div className="rounded-xl bg-card px-3 py-2">
+                <div className="rounded-2xl bg-card px-3 py-2">
                   🌧️ 雨天準備
                 </div>
-                <div className="rounded-xl bg-card px-3 py-2">
+                <div className="rounded-2xl bg-card px-3 py-2">
                   ❄️ 保暖提醒
                 </div>
-                <div className="rounded-xl bg-card px-3 py-2">
+                <div className="rounded-2xl bg-card px-3 py-2">
                   ☀️ 防曬補水
                 </div>
-                <div className="rounded-xl bg-card px-3 py-2">
+                <div className="rounded-2xl bg-card px-3 py-2">
                   🌬️ 強風提醒
                 </div>
               </div>
@@ -289,7 +289,7 @@ export function EventFormSheet({
                 placeholder="想記住什麼？"
                 rows={3}
                 onChange={(e) => setDraft((d) => ({ ...d, note: e.target.value }))}
-                className="rounded-xl bg-surface/50"
+                className="min-h-11 rounded-2xl border-border/70 bg-surface/50"
               />
             </div>
 

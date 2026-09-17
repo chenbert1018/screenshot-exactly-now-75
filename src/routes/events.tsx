@@ -67,7 +67,7 @@ function EventCard({
         <p className="text-xs tracking-wide text-muted-foreground">{idolLabel(idol)}</p>
         <div className="mt-2 flex items-end justify-between gap-4">
           <div className="min-w-0">
-            <p className="truncate text-[17px]">{event.title}</p>
+            <p className="truncate font-display text-[18px] font-medium">{event.title}</p>
             <p className="mt-1 text-sm text-muted-foreground">{c?.dotDate ?? event.date}</p>
           </div>
           {done ? (
@@ -160,7 +160,7 @@ function EventsPage() {
         </span>
         <Link
           to="/calendar"
-          className="flex-1 rounded-full py-2 text-center text-xs text-muted-foreground transition-transform duration-300 active:scale-95"
+          className="flex-1 rounded-full py-2.5 text-center text-xs text-muted-foreground transition-transform duration-300 active:scale-95"
         >
           行事曆
         </Link>
@@ -207,7 +207,12 @@ function EventsPage() {
 
           {past.length > 0 ? (
             <>
-              <p className="pt-4 pb-1 text-xs tracking-wide text-muted-foreground">已經見過啦 🥹</p>
+              <div className="flex items-center gap-3 pt-6 pb-1">
+              <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground">
+                ALREADY MET ♡
+              </p>
+              <span className="h-px flex-1 bg-border/60" />
+            </div>
               {past.map((e) => (
                 <EventCard
                   key={e.id}
