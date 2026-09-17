@@ -1,14 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  Archive,
   ArrowRight,
-  BellRing,
-  CalendarDays,
-  CloudSun,
+  CalendarHeart,
   Heart,
   Images,
   Sparkles,
-  Smartphone,
 } from "lucide-react";
 
 export const Route = createFileRoute("/intro")({
@@ -24,78 +20,228 @@ export const Route = createFileRoute("/intro")({
   component: IdolDaysIntro,
 });
 
-const features = [
-  { Icon: CalendarDays, title: "重要日子倒數", body: "回歸、生日、搶票日、演唱會倒數，這次不再錯過。" },
-  { Icon: CloudSun, title: "追星天氣", body: "去見他的那天，天氣、穿搭、雨傘都先幫你想好。" },
-  { Icon: Archive, title: "粉絲考古", body: "那支直拍、那句話、那個讓你反覆重看的瞬間，都收好。" },
-  { Icon: Images, title: "回憶夾", body: "把每一次「我真的見到他了」留在這裡。" },
-  { Icon: BellRing, title: "iPhone 提醒", body: "重要的日子，讓 IdolDays 跟你一起記得。" },
-  { Icon: Smartphone, title: "桌面陪伴", body: "一打開手機，就知道離見面還有幾天。" },
+const moments = [
+  {
+    Icon: CalendarHeart,
+    eyebrow: "COUNT THE DAYS",
+    title: "期待見面的每一天",
+    body: "生日、回歸、演唱會與那些只有你知道的重要日子。",
+  },
+  {
+    Icon: Heart,
+    eyebrow: "STAY CLOSE",
+    title: "今天，也和他靠近一點",
+    body: "一首歌、一個心情、幾秒鐘的小互動，就能留下今天。",
+  },
+  {
+    Icon: Images,
+    eyebrow: "KEEP THE MOMENTS",
+    title: "讓喜歡慢慢變成回憶",
+    body: "不用努力寫日記，IdolDays 會替你把走過的日子收好。",
+  },
 ];
-
-function IdolDaysMark({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 128 128" fill="none" aria-hidden="true" className={className}>
-      <g transform="translate(64 64) scale(1.44) translate(-62.5 -53.5)">
-        <path d="M64 28c3 14.2 7 18.2 21.5 21.5-14.5 3.1-18.5 7.2-21.5 21.5-3.2-14.3-7.2-18.4-21.5-21.5 14.3-3.3 18.3-7.3 21.5-21.5Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="3.4" />
-        <path d="M80 25v10M75 30h10" stroke="currentColor" strokeLinecap="round" strokeWidth="3.2" />
-        <circle cx="45" cy="78" r="4.4" stroke="currentColor" strokeWidth="3.4" />
-        <path d="M49 74.5c2.7-5.1 6.3-8.1 11.1-9.4" stroke="currentColor" strokeLinecap="round" strokeWidth="3.4" />
-      </g>
-    </svg>
-  );
-}
 
 function IdolDaysIntro() {
   return (
-    <main className="min-h-screen overflow-hidden bg-[#f7fbff] text-[#1f3f6b]">
-      <section className="relative isolate overflow-hidden px-5 pb-16 pt-[max(2rem,env(safe-area-inset-top))] sm:px-8">
-        <div aria-hidden className="absolute -left-32 -top-40 -z-10 size-[28rem] rounded-full bg-[#dcecff] blur-3xl" />
-        <div aria-hidden className="absolute -right-24 top-32 -z-10 size-80 rounded-full bg-[#decfff]/70 blur-3xl" />
-        <div className="mx-auto max-w-5xl">
-          <nav className="flex items-center justify-between">
-            <Link to="/intro" className="flex items-center gap-2 text-xl font-semibold tracking-tight text-[#3265ae]">
-              <img src="/idoldays-icon.svg?v=20260916-564eaf3" alt="" className="size-8 rounded-xl shadow-[0_8px_22px_rgb(74_144_226_/_0.25)]" />
-              IdolDays
-            </Link>
-            <Link to="/" className="rounded-full border border-[#cfe0f7] bg-white/80 px-4 py-2 text-sm font-medium text-[#315b8d] backdrop-blur transition hover:bg-white">開啟 App</Link>
-          </nav>
+    <main className="dreamy-bg paper-grain relative min-h-screen overflow-hidden bg-background text-foreground">
+      <span
+        aria-hidden
+        className="twinkle pointer-events-none absolute top-28 left-[8%] text-xl text-primary/35"
+      >
+        ✦
+      </span>
+      <span
+        aria-hidden
+        className="twinkle pointer-events-none absolute top-52 right-[9%] text-lg text-lavender"
+      >
+        ♡
+      </span>
 
-          <div className="grid items-center gap-12 pt-16 md:grid-cols-[1.1fr_.9fr] md:pt-24">
-            <div>
-              <p className="inline-flex items-center gap-2 rounded-full border border-[#cddfff] bg-white/75 px-3 py-1.5 text-xs font-semibold tracking-[0.12em] text-[#4a90e2] uppercase"><Sparkles className="size-3.5" /> Your private fandom diary</p>
-              <h1 className="mt-5 max-w-xl text-4xl font-semibold leading-[1.18] tracking-tight text-[#1f3f6b] sm:text-5xl">把喜歡一個人的<br /><span className="bg-gradient-to-r from-[#4a90e2] via-[#7d92e8] to-[#bd8be4] bg-clip-text text-transparent">每一天留下來。</span></h1>
-              <p className="mt-5 max-w-lg text-lg leading-8 text-[#547393]">IdolDays 是為 K-POP 粉絲打造的私人追星陪伴 App。從下一個 D-Day，到多年後回看的回憶，這些只有你懂的心動，都有地方安放。</p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Link to="/" className="inline-flex items-center gap-2 rounded-full bg-[#4a90e2] px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_30px_rgb(74_144_226_/_0.28)] transition hover:-translate-y-0.5">開始收藏我的日子 <ArrowRight className="size-4" /></Link>
-                <a href="#features" className="rounded-full border border-[#c8dcf6] bg-white/75 px-5 py-3 text-sm font-semibold text-[#315b8d] transition hover:bg-white">看看功能</a>
-              </div>
-              <p className="mt-5 text-sm text-[#6d87a7]">不只是倒數，而是和喜歡的人一起走過的日子。</p>
-            </div>
+      <div className="relative mx-auto w-full max-w-md px-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(2.5rem,env(safe-area-inset-bottom))]">
+        <nav className="flex items-center justify-between">
+          <Link
+            to="/intro"
+            className="font-display text-[25px] font-semibold tracking-tight text-primary"
+          >
+            IdolDays <span className="text-[18px]">♡</span>
+          </Link>
 
-            <div className="relative mx-auto w-full max-w-[20rem] rotate-2 rounded-[2.7rem] border-[7px] border-slate-950 bg-slate-950 p-1.5 shadow-[0_28px_70px_rgb(31_63_107_/_0.3)]">
-              <div className="absolute left-1/2 top-2 h-5 w-24 -translate-x-1/2 rounded-full bg-slate-950" />
-              <div className="overflow-hidden rounded-[2.2rem] bg-gradient-to-b from-[#dcecff] via-[#f8fbff] to-[#e4ddff] px-4 pb-5 pt-12">
-                <div className="flex items-center justify-between text-xs font-semibold text-[#315b8d]"><span>IdolDays</span><BellRing className="size-4" /></div>
-                <div className="mt-4 h-48 rounded-[1.6rem] bg-[radial-gradient(circle_at_55%_28%,rgba(255,255,255,.95),transparent_20%),linear-gradient(145deg,#83b4ef,#b2cdfb_52%,#d9ccfb)] p-5 text-white shadow-inner">
-                  <div className="flex justify-end text-white"><IdolDaysMark className="size-9" /></div>
-                  <div className="mt-16"><p className="text-xs tracking-[0.14em] uppercase text-white/80">오늘도 우리예요</p><p className="mt-1 text-xl font-semibold">帶著好心情，<br />去見喜歡的人吧。</p></div>
+          <Link
+            to="/"
+            className="inline-flex min-h-10 items-center justify-center rounded-full border border-border/70 bg-card/70 px-4 text-sm font-medium text-foreground backdrop-blur transition-all duration-300 active:scale-[0.98]"
+          >
+            開啟 App
+          </Link>
+        </nav>
+
+        <section className="pt-14 text-center">
+          <p className="text-xs font-semibold tracking-[0.18em] text-primary">
+            CLOSER TO YOU
+          </p>
+
+          <h1 className="mt-4 font-display text-[36px] leading-[1.28] font-semibold tracking-[-0.025em]">
+            把喜歡一個人的
+            <br />
+            <span className="text-primary">每一天留下來。</span>
+          </h1>
+
+          <p className="mx-auto mt-5 max-w-[19rem] text-[15px] leading-7 text-muted-foreground">
+            不是在倒數日子，
+            <br />
+            而是在收藏我喜歡一個人的日子。
+          </p>
+
+          <div className="relative mx-auto mt-10 overflow-hidden rounded-[2.25rem] border border-border/70 bg-card/80 p-3 shadow-lift backdrop-blur-xl">
+            <div className="relative h-[29rem] overflow-hidden rounded-[1.75rem] bg-gradient-to-b from-accent/60 via-background to-lavender/35">
+              <div
+                aria-hidden
+                className="absolute -top-16 -right-12 size-56 rounded-full bg-card/70 blur-3xl"
+              />
+              <div
+                aria-hidden
+                className="absolute top-32 -left-20 size-52 rounded-full bg-primary/15 blur-3xl"
+              />
+
+              <div className="relative flex h-full flex-col px-5 pt-7 pb-5 text-left">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-xs tracking-[0.14em] text-muted-foreground">
+                      TODAY ♡
+                    </p>
+                    <p className="mt-1 font-display text-[22px] font-semibold">
+                      今天也一起追星吧
+                    </p>
+                  </div>
+                  <Sparkles
+                    className="size-5 text-primary"
+                    strokeWidth={1.5}
+                  />
                 </div>
-                <div className="mt-3 rounded-3xl bg-white/90 p-4 shadow-[0_10px_25px_rgb(74_144_226_/_0.12)]"><p className="text-[10px] font-semibold tracking-[0.14em] text-[#6d87a7] uppercase">Next D-Day</p><div className="mt-1 flex items-center justify-between"><div><p className="font-semibold text-[#274d7d]">台北演唱會</p><p className="mt-1 text-xs text-[#6d87a7]">2026.09.17</p></div><p className="text-3xl font-semibold text-[#4a90e2]">D-1</p></div></div>
-                <div className="mt-3 flex items-center gap-3 rounded-3xl bg-white/80 p-3"><div className="grid size-10 place-items-center rounded-2xl bg-[#e6e2ff] text-[#6f79ce]"><CloudSun className="size-5" /></div><div><p className="text-xs font-semibold text-[#4a90e2]">Fan Weather</p><p className="text-sm font-medium text-[#315b8d]">舒適 · 23–30°C</p></div></div>
+
+                <div className="mt-auto rounded-[1.8rem] border border-white/50 bg-card/75 p-5 shadow-soft backdrop-blur-xl">
+                  <p className="text-xs font-medium tracking-[0.14em] text-muted-foreground">
+                    NEXT D-DAY
+                  </p>
+
+                  <div className="mt-3 flex items-end justify-between gap-4">
+                    <div>
+                      <p className="font-display text-[19px] font-semibold">
+                        下一次見面的日子
+                      </p>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        再一下下，就能見面了 ♡
+                      </p>
+                    </div>
+
+                    <p className="font-display text-[42px] leading-none font-semibold text-primary">
+                      D-12
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-3 rounded-[1.6rem] border border-border/60 bg-card/65 px-4 py-4 backdrop-blur-xl">
+                  <p className="text-xs tracking-[0.14em] text-primary">
+                    TODAY'S SONG ♡
+                  </p>
+                  <p className="mt-2 font-medium">♪ 今天想和他一起聽什麼？</p>
+                  <div className="mt-3 flex gap-3 text-lg">
+                    <span>🥹</span>
+                    <span>💗</span>
+                    <span>😭</span>
+                    <span>✨</span>
+                    <span>🔥</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
 
-      <section id="features" className="bg-white px-5 py-16 sm:px-8">
-        <div className="mx-auto max-w-5xl"><div className="max-w-xl"><p className="text-sm font-semibold text-[#4a90e2]">ONE APP, EVERY FAN MOMENT</p><h2 className="mt-3 text-3xl font-semibold tracking-tight text-[#1f3f6b]">讓追星不再散落在<br />相簿、記事本與收藏夾裡。</h2></div><div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{features.map(({ Icon, title, body }) => <article key={title} className="rounded-[1.7rem] border border-[#e0eaf7] bg-[#fbfdff] p-5 shadow-[0_10px_26px_rgb(74_144_226_/_0.06)]"><div className="grid size-11 place-items-center rounded-2xl bg-[#e7f0ff] text-[#4a90e2]"><Icon className="size-5" /></div><h3 className="mt-5 text-lg font-semibold text-[#274d7d]">{title}</h3><p className="mt-2 text-sm leading-6 text-[#6d87a7]">{body}</p></article>)}</div></div>
-      </section>
+          <p className="mt-5 font-display text-[15px] italic text-primary/80">
+            Closer to you, one day at a time.
+          </p>
+        </section>
 
-      <section className="px-5 py-16 sm:px-8"><div className="mx-auto grid max-w-5xl items-center gap-8 rounded-[2rem] bg-gradient-to-br from-[#315f9e] via-[#527fce] to-[#9982d9] px-6 py-10 text-white shadow-[0_24px_56px_rgb(49_95_158_/_0.3)] sm:px-10 md:grid-cols-[1fr_auto]"><div><p className="inline-flex items-center gap-2 text-sm font-medium text-white/80"><Heart className="size-4 fill-current" /> FOR EVERY FANDOM MOMENT</p><h2 className="mt-3 text-3xl font-semibold tracking-tight">從今天的期待，到很久以後的回看。</h2><p className="mt-3 max-w-2xl leading-7 text-white/80">把本命、重要日子與你的故事，收進只屬於自己的 IdolDays。</p></div><Link to="/" className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-[#315b8d] transition hover:-translate-y-0.5">開啟 IdolDays <ArrowRight className="size-4" /></Link></div></section>
+        <section className="pt-20">
+          <div className="text-center">
+            <p className="text-xs font-semibold tracking-[0.16em] text-primary">
+              OUR DAYS ♡
+            </p>
+            <h2 className="mt-3 font-display text-[26px] font-semibold">
+              喜歡，不需要記得很辛苦。
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              你只需要留下幾秒鐘，
+              <br />
+              剩下的，讓 IdolDays 幫你記住。
+            </p>
+          </div>
 
-      <footer className="border-t border-[#dfe9f7] bg-white px-5 py-7 text-center text-sm text-[#6d87a7]">IdolDays · Count the good days.</footer>
+          <div className="mt-8 space-y-3">
+            {moments.map(({ Icon, eyebrow, title, body }) => (
+              <article
+                key={title}
+                className="cream-card flex gap-4 px-5 py-5"
+              >
+                <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-accent/35 text-primary">
+                  <Icon className="size-5" strokeWidth={1.5} />
+                </div>
+
+                <div>
+                  <p className="text-[11px] font-semibold tracking-[0.14em] text-primary">
+                    {eyebrow}
+                  </p>
+                  <h3 className="mt-1 font-display text-[17px] font-semibold">
+                    {title}
+                  </h3>
+                  <p className="mt-1.5 text-sm leading-6 text-muted-foreground">
+                    {body}
+                  </p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="pt-16">
+          <div className="relative overflow-hidden rounded-[2rem] border border-primary/15 bg-gradient-to-br from-primary/15 via-card/85 to-lavender/30 px-6 py-9 text-center shadow-soft">
+            <span
+              aria-hidden
+              className="absolute top-4 right-6 text-xl text-primary/30"
+            >
+              ✦
+            </span>
+
+            <p className="text-xs font-semibold tracking-[0.16em] text-primary">
+              EVERY DAY CLOSER TO YOU
+            </p>
+
+            <h2 className="mt-3 font-display text-[25px] font-semibold">
+              今天開始，
+              <br />
+              收藏我們的日子。
+            </h2>
+
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              從今天的期待，到很久以後的回看。
+            </p>
+
+            <Link
+              to="/"
+              className="mt-7 inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft transition-all duration-300 active:scale-[0.98]"
+            >
+              開始我的 IdolDays
+              <ArrowRight className="size-4" />
+            </Link>
+          </div>
+        </section>
+
+        <footer className="pt-12 text-center">
+          <p className="font-display text-[18px] text-primary">IdolDays ♡</p>
+          <p className="mt-1 text-xs tracking-[0.08em] text-muted-foreground">
+            讓喜歡的日子，變成每天的風景。
+          </p>
+        </footer>
+      </div>
     </main>
   );
 }
