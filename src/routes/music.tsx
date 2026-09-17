@@ -30,7 +30,14 @@ import {
 import { useIdolMusicSource } from "@/lib/idol-music.source";
 import { useIdolSource } from "@/lib/idols.source";
 import { shareSoundtrackCard } from "@/lib/soundtrack-share";
-import { useSongJournalHistory } from "@/lib/idol-song-journal.source";
+import {
+  useSongJournalHistory,
+  useTodaySongJournal,
+} from "@/lib/idol-song-journal.source";
+import {
+  SONG_MOOD_OPTIONS,
+  type SongMood,
+} from "@/lib/idol-song-journal";
 import { useComebackDiaryHistory } from "@/lib/comeback-diary.source";
 import { useConcertMusicMemoryHistory } from "@/lib/concert-music-memory.source";
 import { buildMusicTimeline } from "@/lib/music-timeline";
@@ -59,6 +66,9 @@ function MusicPage() {
 
   const songHistory =
     useSongJournalHistory(homeIdol?.id);
+
+  const todayJournal =
+    useTodaySongJournal(homeIdol?.id);
 
   const comebackHistory =
     useComebackDiaryHistory(homeIdol?.id);
@@ -162,6 +172,26 @@ function MusicPage() {
     }
   };
 
+  const chooseTodaySong = async (
+    songId: string,
+  ) => {
+    await setTodayPick(songId);
+    await todayJournal.save({
+      songId,
+    });
+  };
+
+  const chooseMood = async (
+    mood: SongMood,
+  ) => {
+    if (!today) return;
+
+    await todayJournal.save({
+      songId: today.id,
+      mood,
+    });
+  };
+
   const share = async () => {
     if (!homeIdol) return;
 
@@ -246,6 +276,58 @@ function MusicPage() {
                 "選一首歌，讓今天也有專屬 BGM。"}
             </p>
 
+            {today ? (
+              <div className="mt-5">
+                <p className="text-xs text-muted-foreground">
+                  今天聽這首歌的心情
+                  {todayJournal.entry?.mood
+                    ? `：${todayJournal.entry.mood}`
+                    : ""}
+                </p>
+
+                <div className="mt-2 flex items-center gap-2">
+                  {SONG_MOOD_OPTIONS.map((mood) => {
+                    const selected =
+                      todayJournal.entry?.mood === mood;
+
+                    return (
+                      <button
+                        key={mood}
+                        type="button"
+                        disabled={
+                          Boolean(busy) ||
+                          !todayJournal.ready
+                        }
+                        aria-label={`今天的心情：${mood}`}
+                        aria-pressed={selected}
+                        onClick={() =>
+                          void run(
+                            `mood-${mood}`,
+                            () => chooseMood(mood),
+                          )
+                        }
+                        className={`flex size-10 items-center justify-center rounded-full text-xl transition ${
+                          selected
+                            ? "bg-primary/15 ring-2 ring-primary/30"
+                            : "bg-card/70"
+                        }`}
+                      >
+                        {mood}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {todayJournal.entry?.songId ===
+                  today.id &&
+                todayJournal.entry?.mood ? (
+                  <p className="mt-2 text-xs font-medium text-primary">
+                    今天已留下 ♡
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
+
             <div className="mt-5 flex flex-wrap gap-2">
               <button
                 type="button"
@@ -277,13 +359,17 @@ function MusicPage() {
             </div>
           </section>
 
-          {actionError || error ? (
+          {actionError ||
+          error ||
+          todayJournal.error ? (
             <p
               role="alert"
               className="mt-3 rounded-2xl bg-destructive/10 px-4 py-3 text-sm text-destructive"
             >
               {actionError ||
-                "歌曲資料暫時讀取失敗，請稍後再試。"}
+                (todayJournal.error
+                  ? "今天的音樂日記暫時無法讀取，請稍後再試。"
+                  : "歌曲資料暫時讀取失敗，請稍後再試。")}
             </p>
           ) : null}
 
@@ -397,7 +483,7 @@ function MusicPage() {
                                     void run(
                                       `today-${song.id}`,
                                       () =>
-                                        setTodayPick(
+                                        chooseTodaySong(
                                           song.id,
                                         ),
                                     )
