@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { emptyMemoryDraft, type MemoryDraft } from "@/lib/memories";
 import { prepareUserImage } from "@/lib/image-upload";
+import type { IdolSong } from "@/lib/idol-music";
 
 function todayValue() {
   const n = new Date();
@@ -27,6 +28,7 @@ export function MemoryFormSheet({
   title,
   submitLabel,
   onSubmit,
+  songs = [],
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -34,6 +36,7 @@ export function MemoryFormSheet({
   title: string;
   submitLabel: string;
   onSubmit: (draft: MemoryDraft) => void | Promise<void>;
+  songs?: IdolSong[];
 }) {
   const [draft, setDraft] = useState<MemoryDraft>(emptyMemoryDraft);
   const [error, setError] = useState("");
@@ -169,6 +172,20 @@ export function MemoryFormSheet({
               onChange={(e) => setDraft((d) => ({ ...d, note: e.target.value }))}
               className="rounded-xl bg-surface/50"
             />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="memory-song">這天的歌</Label>
+            <select
+              id="memory-song"
+              value={draft.songId}
+              onChange={(e) => setDraft((d) => ({ ...d, songId: e.target.value }))}
+              className="h-10 w-full rounded-xl border border-input bg-surface/50 px-3 text-sm"
+            >
+              <option value="">還沒有綁定歌曲</option>
+              {songs.map((song) => <option key={song.id} value={song.id}>{song.title}{song.artist ? ` · ${song.artist}` : ""}</option>)}
+            </select>
+            <p className="text-xs text-muted-foreground">之後「去年的今天」可以再聽一次。</p>
           </div>
 
           {error ? <p className="text-sm text-destructive">{error}</p> : null}
