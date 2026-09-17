@@ -374,11 +374,11 @@ function ArchaeologyPage() {
         initial={editDraft}
         title={editing ? "編輯考古" : "收進考古"}
         submitLabel={editing ? "儲存修改" : "收進考古"}
-        onSubmit={(draft) => {
+        onSubmit={async (draft) => {
           if (editing) {
-            updateItem(editing.id, draft);
+            await updateItem(editing.id, draft);
           } else {
-            addItem(draft);
+            await addItem(draft);
           }
 
           setFormOpen(false);
