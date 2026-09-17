@@ -63,3 +63,54 @@ export function useConcertMusicMemory(event?: { id: string; idolId: string; type
 
   return useMemo(() => ({ entry, ready, error, save }), [entry, ready, error, save]);
 }
+
+/** Music Timeline 用：讀取目前登入使用者、指定偶像的 Concert Music Memory 歷史。 */
+export function useConcertMusicMemoryHistory(idolId?: string, limit = 50) {
+  const { user, loading: authLoading } = useAuth();
+  const [entries, setEntries] = useState<ConcertMusicMemory[]>([]);
+  const [ready, setReady] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (authLoading) return;
+
+    if (!user || !idolId) {
+      setEntries([]);
+      setError(null);
+      setReady(true);
+      return;
+    }
+
+    let active = true;
+    setReady(false);
+
+    void supabase
+      .from("concert_music_memories")
+      .select(COLUMNS)
+      .eq("idol_id", idolId)
+      .order("created_at", { ascending: false })
+      .limit(limit)
+      .then(({ data, error: loadError }) => {
+        if (!active) return;
+
+        if (loadError) {
+          setEntries([]);
+          setError(loadError.message);
+        } else {
+          setEntries(((data ?? []) as MemoryRow[]).map(toMemory));
+          setError(null);
+        }
+
+        setReady(true);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [authLoading, user?.id, idolId, limit]);
+
+  return useMemo(
+    () => ({ entries, ready, error }),
+    [entries, ready, error],
+  );
+}

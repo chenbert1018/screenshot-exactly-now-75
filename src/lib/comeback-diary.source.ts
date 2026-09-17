@@ -96,3 +96,54 @@ export function useComebackDiary(event?: { id: string; idolId: string; type: str
 
   return useMemo(() => ({ entry, ready, error, save }), [entry, ready, error, save]);
 }
+
+/** Music Timeline 用：讀取目前登入使用者、指定偶像的 Comeback Diary 歷史。 */
+export function useComebackDiaryHistory(idolId?: string, limit = 50) {
+  const { user, loading: authLoading } = useAuth();
+  const [entries, setEntries] = useState<ComebackDiary[]>([]);
+  const [ready, setReady] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (authLoading) return;
+
+    if (!user || !idolId) {
+      setEntries([]);
+      setError(null);
+      setReady(true);
+      return;
+    }
+
+    let active = true;
+    setReady(false);
+
+    void supabase
+      .from("comeback_diaries")
+      .select(COLUMNS)
+      .eq("idol_id", idolId)
+      .order("created_at", { ascending: false })
+      .limit(limit)
+      .then(({ data, error: loadError }) => {
+        if (!active) return;
+
+        if (loadError) {
+          setEntries([]);
+          setError(loadError.message);
+        } else {
+          setEntries(((data ?? []) as DiaryRow[]).map(toDiary));
+          setError(null);
+        }
+
+        setReady(true);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [authLoading, user?.id, idolId, limit]);
+
+  return useMemo(
+    () => ({ entries, ready, error }),
+    [entries, ready, error],
+  );
+}
