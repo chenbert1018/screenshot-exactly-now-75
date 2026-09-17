@@ -29,6 +29,26 @@ function isIOSNative(): boolean {
   );
 }
 
+export type NotificationPermissionStatus =
+  | "unavailable"
+  | "prompt"
+  | "granted"
+  | "denied";
+
+/** iPhone 通知權限狀態，Web 版不顯示系統通知提示。 */
+export async function getNotificationPermissionStatus(): Promise<NotificationPermissionStatus> {
+  if (!isIOSNative()) return "unavailable";
+
+  try {
+    const permission = await LocalNotifications.checkPermissions();
+    if (permission.display === "granted") return "granted";
+    if (permission.display === "prompt") return "prompt";
+    return "denied";
+  } catch {
+    return "denied";
+  }
+}
+
 /**
  * LocalNotifications 要求數字 ID。
  * 從 event.id + reminderDays 穩定產生正整數，
