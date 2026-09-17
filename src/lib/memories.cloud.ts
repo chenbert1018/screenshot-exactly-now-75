@@ -14,10 +14,11 @@ type Row = {
   note: string | null;
   photo: string | null;
   date: string | null;
+  song_id: string | null;
   created_at: string;
 };
 
-const COLUMNS = "id, folder_id, idol_id, title, note, photo, date, created_at";
+const COLUMNS = "id, folder_id, idol_id, title, note, photo, date, song_id, created_at";
 
 function toMemory(row: Row): Memory {
   return {
@@ -28,6 +29,7 @@ function toMemory(row: Row): Memory {
     date: row.date ?? "",
     note: row.note ?? "",
     photo: row.photo ?? "",
+    songId: row.song_id ?? "",
     createdAt: row.created_at,
   };
 }
@@ -38,6 +40,7 @@ function toRow(draft: MemoryDraft) {
     note: draft.note ?? "",
     photo: draft.photo ?? "",
     date: draft.date || null,
+    song_id: draft.songId || null,
   };
 }
 
