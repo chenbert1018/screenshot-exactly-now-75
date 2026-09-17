@@ -158,6 +158,7 @@ export async function migrateLocalMemories(
       date: item.date ?? "",
       note: item.note ?? "",
       photo: item.photo ?? "",
+      songId: item.songId ?? "",
     };
     try {
       const createdMemory = await createMemory(cloudFolderId, draft, userId, cloudIdolId);
