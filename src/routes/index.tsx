@@ -1,7 +1,7 @@
 import { StoredImage } from "@/components/StoredImage";
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Bell, CalendarHeart, CloudSun, Heart, History, ImageIcon, Plus, Repeat2, Search } from "lucide-react";
+import { ArrowRight, Bell, CalendarHeart, CloudSun, Heart, History, ImageIcon, Music2, Plus, Repeat2, Search } from "lucide-react";
 import { AppShell, EmptyState, Section } from "@/components/AppShell";
 import type { Idol } from "@/lib/idols";
 import { useIdolSource } from "@/lib/idols.source";
@@ -9,6 +9,8 @@ import { canUseFanWeather, eventCountdown, nextEvent, type IdolEvent } from "@/l
 import { useEventSource } from "@/lib/events.source";
 import { useArchaeologySource } from "@/lib/archaeology.source";
 import { useMemorySource } from "@/lib/memories.source";
+import { useIdolMusicSource } from "@/lib/idol-music.source";
+import { streamingLink, type IdolSong } from "@/lib/idol-music";
 import { daysSince } from "@/lib/dates";
 import { classifyFanWeather, type FanWeatherInput } from "@/lib/fan-weather";
 
@@ -236,6 +238,17 @@ function EmptyMemoryCard() {
   );
 }
 
+function TodaySongCard({ song }: { song?: IdolSong | undefined }) {
+  const link = song ? streamingLink(song) : "";
+  return (
+    <Link to="/music" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 p-4 text-card-foreground shadow-[0_12px_32px_rgba(157,91,116,0.10)] backdrop-blur-xl transition-transform active:scale-[0.99]">
+      <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary"><Music2 className="size-6" strokeWidth={1.55} /></div>
+      <div className="min-w-0 flex-1"><p className="text-[11px] font-medium tracking-[0.1em] text-primary">TODAY'S PICK</p><p className="mt-1 truncate text-[16px] font-medium">{song?.title || "今天想聽哪一首？"}</p><p className="mt-1 truncate text-sm text-muted-foreground">{song ? (song.artist || "前往播放") : "選一首，讓今天有專屬 BGM ♡"}</p></div>
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">{link ? <Music2 className="size-4" /> : <ArrowRight className="size-4" />}</span>
+    </Link>
+  );
+}
+
 function Hero({
   idol,
   canSwitch,
@@ -295,6 +308,8 @@ function HomePage() {
   const { items: archaeology } = useArchaeologySource();
   const { all: memories } = useMemorySource();
   const main = homeIdol;
+  const { songs } = useIdolMusicSource(main?.id);
+  const todaySong = useMemo(() => songs.find((song) => song.isTodayPick), [songs]);
   const companionship = useMemo(
     () => (main ? daysSince(main.sinceDate) : null),
     [main],
@@ -369,6 +384,7 @@ function HomePage() {
               <FanWeatherSetupCard event={nextMainEvent} />
             )
           ) : null}
+          <TodaySongCard song={todaySong} />
           {latestArchaeology ? <ArchaeologyCard item={latestArchaeology} /> : <EmptyArchaeologyCard />}
           {memoryFromToday ? <MemoryCard memory={memoryFromToday} /> : <EmptyMemoryCard />}
 
