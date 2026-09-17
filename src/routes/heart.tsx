@@ -32,6 +32,7 @@ import {
 import { type Idol } from "@/lib/idols";
 import { useIdolSource } from "@/lib/idols.source";
 import { useSugarSource } from "@/lib/sugar.source";
+import { CloudRetryNotice } from "@/components/CloudRetryNotice";
 
 export const Route = createFileRoute("/heart")({
   head: () => ({
@@ -96,7 +97,7 @@ function HeartCard({
 
 function HeartPage() {
   const { idols, ready: idolsReady } = useIdolSource();
-  const { items, ready, add, update, remove, error } = useSugarSource();
+  const { items, ready, add, update, remove, error, reload } = useSugarSource();
 
   const [idolFilter, setIdolFilter] = useState<string>("ALL");
   const [typeFilter, setTypeFilter] = useState<"ALL" | HeartItemType>("ALL");
@@ -154,9 +155,9 @@ function HeartPage() {
       </header>
 
       {error ? (
-        <p className="mb-4 rounded-2xl border border-border/60 bg-surface/60 px-4 py-3 text-sm text-muted-foreground">
+        <CloudRetryNotice onRetry={reload}>
           目前連不上雲端資料，你收藏的糖沒有遺失，請稍後再試。
-        </p>
+        </CloudRetryNotice>
       ) : null}
 
       {!ready || !idolsReady ? (
