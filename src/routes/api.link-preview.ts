@@ -26,6 +26,22 @@ function isPrivateIpv4(hostname: string) {
   );
 }
 
+
+function isPrivateIpv6(hostname: string) {
+  const value = hostname.replace(/^\[|\]$/g, "").toLowerCase();
+
+  // Loopback, link-local, unique-local and IPv4-mapped IPv6 addresses must
+  // never be fetched by the metadata proxy. Blocking the mapped range as a
+  // whole also avoids alternate IPv4 spellings bypassing the IPv4 guard.
+  return (
+    value === "::1" ||
+    value.startsWith("fe80:") ||
+    value.startsWith("fc") ||
+    value.startsWith("fd") ||
+    value.startsWith("::ffff:")
+  );
+}
+
 function validateRemoteUrl(value: string) {
   let url: URL;
 
@@ -47,7 +63,9 @@ function validateRemoteUrl(value: string) {
     hostname === "[::1]" ||
     hostname.endsWith(".localhost") ||
     hostname.endsWith(".local") ||
-    isPrivateIpv4(hostname)
+    hostname.endsWith(".internal") ||
+    isPrivateIpv4(hostname) ||
+    isPrivateIpv6(hostname)
   ) {
     throw new Error("PRIVATE_URL");
   }
