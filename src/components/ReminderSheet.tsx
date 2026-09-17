@@ -8,6 +8,10 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { DAYS_BEFORE_OPTIONS, reminderPreview } from "@/lib/reminders";
+import {
+  getNotificationPermissionStatus,
+  type NotificationPermissionStatus,
+} from "@/lib/event-notifications";
 
 export function ReminderSheet({
   open,
@@ -30,6 +34,8 @@ export function ReminderSheet({
   const [selected, setSelected] = useState<number | null>(initialDaysBefore);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [notificationStatus, setNotificationStatus] =
+    useState<NotificationPermissionStatus>("unavailable");
 
   useEffect(() => {
     if (open) {
@@ -38,6 +44,11 @@ export function ReminderSheet({
       setError("");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    void getNotificationPermissionStatus().then(setNotificationStatus);
   }, [open]);
 
   const options: { value: number | null; label: string }[] = [
@@ -100,6 +111,18 @@ export function ReminderSheet({
           </p>
         ) : null}
 
+        {notificationStatus === "prompt" ? (
+          <p className="mt-3 rounded-2xl bg-surface/60 px-4 py-3 text-xs leading-5 text-muted-foreground">
+            第一次儲存時，IdolDays 會請你允許 iPhone 通知。
+          </p>
+        ) : null}
+
+        {notificationStatus === "denied" ? (
+          <p className="mt-3 rounded-2xl bg-destructive/10 px-4 py-3 text-xs leading-5 text-destructive">
+            iPhone 通知目前未開啟。提醒仍會保存，但請到「設定 → 通知 → IdolDays」開啟通知，才會收到排程提醒。
+          </p>
+        ) : null}
+
         <div className="flex gap-3 pt-5">
           <button
             type="button"
@@ -117,6 +140,7 @@ export function ReminderSheet({
               setError("");
               try {
                 await onSave(selected);
+                setNotificationStatus(await getNotificationPermissionStatus());
               } catch {
                 setError("提醒沒有儲存成功，請確認網路後再試一次");
               } finally {
