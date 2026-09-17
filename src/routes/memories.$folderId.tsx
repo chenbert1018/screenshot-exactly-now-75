@@ -30,6 +30,7 @@ import {
 } from "@/lib/memories";
 import { useMemorySource } from "@/lib/memories.source";
 import { useIdolSource } from "@/lib/idols.source";
+import { toast } from "sonner";
 import { parseLocalDate } from "@/lib/dates";
 
 export const Route = createFileRoute("/memories/$folderId")({
@@ -69,6 +70,7 @@ function FolderDetailPage() {
   const [memoryOpen, setMemoryOpen] = useState(false);
   const [editing, setEditing] = useState<Memory | null>(null);
   const [pendingDelete, setPendingDelete] = useState<Memory | null>(null);
+  const [deletingMemory, setDeletingMemory] = useState(false);
 
   if (ready && !folder) {
     return (
@@ -348,12 +350,22 @@ function FolderDetailPage() {
             <AlertDialogCancel className="rounded-full">取消</AlertDialogCancel>
             <AlertDialogAction
               className="rounded-full bg-destructive text-destructive-foreground"
-              onClick={() => {
-                if (pendingDelete) void removeMemory(pendingDelete.id);
-                setPendingDelete(null);
+              disabled={deletingMemory}
+              onClick={async (event) => {
+                event.preventDefault();
+                if (!pendingDelete || deletingMemory) return;
+                setDeletingMemory(true);
+                try {
+                  await removeMemory(pendingDelete.id);
+                  setPendingDelete(null);
+                } catch {
+                  toast.error("回憶沒有刪除成功，請確認網路後再試一次");
+                } finally {
+                  setDeletingMemory(false);
+                }
               }}
             >
-              刪除
+              {deletingMemory ? "刪除中…" : "刪除"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
