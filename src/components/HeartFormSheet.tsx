@@ -38,10 +38,11 @@ export function HeartFormSheet({
   defaultIdolId?: string | undefined;
   title: string;
   submitLabel: string;
-  onSubmit: (draft: HeartDraft) => void;
+  onSubmit: (draft: HeartDraft) => void | Promise<void>;
 }) {
   const [draft, setDraft] = useState<HeartDraft>(emptyHeartDraft);
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -54,6 +55,7 @@ export function HeartFormSheet({
       },
     );
     setError("");
+    setSaving(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
@@ -69,12 +71,22 @@ export function HeartFormSheet({
     }
   }
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!draft.idolId) return setError("請選擇一位偶像");
     if (!draft.title.trim()) return setError("幫這個瞬間取一個名字");
     if (!draft.date) return setError("請選擇日期");
-    onSubmit({ ...draft, title: draft.title.trim() });
+
+    setSaving(true);
+    setError("");
+
+    try {
+      await onSubmit({ ...draft, title: draft.title.trim() });
+    } catch {
+      setError("這顆糖沒有儲存成功，請確認網路後再試一次");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -248,9 +260,10 @@ export function HeartFormSheet({
             </button>
             <button
               type="submit"
-              className="flex-1 rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+              disabled={saving}
+              className="flex-1 rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95 disabled:opacity-60"
             >
-              {submitLabel}
+              {saving ? "儲存中…" : submitLabel}
             </button>
           </div>
         </form>
