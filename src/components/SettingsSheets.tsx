@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Check, Trash2 } from "lucide-react";
 import {
   Sheet,
@@ -163,6 +164,8 @@ export function NotificationSettingsSheet({
   const { reminders, updateReminder, removeReminder } = useReminderSource();
   const { idols } = useIdolSource();
   const { events } = useEventSource();
+  const [busyReminderId, setBusyReminderId] = useState<string | null>(null);
+  const [actionError, setActionError] = useState("");
 
   const rows = reminders.map((r) => {
     const event = r.eventId ? events.find((e) => e.id === r.eventId) : undefined;
@@ -189,16 +192,34 @@ export function NotificationSettingsSheet({
     row: (typeof rows)[number],
     enabled: boolean,
   ) {
-    await updateReminder(row.id, { enabled });
-    if (row.event) {
-      await scheduleEventNotifications(row.event, enabled ? row.daysBefore : null);
+    if (busyReminderId) return;
+    setBusyReminderId(row.id);
+    setActionError("");
+    try {
+      await updateReminder(row.id, { enabled });
+      if (row.event) {
+        await scheduleEventNotifications(row.event, enabled ? row.daysBefore : null);
+      }
+    } catch {
+      setActionError("提醒設定沒有更新成功，請確認網路後再試一次。");
+    } finally {
+      setBusyReminderId(null);
     }
   }
 
   async function deleteReminder(row: (typeof rows)[number]) {
-    await removeReminder(row.id);
-    if (row.event) {
-      await scheduleEventNotifications(row.event, null);
+    if (busyReminderId) return;
+    setBusyReminderId(row.id);
+    setActionError("");
+    try {
+      await removeReminder(row.id);
+      if (row.event) {
+        await scheduleEventNotifications(row.event, null);
+      }
+    } catch {
+      setActionError("提醒沒有刪除成功，請確認網路後再試一次。");
+    } finally {
+      setBusyReminderId(null);
     }
   }
 
@@ -209,7 +230,7 @@ export function NotificationSettingsSheet({
       title="提醒通知"
       description="活動倒數提醒會同步到 App 並在 iPhone 排程；其他提醒會安全保留在帳號設定中。"
     >
-      {rows.length === 0 ? (
+      {actionError ? (\n        <p role="alert" className="rounded-2xl bg-destructive/10 px-4 py-3 text-sm text-destructive">\n          {actionError}\n        </p>\n      ) : null}\n\n      {rows.length === 0 ? (
         <p className="rounded-2xl bg-surface/60 px-4 py-4 text-sm text-muted-foreground">
           還沒有提醒。到日子或偶像頁面就能設定。
         </p>
@@ -225,19 +246,22 @@ export function NotificationSettingsSheet({
               </div>
               <Switch
                 checked={row.enabled}
+                disabled={busy || busyReminderId !== null}
                 aria-label={`${row.title} 提醒開關`}
                 onCheckedChange={(v) => void setReminderEnabled(row, v)}
               />
               <button
                 type="button"
+                disabled={busy || busyReminderId !== null}
                 aria-label={`刪除 ${row.title} 提醒`}
                 onClick={() => void deleteReminder(row)}
-                className="rounded-full p-2 text-muted-foreground transition-transform duration-300 active:scale-90"
+                className="rounded-full p-2 text-muted-foreground transition-transform duration-300 active:scale-90 disabled:opacity-50"
               >
                 <Trash2 className="size-4" strokeWidth={1.6} />
               </button>
             </li>
-          ))}
+            );
+          })}
         </ul>
       )}
     </SheetShell>
