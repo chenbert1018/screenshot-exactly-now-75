@@ -30,9 +30,9 @@ export type Idol = {
   favoriteColor: string;
   sinceDate: string;
   photo: string;
-  cutoutPhoto?: string;
+  cutoutPhoto?: string | undefined;
   /** 偶像代表動物；舊資料未選擇時保持 undefined。 */
-  representativeAnimal?: RepresentativeAnimal;
+  representativeAnimal?: RepresentativeAnimal | undefined;
 };
 
 export type IdolDraft = Omit<Idol, "id">;
