@@ -30,6 +30,7 @@ import {
 } from "@/lib/memories";
 import { useMemorySource } from "@/lib/memories.source";
 import { useIdolSource } from "@/lib/idols.source";
+import { useIdolMusicSource } from "@/lib/idol-music.source";
 import { toast } from "sonner";
 import { parseLocalDate } from "@/lib/dates";
 
@@ -63,6 +64,7 @@ function FolderDetailPage() {
 
   const folder = folders.find((f) => f.id === folderId);
   const idol = folder?.idolId ? idols.find((i) => i.id === folder.idolId) : undefined;
+  const { songs } = useIdolMusicSource(folder?.idolId);
 
   const [editFolder, setEditFolder] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
@@ -99,6 +101,7 @@ function FolderDetailPage() {
         date: editing.date,
         note: editing.note,
         photo: editing.photo ?? "",
+        songId: editing.songId ?? "",
       }
     : undefined;
 
@@ -230,6 +233,9 @@ function FolderDetailPage() {
                               {m.note}
                             </p>
                           ) : null}
+                          {m.songId ? (
+                            <p className="mt-2 text-xs text-primary">🎵 {songs.find((song) => song.id === m.songId)?.title ?? "已連結的歌曲"}</p>
+                          ) : null}
                         </div>
                         <DropdownMenu>
                           <DropdownMenuTrigger
@@ -308,6 +314,7 @@ function FolderDetailPage() {
           setMemoryOpen(false);
           setEditing(null);
         }}
+        songs={songs}
       />
 
       <AlertDialog open={deleteFolder} onOpenChange={setDeleteFolder}>
