@@ -69,7 +69,7 @@ function MilestoneRow({
   last: boolean;
   onToggle: () => void;
   onEdit: () => void;
-  onDelete: () => void;
+  onDelete: () => void | Promise<void>;
 }) {
   const done = milestone.completed;
   return (
@@ -144,6 +144,8 @@ export function EventDetailSheet({
   const [formOpen, setFormOpen] = useState(false);
   const [editingMilestone, setEditingMilestone] = useState<Milestone | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
   const [confirmRestore, setConfirmRestore] = useState(false);
   const [restoreDate, setRestoreDate] = useState("");
   const [paywallOpen, setPaywallOpen] = useState(false);
@@ -197,7 +199,10 @@ export function EventDetailSheet({
                   </DropdownMenuItem>
                 ) : null}
                 <DropdownMenuItem
-                  onSelect={() => setConfirmDelete(true)}
+                  onSelect={() => {
+                    setDeleteError("");
+                    setConfirmDelete(true);
+                  }}
                   className="text-destructive"
                 >
                   刪除日子
@@ -430,23 +435,35 @@ export function EventDetailSheet({
           {confirmDelete ? (
             <div className="mt-10 rounded-2xl bg-surface/60 px-5 py-5 text-center">
               <p className="text-sm">確定要刪除這個日子嗎？</p>
+              {deleteError ? <p className="mt-2 text-xs text-destructive">{deleteError}</p> : null}
               <div className="mt-4 flex gap-3">
                 <button
                   type="button"
+                  disabled={deleting}
                   onClick={() => setConfirmDelete(false)}
-                  className="flex-1 rounded-full border border-border/70 py-2.5 text-sm"
+                  className="flex-1 rounded-full border border-border/70 py-2.5 text-sm disabled:opacity-60"
                 >
                   取消
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    setConfirmDelete(false);
-                    onDelete();
+                  disabled={deleting}
+                  onClick={async () => {
+                    if (deleting) return;
+                    setDeleting(true);
+                    setDeleteError("");
+                    try {
+                      await onDelete();
+                      setConfirmDelete(false);
+                    } catch {
+                      setDeleteError("這個日子沒有刪除成功，請確認網路後再試一次");
+                    } finally {
+                      setDeleting(false);
+                    }
                   }}
-                  className="flex-1 rounded-full bg-destructive py-2.5 text-sm text-destructive-foreground"
+                  className="flex-1 rounded-full bg-destructive py-2.5 text-sm text-destructive-foreground disabled:opacity-60"
                 >
-                  刪除
+                  {deleting ? "刪除中…" : "刪除"}
                 </button>
               </div>
             </div>
