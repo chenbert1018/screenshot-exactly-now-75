@@ -12,11 +12,7 @@ import {
   Trash2,
 } from "lucide-react";
 
-import {
-  AppShell,
-  PageHeader,
-  SoftCard,
-} from "@/components/AppShell";
+import { AppShell, SoftCard } from "@/components/AppShell";
 import { ArchaeologyFormSheet } from "@/components/ArchaeologyFormSheet";
 import { StoredImage } from "@/components/StoredImage";
 import { Input } from "@/components/ui/input";
@@ -63,28 +59,17 @@ const SOURCE_LABELS: Record<ArchaeologySource, string> = {
 };
 
 function ArchaeologyPage() {
-  const {
-    items,
-    ready,
-    addItem,
-    updateItem,
-    toggleFavorite,
-    removeItem,
-    error,
-    reload,
-  } = useArchaeologySource();
+  const { items, ready, addItem, updateItem, toggleFavorite, removeItem, error, reload } =
+    useArchaeologySource();
 
   const [formOpen, setFormOpen] = useState(false);
-  const [editing, setEditing] =
-    useState<ArchaeologyItem | null>(null);
-  const [pendingDelete, setPendingDelete] =
-    useState<ArchaeologyItem | null>(null);
+  const [editing, setEditing] = useState<ArchaeologyItem | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<ArchaeologyItem | null>(null);
   const [deleting, setDeleting] = useState(false);
 
   const [query, setQuery] = useState("");
   const [view, setView] = useState<ViewMode>("RECENT");
-  const [activeCollection, setActiveCollection] =
-    useState<string | null>(null);
+  const [activeCollection, setActiveCollection] = useState<string | null>(null);
 
   const collections = useMemo(() => {
     const counts = new Map<string, number>();
@@ -109,22 +94,13 @@ function ArchaeologyPage() {
         return false;
       }
 
-      if (
-        activeCollection &&
-        item.collection !== activeCollection
-      ) {
+      if (activeCollection && item.collection !== activeCollection) {
         return false;
       }
 
       if (!normalizedQuery) return true;
 
-      const haystack = [
-        item.title,
-        item.note,
-        item.collection,
-        item.source,
-        ...item.tags,
-      ]
+      const haystack = [item.title, item.note, item.collection, item.source, ...item.tags]
         .join(" ")
         .toLowerCase();
 
@@ -164,10 +140,36 @@ function ArchaeologyPage() {
 
   return (
     <AppShell>
-      <PageHeader
-        title="考古"
-        subtitle="把散落在飯圈各處的寶藏收回來"
-      />
+      <header className="relative mb-7">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute top-0 right-2 text-xl text-primary/25"
+        >
+          ✦
+        </span>
+
+        <p className="text-[11px] font-semibold tracking-[0.18em] text-primary">FROM OUR DAYS ♡</p>
+
+        <div className="mt-2 flex items-end justify-between gap-4">
+          <div className="min-w-0">
+            <h1 className="font-display text-[28px] leading-snug font-semibold">
+              以前喜歡過的瞬間
+            </h1>
+            <p className="mt-2 max-w-[290px] text-sm leading-6 text-muted-foreground">
+              有些貼文、影片和一句話，過了很久還是會想再看一次。
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={openCreate}
+            aria-label="收藏新的考古"
+            className="mb-1 flex size-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-soft transition-transform duration-300 active:scale-90"
+          >
+            <Plus className="size-4" strokeWidth={2} />
+          </button>
+        </div>
+      </header>
 
       {error ? (
         <CloudRetryNotice onRetry={reload}>
@@ -185,8 +187,8 @@ function ArchaeologyPage() {
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="搜尋標題、收藏集、Tag..."
-            className="h-11 rounded-full bg-surface/60 pl-11"
+            placeholder="找找以前收藏過的瞬間..."
+            className="h-11 rounded-full border-border/60 bg-card/70 pl-11 shadow-soft"
           />
         </div>
 
@@ -216,25 +218,21 @@ function ArchaeologyPage() {
         <button
           type="button"
           onClick={openCreate}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-primary/20 bg-primary/8 px-4 py-3 text-sm font-medium text-primary transition-colors active:bg-primary/12"
+          className="flex w-full items-center justify-center gap-2 rounded-full border border-primary/20 bg-primary/8 px-4 py-3 text-sm font-medium text-primary transition-colors active:bg-primary/12"
         >
           <Plus className="size-4" strokeWidth={1.8} />
-          收進考古
+          留下新的寶藏
         </button>
 
         {view === "COLLECTIONS" ? (
           <section className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-medium">
-                我的收藏集
-              </h2>
+              <h2 className="text-sm font-medium">我的收藏集</h2>
 
               {activeCollection ? (
                 <button
                   type="button"
-                  onClick={() =>
-                    setActiveCollection(null)
-                  }
+                  onClick={() => setActiveCollection(null)}
                   className="text-xs text-muted-foreground"
                 >
                   顯示全部
@@ -250,9 +248,7 @@ function ArchaeologyPage() {
                     type="button"
                     onClick={() =>
                       setActiveCollection(
-                        activeCollection === collection.name
-                          ? null
-                          : collection.name,
+                        activeCollection === collection.name ? null : collection.name,
                       )
                     }
                     className={[
@@ -262,26 +258,17 @@ function ArchaeologyPage() {
                         : "border-border/60 bg-surface/50",
                     ].join(" ")}
                   >
-                    <FolderHeart
-                      className="mb-3 size-5 text-primary"
-                      strokeWidth={1.5}
-                    />
+                    <FolderHeart className="mb-3 size-5 text-primary" strokeWidth={1.5} />
 
-                    <p className="truncate text-sm font-medium">
-                      {collection.name}
-                    </p>
+                    <p className="truncate text-sm font-medium">{collection.name}</p>
 
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {collection.count} 篇
-                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">{collection.count} 篇</p>
                   </button>
                 ))}
               </div>
             ) : (
               <SoftCard className="px-5 py-6 text-center">
-                <p className="text-sm font-medium">
-                  還沒有收藏集
-                </p>
+                <p className="text-sm font-medium">還沒有收藏集</p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   收藏考古時，可以順手把它們分進收藏集。
                 </p>
@@ -293,17 +280,11 @@ function ArchaeologyPage() {
         <section className="space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-medium">
-              {view === "FAVORITES"
-                ? "我的最愛"
-                : activeCollection
-                  ? activeCollection
-                  : "最近收藏"}
+              {view === "FAVORITES" ? "我的最愛" : activeCollection ? activeCollection : "最近收藏"}
             </h2>
 
             {items.length > 0 ? (
-              <span className="text-xs text-muted-foreground">
-                {visibleItems.length} 篇
-              </span>
+              <span className="text-xs text-muted-foreground">{visibleItems.length} 篇</span>
             ) : null}
           </div>
 
@@ -317,9 +298,7 @@ function ArchaeologyPage() {
                 <ArchaeologyCard
                   key={item.id}
                   item={item}
-                  onToggleFavorite={() =>
-                    toggleFavorite(item.id)
-                  }
+                  onToggleFavorite={() => toggleFavorite(item.id)}
                   onEdit={() => openEdit(item)}
                   onDelete={() => setPendingDelete(item)}
                 />
@@ -328,19 +307,13 @@ function ArchaeologyPage() {
           ) : items.length === 0 ? (
             <SoftCard className="px-6 py-10 text-center">
               <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-surface">
-                <Bookmark
-                  className="size-5 text-muted-foreground"
-                  strokeWidth={1.5}
-                />
+                <Bookmark className="size-5 text-muted-foreground" strokeWidth={1.5} />
               </div>
 
-              <p className="mt-4 text-[15px] font-medium">
-                你的考古收藏還是空的
-              </p>
+              <p className="mt-4 text-[15px] font-medium">還沒有留下以前的寶藏</p>
 
               <p className="mx-auto mt-2 max-w-[250px] text-sm leading-relaxed text-muted-foreground">
-                下次在 Threads、X 或 YouTube
-                挖到寶藏，就把它收回來。
+                下次在 Threads、X 或 YouTube 遇見捨不得忘記的瞬間，就把它留在這裡。
               </p>
 
               <button
@@ -348,17 +321,13 @@ function ArchaeologyPage() {
                 onClick={openCreate}
                 className="mt-5 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-soft"
               >
-                ＋ 收進第一篇考古
+                ＋ 留下第一個寶藏
               </button>
             </SoftCard>
           ) : (
             <SoftCard className="px-5 py-8 text-center">
-              <p className="text-sm font-medium">
-                沒找到這篇考古
-              </p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                換個關鍵字看看。
-              </p>
+              <p className="text-sm font-medium">沒找到那個瞬間</p>
+              <p className="mt-1 text-xs text-muted-foreground">換個關鍵字看看。</p>
             </SoftCard>
           )}
         </section>
@@ -394,19 +363,13 @@ function ArchaeologyPage() {
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/30 px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
           <div className="w-full max-w-md rounded-3xl bg-card p-5 shadow-xl">
             <div className="flex size-11 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-              <Trash2
-                className="size-5"
-                strokeWidth={1.7}
-              />
+              <Trash2 className="size-5" strokeWidth={1.7} />
             </div>
 
-            <h2 className="mt-4 text-lg font-medium">
-              刪除這篇考古？
-            </h2>
+            <h2 className="mt-4 text-lg font-medium">刪除這篇考古？</h2>
 
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              「{pendingDelete.title}」會從你的考古收藏中移除。
-              原始貼文不會受到影響。
+              「{pendingDelete.title}」會從你的考古收藏中移除。 原始貼文不會受到影響。
             </p>
 
             <div className="mt-5 flex gap-3">
@@ -467,10 +430,7 @@ function FilterButton({
           : "border-border/60 bg-surface/40 text-muted-foreground",
       ].join(" ")}
     >
-      <Icon
-        className="size-4"
-        strokeWidth={active ? 1.9 : 1.5}
-      />
+      <Icon className="size-4" strokeWidth={active ? 1.9 : 1.5} />
       {label}
     </button>
   );
@@ -488,13 +448,7 @@ function isVideoPreviewSource(source: ArchaeologySource) {
   return PREVIEW_VIDEO_SOURCES.includes(source);
 }
 
-function VideoFallback({
-  source,
-  url,
-}: {
-  source: ArchaeologySource;
-  url: string;
-}) {
+function VideoFallback({ source, url }: { source: ArchaeologySource; url: string }) {
   return (
     <a
       href={url}
@@ -506,13 +460,9 @@ function VideoFallback({
         <span className="ml-0.5 text-lg">▶</span>
       </div>
 
-      <p className="mt-2 text-xs">
-        {SOURCE_LABELS[source]} 影片
-      </p>
+      <p className="mt-2 text-xs">{SOURCE_LABELS[source]} 影片</p>
 
-      <p className="mt-1 text-[11px] text-muted-foreground/70">
-        點一下回原文觀看
-      </p>
+      <p className="mt-1 text-[11px] text-muted-foreground/70">點一下回原文觀看</p>
     </a>
   );
 }
@@ -532,9 +482,7 @@ function ArchaeologyCover({
   const showPlay = isVideoPreviewSource(source);
 
   if (failed) {
-    return showPlay ? (
-      <VideoFallback source={source} url={url} />
-    ) : null;
+    return showPlay ? <VideoFallback source={source} url={url} /> : null;
   }
 
   return (
@@ -585,10 +533,7 @@ function ArchaeologyCard({
           url={item.url}
         />
       ) : isVideoPreviewSource(item.source) ? (
-        <VideoFallback
-          source={item.source}
-          url={item.url}
-        />
+        <VideoFallback source={item.source} url={item.url} />
       ) : null}
 
       <div className="flex items-start gap-3">
@@ -599,23 +544,16 @@ function ArchaeologyCard({
             </span>
 
             {item.collection ? (
-              <span className="text-[11px] text-muted-foreground">
-                {item.collection}
-              </span>
+              <span className="text-[11px] text-muted-foreground">{item.collection}</span>
             ) : null}
           </div>
 
-          <p className="mt-2.5 pr-1 text-[15px] font-medium leading-snug">
-            {item.title}
-          </p>
+          <p className="mt-2.5 pr-1 text-[15px] font-medium leading-snug">{item.title}</p>
 
           {item.tags.length > 0 ? (
             <div className="mt-2 flex flex-wrap gap-x-2 gap-y-1">
               {item.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="text-xs text-primary/80"
-                >
+                <span key={tag} className="text-xs text-primary/80">
                   #{tag}
                 </span>
               ))}
@@ -634,16 +572,12 @@ function ArchaeologyCard({
             type="button"
             onClick={onToggleFavorite}
             className="flex size-9 items-center justify-center rounded-full bg-surface"
-            aria-label={
-              item.favorite ? "取消最愛" : "加入最愛"
-            }
+            aria-label={item.favorite ? "取消最愛" : "加入最愛"}
           >
             <Heart
               className={[
                 "size-4",
-                item.favorite
-                  ? "fill-primary text-primary"
-                  : "text-muted-foreground",
+                item.favorite ? "fill-primary text-primary" : "text-muted-foreground",
               ].join(" ")}
               strokeWidth={1.7}
             />
@@ -655,10 +589,7 @@ function ArchaeologyCard({
             className="flex size-9 items-center justify-center rounded-full bg-surface text-muted-foreground"
             aria-label="更多操作"
           >
-            <MoreHorizontal
-              className="size-4"
-              strokeWidth={1.7}
-            />
+            <MoreHorizontal className="size-4" strokeWidth={1.7} />
           </button>
 
           {menuOpen ? (
@@ -671,10 +602,7 @@ function ArchaeologyCard({
                 }}
                 className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm"
               >
-                <Pencil
-                  className="size-4"
-                  strokeWidth={1.6}
-                />
+                <Pencil className="size-4" strokeWidth={1.6} />
                 編輯
               </button>
 
@@ -686,10 +614,7 @@ function ArchaeologyCard({
                 }}
                 className="flex w-full items-center gap-2 border-t border-border/50 px-4 py-3 text-left text-sm text-destructive"
               >
-                <Trash2
-                  className="size-4"
-                  strokeWidth={1.6}
-                />
+                <Trash2 className="size-4" strokeWidth={1.6} />
                 刪除
               </button>
             </div>
@@ -709,10 +634,7 @@ function ArchaeologyCard({
           className="flex items-center gap-1.5 text-xs font-medium text-primary"
         >
           回原文
-          <ExternalLink
-            className="size-3.5"
-            strokeWidth={1.7}
-          />
+          <ExternalLink className="size-3.5" strokeWidth={1.7} />
         </a>
       </div>
     </SoftCard>
