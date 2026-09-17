@@ -30,10 +30,11 @@ export function EventFormSheet({
   initial?: EventDraft | undefined;
   title: string;
   submitLabel: string;
-  onSubmit: (draft: EventDraft) => void;
+  onSubmit: (draft: EventDraft) => void | Promise<void>;
 }) {
   const [draft, setDraft] = useState<EventDraft>(initial ?? emptyEventDraft);
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
   const [paywallOpen, setPaywallOpen] = useState(false);
   const { isPlus } = useSubscription();
 
@@ -48,21 +49,32 @@ export function EventFormSheet({
         weatherTone: weatherToneForAnimal(selectedIdol?.representativeAnimal),
       });
       setError("");
+      setSaving(false);
     }
   }, [open, initial, idols]);
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!draft.idolId) return setError("請先選擇一位偶像");
     if (!draft.title.trim()) return setError("請幫這個日子取一個名字");
     if (!draft.date) return setError("請選擇日期");
-    onSubmit({
-      ...draft,
-      title: draft.title.trim(),
-      note: draft.note.trim(),
-      locationName: draft.locationName?.trim() ?? "",
-      city: draft.city?.trim() ?? "",
-    });
+
+    setSaving(true);
+    setError("");
+
+    try {
+      await onSubmit({
+        ...draft,
+        title: draft.title.trim(),
+        note: draft.note.trim(),
+        locationName: draft.locationName?.trim() ?? "",
+        city: draft.city?.trim() ?? "",
+      });
+    } catch {
+      setError("日子沒有儲存成功，請確認網路後再試一次");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -293,9 +305,10 @@ export function EventFormSheet({
               </button>
               <button
                 type="submit"
-                className="flex-1 rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+                disabled={saving}
+                className="flex-1 rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95 disabled:opacity-60"
               >
-                {submitLabel}
+                {saving ? "儲存中…" : submitLabel}
               </button>
             </div>
           </form>
