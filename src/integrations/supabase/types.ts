@@ -136,6 +136,7 @@ export type Database = {
           id: string
           name: string
           photo: string
+          song_id: string | null
           representative_animal: string
           since_date: string | null
           updated_at: string
@@ -151,6 +152,7 @@ export type Database = {
           id?: string
           name: string
           photo?: string
+          song_id?: string | null
           representative_animal?: string
           since_date?: string | null
           updated_at?: string
@@ -166,6 +168,7 @@ export type Database = {
           id?: string
           name?: string
           photo?: string
+          song_id?: string | null
           representative_animal?: string
           since_date?: string | null
           updated_at?: string
@@ -182,6 +185,7 @@ export type Database = {
           idol_id: string | null
           note: string
           photo: string
+          song_id: string | null
           title: string
           updated_at: string
           user_id: string
@@ -194,6 +198,7 @@ export type Database = {
           idol_id?: string | null
           note?: string
           photo?: string
+          song_id?: string | null
           title?: string
           updated_at?: string
           user_id: string
@@ -206,6 +211,7 @@ export type Database = {
           idol_id?: string | null
           note?: string
           photo?: string
+          song_id?: string | null
           title?: string
           updated_at?: string
           user_id?: string
@@ -225,7 +231,60 @@ export type Database = {
             referencedRelation: "idols"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "memories_song_id_fkey"
+            columns: ["song_id"]
+            isOneToOne: false
+            referencedRelation: "idol_songs"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      idol_songs: {
+        Row: {
+          id: string
+          user_id: string
+          idol_id: string
+          title: string
+          artist: string
+          album: string
+          apple_music_url: string
+          spotify_url: string
+          is_today_pick: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          idol_id: string
+          title: string
+          artist?: string
+          album?: string
+          apple_music_url?: string
+          spotify_url?: string
+          is_today_pick?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          user_id?: string
+          idol_id?: string
+          title?: string
+          artist?: string
+          album?: string
+          apple_music_url?: string
+          spotify_url?: string
+          is_today_pick?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      idol_song_roles: {
+        Row: { id: string; user_id: string; idol_id: string; song_id: string; role: string; created_at: string }
+        Insert: { id?: string; user_id: string; idol_id: string; song_id: string; role: string; created_at?: string }
+        Update: { user_id?: string; idol_id?: string; song_id?: string; role?: string }
+        Relationships: []
       }
       memory_folders: {
         Row: {
