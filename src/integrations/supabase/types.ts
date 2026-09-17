@@ -357,6 +357,52 @@ export type Database = {
         }
         Relationships: []
       }
+      concert_music_memories: {
+        Row: {
+          id: string
+          user_id: string
+          idol_id: string
+          event_id: string
+          want_to_hear_song_id: string | null
+          opening_song_id: string | null
+          finally_heard_song_id: string | null
+          tearjerker_song_id: string | null
+          hype_song_id: string | null
+          unforgettable_song_id: string | null
+          note: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          idol_id: string
+          event_id: string
+          want_to_hear_song_id?: string | null
+          opening_song_id?: string | null
+          finally_heard_song_id?: string | null
+          tearjerker_song_id?: string | null
+          hype_song_id?: string | null
+          unforgettable_song_id?: string | null
+          note?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          user_id?: string
+          idol_id?: string
+          event_id?: string
+          want_to_hear_song_id?: string | null
+          opening_song_id?: string | null
+          finally_heard_song_id?: string | null
+          tearjerker_song_id?: string | null
+          hype_song_id?: string | null
+          unforgettable_song_id?: string | null
+          note?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       memory_folders: {
         Row: {
           cover_photo: string
