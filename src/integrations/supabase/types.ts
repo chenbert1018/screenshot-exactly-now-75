@@ -317,6 +317,46 @@ export type Database = {
         }
         Relationships: []
       }
+      comeback_diaries: {
+        Row: {
+          id: string
+          user_id: string
+          idol_id: string
+          event_id: string
+          first_listen_rating: number | null
+          first_favorite_song_id: string | null
+          later_favorite_song_id: string | null
+          want_to_hear_live_song_id: string | null
+          note: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          idol_id: string
+          event_id: string
+          first_listen_rating?: number | null
+          first_favorite_song_id?: string | null
+          later_favorite_song_id?: string | null
+          want_to_hear_live_song_id?: string | null
+          note?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          user_id?: string
+          idol_id?: string
+          event_id?: string
+          first_listen_rating?: number | null
+          first_favorite_song_id?: string | null
+          later_favorite_song_id?: string | null
+          want_to_hear_live_song_id?: string | null
+          note?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       memory_folders: {
         Row: {
           cover_photo: string
