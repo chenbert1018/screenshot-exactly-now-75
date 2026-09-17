@@ -191,7 +191,7 @@ export const Route = createFileRoute("/api/weather")({
         }
 
         const city = normalizeCity(rawCity);
-        const apiKey = process.env.CWA_API_KEY;
+        const apiKey = process.env["CWA_API_KEY"];
 
         if (!apiKey) {
           return Response.json(
