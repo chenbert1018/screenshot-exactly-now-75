@@ -11,6 +11,8 @@ import { useArchaeologySource } from "@/lib/archaeology.source";
 import { useMemorySource } from "@/lib/memories.source";
 import { useIdolMusicSource } from "@/lib/idol-music.source";
 import { streamingLink, type IdolSong } from "@/lib/idol-music";
+import { useTodaySongJournal } from "@/lib/idol-song-journal.source";
+import { SONG_MOOD_OPTIONS, type IdolSongJournalEntry, type SongMood } from "@/lib/idol-song-journal";
 import { daysSince } from "@/lib/dates";
 import { classifyFanWeather, type FanWeatherInput } from "@/lib/fan-weather";
 
@@ -242,14 +244,84 @@ function EmptyMemoryCard() {
   );
 }
 
-function TodaySongCard({ song }: { song?: IdolSong | undefined }) {
-  const link = song ? streamingLink(song) : "";
+function TodaySongCard({
+  idolName,
+  songs,
+  entry,
+  save,
+}: {
+  idolName: string;
+  songs: IdolSong[];
+  entry: IdolSongJournalEntry | null;
+  save: (patch: { songId?: string | null; mood?: SongMood | null }) => Promise<void>;
+}) {
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const fallbackSong = songs.find((song) => song.isTodayPick);
+  const selectedSong = songs.find((song) => song.id === entry?.songId) ?? fallbackSong;
+  const selectedSongId = entry?.songId ?? fallbackSong?.id ?? "";
+
+  async function update(patch: { songId?: string | null; mood?: SongMood | null }) {
+    setSaving(true);
+    setError("");
+    try {
+      await save(patch);
+    } catch {
+      setError("今天的音樂日記沒有儲存成功，請確認網路後再試一次。");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   return (
-    <Link to="/music" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 p-4 text-card-foreground shadow-[0_12px_32px_rgba(157,91,116,0.10)] backdrop-blur-xl transition-transform active:scale-[0.99]">
-      <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary"><Music2 className="size-6" strokeWidth={1.55} /></div>
-      <div className="min-w-0 flex-1"><p className="text-[11px] font-medium tracking-[0.1em] text-primary">TODAY'S PICK</p><p className="mt-1 truncate text-[16px] font-medium">{song?.title || "今天想聽哪一首？"}</p><p className="mt-1 truncate text-sm text-muted-foreground">{song ? (song.artist || "前往播放") : "選一首，讓今天有專屬 BGM ♡"}</p></div>
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">{link ? <Music2 className="size-4" /> : <ArrowRight className="size-4" />}</span>
-    </Link>
+    <section className="mt-3 rounded-[1.8rem] border border-border/70 bg-card/90 p-4 text-card-foreground shadow-[0_12px_32px_rgba(157,91,116,0.10)] backdrop-blur-xl">
+      <div className="flex gap-4">
+        <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary"><Music2 className="size-6" strokeWidth={1.55} /></div>
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] font-medium tracking-[0.1em] text-primary">TODAY'S SONG ♡</p>
+          <p className="mt-1 text-[16px] font-medium">今天想和 {idolName} 一起聽什麼？</p>
+          {songs.length > 0 ? (
+            <select
+              value={selectedSongId}
+              disabled={saving}
+              onChange={(event) => void update({ songId: event.target.value || null })}
+              aria-label="選擇今天的歌曲"
+              className="mt-3 w-full rounded-xl border border-border/70 bg-surface/60 px-3 py-2 text-sm outline-none"
+            >
+              <option value="">＋ 選一首歌</option>
+              {songs.map((song) => <option key={song.id} value={song.id}>♪ {song.title}{song.artist ? ` · ${song.artist}` : ""}</option>)}
+            </select>
+          ) : (
+            <Link to="/music" className="mt-3 inline-flex rounded-full bg-primary px-3.5 py-2 text-xs font-medium text-primary-foreground">＋ 加入第一首歌</Link>
+          )}
+        </div>
+      </div>
+
+      {selectedSong ? (
+        <div className="mt-4 border-t border-border/60 pt-3">
+          <p className="truncate text-sm font-medium">♪ {selectedSong.title}</p>
+          {selectedSong.artist ? <p className="mt-0.5 truncate text-xs text-muted-foreground">{selectedSong.artist}</p> : null}
+          <p className="mt-3 text-xs text-muted-foreground">今天的心情{entry?.mood ? `：${entry.mood}` : ""}</p>
+          <div className="mt-2 flex gap-2">
+            {SONG_MOOD_OPTIONS.map((mood) => (
+              <button
+                key={mood}
+                type="button"
+                disabled={saving}
+                onClick={() => void update({ songId: selectedSongId, mood })}
+                aria-label={`今天的心情：${mood}`}
+                className={`flex size-9 items-center justify-center rounded-full text-[17px] transition-transform active:scale-90 disabled:opacity-50 ${entry?.mood === mood ? "bg-primary/20 ring-1 ring-primary/50" : "bg-surface/70"}`}
+              >
+                {mood}
+              </button>
+            ))}
+          </div>
+          {streamingLink(selectedSong) ? <a href={streamingLink(selectedSong)} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary">🎧 再聽一次 <ArrowRight className="size-3" /></a> : null}
+        </div>
+      ) : null}
+
+      {error ? <p role="alert" className="mt-3 text-xs text-destructive">{error}</p> : null}
+    </section>
   );
 }
 
@@ -313,7 +385,7 @@ function HomePage() {
   const { all: memories } = useMemorySource();
   const main = homeIdol;
   const { songs } = useIdolMusicSource(main?.id);
-  const todaySong = useMemo(() => songs.find((song) => song.isTodayPick), [songs]);
+  const todayJournal = useTodaySongJournal(main?.id);
   const companionship = useMemo(
     () => (main ? daysSince(main.sinceDate) : null),
     [main],
@@ -388,7 +460,7 @@ function HomePage() {
               <FanWeatherSetupCard event={nextMainEvent} />
             )
           ) : null}
-          <TodaySongCard song={todaySong} />
+          <TodaySongCard idolName={main.name || "他"} songs={songs} entry={todayJournal.entry} save={todayJournal.save} />
           {latestArchaeology ? <ArchaeologyCard item={latestArchaeology} /> : <EmptyArchaeologyCard />}
           {memoryFromToday ? <MemoryCard memory={memoryFromToday} song={songs.find((song) => song.id === memoryFromToday.songId)} /> : <EmptyMemoryCard />}
 
