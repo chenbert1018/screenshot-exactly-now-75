@@ -74,10 +74,13 @@ export function MemoryFolderFormSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
-        className="mx-auto max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-3xl border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
+        className="mx-auto max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-[2rem] border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
       >
         <SheetHeader className="px-0 text-left">
-          <SheetTitle className="text-xl">{title}</SheetTitle>
+          <p className="text-[11px] font-semibold tracking-[0.16em] text-primary">
+            OUR MEMORIES ♡
+          </p>
+          <SheetTitle className="font-display text-[22px]">{title}</SheetTitle>
           <SheetDescription>把一段時光收在同一個地方 ♡</SheetDescription>
         </SheetHeader>
 
@@ -85,7 +88,7 @@ export function MemoryFolderFormSheet({
           <div>
             <p className="mb-2 text-sm font-medium">封面照片</p>
             {draft.coverPhoto ? (
-              <div className="relative overflow-hidden rounded-2xl border border-border/60">
+              <div className="relative overflow-hidden rounded-[1.75rem] border border-border/60">
                 <StoredImage src={draft.coverPhoto} alt="封面預覽" className="aspect-[4/3] w-full object-cover" />
                 <div className="absolute right-3 bottom-3 flex gap-2">
                   <button
@@ -109,7 +112,7 @@ export function MemoryFolderFormSheet({
               <button
                 type="button"
                 onClick={() => fileRef.current?.click()}
-                className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-surface/50 text-muted-foreground"
+                className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 rounded-[1.75rem] border border-dashed border-border bg-surface/50 text-muted-foreground"
               >
                 <ImagePlus className="size-6" strokeWidth={1.4} />
                 <span className="text-sm">選一張代表這段回憶的照片</span>
@@ -136,7 +139,7 @@ export function MemoryFolderFormSheet({
               value={draft.title}
               placeholder="例如：2026 巡迴演唱會"
               onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))}
-              className="rounded-xl bg-surface/50"
+              className="min-h-11 rounded-2xl border-border/70 bg-surface/50"
             />
           </div>
 
@@ -147,7 +150,7 @@ export function MemoryFolderFormSheet({
               value={draft.description}
               placeholder="想留給自己的一句話"
               onChange={(e) => setDraft((d) => ({ ...d, description: e.target.value }))}
-              className="rounded-xl bg-surface/50"
+              className="min-h-11 rounded-2xl border-border/70 bg-surface/50"
             />
           </div>
 
@@ -159,7 +162,7 @@ export function MemoryFolderFormSheet({
                 type="date"
                 value={draft.startDate}
                 onChange={(e) => setDraft((d) => ({ ...d, startDate: e.target.value }))}
-                className="rounded-xl bg-surface/50"
+                className="min-h-11 rounded-2xl border-border/70 bg-surface/50"
               />
             </div>
             <div className="space-y-1.5">
@@ -169,7 +172,7 @@ export function MemoryFolderFormSheet({
                 type="date"
                 value={draft.endDate}
                 onChange={(e) => setDraft((d) => ({ ...d, endDate: e.target.value }))}
-                className="rounded-xl bg-surface/50"
+                className="min-h-11 rounded-2xl border-border/70 bg-surface/50"
               />
             </div>
           </div>

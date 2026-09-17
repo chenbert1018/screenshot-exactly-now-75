@@ -85,10 +85,13 @@ export function MemoryFormSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
-        className="mx-auto max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-3xl border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
+        className="mx-auto max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-[2rem] border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
       >
         <SheetHeader className="px-0 text-left">
-          <SheetTitle className="text-xl">{title}</SheetTitle>
+          <p className="text-[11px] font-semibold tracking-[0.16em] text-primary">
+            OUR MEMORIES ♡
+          </p>
+          <SheetTitle className="font-display text-[22px]">{title}</SheetTitle>
           <SheetDescription>把這一天的心情寫下來 ♡</SheetDescription>
         </SheetHeader>
 
@@ -96,7 +99,7 @@ export function MemoryFormSheet({
           <div>
             <p className="mb-2 text-sm font-medium">照片</p>
             {draft.photo ? (
-              <div className="relative overflow-hidden rounded-2xl border border-border/60">
+              <div className="relative overflow-hidden rounded-[1.75rem] border border-border/60">
                 <StoredImage src={draft.photo} alt="回憶照片預覽" className="aspect-[4/3] w-full object-cover" />
                 <div className="absolute right-3 bottom-3 flex gap-2">
                   <button
@@ -120,7 +123,7 @@ export function MemoryFormSheet({
               <button
                 type="button"
                 onClick={() => fileRef.current?.click()}
-                className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-surface/50 text-muted-foreground"
+                className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 rounded-[1.75rem] border border-dashed border-border bg-surface/50 text-muted-foreground"
               >
                 <ImagePlus className="size-6" strokeWidth={1.4} />
                 <span className="text-sm">放一張那天的照片（可略過）</span>
@@ -147,7 +150,7 @@ export function MemoryFormSheet({
               value={draft.title}
               placeholder="例如：演唱會 Day 1"
               onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))}
-              className="rounded-xl bg-surface/50"
+              className="min-h-11 rounded-2xl border-border/70 bg-surface/50"
             />
           </div>
 
@@ -158,7 +161,7 @@ export function MemoryFormSheet({
               type="date"
               value={draft.date}
               onChange={(e) => setDraft((d) => ({ ...d, date: e.target.value }))}
-              className="rounded-xl bg-surface/50"
+              className="min-h-11 rounded-2xl border-border/70 bg-surface/50"
             />
           </div>
 
@@ -170,7 +173,7 @@ export function MemoryFormSheet({
               value={draft.note}
               placeholder="今天真的見到他了⋯"
               onChange={(e) => setDraft((d) => ({ ...d, note: e.target.value }))}
-              className="rounded-xl bg-surface/50"
+              className="min-h-11 rounded-2xl border-border/70 bg-surface/50"
             />
           </div>
 
@@ -180,7 +183,7 @@ export function MemoryFormSheet({
               id="memory-song"
               value={draft.songId}
               onChange={(e) => setDraft((d) => ({ ...d, songId: e.target.value }))}
-              className="h-10 w-full rounded-xl border border-input bg-surface/50 px-3 text-sm"
+              className="min-h-11 w-full rounded-2xl border border-input bg-surface/50 px-3 text-sm"
             >
               <option value="">還沒有綁定歌曲</option>
               {songs.map((song) => <option key={song.id} value={song.id}>{song.title}{song.artist ? ` · ${song.artist}` : ""}</option>)}

@@ -144,21 +144,26 @@ function FolderDetailPage() {
             <StoredImage
               src={folder.coverPhoto}
               alt={folder.title}
-              className="mb-4 aspect-[16/9] w-full rounded-3xl object-cover shadow-soft"
+              className="mb-5 aspect-[4/3] w-full rounded-[2rem] object-cover shadow-soft"
             />
           ) : null}
-          <h1 className="font-display text-[26px] leading-snug font-medium">{folder.title}</h1>
+          <p className="text-[11px] font-semibold tracking-[0.16em] text-primary">
+            OUR MEMORIES ♡
+          </p>
+          <h1 className="mt-2 font-display text-[28px] leading-snug font-semibold">
+            {folder.title}
+          </h1>
           {folder.description ? (
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{folder.description}</p>
           ) : null}
-          <div className="mt-3 flex flex-wrap items-center gap-2 text-[13px] text-muted-foreground">
+          <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-[12px] text-muted-foreground">
             {folder.startDate || folder.endDate ? (
-              <span className="rounded-full bg-surface px-2.5 py-1 tracking-wide">
+              <span className="tracking-wide">
                 {dotDate(folder.startDate)}
                 {folder.endDate ? ` – ${dotDate(folder.endDate)}` : ""}
               </span>
             ) : null}
-            <span className="rounded-full bg-surface px-2.5 py-1">{memories.length} 則回憶</span>
+            <span>· {memories.length} 則回憶</span>
             {idol ? (
               <span className="rounded-full bg-accent/40 px-2.5 py-1 text-primary">♡ {idol.name}</span>
             ) : null}
@@ -167,7 +172,14 @@ function FolderDetailPage() {
       ) : null}
 
       <div className="mb-5 flex items-baseline justify-between">
-        <h2 className="font-display text-[15px] font-medium tracking-[0.08em]">回憶時間軸</h2>
+        <div>
+          <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground">
+            OUR DAYS
+          </p>
+          <h2 className="mt-1 font-display text-[17px] font-medium">
+            一起走過的日子
+          </h2>
+        </div>
         {memories.length > 0 ? (
           <button
             onClick={() => {
@@ -216,19 +228,25 @@ function FolderDetailPage() {
                 <p className="font-display text-[13px] tracking-[0.14em] text-muted-foreground">
                   {dotDate(g.date)}
                 </p>
-                <div className="mt-3 space-y-4">
+                <div className="mt-4 space-y-5">
                   {g.items.map((m) => (
                     <SoftCard key={m.id} className="overflow-hidden p-0">
                       {m.photo ? (
-                        <StoredImage src={m.photo} alt={m.title} className="aspect-[4/3] w-full object-cover" />
+                        <StoredImage
+                          src={m.photo}
+                          alt={m.title}
+                          className="aspect-[4/3] w-full object-cover"
+                        />
                       ) : (
                         <div className="flex aspect-[16/7] w-full items-center justify-center bg-accent/20 text-primary/40">
                           <span className="text-lg select-none">♡</span>
                         </div>
                       )}
-                      <div className="flex items-start gap-3 px-5 py-4">
+                      <div className="flex items-start gap-3 px-5 py-5">
                         <div className="min-w-0 flex-1">
-                          <p className="text-[15px] font-medium">{m.title || "未命名的回憶"}</p>
+                          <p className="font-display text-[17px] font-medium">
+                            {m.title || "未命名的回憶"}
+                          </p>
                           {m.note ? (
                             <p className="mt-1.5 text-sm leading-relaxed whitespace-pre-wrap text-muted-foreground">
                               {m.note}
@@ -237,7 +255,7 @@ function FolderDetailPage() {
                           {m.songId ? (() => {
                             const song = songs.find((item) => item.id === m.songId);
                             const link = song ? streamingLink(song) : "";
-                            return <div className="mt-3 rounded-xl bg-primary/8 px-3 py-2"><p className="text-xs text-primary">🎵 {song?.title ?? "已連結的歌曲"}</p>{link ? <a href={link} target="_blank" rel="noreferrer" className="mt-1 inline-block text-xs font-medium text-primary underline underline-offset-2">🎧 再聽一次</a> : <p className="mt-1 text-xs text-muted-foreground">到「我們的歌」補上合法串流連結</p>}</div>;
+                            return <div className="mt-4 rounded-2xl bg-primary/8 px-3.5 py-2.5"><p className="text-xs text-primary">🎵 {song?.title ?? "已連結的歌曲"}</p>{link ? <a href={link} target="_blank" rel="noreferrer" className="mt-1 inline-block text-xs font-medium text-primary underline underline-offset-2">🎧 再聽一次</a> : <p className="mt-1 text-xs text-muted-foreground">到「我們的歌」補上合法串流連結</p>}</div>;
                           })() : null}
                         </div>
                         <DropdownMenu>

@@ -63,7 +63,7 @@ function MemoriesPage() {
             className="inline-flex items-center gap-1 rounded-full bg-primary px-3.5 py-1.5 text-xs font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
           >
             <Plus className="size-3.5" strokeWidth={2} />
-            建立資料夾
+            新增回憶夾
           </button>
         ) : null}
       </div>
@@ -87,7 +87,7 @@ function MemoriesPage() {
               className="inline-flex items-center gap-1.5 rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
             >
               <Plus className="size-4" strokeWidth={2} />
-              建立資料夾
+              新增回憶夾
             </button>
           }
         />
@@ -106,10 +106,11 @@ function MemoriesPage() {
               >
                 <SoftCard className="overflow-hidden p-0">
                   {f.coverPhoto ? (
-                    <StoredImage src={f.coverPhoto} alt={f.title} className="aspect-[16/9] w-full object-cover" />
+                    <StoredImage src={f.coverPhoto} alt={f.title} className="aspect-[4/3] w-full object-cover" />
                   ) : (
-                    <div className="flex aspect-[16/9] w-full items-center justify-center bg-accent/25 text-primary/50">
+                    <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-accent/35 via-card to-lavender/30 text-primary/50">
                       <Images className="size-7" strokeWidth={1.3} />
+                      <span className="text-xs tracking-[0.12em]">OUR DAYS ♡</span>
                     </div>
                   )}
                   <div className="px-5 py-4">
@@ -117,11 +118,11 @@ function MemoriesPage() {
                     {f.description ? (
                       <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{f.description}</p>
                     ) : null}
-                    <div className="mt-3 flex flex-wrap items-center gap-2 text-[13px] text-muted-foreground">
+                    <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[12px] text-muted-foreground">
                       {range ? (
-                        <span className="rounded-full bg-surface px-2.5 py-1 tracking-wide">{range}</span>
+                        <span className="tracking-wide">{range}</span>
                       ) : null}
-                      <span className="rounded-full bg-surface px-2.5 py-1">{count} 則回憶</span>
+                      <span>· {count} 則回憶</span>
                       {idol ? (
                         <span className="rounded-full bg-accent/40 px-2.5 py-1 text-primary">
                           ♡ {idol.name}
@@ -139,7 +140,7 @@ function MemoriesPage() {
       <MemoryFolderFormSheet
         open={open}
         onOpenChange={setOpen}
-        title="建立回憶資料夾"
+        title="建立回憶夾"
         submitLabel="建立"
         onSubmit={async (draft) => {
           await addFolder(draft);
