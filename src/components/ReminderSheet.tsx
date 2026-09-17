@@ -25,12 +25,18 @@ export function ReminderSheet({
   eventDate: string;
   /** null 代表不提醒 */
   initialDaysBefore: number | null;
-  onSave: (daysBefore: number | null) => void;
+  onSave: (daysBefore: number | null) => void | Promise<void>;
 }) {
   const [selected, setSelected] = useState<number | null>(initialDaysBefore);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    if (open) setSelected(initialDaysBefore);
+    if (open) {
+      setSelected(initialDaysBefore);
+      setSaving(false);
+      setError("");
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
@@ -104,12 +110,25 @@ export function ReminderSheet({
           </button>
           <button
             type="button"
-            onClick={() => onSave(selected)}
-            className="flex-1 rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+            disabled={saving}
+            onClick={async () => {
+              if (saving) return;
+              setSaving(true);
+              setError("");
+              try {
+                await onSave(selected);
+              } catch {
+                setError("提醒沒有儲存成功，請確認網路後再試一次");
+              } finally {
+                setSaving(false);
+              }
+            }}
+            className="flex-1 rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95 disabled:opacity-60"
           >
-            幫我記住 ♡
+            {saving ? "儲存中…" : "幫我記住 ♡"}
           </button>
         </div>
+        {error ? <p className="mt-3 text-center text-sm text-destructive">{error}</p> : null}
       </SheetContent>
     </Sheet>
   );
