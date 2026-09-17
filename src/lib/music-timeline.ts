@@ -2,6 +2,7 @@ import type { IdolSong } from "./idol-music";
 import type { IdolSongJournalEntry } from "./idol-song-journal";
 import type { ComebackDiary } from "./comeback-diary";
 import type { ConcertMusicMemory } from "./concert-music-memory";
+import type { IdolEvent } from "./events";
 
 export type MusicTimelineKind = "TODAY_SONG" | "COMEBACK" | "CONCERT";
 
@@ -41,15 +42,22 @@ export function buildMusicTimeline(input: {
   journalEntries: IdolSongJournalEntry[];
   comebackDiaries: ComebackDiary[];
   concertMemories: ConcertMusicMemory[];
+  events: IdolEvent[];
 }): MusicTimelineItem[] {
   const {
     songs,
     journalEntries,
     comebackDiaries,
     concertMemories,
+    events,
   } = input;
 
   const items: MusicTimelineItem[] = [];
+
+  const eventById = new Map(
+    events.map((event) => [event.id, event]),
+  );
+
 
   for (const entry of journalEntries) {
     const song = songById(songs, entry.songId);
@@ -77,8 +85,8 @@ export function buildMusicTimeline(input: {
     items.push({
       id: `comeback-${diary.id}`,
       kind: "COMEBACK",
-      date: diary.createdAt,
-      title: "Comeback Diary",
+      date: eventById.get(diary.eventId)?.date || diary.createdAt,
+      title: eventById.get(diary.eventId)?.title || "Comeback Diary",
       subtitle:
         diary.firstListenRating != null
           ? `第一耳 ${diary.firstListenRating}/5`
@@ -103,8 +111,8 @@ export function buildMusicTimeline(input: {
     items.push({
       id: `concert-${memory.id}`,
       kind: "CONCERT",
-      date: memory.createdAt,
-      title: "Concert Music Memory",
+      date: eventById.get(memory.eventId)?.date || memory.createdAt,
+      title: eventById.get(memory.eventId)?.title || "Concert Music Memory",
       subtitle: "MY CONCERT SOUNDTRACK",
       note: memory.note,
       songs: memorySongs,

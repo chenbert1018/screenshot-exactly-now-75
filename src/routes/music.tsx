@@ -12,6 +12,7 @@ import { useSongJournalHistory } from "@/lib/idol-song-journal.source";
 import { useComebackDiaryHistory } from "@/lib/comeback-diary.source";
 import { useConcertMusicMemoryHistory } from "@/lib/concert-music-memory.source";
 import { buildMusicTimeline } from "@/lib/music-timeline";
+import { useEventSource } from "@/lib/events.source";
 
 export const Route = createFileRoute("/music")({ component: MusicPage });
 
@@ -21,6 +22,15 @@ function MusicPage() {
   const songHistory = useSongJournalHistory(homeIdol?.id);
   const comebackHistory = useComebackDiaryHistory(homeIdol?.id);
   const concertHistory = useConcertMusicMemoryHistory(homeIdol?.id);
+  const eventSource = useEventSource();
+
+  const timelineEvents = useMemo(
+    () =>
+      eventSource.events.filter(
+        (event) => event.idolId === homeIdol?.id,
+      ),
+    [eventSource.events, homeIdol?.id],
+  );
 
   const timelineItems = useMemo(
     () =>
@@ -29,19 +39,22 @@ function MusicPage() {
         journalEntries: songHistory.entries,
         comebackDiaries: comebackHistory.entries,
         concertMemories: concertHistory.entries,
+        events: timelineEvents,
       }),
     [
       songs,
       songHistory.entries,
       comebackHistory.entries,
       concertHistory.entries,
+      timelineEvents,
     ],
   );
 
   const timelineReady =
     songHistory.ready &&
     comebackHistory.ready &&
-    concertHistory.ready;
+    concertHistory.ready &&
+    eventSource.ready;
 
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState("");
