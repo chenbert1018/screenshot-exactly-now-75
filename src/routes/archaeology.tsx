@@ -20,6 +20,7 @@ import {
 import { ArchaeologyFormSheet } from "@/components/ArchaeologyFormSheet";
 import { StoredImage } from "@/components/StoredImage";
 import { Input } from "@/components/ui/input";
+import { CloudRetryNotice } from "@/components/CloudRetryNotice";
 
 import {
   type ArchaeologyDraft,
@@ -68,6 +69,8 @@ function ArchaeologyPage() {
     updateItem,
     toggleFavorite,
     removeItem,
+    error,
+    reload,
   } = useArchaeologySource();
 
   const [formOpen, setFormOpen] = useState(false);
@@ -163,6 +166,12 @@ function ArchaeologyPage() {
         title="考古"
         subtitle="把散落在飯圈各處的寶藏收回來"
       />
+
+      {error ? (
+        <CloudRetryNotice onRetry={reload}>
+          目前連不上雲端資料，你的考古收藏沒有遺失，請稍後再試。
+        </CloudRetryNotice>
+      ) : null}
 
       <div className="space-y-4">
         <div className="relative">
