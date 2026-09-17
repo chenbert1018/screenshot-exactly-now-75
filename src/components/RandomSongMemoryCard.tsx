@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ExternalLink, RefreshCw } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import {
   pickRandomSongMemory,
   randomMemoryDateLabel,
@@ -36,29 +36,9 @@ export function RandomSongMemoryCard({ items, ready = true }: Props) {
     if (next) setSelectedId(next.id);
   };
 
-  if (!ready) {
-    return (
-      <section className="rounded-[1.8rem] border border-border/70 bg-card/85 px-5 py-6 shadow-soft">
-        <div className="h-20 animate-pulse rounded-2xl bg-surface" />
-      </section>
-    );
-  }
+  if (!ready) return null;
 
-  if (!selected) {
-    return (
-      <section className="rounded-[1.8rem] border border-border/70 bg-card/85 px-5 py-6 shadow-soft">
-        <p className="text-[11px] font-medium tracking-[0.13em] text-primary">
-          RANDOM MEMORY ♡
-        </p>
-        <h3 className="mt-2 font-display text-[18px] font-semibold">
-          以前的歌，再聽一次
-        </h3>
-        <p className="mt-3 text-sm leading-6 text-muted-foreground">
-          等你留下幾首歌之後，我會偶爾把以前的心情帶回來給你 ♡
-        </p>
-      </section>
-    );
-  }
+  if (!selected) return null;
 
   const dateLabel = randomMemoryDateLabel(selected.date);
   const listenUrl = selected.appleMusicUrl || selected.spotifyUrl;
@@ -67,35 +47,16 @@ export function RandomSongMemoryCard({ items, ready = true }: Props) {
     <section className="rounded-[1.8rem] border border-border/70 bg-card/85 px-5 py-6 shadow-soft backdrop-blur-xl">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-[11px] font-medium tracking-[0.13em] text-primary">
-            RANDOM MEMORY ♡
-          </p>
-          <h3 className="mt-2 font-display text-[18px] font-semibold">
-            以前的歌，再聽一次
-          </h3>
+          <p className="text-[11px] font-medium tracking-[0.13em] text-primary">FROM OUR MUSIC ♡</p>
+          <h3 className="mt-2 font-display text-[18px] font-semibold">以前的歌，今天又回來了</h3>
         </div>
-
-        {items.length > 1 ? (
-          <button
-            type="button"
-            onClick={changeSong}
-            className="flex size-9 shrink-0 items-center justify-center rounded-full bg-surface text-muted-foreground transition-transform active:scale-95"
-            aria-label="換一首"
-          >
-            <RefreshCw className="size-4" />
-          </button>
-        ) : null}
       </div>
 
       <div className="mt-5 rounded-2xl bg-surface/70 px-4 py-4">
-        <p className="font-display text-[17px] font-semibold">
-          ♪ {selected.title}
-        </p>
+        <p className="font-display text-[17px] font-semibold">♪ {selected.title}</p>
 
         {selected.artist ? (
-          <p className="mt-1 text-xs text-muted-foreground">
-            {selected.artist}
-          </p>
+          <p className="mt-1 text-xs text-muted-foreground">{selected.artist}</p>
         ) : null}
 
         {dateLabel || selected.mood ? (
@@ -104,9 +65,7 @@ export function RandomSongMemoryCard({ items, ready = true }: Props) {
             {selected.mood ? `・${selected.mood}` : ""}
           </p>
         ) : (
-          <p className="mt-3 text-xs text-muted-foreground">
-            以前的你，曾經留下這首歌。
-          </p>
+          <p className="mt-3 text-xs text-muted-foreground">以前的你，曾經留下這首歌。</p>
         )}
       </div>
 

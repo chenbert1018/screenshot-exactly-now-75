@@ -93,7 +93,7 @@ function EventCard({ event }: { event: IdolEvent }) {
   return (
     <Link
       to="/events"
-      className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground px-5 py-4 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]"
+      className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground px-5 py-4 shadow-soft backdrop-blur-xl transition-transform active:scale-[0.99]"
     >
       <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
         <CalendarHeart className="size-6" strokeWidth={1.55} />
@@ -175,9 +175,9 @@ function FanWeatherCard({ event }: { event: IdolEvent }) {
     <Link
       to="/weather/$eventId"
       params={{ eventId: event.id }}
-      className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 px-5 py-4 text-card-foreground shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]"
+      className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 px-5 py-4 text-card-foreground shadow-soft backdrop-blur-xl transition-transform active:scale-[0.99]"
     >
-      <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-[#e8e6ff] text-[#8b87cf]">
+      <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-accent/60 text-primary">
         <CloudSun className="size-7" strokeWidth={1.45} />
       </div>
       <div className="min-w-0 flex-1">
@@ -202,7 +202,7 @@ function ArchaeologyCard({
   return (
     <Link
       to="/archaeology"
-      className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground p-3 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]"
+      className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground p-3 shadow-soft backdrop-blur-xl transition-transform active:scale-[0.99]"
     >
       <div className="flex size-[5.2rem] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/10 text-primary">
         {item.imageUrl ? (
@@ -234,7 +234,7 @@ function MemoryCard({
   const text = memory.title.trim() || memory.note.trim() || "那天也好想你 ♡";
   const link = song ? streamingLink(song) : "";
   return (
-    <section className="mt-3 overflow-hidden rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl">
+    <section className="mt-3 overflow-hidden rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground shadow-soft backdrop-blur-xl">
       <Link
         to="/memories"
         className="flex items-center gap-4 p-3 transition-transform active:scale-[0.99]"
@@ -314,7 +314,7 @@ function TodaySongCard({
   }
 
   return (
-    <section className="mt-3 rounded-[1.8rem] border border-border/70 bg-card/90 p-4 text-card-foreground shadow-[0_12px_32px_rgba(157,91,116,0.10)] backdrop-blur-xl">
+    <section className="mt-3 rounded-[1.8rem] border border-border/70 bg-card/90 p-4 text-card-foreground shadow-soft backdrop-blur-xl">
       <div className="flex gap-4">
         <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
           <Music2 className="size-6" strokeWidth={1.55} />
@@ -405,7 +405,7 @@ function Hero({
 }) {
   const backdrop = idol.photo || idol.cutoutPhoto;
   return (
-    <section className="relative mt-0 overflow-hidden rounded-[1.7rem] bg-gradient-to-b from-[#f6cddb] via-[#f9dfe7] to-[#fdf0f3] shadow-[0_18px_40px_rgba(176,102,130,0.16)]">
+    <section className="relative mt-0 overflow-hidden rounded-[1.7rem] bg-gradient-to-b from-accent/80 via-surface to-card shadow-soft">
       {backdrop ? (
         <StoredImage
           src={backdrop}
@@ -454,10 +454,10 @@ function Hero({
         )}
         <div className="absolute inset-x-0 bottom-0 z-20 h-48 bg-gradient-to-t from-black/65 via-black/20 to-transparent" />
         <div className="absolute bottom-5 left-5 z-30">
-          <p className="font-display text-[28px] leading-tight text-[#ffafc9] drop-shadow-[0_2px_5px_rgba(0,0,0,0.55)]">
+          <p className="font-display text-[28px] leading-tight text-accent drop-shadow-md">
             {timeGreeting()}
           </p>
-          <p className="mt-2 text-[16px] leading-relaxed text-white drop-shadow-[0_2px_5px_rgba(0,0,0,0.7)]">
+          <p className="mt-2 text-[16px] leading-relaxed text-white drop-shadow-md">
             {dailyAnimalLine(idol)}
           </p>
         </div>
