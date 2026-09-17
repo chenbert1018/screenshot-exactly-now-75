@@ -129,12 +129,12 @@ function HeartPage() {
     setFormOpen(true);
   }
 
-  function submit(draft: HeartDraft) {
+  async function submit(draft: HeartDraft) {
     if (editing) {
-      void update(editing.id, draft);
+      await update(editing.id, draft);
       toast("這顆糖更新好了 ♡");
     } else {
-      void add(draft);
+      await add(draft);
       toast("收好了 ♡", { description: "這顆糖以後可以慢慢嗑。" });
     }
     setFormOpen(false);
