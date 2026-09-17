@@ -300,9 +300,9 @@ function FolderDetailPage() {
         initial={editDraft}
         title={editing ? "編輯回憶" : "把這一天留下來 📸"}
         submitLabel={editing ? "儲存" : "留下來"}
-        onSubmit={(draft) => {
-          if (editing) void updateMemory(editing.id, draft);
-          else void addMemory(folderId, draft, folder?.idolId);
+        onSubmit={async (draft) => {
+          if (editing) await updateMemory(editing.id, draft);
+          else await addMemory(folderId, draft, folder?.idolId);
           setMemoryOpen(false);
           setEditing(null);
         }}
