@@ -230,36 +230,44 @@ export function NotificationSettingsSheet({
       title="提醒通知"
       description="活動倒數提醒會同步到 App 並在 iPhone 排程；其他提醒會安全保留在帳號設定中。"
     >
-      {actionError ? (\n        <p role="alert" className="rounded-2xl bg-destructive/10 px-4 py-3 text-sm text-destructive">\n          {actionError}\n        </p>\n      ) : null}\n\n      {rows.length === 0 ? (
+      {actionError ? (
+        <p role="alert" className="rounded-2xl bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          {actionError}
+        </p>
+      ) : null}
+
+      {rows.length === 0 ? (
         <p className="rounded-2xl bg-surface/60 px-4 py-4 text-sm text-muted-foreground">
           還沒有提醒。到日子或偶像頁面就能設定。
         </p>
       ) : (
         <ul className="divide-y divide-border/60">
-          {rows.map((row) => (
-            <li key={row.id} className="flex items-center gap-3 py-3">
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm">{row.title}</p>
-                <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                  {row.idolName} · {formatDaysBefore(row.daysBefore)}
-                </p>
-              </div>
-              <Switch
-                checked={row.enabled}
-                disabled={busy || busyReminderId !== null}
-                aria-label={`${row.title} 提醒開關`}
-                onCheckedChange={(v) => void setReminderEnabled(row, v)}
-              />
-              <button
-                type="button"
-                disabled={busy || busyReminderId !== null}
-                aria-label={`刪除 ${row.title} 提醒`}
-                onClick={() => void deleteReminder(row)}
-                className="rounded-full p-2 text-muted-foreground transition-transform duration-300 active:scale-90 disabled:opacity-50"
-              >
-                <Trash2 className="size-4" strokeWidth={1.6} />
-              </button>
-            </li>
+          {rows.map((row) => {
+            const busy = busyReminderId === row.id;
+            return (
+              <li key={row.id} className="flex items-center gap-3 py-3">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm">{row.title}</p>
+                  <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                    {row.idolName} · {formatDaysBefore(row.daysBefore)}
+                  </p>
+                </div>
+                <Switch
+                  checked={row.enabled}
+                  disabled={busy || busyReminderId !== null}
+                  aria-label={`${row.title} 提醒開關`}
+                  onCheckedChange={(v) => void setReminderEnabled(row, v)}
+                />
+                <button
+                  type="button"
+                  disabled={busy || busyReminderId !== null}
+                  aria-label={`刪除 ${row.title} 提醒`}
+                  onClick={() => void deleteReminder(row)}
+                  className="rounded-full p-2 text-muted-foreground transition-transform duration-300 active:scale-90 disabled:opacity-50"
+                >
+                  <Trash2 className="size-4" strokeWidth={1.6} />
+                </button>
+              </li>
             );
           })}
         </ul>
