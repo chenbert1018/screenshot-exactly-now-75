@@ -28,6 +28,7 @@ import {
   type ArchaeologySource,
 } from "@/lib/archaeology";
 import { useArchaeologySource } from "@/lib/archaeology.source";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/archaeology")({
   head: () => ({
@@ -78,6 +79,7 @@ function ArchaeologyPage() {
     useState<ArchaeologyItem | null>(null);
   const [pendingDelete, setPendingDelete] =
     useState<ArchaeologyItem | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const [query, setQuery] = useState("");
   const [view, setView] = useState<ViewMode>("RECENT");
@@ -418,13 +420,22 @@ function ArchaeologyPage() {
 
               <button
                 type="button"
-                onClick={() => {
-                  removeItem(pendingDelete.id);
-                  setPendingDelete(null);
+                disabled={deleting}
+                onClick={async () => {
+                  if (deleting) return;
+                  setDeleting(true);
+                  try {
+                    await removeItem(pendingDelete.id);
+                    setPendingDelete(null);
+                  } catch {
+                    toast.error("考古沒有刪除成功，請確認網路後再試一次");
+                  } finally {
+                    setDeleting(false);
+                  }
                 }}
-                className="flex-1 rounded-full bg-destructive py-3 text-sm font-medium text-destructive-foreground"
+                className="flex-1 rounded-full bg-destructive py-3 text-sm font-medium text-destructive-foreground disabled:opacity-60"
               >
-                刪除
+                {deleting ? "刪除中…" : "刪除"}
               </button>
             </div>
           </div>
