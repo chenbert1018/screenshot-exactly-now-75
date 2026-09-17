@@ -3,7 +3,7 @@ import { Capacitor, registerPlugin } from "@capacitor/core";
 interface IdolDaysWidgetBridgePlugin {
   updateWidget(options: WidgetNativePayload): Promise<{
     success: boolean;
-    snapshotPath?: string;
+    snapshotPath?: string | undefined;
   }>;
 }
 
@@ -19,7 +19,7 @@ export interface WidgetNativePayload {
   decorationEmoji: string;
   decorationLabel: string;
   enabledContents: string[];
-  imageData?: string;
+  imageData?: string | undefined;
 }
 
 const WidgetBridge =
