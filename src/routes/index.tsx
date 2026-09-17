@@ -208,20 +208,24 @@ function EmptyArchaeologyCard() {
   );
 }
 
-function MemoryCard({ memory }: { memory: { title: string; note: string; photo?: string | undefined; date: string } }) {
+function MemoryCard({ memory, song }: { memory: { title: string; note: string; photo?: string | undefined; date: string }; song?: IdolSong | undefined }) {
   const text = memory.title.trim() || memory.note.trim() || "那天也好想你 ♡";
+  const link = song ? streamingLink(song) : "";
   return (
-    <Link to="/memories" className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground p-3 shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl transition-transform active:scale-[0.99]">
+    <section className="mt-3 overflow-hidden rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground shadow-[0_12px_32px_rgba(157,91,116,0.12)] backdrop-blur-xl">
+      <Link to="/memories" className="flex items-center gap-4 p-3 transition-transform active:scale-[0.99]">
       <div className="flex size-[5.2rem] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/10 text-primary">
         {memory.photo ? <StoredImage src={memory.photo} alt="" className="size-full object-cover" /> : <History className="size-7" strokeWidth={1.45} />}
       </div>
       <div className="min-w-0 flex-1 py-1">
         <p className="text-[11px] font-medium text-primary">▣ 去年的今天</p>
-        <p className="mt-1 text-[17px] font-medium">{dotDate(memory.date)}</p>
+        <p className="mt-1 text-[17px] font-medium">{song ? "一年前，你第一次在現場聽到這首歌。" : dotDate(memory.date)}</p>
         <p className="mt-1 truncate text-sm text-muted-foreground">{text}</p>
       </div>
       <ArrowRight className="mr-1 size-5 shrink-0 text-primary" strokeWidth={1.8} />
-    </Link>
+      </Link>
+      {song ? <div className="border-t border-border/60 px-4 py-3"><p className="text-sm text-primary">🎵 {song.title}{song.artist ? ` · ${song.artist}` : ""}</p>{link ? <a href={link} target="_blank" rel="noreferrer" className="mt-2 inline-flex rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground">🎧 再聽一次</a> : <Link to="/music" className="mt-2 inline-flex rounded-full bg-surface px-3 py-1.5 text-xs text-muted-foreground">加入串流連結後再聽一次</Link>}</div> : null}
+    </section>
   );
 }
 
@@ -386,7 +390,7 @@ function HomePage() {
           ) : null}
           <TodaySongCard song={todaySong} />
           {latestArchaeology ? <ArchaeologyCard item={latestArchaeology} /> : <EmptyArchaeologyCard />}
-          {memoryFromToday ? <MemoryCard memory={memoryFromToday} /> : <EmptyMemoryCard />}
+          {memoryFromToday ? <MemoryCard memory={memoryFromToday} song={songs.find((song) => song.id === memoryFromToday.songId)} /> : <EmptyMemoryCard />}
 
           {companionship && !companionship.isFuture && companionship.days !== null ? (
             <section className="relative mt-5 rounded-[1.8rem] border border-border/70 bg-card/90 px-5 py-4 text-center text-card-foreground shadow-[0_12px_32px_rgba(157,91,116,0.10)] backdrop-blur-xl">
