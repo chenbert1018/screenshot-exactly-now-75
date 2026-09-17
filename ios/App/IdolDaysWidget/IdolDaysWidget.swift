@@ -567,7 +567,11 @@ struct IdolDaysWidgetEntryView: View {
                             Text(prettyDecorationEmoji)
                                 .font(.system(size: 30))
                                 .shadow(
-                                    color: secondaryAccent.opacity(0.35),
+                                    color: Color(
+                                        red: 0.38,
+                                        green: 0.62,
+                                        blue: 0.80
+                                    ).opacity(0.35),
                                     radius: 5,
                                     x: 0,
                                     y: 2
