@@ -6,6 +6,7 @@ import { AppShell, PageHeader, EmptyState, SoftCard } from "@/components/AppShel
 import { useIdolSource } from "@/lib/idols.source";
 import { useEventSource } from "@/lib/events.source";
 import { useWidgetPreferenceSource } from "@/lib/widget-preferences.source";
+import { useIdolMusicSource } from "@/lib/idol-music.source";
 import { updateNativeWidget } from "@/lib/widget-native-bridge";
 import { resolveImageUrl } from "@/lib/storage";
 import {
@@ -34,6 +35,7 @@ const CONTENT_LABELS: Record<WidgetContentType, string> = {
   DECORATION: "小裝飾",
   MOOD: "今日心情",
   COUNTDOWN: "重要日子",
+  SONG: "今天和他一起聽",
 };
 
 type WidgetCompanionContent = ReturnType<
@@ -89,6 +91,8 @@ function WidgetNativeSync({
   const moodLabel = content.mood?.label ?? "";
   const decorationEmoji = content.decoration?.emoji ?? "";
   const decorationLabel = content.decoration?.label ?? "";
+  const songTitle = content.todaySong?.title ?? "";
+  const songArtist = content.todaySong?.artist ?? "";
 
   useEffect(() => {
     if (!idolName) {
@@ -125,6 +129,8 @@ function WidgetNativeSync({
         moodLabel,
         decorationEmoji,
         decorationLabel,
+        songTitle,
+        songArtist,
         enabledContents,
         imageData,
       });
@@ -140,6 +146,8 @@ function WidgetNativeSync({
     moodLabel,
     decorationEmoji,
     decorationLabel,
+    songTitle,
+    songArtist,
     enabledContents,
   ]);
 
@@ -150,6 +158,8 @@ function WidgetPage() {
   const { idols, ready } = useIdolSource();
   const { events } = useEventSource();
   const { prefs, update: updatePrefs } = useWidgetPreferenceSource();
+  const musicIdolId = prefs?.idolId ?? idols[0]?.id;
+  const { songs } = useIdolMusicSource(musicIdolId);
 
   if (!ready || !prefs) {
     return (
@@ -182,7 +192,7 @@ function WidgetPage() {
     );
   }
 
-  const content = getWidgetCompanionContent({ idols, events, preferences: prefs });
+  const content = getWidgetCompanionContent({ idols, events, songs, preferences: prefs });
   const on = (t: WidgetContentType) => prefs.enabledContents.includes(t);
 
   function toggle(t: WidgetContentType) {
@@ -244,6 +254,22 @@ function WidgetPage() {
           <p className="mt-4 text-sm text-muted-foreground">
             {content.mood.emoji} {content.mood.label}
           </p>
+        ) : null}
+
+        {on("SONG") ? (
+          content.todaySong ? (
+            <div className="mt-4 rounded-2xl bg-primary/10 px-4 py-3 text-left">
+              <p className="text-[11px] font-medium tracking-[0.16em] text-primary">🎧 今天和他一起聽</p>
+              <p className="mt-1 truncate text-sm font-medium">{content.todaySong.title}</p>
+              {content.todaySong.artist ? (
+                <p className="mt-0.5 truncate text-xs text-muted-foreground">{content.todaySong.artist}</p>
+              ) : null}
+            </div>
+          ) : (
+            <Link to="/music" className="mt-4 block text-xs text-primary underline underline-offset-4">
+              先到「我們的歌」選一首今日歌曲
+            </Link>
+          )
         ) : null}
 
         {on("COUNTDOWN") ? (
