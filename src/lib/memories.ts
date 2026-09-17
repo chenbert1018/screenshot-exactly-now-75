@@ -12,6 +12,8 @@ export type Memory = {
   date: string;
   note: string;
   photo?: string | undefined;
+  /** Optional personal song linked to this memory. */
+  songId?: string | undefined;
   createdAt: string;
 };
 
@@ -20,9 +22,10 @@ export type MemoryDraft = {
   date: string;
   note: string;
   photo: string;
+  songId: string;
 };
 
-export const emptyMemoryDraft: MemoryDraft = { title: "", date: "", note: "", photo: "" };
+export const emptyMemoryDraft: MemoryDraft = { title: "", date: "", note: "", photo: "", songId: "" };
 
 /** 舊資料容錯：缺欄位時補上安全預設值，不刪除任何既有資料 */
 function normalize(raw: unknown): Memory | null {
@@ -37,6 +40,7 @@ function normalize(raw: unknown): Memory | null {
     date: typeof m.date === "string" ? m.date : "",
     note: typeof m.note === "string" ? m.note : "",
     photo: typeof m.photo === "string" ? m.photo : undefined,
+    songId: typeof m.songId === "string" ? m.songId : undefined,
     createdAt: typeof m.createdAt === "string" ? m.createdAt : new Date(0).toISOString(),
   };
 }
@@ -121,6 +125,7 @@ export function useMemories(folderId?: string) {
       date: draft.date,
       note: draft.note,
       photo: draft.photo || undefined,
+      songId: draft.songId || undefined,
       createdAt: new Date().toISOString(),
     };
     emit([...read(), memory]);
@@ -130,7 +135,7 @@ export function useMemories(folderId?: string) {
     emit(
       read().map((m) =>
         m.id === id
-          ? { ...m, title: draft.title, date: draft.date, note: draft.note, photo: draft.photo || undefined }
+          ? { ...m, title: draft.title, date: draft.date, note: draft.note, photo: draft.photo || undefined, songId: draft.songId || undefined }
           : m,
       ),
     );
