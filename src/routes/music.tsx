@@ -5,6 +5,7 @@ import { AppShell, EmptyState, SoftCard } from "@/components/AppShell";
 import { IdolSongFormSheet } from "@/components/IdolSongFormSheet";
 import { MusicTimeline } from "@/components/MusicTimeline";
 import { YearInMusicCard } from "@/components/YearInMusicCard";
+import { MonthlyMusicCard } from "@/components/MonthlyMusicCard";
 import { SONG_ROLE_OPTIONS, songRoleLabel, streamingLink, type SongRole } from "@/lib/idol-music";
 import { useIdolMusicSource } from "@/lib/idol-music.source";
 import { useIdolSource } from "@/lib/idols.source";
@@ -80,6 +81,12 @@ function MusicPage() {
       {actionError || error ? <p role="alert" className="mb-3 rounded-2xl bg-destructive/10 px-4 py-3 text-sm text-destructive">{actionError || "歌曲資料暫時讀取失敗，請稍後再試。"}</p> : null}
       {!ready ? <div className="h-36 rounded-3xl bg-surface/50" /> : songs.length === 0 ? <EmptyState icon={<Music2 className="size-5" />} title="還沒有第一首歌" description="把入坑曲、最愛或最近循環加進來。" action={<button onClick={() => setOpen(true)} className="rounded-full bg-primary px-5 py-2.5 text-sm text-primary-foreground">加入第一首歌</button>} /> : <div className="space-y-3">{songs.map((song) => <SoftCard key={song.id} className="p-4"><div className="flex gap-3"><Music2 className="mt-0.5 size-5 shrink-0 text-primary" /><div className="min-w-0 flex-1"><p className="truncate font-medium">{song.title}</p><p className="mt-1 truncate text-sm text-muted-foreground">{[song.artist, song.album].filter(Boolean).join(" · ") || "我的歌"}</p><div className="mt-3 flex flex-wrap gap-2"><button disabled={Boolean(busy)} onClick={() => void run(`today-${song.id}`, () => setTodayPick(song.id))} className={`rounded-full px-3 py-1.5 text-xs ${song.isTodayPick ? "bg-primary text-primary-foreground" : "bg-surface text-muted-foreground"}`}>{song.isTodayPick ? "今日播放中" : "設為今日歌曲"}</button>{streamingLink(song) ? <a href={streamingLink(song)} target="_blank" rel="noreferrer" className="rounded-full bg-surface px-3 py-1.5 text-xs text-muted-foreground">播放 ↗</a> : null}</div></div><button disabled={Boolean(busy)} aria-label={`刪除 ${song.title}`} onClick={() => void run(`delete-${song.id}`, () => removeSong(song.id))} className="p-1 text-muted-foreground"><Trash2 className="size-4" /></button></div></SoftCard>)}</div>}
       <YearInMusicCard
+        idolName={homeIdol.name || "他"}
+        items={timelineItems}
+        ready={timelineReady}
+      />
+
+      <MonthlyMusicCard
         idolName={homeIdol.name || "他"}
         items={timelineItems}
         ready={timelineReady}
