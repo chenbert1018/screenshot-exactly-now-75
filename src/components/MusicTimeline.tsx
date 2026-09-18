@@ -81,16 +81,70 @@ function kindLabel(kind: MusicTimelineItem["kind"]) {
   }
 }
 
-function kindIcon(kind: MusicTimelineItem["kind"]) {
+function collectibleVisual(
+  kind: MusicTimelineItem["kind"],
+) {
   switch (kind) {
     case "TODAY_SONG":
-      return "🎧";
+      return (
+        <span
+          className="music-collectible music-collectible--disc"
+          aria-hidden="true"
+        >
+          <span className="music-collectible-disc-shine" />
+          <span className="music-collectible-disc-hole" />
+          <span className="music-collectible-disc-note">♪</span>
+        </span>
+      );
+
     case "COMEBACK":
-      return "💿";
+      return (
+        <span
+          className="music-collectible music-collectible--album"
+          aria-hidden="true"
+        >
+          <span className="music-collectible-album-label">
+            NEW
+          </span>
+          <span className="music-collectible-album-title">
+            ALBUM
+          </span>
+          <span className="music-collectible-album-star">
+            ✦
+          </span>
+        </span>
+      );
+
     case "CONCERT":
-      return "🎤";
+      return (
+        <span
+          className="music-collectible music-collectible--ticket"
+          aria-hidden="true"
+        >
+          <span className="music-collectible-ticket-side">
+            LIVE
+          </span>
+          <span className="music-collectible-ticket-main">
+            <span>ADMIT ONE</span>
+            <strong>♪</strong>
+          </span>
+        </span>
+      );
+
     case "MEMORY_DAY":
-      return "♡";
+      return (
+        <span
+          className="music-collectible music-collectible--polaroid"
+          aria-hidden="true"
+        >
+          <span className="music-collectible-polaroid-photo">
+            <span>♡</span>
+          </span>
+          <span className="music-collectible-polaroid-note">
+            OUR DAY
+          </span>
+        </span>
+      );
   }
 }
 
@@ -191,9 +245,11 @@ export function MusicTimeline({
                   return (
                     <article
                       key={item.id}
-                      className="flex gap-3"
+                      className={`music-timeline-entry music-timeline-entry--${item.kind
+                        .toLowerCase()
+                        .replace("_", "-")} flex gap-3`}
                     >
-                      <div className="w-10 shrink-0 pt-2 text-center">
+                      <div className="music-timeline-date w-10 shrink-0 pt-2 text-center">
                         <p className="text-[9px] font-medium tracking-[0.12em] text-muted-foreground">
                           {date.month}
                         </p>
@@ -203,32 +259,28 @@ export function MusicTimeline({
                         </p>
                       </div>
 
-                      <div className="min-w-0 flex-1 rounded-[1.7rem] border border-border/60 bg-card/85 px-4 py-4 shadow-soft backdrop-blur-xl">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0">
-                            <p className="text-[10px] font-medium tracking-[0.12em] text-primary">
+                      <div className="music-timeline-card min-w-0 flex-1 overflow-hidden rounded-[1.7rem] border border-border/60 bg-card/85 px-4 py-4 shadow-soft backdrop-blur-xl">
+                        <div className="music-timeline-card-head flex items-start gap-3">
+                          <div className="music-timeline-collectible-slot shrink-0">
+                            {collectibleVisual(item.kind)}
+                          </div>
+
+                          <div className="min-w-0 flex-1 pt-0.5">
+                            <p className="text-[9px] font-semibold tracking-[0.14em] text-primary">
                               {kindLabel(item.kind)} ♡
                             </p>
 
-                            <h3 className="mt-1 truncate text-[14px] font-medium">
+                            <h3 className="mt-1.5 line-clamp-2 text-[14px] font-medium leading-5">
                               {item.title}
                             </h3>
+
+                            {item.subtitle ? (
+                              <p className="mt-1 text-[10px] leading-4 text-muted-foreground">
+                                {item.subtitle}
+                              </p>
+                            ) : null}
                           </div>
-
-                          <span
-                            aria-hidden
-                            className="shrink-0 text-base"
-                          >
-                            {kindIcon(item.kind)}
-                          </span>
                         </div>
-
-                        {item.subtitle ? (
-                          <p className="mt-1 text-[11px] text-muted-foreground">
-                            {item.subtitle}
-                          </p>
-                        ) : null}
-
                         {item.songs.length > 0 ? (
                           <div className="mt-3 space-y-2">
                             {item.songs.map(

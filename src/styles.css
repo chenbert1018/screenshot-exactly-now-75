@@ -1037,3 +1037,371 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* IdolDays Music Diary V2-B — collectible timeline */
+
+.music-timeline-entry {
+  position: relative;
+}
+
+.music-timeline-date {
+  transition:
+    transform 240ms ease,
+    opacity 240ms ease;
+}
+
+.music-timeline-card {
+  position: relative;
+  isolation: isolate;
+}
+
+.music-timeline-card::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 2px;
+  border-radius: 999px;
+  background: var(--primary);
+  content: "";
+  opacity: 0.28;
+}
+
+.music-timeline-card::after {
+  position: absolute;
+  right: -2.4rem;
+  top: -2.8rem;
+  z-index: -1;
+  width: 7.5rem;
+  height: 7.5rem;
+  border-radius: 999px;
+  background: var(--primary);
+  content: "";
+  filter: blur(38px);
+  opacity: 0.055;
+  pointer-events: none;
+}
+
+.music-timeline-card-head {
+  min-height: 72px;
+}
+
+.music-timeline-collectible-slot {
+  display: flex;
+  width: 72px;
+  min-height: 72px;
+  align-items: center;
+  justify-content: center;
+}
+
+.music-collectible {
+  position: relative;
+  display: inline-block;
+  color: var(--primary);
+  user-select: none;
+}
+
+/* Today's Song — CD clipping */
+
+.music-collectible--disc {
+  width: 62px;
+  height: 62px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background:
+    radial-gradient(
+      circle at center,
+      var(--card) 0 9%,
+      var(--primary) 10% 13%,
+      transparent 14% 25%,
+      color-mix(in srgb, var(--primary) 11%, var(--surface)) 26% 100%
+    );
+  box-shadow:
+    0 7px 18px color-mix(in srgb, var(--primary) 10%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--card) 70%, transparent);
+  transform: rotate(-7deg);
+}
+
+.music-collectible-disc-shine {
+  position: absolute;
+  inset: 6px;
+  border-radius: inherit;
+  background:
+    conic-gradient(
+      from 35deg,
+      transparent,
+      color-mix(in srgb, var(--primary) 16%, transparent),
+      transparent 28%,
+      color-mix(in srgb, var(--card) 75%, transparent) 45%,
+      transparent 58%
+    );
+  opacity: 0.8;
+}
+
+.music-collectible-disc-hole {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--card);
+  transform: translate(-50%, -50%);
+}
+
+.music-collectible-disc-note {
+  position: absolute;
+  right: -2px;
+  bottom: 2px;
+  display: grid;
+  width: 21px;
+  height: 21px;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--card);
+  box-shadow: 0 3px 9px color-mix(in srgb, var(--primary) 8%, transparent);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* Comeback — album sleeve */
+
+.music-collectible--album {
+  width: 58px;
+  height: 64px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--primary) 16%, var(--card)),
+      var(--card) 62%
+    );
+  box-shadow:
+    5px 6px 0 color-mix(in srgb, var(--primary) 7%, var(--surface)),
+    0 9px 18px color-mix(in srgb, var(--primary) 8%, transparent);
+  transform: rotate(3deg);
+}
+
+.music-collectible--album::after {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 9px;
+  height: 1px;
+  background: var(--primary);
+  content: "";
+  opacity: 0.32;
+}
+
+.music-collectible-album-label {
+  position: absolute;
+  left: 7px;
+  top: 8px;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+}
+
+.music-collectible-album-title {
+  position: absolute;
+  left: 7px;
+  top: 24px;
+  color: var(--card-foreground);
+  font-family: var(--font-display, inherit);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.music-collectible-album-star {
+  position: absolute;
+  right: 7px;
+  bottom: 13px;
+  font-size: 9px;
+}
+
+/* Concert — ticket stub */
+
+.music-collectible--ticket {
+  display: flex;
+  width: 70px;
+  height: 44px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--card);
+  box-shadow: 0 8px 16px color-mix(in srgb, var(--primary) 9%, transparent);
+  transform: rotate(-4deg);
+}
+
+.music-collectible--ticket::before,
+.music-collectible--ticket::after {
+  position: absolute;
+  right: 13px;
+  z-index: 2;
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  content: "";
+}
+
+.music-collectible--ticket::before {
+  top: -5px;
+}
+
+.music-collectible--ticket::after {
+  bottom: -5px;
+}
+
+.music-collectible-ticket-side {
+  display: flex;
+  width: 19px;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px dashed var(--border);
+  background: color-mix(in srgb, var(--primary) 12%, var(--surface));
+  font-size: 6px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.music-collectible-ticket-main {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: var(--card-foreground);
+}
+
+.music-collectible-ticket-main span {
+  font-size: 6px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.music-collectible-ticket-main strong {
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Memory Day — paper polaroid */
+
+.music-collectible--polaroid {
+  width: 54px;
+  height: 65px;
+  padding: 5px 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--card);
+  box-shadow: 0 8px 17px color-mix(in srgb, var(--primary) 9%, transparent);
+  transform: rotate(4deg);
+}
+
+.music-collectible-polaroid-photo {
+  display: grid;
+  width: 100%;
+  height: 42px;
+  place-items: center;
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--primary) 13%, var(--surface)),
+      var(--surface)
+    );
+  color: var(--primary);
+  font-size: 14px;
+}
+
+.music-collectible-polaroid-photo::before {
+  position: absolute;
+  left: 9px;
+  top: 9px;
+  width: 13px;
+  height: 1px;
+  background: var(--primary);
+  content: "";
+  opacity: 0.25;
+  transform: rotate(-22deg);
+}
+
+.music-collectible-polaroid-note {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 3px;
+  text-align: center;
+  color: var(--muted-foreground);
+  font-size: 5px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+}
+
+/* Different entries should feel collected, not mechanically repeated. */
+
+.music-timeline-entry:nth-child(even)
+  .music-collectible--disc {
+  transform: rotate(5deg);
+}
+
+.music-timeline-entry:nth-child(even)
+  .music-collectible--album {
+  transform: rotate(-2deg);
+}
+
+.music-timeline-entry:nth-child(even)
+  .music-collectible--ticket {
+  transform: rotate(3deg);
+}
+
+.music-timeline-entry:nth-child(even)
+  .music-collectible--polaroid {
+  transform: rotate(-3deg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .music-timeline-entry {
+    animation: music-timeline-collect-in 420ms ease both;
+  }
+
+  .music-timeline-entry:nth-child(2) {
+    animation-delay: 45ms;
+  }
+
+  .music-timeline-entry:nth-child(3) {
+    animation-delay: 90ms;
+  }
+
+  .music-timeline-entry:nth-child(4) {
+    animation-delay: 135ms;
+  }
+}
+
+@keyframes music-timeline-collect-in {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .music-timeline-entry,
+  .music-collectible {
+    animation: none !important;
+    transition: none !important;
+  }
+}
