@@ -18,6 +18,7 @@ import {
   SoftCard,
 } from "@/components/AppShell";
 import { IdolSongFormSheet } from "@/components/IdolSongFormSheet";
+import { StoredImage } from "@/components/StoredImage";
 import { MusicTimeline } from "@/components/MusicTimeline";
 import { YearInMusicCard } from "@/components/YearInMusicCard";
 import { MonthlyMusicCard } from "@/components/MonthlyMusicCard";
@@ -282,48 +283,145 @@ function MusicPage() {
       ) : (
         <>
           {/* TODAY */}
-          <SectionLabel
-            eyebrow="TODAY ♡"
-            title="今天和他一起聽什麼？"
-          />
+          <section className="music-diary-now-playing relative overflow-hidden rounded-[2rem] border border-border/70 bg-card/90 p-4 shadow-soft">
+            <span
+              aria-hidden="true"
+              className="absolute right-5 top-4 text-[10px] text-primary/60"
+            >
+              ✦
+            </span>
 
-          <section className="rounded-[2rem] border border-primary/15 bg-gradient-to-br from-primary/15 via-card to-accent/25 p-5 shadow-soft">
-            <p className="text-[10px] font-medium tracking-[0.16em] text-primary">
-              TODAY'S SONG
-            </p>
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-semibold tracking-[0.18em] text-primary">
+                  TODAY'S SONG ♡
+                </p>
+                <p className="mt-1 text-[12px] text-muted-foreground">
+                  {today ? "NOW PLAYING" : "CHOOSE TODAY'S BGM"}
+                </p>
+              </div>
 
-            <p className="mt-3 font-display text-[22px] font-semibold">
-              {today?.title ||
-                "今天想聽哪一首？"}
-            </p>
+              <span className="music-diary-date-mark" aria-hidden="true">
+                TODAY
+              </span>
+            </div>
 
-            <p className="mt-1 text-sm text-muted-foreground">
-              {today?.artist ||
-                "選一首歌，讓今天也有專屬 BGM。"}
-            </p>
+            <div className="mt-4 flex items-center gap-4">
+              <button
+                type="button"
+                disabled={Boolean(busy)}
+                onClick={() => setLibraryOpen(true)}
+                aria-label={today ? "更換今天的歌曲" : "選擇今天的歌曲"}
+                className="music-diary-album relative h-[112px] w-[126px] shrink-0 disabled:opacity-50"
+              >
+                <span
+                  aria-hidden="true"
+                  className={`music-diary-disc absolute right-0 top-[12px] size-[88px] rounded-full border border-primary/20 ${
+                    today ? "music-diary-disc--playing" : ""
+                  }`}
+                >
+                  <span className="absolute inset-[14%] rounded-full border border-primary/10" />
+                  <span className="absolute inset-[30%] rounded-full border border-primary/10" />
+                  <span className="absolute inset-[42%] rounded-full bg-card shadow-[0_0_0_1px_var(--border)]" />
+                  <span className="absolute inset-[47%] rounded-full bg-primary/60" />
+                  <span className="music-diary-disc-shine absolute inset-0 rounded-full" />
+                </span>
 
-            {today ? (
-              <div className="mt-5">
-                <p className="text-xs text-muted-foreground">
-                  今天聽這首歌的心情
-                  {todayJournal.entry?.mood
-                    ? `：${todayJournal.entry.mood}`
-                    : ""}
+                <span className="music-diary-photocard absolute bottom-0 left-0 z-10 h-[106px] w-[78px] overflow-hidden rounded-[0.9rem] border border-border/70 bg-surface shadow-soft">
+                  {homeIdol.cutoutPhoto ? (
+                    <>
+                      <span
+                        aria-hidden="true"
+                        className="absolute inset-0 bg-gradient-to-b from-primary/10 via-surface/50 to-card"
+                      />
+                      <StoredImage
+                        src={homeIdol.cutoutPhoto}
+                        alt={`${homeIdol.name} 的照片`}
+                        className="relative z-10 size-full object-contain object-bottom"
+                      />
+                    </>
+                  ) : homeIdol.photo ? (
+                    <StoredImage
+                      src={homeIdol.photo}
+                      alt={`${homeIdol.name} 的照片`}
+                      className="size-full object-cover object-center"
+                    />
+                  ) : (
+                    <span className="flex size-full items-center justify-center font-display text-[22px] text-primary">
+                      {homeIdol.name.trim().slice(0, 1) || "♡"}
+                    </span>
+                  )}
+
+                  <span
+                    aria-hidden="true"
+                    className="absolute bottom-1.5 right-2 z-20 text-[9px] text-primary"
+                  >
+                    ♡
+                  </span>
+                </span>
+
+                <span
+                  aria-hidden="true"
+                  className="absolute left-[71px] top-0 z-20 text-[11px] text-primary/70"
+                >
+                  ✦
+                </span>
+              </button>
+
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-display text-[20px] font-semibold leading-tight">
+                  {today?.title || "今天想聽哪一首？"}
                 </p>
 
-                <div className="mt-2 flex items-center gap-2">
-                  {SONG_MOOD_OPTIONS.map((mood) => {
-                    const selected =
-                      todayJournal.entry?.mood === mood;
+                <p className="mt-1.5 truncate text-[12px] text-muted-foreground">
+                  {today?.artist || `和 ${homeIdol.name || "他"} 選一首今天的歌`}
+                </p>
+
+                <button
+                  type="button"
+                  onClick={() => setLibraryOpen(true)}
+                  className="mt-3 inline-flex items-center gap-1 text-[10px] font-semibold tracking-[0.08em] text-primary"
+                >
+                  {today ? "CHANGE SONG" : "＋ SELECT SONG"}
+                </button>
+
+                {today && streamingLink(today) ? (
+                  <a
+                    href={streamingLink(today)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-2 flex w-fit items-center gap-1 text-[10px] text-muted-foreground"
+                  >
+                    ♪ LISTEN
+                    <ExternalLink className="size-3" />
+                  </a>
+                ) : null}
+              </div>
+            </div>
+
+            {today ? (
+              <div className="mt-5 border-t border-border/60 pt-4">
+                <div className="flex items-center justify-between">
+                  <p className="text-[9px] font-semibold tracking-[0.16em] text-muted-foreground">
+                    TODAY'S MOOD
+                  </p>
+
+                  {todayJournal.entry?.mood ? (
+                    <span className="text-[10px] text-primary">
+                      SAVED ♡
+                    </span>
+                  ) : null}
+                </div>
+
+                <div className="mt-3 flex items-center justify-between px-1">
+                  {SONG_MOOD_OPTIONS.map((mood, index) => {
+                    const selected = todayJournal.entry?.mood === mood;
 
                     return (
                       <button
                         key={mood}
                         type="button"
-                        disabled={
-                          Boolean(busy) ||
-                          !todayJournal.ready
-                        }
+                        disabled={Boolean(busy) || !todayJournal.ready}
                         aria-label={`今天的心情：${mood}`}
                         aria-pressed={selected}
                         onClick={() =>
@@ -332,57 +430,28 @@ function MusicPage() {
                             () => chooseMood(mood),
                           )
                         }
-                        className={`flex size-10 items-center justify-center rounded-full text-xl transition ${
-                          selected
-                            ? "bg-primary/15 ring-2 ring-primary/30"
-                            : "bg-card/70"
+                        className={`music-diary-mood ${
+                          selected ? "music-diary-mood--active" : ""
                         }`}
+                        style={{
+                          "--music-mood-rotate": `${[-4, 2, -2, 4, -3][index] ?? 0}deg`,
+                        } as React.CSSProperties}
                       >
-                        {mood}
+                        <span>{mood}</span>
+                        {selected ? (
+                          <span
+                            aria-hidden="true"
+                            className="music-diary-mood-heart"
+                          >
+                            ♡
+                          </span>
+                        ) : null}
                       </button>
                     );
                   })}
                 </div>
-
-                {todayJournal.entry?.songId ===
-                  today.id &&
-                todayJournal.entry?.mood ? (
-                  <p className="mt-2 text-xs font-medium text-primary">
-                    今天已留下 ♡
-                  </p>
-                ) : null}
               </div>
             ) : null}
-
-            <div className="mt-5 flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() =>
-                  setLibraryOpen(true)
-                }
-                className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground"
-              >
-                <Music2 className="size-4" />
-                {today
-                  ? "換一首歌"
-                  : "選一首歌"}
-              </button>
-
-              {today &&
-              streamingLink(today) ? (
-                <a
-                  href={
-                    streamingLink(today)
-                  }
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-full bg-card/80 px-4 py-2.5 text-sm text-foreground"
-                >
-                  播放
-                  <ExternalLink className="size-3.5" />
-                </a>
-              ) : null}
-            </div>
           </section>
 
           {actionError ||

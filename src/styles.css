@@ -871,3 +871,169 @@
     transform: translateY(0) rotate(-10deg) scale(1);
   }
 }
+
+/* Music Visual Polish V2-A — Music Diary cover + collectible player */
+.music-diary-header {
+  position: relative;
+}
+
+.music-diary-header-mark {
+  display: flex;
+  min-width: 3.4rem;
+  height: 3.4rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 16%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  color: color-mix(in srgb, var(--primary) 65%, transparent);
+  font-size: 0.75rem;
+  transform: rotate(6deg);
+}
+
+.music-diary-now-playing::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  left: -3rem;
+  bottom: -4rem;
+  width: 10rem;
+  height: 10rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 9%, transparent);
+  filter: blur(1.8rem);
+}
+
+.music-diary-date-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--primary) 18%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  padding: 0.35rem 0.55rem;
+  color: var(--primary);
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+}
+
+.music-diary-disc {
+  overflow: hidden;
+  background:
+    radial-gradient(
+      circle at 32% 28%,
+      color-mix(in srgb, var(--card) 88%, transparent),
+      transparent 18%
+    ),
+    radial-gradient(
+      circle,
+      color-mix(in srgb, var(--surface) 80%, var(--card)),
+      color-mix(in srgb, var(--primary) 11%, var(--card))
+    );
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--border) 62%, transparent),
+    0 8px 22px color-mix(in srgb, var(--primary) 9%, transparent);
+}
+
+.music-diary-disc-shine {
+  background: linear-gradient(
+    125deg,
+    transparent 24%,
+    color-mix(in srgb, var(--primary) 8%, transparent) 42%,
+    color-mix(in srgb, var(--card) 55%, transparent) 50%,
+    transparent 62%
+  );
+}
+
+.music-diary-disc--playing {
+  animation: music-diary-disc-arrive 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.music-diary-photocard {
+  transform: rotate(-2deg);
+  transform-origin: 50% 85%;
+  transition:
+    transform 380ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 380ms ease;
+}
+
+.music-diary-album:active .music-diary-photocard {
+  transform: rotate(0deg) scale(0.98);
+}
+
+.music-diary-album:active .music-diary-disc {
+  transform: translateX(3px) rotate(9deg) scale(0.98);
+}
+
+.music-diary-mood {
+  --music-mood-rotate: 0deg;
+  position: relative;
+  display: flex;
+  width: 2.65rem;
+  height: 2.65rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--border) 68%, transparent);
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--surface) 78%, var(--card));
+  font-size: 1.25rem;
+  transform: rotate(var(--music-mood-rotate));
+  transition:
+    transform 240ms ease,
+    background 240ms ease,
+    border-color 240ms ease;
+}
+
+.music-diary-mood--active {
+  border-color: color-mix(in srgb, var(--primary) 35%, transparent);
+  background: color-mix(in srgb, var(--primary) 12%, var(--card));
+  transform: rotate(var(--music-mood-rotate)) translateY(-2px) scale(1.05);
+}
+
+.music-diary-mood-heart {
+  position: absolute;
+  right: -0.15rem;
+  top: -0.35rem;
+  color: var(--primary);
+  font-size: 0.62rem;
+  animation: music-diary-mood-pop 340ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes music-diary-disc-arrive {
+  from {
+    opacity: 0;
+    transform: translateX(-0.35rem) rotate(-14deg) scale(0.92);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0) rotate(0) scale(1);
+  }
+}
+
+@keyframes music-diary-mood-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.5) rotate(-12deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .music-diary-disc--playing,
+  .music-diary-mood-heart {
+    animation: none !important;
+  }
+
+  .music-diary-photocard,
+  .music-diary-disc,
+  .music-diary-mood {
+    transition-duration: 0.01ms !important;
+  }
+}
