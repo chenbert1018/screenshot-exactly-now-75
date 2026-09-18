@@ -1405,3 +1405,337 @@
     transition: none !important;
   }
 }
+
+/* IdolDays Music Diary V2-C — recap booklet + private soundtrack */
+
+.music-recap-toggle,
+.music-soundtrack-toggle {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+}
+
+.music-recap-toggle::after,
+.music-soundtrack-toggle::after {
+  position: absolute;
+  right: -22px;
+  top: -30px;
+  width: 92px;
+  height: 92px;
+  border-radius: 999px;
+  background: var(--primary);
+  content: "";
+  filter: blur(32px);
+  opacity: 0.055;
+  pointer-events: none;
+}
+
+.music-recap-toggle-mark {
+  position: relative;
+  display: flex;
+  width: 44px;
+  height: 50px;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--card);
+  box-shadow: 3px 4px 0 color-mix(in srgb, var(--primary) 7%, var(--surface));
+  color: var(--primary);
+  transform: rotate(-4deg);
+}
+
+.music-recap-toggle-mark::before {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 7px;
+  height: 1px;
+  background: var(--primary);
+  content: "";
+  opacity: 0.25;
+}
+
+.music-recap-toggle-mark span {
+  margin-top: 5px;
+  font-size: 6px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+}
+
+.music-recap-toggle-mark strong {
+  margin-top: 2px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.music-recap-booklet {
+  position: relative;
+  isolation: isolate;
+}
+
+.music-recap-booklet::before {
+  position: absolute;
+  left: 15px;
+  top: 0;
+  width: 48px;
+  height: 7px;
+  border-radius: 0 0 4px 4px;
+  background: color-mix(in srgb, var(--primary) 16%, var(--card));
+  content: "";
+  opacity: 0.85;
+}
+
+.music-recap-booklet::after {
+  position: absolute;
+  right: -42px;
+  top: 54px;
+  z-index: -1;
+  width: 128px;
+  height: 128px;
+  border: 1px solid color-mix(in srgb, var(--primary) 12%, var(--border));
+  border-radius: 999px;
+  content: "";
+  opacity: 0.65;
+}
+
+.music-recap-booklet--year::after {
+  right: -56px;
+  top: 112px;
+  width: 154px;
+  height: 154px;
+}
+
+.music-recap-hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 118px;
+}
+
+.music-recap-hero::before {
+  position: absolute;
+  right: -16px;
+  bottom: -32px;
+  width: 106px;
+  height: 106px;
+  border: 1px solid color-mix(in srgb, var(--primary) 16%, var(--border));
+  border-radius: 999px;
+  content: "";
+}
+
+.music-recap-hero::after {
+  position: absolute;
+  right: 17px;
+  bottom: 2px;
+  width: 40px;
+  height: 40px;
+  border: 1px solid color-mix(in srgb, var(--primary) 20%, var(--border));
+  border-radius: 999px;
+  content: "";
+}
+
+.music-recap-hero--year {
+  min-height: 122px;
+}
+
+.music-recap-hero-label {
+  position: absolute;
+  left: 13px;
+  top: 12px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid color-mix(in srgb, var(--primary) 30%, transparent);
+  color: var(--primary);
+  font-size: 6px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.music-recap-stats {
+  position: relative;
+}
+
+.music-recap-stat {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--border) 65%, transparent);
+}
+
+.music-recap-stat::after {
+  position: absolute;
+  right: 8px;
+  top: 7px;
+  color: var(--primary);
+  content: "✦";
+  font-size: 6px;
+  opacity: 0.35;
+}
+
+.music-recap-featured {
+  position: relative;
+  border: 1px solid color-mix(in srgb, var(--border) 68%, transparent);
+}
+
+.music-recap-featured::before {
+  position: absolute;
+  right: 13px;
+  top: 10px;
+  color: var(--primary);
+  content: "♪";
+  font-size: 9px;
+  opacity: 0.35;
+}
+
+.music-recap-featured--year::before {
+  content: "♡";
+}
+
+.music-recap-mini-disc {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--primary) 16%, var(--border));
+  background:
+    conic-gradient(
+      from 30deg,
+      color-mix(in srgb, var(--primary) 6%, var(--surface)),
+      color-mix(in srgb, var(--card) 88%, var(--primary)),
+      color-mix(in srgb, var(--primary) 11%, var(--surface)),
+      var(--card)
+    );
+}
+
+.music-recap-mini-disc-hole {
+  position: absolute;
+  inset: 39%;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--card);
+}
+
+.music-soundtrack-cassette {
+  position: relative;
+  display: flex;
+  width: 50px;
+  height: 35px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-evenly;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--primary) 11%, var(--card)),
+      var(--card)
+    );
+  box-shadow: 3px 4px 0 color-mix(in srgb, var(--primary) 6%, var(--surface));
+  transform: rotate(3deg);
+}
+
+.music-soundtrack-cassette::before {
+  position: absolute;
+  left: 7px;
+  right: 7px;
+  bottom: 4px;
+  height: 5px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  content: "";
+}
+
+.music-soundtrack-reel {
+  width: 11px;
+  height: 11px;
+  border: 2px solid color-mix(in srgb, var(--primary) 45%, var(--border));
+  border-radius: 999px;
+  background: var(--surface);
+}
+
+.music-soundtrack-tracklist {
+  counter-reset: soundtrack-track;
+}
+
+.music-soundtrack-track {
+  position: relative;
+  padding-left: 48px;
+  border: 1px solid color-mix(in srgb, var(--border) 65%, transparent);
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--primary) 5%, var(--surface)),
+      var(--surface)
+    );
+  counter-increment: soundtrack-track;
+}
+
+.music-soundtrack-track::before {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  width: 23px;
+  transform: translateY(-50%);
+  color: var(--primary);
+  content: counter(soundtrack-track, decimal-leading-zero);
+  font-family: var(--font-display, inherit);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.music-soundtrack-track::after {
+  position: absolute;
+  left: 37px;
+  top: 10px;
+  bottom: 10px;
+  width: 1px;
+  background: var(--border);
+  content: "";
+  opacity: 0.7;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .music-recap-booklet,
+  .music-soundtrack-track {
+    animation: music-v2c-enter 380ms ease both;
+  }
+
+  .music-soundtrack-track:nth-child(2) {
+    animation-delay: 35ms;
+  }
+
+  .music-soundtrack-track:nth-child(3) {
+    animation-delay: 70ms;
+  }
+
+  .music-soundtrack-track:nth-child(4) {
+    animation-delay: 105ms;
+  }
+
+  .music-soundtrack-track:nth-child(5) {
+    animation-delay: 140ms;
+  }
+
+  .music-soundtrack-track:nth-child(6) {
+    animation-delay: 175ms;
+  }
+}
+
+@keyframes music-v2c-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .music-recap-booklet,
+  .music-soundtrack-track {
+    animation: none !important;
+  }
+}

@@ -703,14 +703,16 @@ function MusicPage() {
                 )
               }
 
-              className="flex w-full items-center gap-3 rounded-[1.6rem] bg-surface/55 px-4 py-4 text-left"
+              className="music-recap-toggle flex w-full items-center gap-3 rounded-[1.6rem] bg-surface/55 px-4 py-4 text-left"
 
             >
 
-              <div className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-
-                <Music2 className="size-4" />
-
+              <div
+                className="music-recap-toggle-mark"
+                aria-hidden="true"
+              >
+                <span>REC</span>
+                <strong>♪</strong>
               </div>
 
               <div className="min-w-0 flex-1">
@@ -798,19 +800,25 @@ function MusicPage() {
                       (value) => !value,
                     )
                   }
-                  className="flex w-full items-center gap-3 rounded-[1.6rem] bg-surface/55 px-4 py-4 text-left"
+                  className="music-soundtrack-toggle flex w-full items-center gap-3 rounded-[1.6rem] bg-surface/55 px-4 py-4 text-left"
                 >
-                  <div className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    <Sparkles className="size-4" />
+                  <div
+                    className="music-soundtrack-cassette"
+                    aria-hidden="true"
+                  >
+                    <span className="music-soundtrack-reel" />
+                    <span className="music-soundtrack-reel" />
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p className="font-display text-[15px] font-medium">
+                    <p className="text-[10px] font-semibold tracking-[0.14em] text-primary">
+                      MY IDOL SOUNDTRACK ♡
+                    </p>
+                    <p className="mt-1 font-display text-[15px] font-medium">
                       六首只屬於我們的歌
                     </p>
-
                     <p className="mt-1 text-[11px] text-muted-foreground">
-                      MY IDOL SOUNDTRACK ♡
+                      不是排行榜，是我喜歡你的方式。
                     </p>
                   </div>
 
@@ -839,7 +847,7 @@ function MusicPage() {
                       </button>
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="music-soundtrack-tracklist space-y-2">
                       {SONG_ROLE_OPTIONS.map(
                         ([role, label]) => {
                           const song =
@@ -848,7 +856,7 @@ function MusicPage() {
                           return (
                             <div
                               key={role}
-                              className="rounded-2xl bg-surface/60 px-4 py-3"
+                              className="music-soundtrack-track rounded-2xl bg-surface/60 px-4 py-3"
                             >
                               <label className="block text-xs text-muted-foreground">
                                 {label}

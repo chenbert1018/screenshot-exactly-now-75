@@ -153,7 +153,7 @@ cutoutPhoto,
 
   return (
     <section className="mt-7">
-      <div className="overflow-hidden rounded-[2rem] border border-primary/15 bg-gradient-to-br from-primary/10 via-card to-accent/15 px-5 py-6 shadow-soft">
+      <div className="music-recap-booklet overflow-hidden rounded-[2rem] border border-primary/15 bg-gradient-to-br from-primary/10 via-card to-accent/15 px-5 py-6 shadow-soft">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="text-[10px] font-medium tracking-[0.16em] text-primary">
@@ -190,7 +190,13 @@ cutoutPhoto,
           ) : null}
         </div>
 
-        <div className="mt-6 rounded-[1.7rem] bg-card/65 px-4 py-5 text-center">
+        <div className="music-recap-hero mt-6 rounded-[1.7rem] bg-card/65 px-4 py-5 text-center">
+          <span
+            className="music-recap-hero-label"
+            aria-hidden="true"
+          >
+            MONTHLY ISSUE
+          </span>
           <p className="font-display text-[38px] font-semibold leading-none">
             {summary.memoryCount}
           </p>
@@ -200,7 +206,7 @@ cutoutPhoto,
           </p>
         </div>
 
-        <div className="mt-3 grid grid-cols-2 gap-2.5">
+        <div className="music-recap-stats mt-3 grid grid-cols-2 gap-2.5">
           <Stat
             value={summary.uniqueSongCount}
             unit="首"
@@ -227,7 +233,7 @@ cutoutPhoto,
         </div>
 
         {remembered ? (
-          <div className="mt-5 rounded-[1.6rem] bg-surface/65 px-4 py-4">
+          <div className="music-recap-featured mt-5 rounded-[1.6rem] bg-surface/65 px-4 py-4">
             <p className="text-[10px] font-medium tracking-[0.13em] text-primary">
               SONG OF THE MONTH
             </p>
@@ -237,8 +243,12 @@ cutoutPhoto,
             </p>
 
             <div className="mt-3 flex items-center gap-3">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                <Music2 className="size-4" />
+              <div className="music-recap-mini-disc flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <span
+                  className="music-recap-mini-disc-hole"
+                  aria-hidden="true"
+                />
+                <Music2 className="relative z-10 size-3.5" />
               </div>
 
               <div className="min-w-0 flex-1">
@@ -317,7 +327,7 @@ function Stat({
   label: string;
 }) {
   return (
-    <div className="rounded-2xl bg-card/70 px-3 py-3.5 text-center">
+    <div className="music-recap-stat rounded-2xl bg-card/70 px-3 py-3.5 text-center">
       <p className="font-display text-[22px] font-semibold">
         {value}
         <span className="ml-1 text-[10px] font-normal text-muted-foreground">
