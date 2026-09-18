@@ -10,6 +10,37 @@ type SpotifyOEmbed = {
   provider_name?: string;
 };
 
+type SpotifyEmbedArtist = {
+  name?: string;
+};
+
+type SpotifyEmbedImage = {
+  url?: string;
+  maxHeight?: number;
+  maxWidth?: number;
+};
+
+type SpotifyEmbedEntity = {
+  name?: string;
+  title?: string;
+  artists?: SpotifyEmbedArtist[];
+  visualIdentity?: {
+    image?: SpotifyEmbedImage[];
+  };
+};
+
+type SpotifyNextData = {
+  props?: {
+    pageProps?: {
+      state?: {
+        data?: {
+          entity?: SpotifyEmbedEntity;
+        };
+      };
+    };
+  };
+};
+
 function decodeHtml(value: string) {
   return value
     .replace(/&amp;/g, "&")
@@ -187,6 +218,148 @@ async function fetchHtml(url: string) {
   return response.text();
 }
 
+function spotifyTrackId(value: string) {
+  try {
+    const url = new URL(value);
+    const parts = url.pathname
+      .split("/")
+      .filter(Boolean);
+
+    const trackIndex = parts.indexOf("track");
+
+    if (trackIndex < 0) return "";
+
+    return parts[trackIndex + 1] ?? "";
+  } catch {
+    return "";
+  }
+}
+
+function extractNextData(html: string) {
+  const match = html.match(
+    /<script[^>]+id=["']__NEXT_DATA__["'][^>]*>([\s\S]*?)<\/script>/i,
+  );
+
+  if (!match?.[1]) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(
+      match[1],
+    ) as SpotifyNextData;
+  } catch {
+    return null;
+  }
+}
+
+async function resolveSpotifyMusic(
+  url: string,
+): Promise<MusicLinkMetadata> {
+  const endpoint = new URL(
+    "https://open.spotify.com/oembed",
+  );
+
+  endpoint.searchParams.set("url", url);
+
+  const oEmbedResponse = await fetch(
+    endpoint,
+    {
+      headers: {
+        Accept: "application/json",
+      },
+    },
+  );
+
+  if (!oEmbedResponse.ok) {
+    throw new Error(
+      "Spotify 歌曲資料讀取失敗",
+    );
+  }
+
+  const oEmbed =
+    (await oEmbedResponse.json()) as SpotifyOEmbed;
+
+  let title = oEmbed.title?.trim() ?? "";
+  let artist = "";
+  let artworkUrl =
+    oEmbed.thumbnail_url?.trim() || undefined;
+
+  const trackId = spotifyTrackId(url);
+
+  if (trackId) {
+    try {
+      const embedUrl =
+        `https://open.spotify.com/embed/track/${encodeURIComponent(trackId)}`;
+
+      const embedHtml =
+        await fetchHtml(embedUrl);
+
+      const nextData =
+        extractNextData(embedHtml);
+
+      const entity =
+        nextData?.props?.pageProps?.state?.data?.entity;
+
+      const entityTitle =
+        entity?.name?.trim() ||
+        entity?.title?.trim();
+
+      if (entityTitle) {
+        title = entityTitle;
+      }
+
+      const artists = (
+        entity?.artists ?? []
+      )
+        .map((item) => item.name?.trim())
+        .filter(
+          (name): name is string =>
+            Boolean(name),
+        );
+
+      if (artists.length > 0) {
+        artist = artists.join(", ");
+      }
+
+      const images =
+        entity?.visualIdentity?.image ?? [];
+
+      const bestImage = [...images]
+        .filter((image) => Boolean(image.url))
+        .sort(
+          (a, b) =>
+            (b.maxWidth ?? 0) -
+            (a.maxWidth ?? 0),
+        )[0];
+
+      if (bestImage?.url) {
+        artworkUrl = bestImage.url;
+      }
+    } catch (error) {
+      console.warn(
+        "[IdolDays Spotify embed metadata]",
+        error,
+      );
+    }
+  }
+
+  if (!title) {
+    throw new Error(
+      "Spotify 歌名讀取失敗",
+    );
+  }
+
+  return {
+    provider: "spotify",
+    title,
+    artist,
+    album: "",
+    url,
+    artworkUrl,
+  };
+}
+
 async function resolveAppleMusic(
   url: string,
 ): Promise<MusicLinkMetadata> {
@@ -296,43 +469,8 @@ export const resolveMusicLink = createServerFn({
         );
       }
 
-      const endpoint = new URL(
-        "https://open.spotify.com/oembed",
-      );
-
-      endpoint.searchParams.set(
-        "url",
+      return resolveSpotifyMusic(
         data.url,
       );
-
-      const response = await fetch(
-        endpoint,
-        {
-          headers: {
-            Accept: "application/json",
-          },
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          "Spotify 歌曲資料讀取失敗",
-        );
-      }
-
-      const payload =
-        (await response.json()) as SpotifyOEmbed;
-
-      return {
-        provider,
-        title:
-          payload.title?.trim() ?? "",
-        artist: "",
-        album: "",
-        url: data.url,
-        artworkUrl:
-          payload.thumbnail_url?.trim() ||
-          undefined,
-      };
     },
   );
