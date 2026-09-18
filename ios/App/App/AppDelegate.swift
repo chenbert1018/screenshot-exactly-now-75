@@ -7,6 +7,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
+    private var idolDaysBackgroundedAt: Date?
+
+    private let idolDaysRefreshInterval: TimeInterval = 30
+
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -63,6 +67,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(
         _ application: UIApplication
     ) {
+        idolDaysBackgroundedAt = Date()
     }
 
     func applicationWillEnterForeground(
@@ -73,6 +78,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidBecomeActive(
         _ application: UIApplication
     ) {
+        guard
+            let backgroundedAt = idolDaysBackgroundedAt,
+            Date().timeIntervalSince(backgroundedAt)
+                >= idolDaysRefreshInterval
+        else {
+            return
+        }
+
+        idolDaysBackgroundedAt = nil
+
+        guard
+            let bridgeViewController =
+                window?.rootViewController as? CAPBridgeViewController,
+            let webView = bridgeViewController.webView
+        else {
+            print("⚠️ IdolDays refresh: WebView not available")
+            return
+        }
+
+        webView.reload()
+        print("🔄 IdolDays hosted web app refreshed")
     }
 
     func applicationWillTerminate(
