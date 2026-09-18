@@ -408,7 +408,49 @@ function TodaySongCard({
   }
 
   return (
-    <section className="music-player-card mt-3 overflow-hidden rounded-[1.9rem] border border-border/70 bg-card/90 p-4 text-card-foreground shadow-soft backdrop-blur-xl">
+    <section
+      className={`music-player-card mt-3 overflow-hidden rounded-[1.9rem] border border-border/70 bg-card/90 p-4 text-card-foreground shadow-soft backdrop-blur-xl ${
+        specialDay ? `music-player-card--${specialDay}` : ""
+      }`}
+    >
+      {specialDay === "birthday" ? (
+        <>
+          <div className="music-birthday-ribbon" aria-hidden="true">
+            <span className="music-birthday-ribbon-tail music-birthday-ribbon-tail--left" />
+            <span className="music-birthday-ribbon-tail music-birthday-ribbon-tail--right" />
+
+            <span className="music-birthday-bow">
+              <span className="music-birthday-bow-loop music-birthday-bow-loop--left" />
+              <span className="music-birthday-bow-loop music-birthday-bow-loop--right" />
+              <span className="music-birthday-bow-knot" />
+            </span>
+
+            <span className="music-birthday-tag-string" />
+            <span className="music-birthday-tag">HBD</span>
+          </div>
+
+          <span
+            aria-hidden="true"
+            className="music-birthday-spark music-birthday-spark--one"
+          >
+            ✦
+          </span>
+          <span
+            aria-hidden="true"
+            className="music-birthday-spark music-birthday-spark--two"
+          >
+            ♡
+          </span>
+        </>
+      ) : specialDay ? (
+        <div className="music-special-day-mark" aria-hidden="true">
+          <span className="music-special-day-line" />
+          <span className="music-special-day-symbol">
+            {specialDay === "debut" ? "✦" : "♪"}
+          </span>
+        </div>
+      ) : null}
+
       <div className="relative">
         <span
           aria-hidden="true"
@@ -439,6 +481,15 @@ function TodaySongCard({
             </span>
 
             <span className="music-photocard absolute bottom-0 left-0 z-10 h-[96px] w-[72px] overflow-hidden rounded-[0.8rem] border border-border/70 bg-surface shadow-soft">
+              {specialDay === "birthday" ? (
+                <span className="music-birthday-hat" aria-hidden="true">
+                  <span className="music-birthday-hat-pom" />
+                  <span className="music-birthday-hat-cone">
+                    <span className="music-birthday-hat-stripe music-birthday-hat-stripe--one" />
+                    <span className="music-birthday-hat-stripe music-birthday-hat-stripe--two" />
+                  </span>
+                </span>
+              ) : null}
               {idolCutoutPhoto ? (
                 <>
                   <span
@@ -469,13 +520,28 @@ function TodaySongCard({
               >
                 ♡
               </span>
+
+              {specialDay === "birthday" ? (
+                <span
+                  aria-hidden="true"
+                  className="music-birthday-photo-note"
+                >
+                  Happy
+                  <br />
+                  Birthday ♡
+                </span>
+              ) : null}
             </span>
 
             <span
               aria-hidden="true"
               className="absolute left-[65px] top-0 z-20 text-[11px] text-primary/70"
             >
-              ✦
+              {specialDay === "birthday"
+                ? "♡"
+                : specialDay === "our-day"
+                  ? "♪"
+                  : "✦"}
             </span>
           </button>
 

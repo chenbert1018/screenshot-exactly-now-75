@@ -419,3 +419,455 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Music Visual Polish V1-C — special day collectible treatment */
+.music-player-card--birthday,
+.music-player-card--debut,
+.music-player-card--our-day {
+  position: relative;
+}
+
+.music-player-card--birthday::after,
+.music-player-card--debut::after,
+.music-player-card--our-day::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  right: -2.5rem;
+  top: -3.5rem;
+  width: 9rem;
+  height: 9rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 11%, transparent);
+  filter: blur(1.6rem);
+}
+
+.music-special-day-mark {
+  pointer-events: none;
+  position: absolute;
+  right: 1rem;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+}
+
+.music-special-day-line {
+  display: block;
+  width: 1px;
+  height: 2.15rem;
+  background: color-mix(in srgb, var(--primary) 35%, transparent);
+}
+
+.music-special-day-symbol {
+  display: flex;
+  width: 1.8rem;
+  height: 1.8rem;
+  margin-top: 1.65rem;
+  margin-left: -0.9rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--primary) 24%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--card) 88%, transparent);
+  color: var(--primary);
+  font-size: 0.7rem;
+  box-shadow: 0 5px 16px color-mix(in srgb, var(--primary) 8%, transparent);
+  animation: music-special-mark-arrive 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.music-player-card--birthday .music-photocard {
+  transform: rotate(-3deg);
+}
+
+.music-player-card--debut .music-photocard {
+  transform: rotate(2deg);
+}
+
+.music-player-card--our-day .music-photocard {
+  transform: rotate(-1deg);
+}
+
+@keyframes music-special-mark-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(-0.35rem) scale(0.88);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .music-special-day-symbol {
+    animation: none !important;
+  }
+}
+
+/* Music Visual Polish V1-C2 — Birthday Hat Collectible */
+.music-birthday-hat {
+  pointer-events: none;
+  position: absolute;
+  left: 0.25rem;
+  top: -0.05rem;
+  z-index: 30;
+  width: 2.3rem;
+  height: 2.45rem;
+  transform: rotate(-12deg);
+  transform-origin: 50% 100%;
+  filter: drop-shadow(
+    0 3px 4px color-mix(in srgb, var(--primary) 12%, transparent)
+  );
+  animation: music-birthday-hat-arrive 620ms
+    cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.music-birthday-hat-cone {
+  position: absolute;
+  left: 0.34rem;
+  bottom: 0.15rem;
+  width: 1.65rem;
+  height: 1.85rem;
+  overflow: hidden;
+  clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+  background: color-mix(in srgb, var(--primary) 25%, var(--card));
+}
+
+.music-birthday-hat-cone::after {
+  content: "";
+  position: absolute;
+  left: 0.05rem;
+  right: 0.05rem;
+  bottom: 0;
+  height: 0.22rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 72%, var(--card));
+}
+
+.music-birthday-hat-stripe {
+  position: absolute;
+  width: 2.2rem;
+  height: 0.28rem;
+  background: color-mix(in srgb, var(--card) 88%, var(--primary));
+  transform: rotate(-28deg);
+}
+
+.music-birthday-hat-stripe--one {
+  left: -0.25rem;
+  top: 0.55rem;
+}
+
+.music-birthday-hat-stripe--two {
+  left: -0.12rem;
+  top: 1.15rem;
+}
+
+.music-birthday-hat-pom {
+  position: absolute;
+  left: 0.91rem;
+  top: 0;
+  z-index: 2;
+  width: 0.48rem;
+  height: 0.48rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--card) 80%, var(--primary));
+}
+
+.music-birthday-photo-note {
+  pointer-events: none;
+  position: absolute;
+  left: 0.38rem;
+  bottom: 0.3rem;
+  z-index: 20;
+  transform: rotate(-5deg);
+  font-size: 6.5px;
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: var(--primary);
+  text-align: left;
+  text-shadow: 0 1px 5px var(--card);
+}
+
+.music-birthday-ribbon {
+  pointer-events: none;
+  position: absolute;
+  right: 1rem;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.music-birthday-ribbon-line {
+  display: block;
+  width: 1px;
+  height: 2rem;
+  background: color-mix(in srgb, var(--primary) 38%, transparent);
+}
+
+.music-birthday-tag {
+  display: flex;
+  min-width: 2rem;
+  height: 1.35rem;
+  padding: 0 0.42rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--primary) 28%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--card) 92%, var(--primary));
+  color: var(--primary);
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  box-shadow: 0 5px 14px
+    color-mix(in srgb, var(--primary) 8%, transparent);
+  animation: music-birthday-tag-arrive 600ms
+    cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.music-birthday-spark {
+  pointer-events: none;
+  position: absolute;
+  z-index: 5;
+  color: color-mix(in srgb, var(--primary) 58%, transparent);
+}
+
+.music-birthday-spark--one {
+  right: 3.8rem;
+  top: 1rem;
+  font-size: 0.62rem;
+}
+
+.music-birthday-spark--two {
+  right: 2.8rem;
+  top: 3.15rem;
+  font-size: 0.55rem;
+}
+
+@keyframes music-birthday-hat-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(-0.45rem) rotate(-20deg) scale(0.82);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(-12deg) scale(1);
+  }
+}
+
+@keyframes music-birthday-tag-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(-0.4rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .music-birthday-hat,
+  .music-birthday-tag {
+    animation: none !important;
+  }
+}
+
+/* Music Birthday V1-C3 — physical iPhone position refinement */
+
+/* Hat: float above the photocard instead of covering the idol's face */
+.music-birthday-hat {
+  left: 0.15rem;
+  top: -1.15rem;
+  width: 2rem;
+  height: 2.2rem;
+  transform: rotate(-10deg);
+  overflow: visible;
+}
+
+.music-birthday-hat-cone {
+  left: 0.3rem;
+  bottom: 0.12rem;
+  width: 1.45rem;
+  height: 1.65rem;
+}
+
+.music-birthday-hat-pom {
+  left: 0.79rem;
+  top: 0;
+  width: 0.43rem;
+  height: 0.43rem;
+}
+
+.music-birthday-hat-stripe--one {
+  top: 0.5rem;
+}
+
+.music-birthday-hat-stripe--two {
+  top: 1rem;
+}
+
+.music-player-card--birthday .music-photocard {
+  overflow: visible;
+}
+
+/* Keep the real photo clipped even though the birthday hat may escape the card */
+.music-player-card--birthday .music-photocard > img,
+.music-player-card--birthday .music-photocard > span:not(.music-birthday-hat):not(.music-birthday-photo-note) {
+  border-radius: inherit;
+}
+
+.music-birthday-photo-note {
+  left: 0.4rem;
+  bottom: 0.35rem;
+  font-size: 6px;
+  line-height: 0.98;
+}
+
+/* Ribbon + bow + hanging HBD tag */
+.music-birthday-ribbon {
+  right: 0.65rem;
+  top: -0.15rem;
+  width: 4.5rem;
+  height: 4.6rem;
+  display: block;
+}
+
+.music-birthday-ribbon::before {
+  content: "";
+  position: absolute;
+  right: -0.75rem;
+  top: 0.45rem;
+  width: 4.2rem;
+  height: 0.34rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 24%, transparent);
+  transform: rotate(35deg);
+  transform-origin: right center;
+}
+
+.music-birthday-ribbon-tail {
+  position: absolute;
+  right: -0.1rem;
+  top: 0.1rem;
+  width: 3.8rem;
+  height: 0.3rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 34%, var(--card));
+  transform-origin: right center;
+}
+
+.music-birthday-ribbon-tail--left {
+  transform: rotate(26deg);
+}
+
+.music-birthday-ribbon-tail--right {
+  top: 0.52rem;
+  transform: rotate(43deg);
+  opacity: 0.72;
+}
+
+.music-birthday-bow {
+  position: absolute;
+  right: -0.05rem;
+  top: 0.82rem;
+  width: 2rem;
+  height: 1.25rem;
+  transform: rotate(8deg);
+}
+
+.music-birthday-bow-loop {
+  position: absolute;
+  top: 0.18rem;
+  width: 0.92rem;
+  height: 0.68rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 42%, transparent);
+  background: color-mix(in srgb, var(--primary) 18%, var(--card));
+}
+
+.music-birthday-bow-loop--left {
+  left: 0;
+  border-radius: 70% 35% 60% 45%;
+  transform: rotate(-22deg);
+}
+
+.music-birthday-bow-loop--right {
+  right: 0;
+  border-radius: 35% 70% 45% 60%;
+  transform: rotate(22deg);
+}
+
+.music-birthday-bow-knot {
+  position: absolute;
+  left: 50%;
+  top: 0.34rem;
+  z-index: 2;
+  width: 0.52rem;
+  height: 0.52rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 42%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 38%, var(--card));
+  transform: translateX(-50%);
+}
+
+.music-birthday-tag-string {
+  position: absolute;
+  right: 0.89rem;
+  top: 1.68rem;
+  width: 1px;
+  height: 0.78rem;
+  background: color-mix(in srgb, var(--primary) 42%, transparent);
+}
+
+.music-birthday-tag {
+  position: absolute;
+  right: 0.25rem;
+  top: 2.28rem;
+  min-width: 1.8rem;
+  height: 1.42rem;
+  padding: 0 0.36rem;
+  border-radius: 48% 48% 52% 52%;
+  background: color-mix(in srgb, var(--card) 90%, var(--primary));
+  transform: rotate(5deg);
+}
+
+.music-birthday-tag::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0.13rem;
+  width: 0.18rem;
+  height: 0.18rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 40%, transparent);
+  border-radius: 999px;
+  transform: translateX(-50%);
+}
+
+.music-birthday-spark--one {
+  right: 4.8rem;
+  top: 1.2rem;
+}
+
+.music-birthday-spark--two {
+  right: 3.8rem;
+  top: 3.4rem;
+}
+
+@keyframes music-birthday-hat-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5rem) rotate(-18deg) scale(0.82);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(-10deg) scale(1);
+  }
+}
