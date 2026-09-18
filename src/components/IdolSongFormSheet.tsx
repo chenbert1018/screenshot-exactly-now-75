@@ -14,7 +14,15 @@ export function IdolSongFormSheet({ open, onOpenChange, onSubmit }: {
   return <Sheet open={open} onOpenChange={onOpenChange}>
     <SheetContent side="bottom" className="mx-auto max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-3xl border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
       <SheetHeader className="px-0 text-left"><SheetTitle className="text-xl">加進我們的歌 🎧</SheetTitle><SheetDescription>只記下你的歌曲與合法串流連結，不會保存音檔。</SheetDescription></SheetHeader>
-      <form className="space-y-4 pt-2" onSubmit={async (event) => { event.preventDefault(); if (!draft.title.trim()) { setError("請填寫歌名"); return; } setSaving(true); setError(""); try { await onSubmit(draft); onOpenChange(false); } catch { setError("歌曲沒有儲存成功，請確認網路後再試一次"); } finally { setSaving(false); } }}>
+      <form className="space-y-4 pt-2" onSubmit={async (event) => { event.preventDefault(); if (!draft.title.trim()) { setError("請填寫歌名"); return; } setSaving(true); setError(""); try {
+  await onSubmit(draft);
+  onOpenChange(false);
+} catch (error) {
+  console.error("[IdolDays song save]", error);
+  setError("歌曲沒有儲存成功，請稍後再試一次");
+} finally {
+  setSaving(false);
+} }}>
         <div className="space-y-1.5"><Label htmlFor="song-title">歌名 <span className="text-primary">*</span></Label><Input id="song-title" value={draft.title} onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))} placeholder="例如：Song Title" className="rounded-xl bg-surface/50" /></div>
         <div className="space-y-1.5"><Label htmlFor="song-artist">歌手／團體</Label><Input id="song-artist" value={draft.artist} onChange={(e) => setDraft((d) => ({ ...d, artist: e.target.value }))} placeholder="例如：Miyeon" className="rounded-xl bg-surface/50" /></div>
         <div className="space-y-1.5"><Label htmlFor="song-album">專輯</Label><Input id="song-album" value={draft.album} onChange={(e) => setDraft((d) => ({ ...d, album: e.target.value }))} placeholder="可略過" className="rounded-xl bg-surface/50" /></div>

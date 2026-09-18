@@ -61,9 +61,9 @@ export function MemoryFormSheet({
       const song = await addSong(songDraft);
       setDraft((d) => ({ ...d, songId: song.id }));
       setSongPickerOpen(false);
-    } catch {
-      setError("歌曲沒有新增成功，請確認網路後再試一次");
-      throw new Error("song-create-failed");
+    } catch (error) {
+      console.error("[IdolDays memory song create]", error);
+      setError("歌曲沒有新增成功，請稍後再試一次");
     }
   }
 
