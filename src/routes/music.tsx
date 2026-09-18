@@ -42,6 +42,7 @@ import { useComebackDiaryHistory } from "@/lib/comeback-diary.source";
 import { useConcertMusicMemoryHistory } from "@/lib/concert-music-memory.source";
 import { buildMusicTimeline } from "@/lib/music-timeline";
 import { useEventSource } from "@/lib/events.source";
+import { useMemorySource } from "@/lib/memories.source";
 
 export const Route = createFileRoute("/music")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -82,6 +83,20 @@ function MusicPage() {
     useConcertMusicMemoryHistory(homeIdol?.id);
 
   const eventSource = useEventSource();
+  const memorySource = useMemorySource();
+
+  const timelineMemories = useMemo(
+    () =>
+      memorySource.all.filter(
+        (memory) =>
+          memory.idolId === homeIdol?.id &&
+          Boolean(memory.songId),
+      ),
+    [
+      memorySource.all,
+      homeIdol?.id,
+    ],
+  );
 
   const timelineEvents = useMemo(
     () =>
@@ -106,6 +121,7 @@ function MusicPage() {
         concertMemories:
           concertHistory.entries,
         events: timelineEvents,
+        memories: timelineMemories,
       }),
     [
       songs,
@@ -113,6 +129,7 @@ function MusicPage() {
       comebackHistory.entries,
       concertHistory.entries,
       timelineEvents,
+      timelineMemories,
     ],
   );
 
@@ -120,7 +137,8 @@ function MusicPage() {
     songHistory.ready &&
     comebackHistory.ready &&
     concertHistory.ready &&
-    eventSource.ready;
+    eventSource.ready &&
+    memorySource.ready;
 
   const [open, setOpen] =
     useState(false);
@@ -557,9 +575,9 @@ function MusicPage() {
           <SectionDivider />
 
           <SectionLabel
-            eyebrow="OUR MEMORIES ♡"
-            title="我們留下的音樂記憶"
-            description="有些歌一響起，就會回到那一天。"
+            eyebrow="MY MUSIC DIARY ♡"
+            title="我的追星音樂日記"
+            description="一首歌、一個心情，慢慢變成喜歡他的日子。"
           />
 
           <button
@@ -577,12 +595,12 @@ function MusicPage() {
 
             <div className="min-w-0 flex-1">
               <p className="font-display text-[15px] font-medium">
-                Music Timeline
+                我和他的音樂日記
               </p>
 
               <p className="mt-1 text-[11px] text-muted-foreground">
-                Today's Song · Comeback ·
-                Concert
+                今日歌曲 · 回歸 · 演唱會 ·
+                音樂回憶
               </p>
             </div>
 

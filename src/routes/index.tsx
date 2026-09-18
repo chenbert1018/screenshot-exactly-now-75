@@ -570,6 +570,31 @@ function TodaySongCard({
         onOpenChange={setAddOpen}
         onSubmit={createAndChooseSong}
       />
+      <Link
+        to="/music"
+        className="mt-4 flex w-full items-center gap-3 border-t border-border/60 pt-4 text-left"
+      >
+        <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <Music2 className="size-4" strokeWidth={1.55} />
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] font-medium tracking-[0.12em] text-primary">
+            MUSIC DIARY ♡
+          </p>
+          <p className="mt-0.5 text-sm font-medium">
+            看我和他的音樂日記
+          </p>
+          <p className="mt-0.5 truncate text-[10px] text-muted-foreground">
+            今日歌曲 · 回歸 · 演唱會 · 音樂回憶
+          </p>
+        </div>
+
+        <ArrowRight
+          className="size-4 shrink-0 text-primary"
+          strokeWidth={1.8}
+        />
+      </Link>
     </section>
   );
 }

@@ -3,8 +3,13 @@ import type { IdolSongJournalEntry } from "./idol-song-journal";
 import type { ComebackDiary } from "./comeback-diary";
 import type { ConcertMusicMemory } from "./concert-music-memory";
 import type { IdolEvent } from "./events";
+import type { Memory } from "./memories";
 
-export type MusicTimelineKind = "TODAY_SONG" | "COMEBACK" | "CONCERT";
+export type MusicTimelineKind =
+  | "TODAY_SONG"
+  | "COMEBACK"
+  | "CONCERT"
+  | "MEMORY_DAY";
 
 export type MusicTimelineSong = {
   role: string;
@@ -43,6 +48,7 @@ export function buildMusicTimeline(input: {
   comebackDiaries: ComebackDiary[];
   concertMemories: ConcertMusicMemory[];
   events: IdolEvent[];
+  memories?: Memory[];
 }): MusicTimelineItem[] {
   const {
     songs,
@@ -50,6 +56,7 @@ export function buildMusicTimeline(input: {
     comebackDiaries,
     concertMemories,
     events,
+    memories = [],
   } = input;
 
   const items: MusicTimelineItem[] = [];
@@ -116,6 +123,28 @@ export function buildMusicTimeline(input: {
       subtitle: "MY CONCERT SOUNDTRACK",
       note: memory.note,
       songs: memorySongs,
+    });
+  }
+
+  for (const memory of memories) {
+    if (!memory.songId) continue;
+
+    const song = songById(songs, memory.songId);
+    if (!song) continue;
+
+    items.push({
+      id: `memory-${memory.id}`,
+      kind: "MEMORY_DAY",
+      date: memory.date || memory.createdAt,
+      title: memory.title || "我們的一天",
+      subtitle: "OUR MEMORY",
+      note: memory.note,
+      songs: [
+        {
+          role: "MEMORY SONG",
+          song,
+        },
+      ],
     });
   }
 
