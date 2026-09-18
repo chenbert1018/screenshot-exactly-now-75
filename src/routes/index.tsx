@@ -304,6 +304,8 @@ type TodaySongSpecialDay =
 
 function TodaySongCard({
   idolName,
+  idolPhoto,
+  idolCutoutPhoto,
   songs,
   entry,
   save,
@@ -312,6 +314,8 @@ function TodaySongCard({
   specialDay,
 }: {
   idolName: string;
+  idolPhoto?: string | undefined;
+  idolCutoutPhoto?: string | undefined;
   songs: IdolSong[];
   entry: IdolSongJournalEntry | null;
   musicDays: number;
@@ -404,145 +408,231 @@ function TodaySongCard({
   }
 
   return (
-    <section className="mt-3 rounded-[1.8rem] border border-border/70 bg-card/90 p-4 text-card-foreground shadow-soft backdrop-blur-xl">
-      <div className="flex gap-4">
-        <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-          <Music2 className="size-6" strokeWidth={1.55} />
-        </div>
+    <section className="music-player-card mt-3 overflow-hidden rounded-[1.9rem] border border-border/70 bg-card/90 p-4 text-card-foreground shadow-soft backdrop-blur-xl">
+      <div className="relative">
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-1 -top-1 text-[13px] text-primary/60"
+        >
+          ✦
+        </span>
 
-        <div className="min-w-0 flex-1">
-          <p className="text-[11px] font-medium tracking-[0.1em] text-primary">
-            {specialDayCopy?.label ?? "TODAY'S SONG ♡"}
-          </p>
-
-          <p className="mt-1 text-[16px] font-medium">
-            {specialDayCopy
-              ? selectedSong
-                ? specialDayCopy.selected
-                : specialDayCopy.empty
-              : selectedSong
-                ? `今天和 ${idolName} 一起聽`
-                : `今天想和 ${idolName} 一起聽什麼？`}
-          </p>
-
+        <div className="flex items-start gap-4">
           <button
             type="button"
             disabled={saving}
             onClick={() => setPickerOpen(true)}
-            className="mt-3 flex w-full items-center justify-between gap-3 rounded-2xl border border-border/70 bg-surface/60 px-4 py-3 text-left transition-transform active:scale-[0.99] disabled:opacity-50"
+            aria-label={selectedSong ? "更換今天的歌曲" : "選擇今天的歌曲"}
+            className="music-album-visual group relative h-[102px] w-[116px] shrink-0 disabled:opacity-50"
           >
-            <span className="min-w-0">
-              {selectedSong ? (
-                <>
-                  <span className="block truncate text-sm font-medium">
-                    ♪ {selectedSong.title}
-                  </span>
-
-                  {selectedSong.artist ? (
-                    <span className="mt-0.5 block truncate text-xs text-muted-foreground">
-                      {selectedSong.artist}
-                    </span>
-                  ) : null}
-                </>
-              ) : (
-                <span className="text-sm font-medium text-primary">
-                  ＋ 選一首歌
-                </span>
-              )}
+            <span
+              aria-hidden="true"
+              className={`music-album-disc music-disc absolute right-0 top-[9px] size-[84px] rounded-full border border-primary/20 ${
+                selectedSong ? "music-disc--active" : ""
+              }`}
+            >
+              <span className="absolute inset-[13%] rounded-full border border-primary/10" />
+              <span className="absolute inset-[29%] rounded-full border border-primary/10" />
+              <span className="absolute inset-[42%] rounded-full bg-card shadow-[0_0_0_1px_var(--border)]" />
+              <span className="absolute inset-[47%] rounded-full bg-primary/60" />
+              <span className="music-disc-shine absolute inset-0 rounded-full" />
             </span>
 
-            <ArrowRight
-              className="size-4 shrink-0 text-primary"
-              strokeWidth={1.8}
-            />
+            <span className="music-photocard absolute bottom-0 left-0 z-10 h-[96px] w-[72px] overflow-hidden rounded-[0.8rem] border border-border/70 bg-surface shadow-soft">
+              {idolCutoutPhoto ? (
+                <>
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-0 bg-gradient-to-b from-primary/10 via-surface/40 to-card"
+                  />
+                  <StoredImage
+                    src={idolCutoutPhoto}
+                    alt={`${idolName} 的照片`}
+                    className="relative z-10 size-full object-contain object-bottom"
+                  />
+                </>
+              ) : idolPhoto ? (
+                <StoredImage
+                  src={idolPhoto}
+                  alt={`${idolName} 的照片`}
+                  className="size-full object-cover object-center"
+                />
+              ) : (
+                <span className="flex size-full items-center justify-center font-display text-[22px] text-primary">
+                  {idolName.trim().slice(0, 1) || "♡"}
+                </span>
+              )}
+
+              <span
+                aria-hidden="true"
+                className="absolute bottom-1.5 right-2 z-20 text-[9px] text-primary/80"
+              >
+                ♡
+              </span>
+            </span>
+
+            <span
+              aria-hidden="true"
+              className="absolute left-[65px] top-0 z-20 text-[11px] text-primary/70"
+            >
+              ✦
+            </span>
           </button>
-        </div>
-      </div>
 
-      {selectedSong ? (
-        <div className="mt-4 border-t border-border/60 pt-3">
-          <p className="truncate text-sm font-medium">
-            ♪ {selectedSong.title}
-          </p>
-
-          {selectedSong.artist ? (
-            <p className="mt-0.5 truncate text-xs text-muted-foreground">
-              {selectedSong.artist}
+          <div className="min-w-0 flex-1 pt-1">
+            <p className="text-[10px] font-semibold tracking-[0.16em] text-primary">
+              {specialDayCopy?.label ?? "TODAY'S SONG ♡"}
             </p>
-          ) : null}
 
-          <p className="mt-3 text-xs text-muted-foreground">
-            今天的心情{entry?.mood ? `：${entry.mood}` : ""}
-          </p>
+            <p className="mt-1.5 text-[15px] font-medium leading-snug">
+              {specialDayCopy
+                ? selectedSong
+                  ? specialDayCopy.selected
+                  : specialDayCopy.empty
+                : selectedSong
+                  ? `今天和 ${idolName} 一起聽`
+                  : `今天想和 ${idolName} 一起聽什麼？`}
+            </p>
 
-          <div className="mt-2 flex gap-2">
-            {SONG_MOOD_OPTIONS.map((mood) => (
+            {selectedSong ? (
               <button
-                key={mood}
                 type="button"
                 disabled={saving}
-                onClick={() =>
-                  void update({
-                    songId: selectedSongId,
-                    mood,
-                  })
-                }
-                aria-label={`今天的心情：${mood}`}
-                className={`flex size-9 items-center justify-center rounded-full text-[17px] transition-transform active:scale-90 disabled:opacity-50 ${
-                  entry?.mood === mood
-                    ? "bg-primary/20 ring-1 ring-primary/50"
-                    : "bg-surface/70"
-                }`}
+                onClick={() => setPickerOpen(true)}
+                className="mt-3 block w-full text-left disabled:opacity-50"
               >
-                {mood}
+                <span className="block truncate font-display text-[18px] leading-tight">
+                  ♪ {selectedSong.title}
+                </span>
+                {selectedSong.artist ? (
+                  <span className="mt-1 block truncate text-[11px] tracking-[0.04em] text-muted-foreground">
+                    {selectedSong.artist}
+                  </span>
+                ) : null}
+                <span className="mt-2 inline-flex items-center gap-1 text-[10px] font-medium text-primary">
+                  CHANGE SONG
+                  <ArrowRight className="size-3" strokeWidth={1.6} />
+                </span>
               </button>
-            ))}
+            ) : (
+              <button
+                type="button"
+                disabled={saving}
+                onClick={() => setPickerOpen(true)}
+                className="mt-3 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/[0.07] px-4 py-2 text-xs font-medium text-primary transition-transform duration-300 active:scale-95 disabled:opacity-50"
+              >
+                <span aria-hidden="true">＋</span>
+                選一首歌
+              </button>
+            )}
           </div>
+        </div>
 
-          {streamingLink(selectedSong) ? (
-            <a
-              href={streamingLink(selectedSong)}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary"
-            >
-              🎧 再聽一次
-              <ArrowRight className="size-3" />
-            </a>
-          ) : null}
+        {selectedSong ? (
+          <div className="mt-4">
+            <div className="flex items-center gap-2" aria-hidden="true">
+              <span className="h-px flex-1 bg-border/70" />
+              <span className="text-[9px] tracking-[0.18em] text-muted-foreground">
+                NOW PLAYING
+              </span>
+              <span className="h-px flex-1 bg-border/70" />
+            </div>
 
-          <div className="mt-4 rounded-[1.35rem] bg-primary/[0.06] px-4 py-3">
-            <p className="text-[13px] leading-relaxed text-foreground/80">
-              {specialDayCopy?.companion ??
-                `今天也有一首歌，陪你喜歡著 ${idolName}。`}
-            </p>
-
-            <div className="mt-3 flex items-end justify-between gap-3 border-t border-primary/10 pt-3">
+            <div className="mt-3 flex items-center justify-between gap-3">
               <div>
+                <p className="text-[10px] tracking-[0.12em] text-muted-foreground">
+                  TODAY'S MOOD
+                </p>
+                {entry?.mood ? (
+                  <p className="mt-1 text-[11px] text-muted-foreground">
+                    今天是 {entry.mood} 的心情
+                  </p>
+                ) : null}
+              </div>
+
+              {streamingLink(selectedSong) ? (
+                <a
+                  href={streamingLink(selectedSong)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex shrink-0 items-center gap-1 rounded-full bg-surface/70 px-3 py-1.5 text-[10px] font-medium text-primary transition-transform duration-300 active:scale-95"
+                >
+                  <span aria-hidden="true">♪</span>
+                  LISTEN
+                </a>
+              ) : null}
+            </div>
+
+            <div className="mt-3 flex items-center justify-between px-1">
+              {SONG_MOOD_OPTIONS.map((mood, index) => {
+                const active = entry?.mood === mood;
+
+                return (
+                  <button
+                    key={mood}
+                    type="button"
+                    disabled={saving}
+                    onClick={() =>
+                      void update({
+                        songId: selectedSongId,
+                        mood,
+                      })
+                    }
+                    aria-label={`今天的心情：${mood}`}
+                    aria-pressed={active}
+                    className={`music-mood-sticker relative flex size-10 items-center justify-center rounded-[42%] text-[18px] transition-all duration-300 active:scale-90 disabled:opacity-50 ${
+                      active
+                        ? "music-mood-sticker--active bg-primary/15 ring-1 ring-primary/35"
+                        : "bg-surface/55"
+                    }`}
+                    style={{
+                      transform: active
+                        ? "rotate(0deg) scale(1.08)"
+                        : `rotate(${[-3, 2, -1, 3, -2][index] ?? 0}deg)`,
+                    }}
+                  >
+                    {mood}
+                    {active ? (
+                      <span
+                        aria-hidden="true"
+                        className="music-mood-heart absolute -right-1 -top-2 text-[10px] text-primary"
+                      >
+                        ♡
+                      </span>
+                    ) : null}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="mt-4 flex items-center justify-between gap-3 rounded-[1.35rem] bg-primary/[0.055] px-4 py-3">
+              <div className="min-w-0">
                 <p className="text-[10px] font-semibold tracking-[0.14em] text-primary">
                   {musicDays} MUSIC {musicDays === 1 ? "DAY" : "DAYS"} ♡
                 </p>
-                <p className="mt-1 text-[11px] text-muted-foreground">
-                  和 {idolName} 留下的音樂日子
+                <p className="mt-1 truncate text-[11px] text-muted-foreground">
+                  {specialDayCopy?.companion ??
+                    `和 ${idolName} 留下的音樂日子`}
                 </p>
               </div>
 
               <Link
                 to="/music"
-                className="shrink-0 text-[11px] font-medium text-primary"
+                className="inline-flex shrink-0 items-center gap-1 text-[10px] font-semibold tracking-[0.05em] text-primary"
               >
-                音樂日記 →
+                DIARY
+                <ArrowRight className="size-3" strokeWidth={1.6} />
               </Link>
             </div>
           </div>
-        </div>
-      ) : null}
+        ) : null}
 
-      {error ? (
-        <p role="alert" className="mt-3 text-xs text-destructive">
-          {error}
-        </p>
-      ) : null}
+        {error ? (
+          <p role="alert" className="mt-3 text-xs text-destructive">
+            {error}
+          </p>
+        ) : null}
+      </div>
 
       <Sheet open={pickerOpen} onOpenChange={setPickerOpen}>
         <SheetContent
@@ -898,6 +988,8 @@ function HomePage() {
           ) : null}
           <TodaySongCard
             idolName={main.name || "他"}
+            idolPhoto={main.photo}
+            idolCutoutPhoto={main.cutoutPhoto}
             songs={songs}
             entry={todayJournal.entry}
             musicDays={musicDays}
