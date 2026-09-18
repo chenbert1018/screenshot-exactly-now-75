@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect} from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ChevronDown,
@@ -44,10 +44,15 @@ import { buildMusicTimeline } from "@/lib/music-timeline";
 import { useEventSource } from "@/lib/events.source";
 
 export const Route = createFileRoute("/music")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    addSong: search.addSong === "1" ? "1" : undefined,
+  }),
   component: MusicPage,
 });
 
 function MusicPage() {
+  const search = Route.useSearch();
+
   const {
     homeIdol,
     ready: idolsReady,

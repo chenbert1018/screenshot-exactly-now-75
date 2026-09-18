@@ -129,6 +129,11 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="zh-Hant">
       <head>
         <HeadContent />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var raw=localStorage.getItem("idoldays.settings.v1");var theme=raw?JSON.parse(raw).theme:"sky";var root=document.documentElement;root.classList.remove("dark","sky");if(theme==="sky"||!theme){root.classList.add("sky");}else if(theme==="dark"||(theme==="system"&&window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)){root.classList.add("dark");}}catch(e){document.documentElement.classList.add("sky");}})();`,
+          }}
+        />
       </head>
       <body>
         {children}

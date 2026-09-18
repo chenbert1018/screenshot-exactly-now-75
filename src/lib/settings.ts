@@ -131,6 +131,7 @@ export function useSettings() {
     write(local);
     setSettings(local);
     applyTheme(local.theme);
+    void setNativeWidgetTheme(local.theme);
 
     if (!user?.id) {
       setReady(!authLoading);
@@ -169,6 +170,7 @@ export function useSettings() {
 
       write(next);
       applyTheme(next.theme);
+      void setNativeWidgetTheme(next.theme);
       setSettings(next);
       listeners.forEach((fn) => fn(next));
 
