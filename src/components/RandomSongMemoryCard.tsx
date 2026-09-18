@@ -135,64 +135,92 @@ export function RandomSongMemoryCard({ items, ready = true }: Props) {
   const link = streamingLink(item);
 
   return (
-    <section className="rounded-[1.8rem] border border-border/70 bg-card/90 p-4 text-card-foreground shadow-soft backdrop-blur-xl">
-      <div className="flex items-start gap-4">
-        <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-          <Music2 className="size-5" strokeWidth={1.55} />
-        </div>
-
-        <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-semibold tracking-[0.14em] text-primary">
-            {onThisDay ? "ON THIS DAY ♡" : "MUSIC MEMORY ♡"}
+    <section className="music-memory-resurface text-card-foreground">
+      <div className="music-memory-resurface-heading">
+        <div>
+          <p className="music-memory-resurface-kicker">
+            {onThisDay ? "ON THIS DAY ♡" : "A SONG FOUND YOU AGAIN ♡"}
           </p>
 
-          <p className="mt-1.5 text-[15px] font-medium leading-relaxed">
+          <p className="music-memory-resurface-title">
             {onThisDay
               ? yearsAgo === 1
                 ? "去年的今天，我們聽了這首歌"
                 : `${yearsAgo} 年前的今天，我們聽了這首歌`
-              : "那一天，我們留下了這首歌"}
+              : "今天，這首歌又回來找你了。"}
+          </p>
+        </div>
+
+        <span
+          className="music-memory-resurface-spark"
+          aria-hidden="true"
+        >
+          ✦
+        </span>
+      </div>
+
+      <div className="music-memory-polaroid">
+        <div
+          className="music-memory-polaroid-photo"
+          aria-hidden="true"
+        >
+          <div className="music-memory-polaroid-disc">
+            <span className="music-memory-polaroid-disc-hole" />
+
+            <Music2
+              className="music-memory-polaroid-note"
+              strokeWidth={1.4}
+            />
+          </div>
+
+          <span className="music-memory-polaroid-date">
+            {formatMemoryDate(item.date)}
+          </span>
+        </div>
+
+        <div className="music-memory-polaroid-caption">
+          <p className="music-memory-polaroid-song">
+            ♪ {item.title}
           </p>
 
-          {!onThisDay ? (
-            <p className="mt-1 text-[11px] tracking-[0.06em] text-muted-foreground">
-              {formatMemoryDate(item.date)}
+          {item.artist ? (
+            <p className="music-memory-polaroid-artist">
+              {item.artist}
             </p>
           ) : null}
+
+          <div className="music-memory-polaroid-meta">
+            <span>{onThisDay ? "OUR DAY" : "FOUND AGAIN"}</span>
+
+            {item.mood ? (
+              <span
+                className="music-memory-polaroid-mood"
+                aria-label={`那天的心情：${item.mood}`}
+              >
+                {item.mood}
+              </span>
+            ) : (
+              <span aria-hidden="true">♡</span>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="mt-4 rounded-[1.4rem] bg-surface/60 px-4 py-3.5">
-        <p className="truncate text-[15px] font-medium">♪ {item.title}</p>
-
-        {item.artist ? (
-          <p className="mt-1 truncate text-xs text-muted-foreground">
-            {item.artist}
-          </p>
-        ) : null}
-
-        {item.mood ? (
-          <p className="mt-3 text-[18px]" aria-label={`那天的心情：${item.mood}`}>
-            {item.mood}
-          </p>
-        ) : null}
-      </div>
-
-      <p className="mt-3 text-[12px] leading-relaxed text-muted-foreground">
+      <p className="music-memory-resurface-copy">
         {onThisDay
           ? "有些歌一響起，就會回到那一天。"
           : "有些喜歡過的日子，會被一首歌重新想起。"}
       </p>
 
-      <div className="mt-3 flex items-center justify-between gap-3">
+      <div className="music-memory-resurface-actions">
         {link ? (
           <a
             href={link}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1 text-xs font-medium text-primary"
+            className="music-memory-resurface-listen"
           >
-            🎧 再聽一次
+            ♪ 再聽一次
             <ArrowRight className="size-3" />
           </a>
         ) : (
@@ -201,7 +229,7 @@ export function RandomSongMemoryCard({ items, ready = true }: Props) {
 
         <Link
           to="/music"
-          className="inline-flex items-center gap-1 text-[11px] font-medium text-primary"
+          className="music-memory-resurface-diary"
         >
           音樂日記
           <ArrowRight className="size-3" />

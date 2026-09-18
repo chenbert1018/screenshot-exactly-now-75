@@ -1739,3 +1739,280 @@
     animation: none !important;
   }
 }
+
+
+/* IdolDays Music Experience V3-A — resurfaced song memory */
+
+.music-memory-resurface {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--border) 76%, transparent);
+  border-radius: 1.8rem;
+  background:
+    radial-gradient(
+      circle at 88% 12%,
+      color-mix(in srgb, var(--primary) 10%, transparent),
+      transparent 26%
+    ),
+    color-mix(in srgb, var(--card) 94%, transparent);
+  padding: 1rem;
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(18px);
+}
+
+.music-memory-resurface::before {
+  content: "";
+  position: absolute;
+  top: -0.3rem;
+  left: 1.6rem;
+  width: 3.5rem;
+  height: 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--border) 52%, transparent);
+  background: color-mix(in srgb, var(--surface) 74%, transparent);
+  opacity: 0.72;
+  transform: rotate(-3deg);
+}
+
+.music-memory-resurface-heading {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.35rem 0.2rem 0;
+}
+
+.music-memory-resurface-kicker {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--primary);
+}
+
+.music-memory-resurface-title {
+  margin-top: 0.4rem;
+  max-width: 16rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.65;
+}
+
+.music-memory-resurface-spark {
+  flex: none;
+  padding-top: 0.1rem;
+  font-size: 0.9rem;
+  color: color-mix(in srgb, var(--primary) 74%, var(--foreground));
+  transform: rotate(9deg);
+}
+
+.music-memory-polaroid {
+  position: relative;
+  width: min(88%, 19rem);
+  margin: 1.15rem auto 0;
+  padding: 0.55rem 0.55rem 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--border) 72%, transparent);
+  border-radius: 0.35rem;
+  background: color-mix(in srgb, var(--card) 96%, var(--surface));
+  box-shadow:
+    0 0.8rem 2rem color-mix(in srgb, var(--foreground) 8%, transparent),
+    0 0.1rem 0.2rem color-mix(in srgb, var(--foreground) 6%, transparent);
+  transform: rotate(-1.35deg);
+  animation: music-memory-found 480ms ease-out both;
+}
+
+.music-memory-polaroid::after {
+  content: "♡";
+  position: absolute;
+  right: 0.7rem;
+  bottom: 0.55rem;
+  font-size: 0.7rem;
+  color: color-mix(in srgb, var(--primary) 62%, transparent);
+  transform: rotate(8deg);
+}
+
+.music-memory-polaroid-photo {
+  position: relative;
+  display: flex;
+  min-height: 9.2rem;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 0.18rem;
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--primary) 12%, var(--surface)),
+      color-mix(in srgb, var(--card) 90%, var(--surface))
+    );
+}
+
+.music-memory-polaroid-photo::before {
+  content: "MUSIC MEMORY";
+  position: absolute;
+  top: 0.75rem;
+  left: 0.8rem;
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: color-mix(in srgb, var(--foreground) 46%, transparent);
+}
+
+.music-memory-polaroid-date {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.65rem;
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  color: color-mix(in srgb, var(--foreground) 48%, transparent);
+}
+
+.music-memory-polaroid-disc {
+  position: relative;
+  display: flex;
+  width: 6.25rem;
+  height: 6.25rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+  border-radius: 999px;
+  background:
+    radial-gradient(
+      circle,
+      transparent 0 8%,
+      color-mix(in srgb, var(--surface) 90%, transparent) 9% 14%,
+      transparent 15% 24%,
+      color-mix(in srgb, var(--primary) 9%, transparent) 25% 27%,
+      transparent 28% 100%
+    ),
+    repeating-radial-gradient(
+      circle,
+      color-mix(in srgb, var(--foreground) 7%, transparent) 0 1px,
+      transparent 1px 4px
+    ),
+    color-mix(in srgb, var(--card) 84%, var(--surface));
+  box-shadow:
+    inset -0.7rem -0.6rem 1.2rem color-mix(in srgb, var(--primary) 9%, transparent),
+    0 0.5rem 1.4rem color-mix(in srgb, var(--foreground) 7%, transparent);
+}
+
+.music-memory-polaroid-disc::after {
+  content: "";
+  position: absolute;
+  inset: 0.5rem 2.5rem 0.5rem auto;
+  width: 0.65rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--card) 58%, transparent);
+  filter: blur(0.2rem);
+  opacity: 0.55;
+  transform: rotate(25deg);
+}
+
+.music-memory-polaroid-disc-hole {
+  width: 0.7rem;
+  height: 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  border-radius: 999px;
+  background: var(--card);
+}
+
+.music-memory-polaroid-note {
+  position: absolute;
+  right: 1.15rem;
+  bottom: 1.25rem;
+  width: 0.9rem;
+  height: 0.9rem;
+  color: color-mix(in srgb, var(--primary) 68%, var(--foreground));
+}
+
+.music-memory-polaroid-caption {
+  position: relative;
+  padding: 0.8rem 0.55rem 0.1rem;
+}
+
+.music-memory-polaroid-song {
+  overflow: hidden;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.music-memory-polaroid-artist {
+  margin-top: 0.2rem;
+  overflow: hidden;
+  font-size: 0.7rem;
+  color: var(--muted-foreground);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.music-memory-polaroid-meta {
+  display: flex;
+  min-height: 1.5rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.55rem;
+  padding-right: 1.25rem;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: color-mix(in srgb, var(--foreground) 48%, transparent);
+}
+
+.music-memory-polaroid-mood {
+  font-size: 1rem;
+  line-height: 1;
+  letter-spacing: normal;
+}
+
+.music-memory-resurface-copy {
+  margin: 1rem 0.2rem 0;
+  font-size: 0.75rem;
+  line-height: 1.7;
+  color: var(--muted-foreground);
+}
+
+.music-memory-resurface-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0.8rem 0.2rem 0;
+}
+
+.music-memory-resurface-listen,
+.music-memory-resurface-diary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.music-memory-resurface-listen {
+  font-size: 0.75rem;
+}
+
+.music-memory-resurface-diary {
+  font-size: 0.6875rem;
+}
+
+@keyframes music-memory-found {
+  from {
+    opacity: 0;
+    transform: translateY(0.4rem) rotate(-2.25deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(-1.35deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .music-memory-polaroid {
+    animation: none;
+  }
+}
