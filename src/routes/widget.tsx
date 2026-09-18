@@ -78,9 +78,11 @@ async function imageUrlToDataUrl(url: string): Promise<string> {
 function WidgetNativeSync({
   content,
   enabledContents,
+  theme,
 }: {
   content: WidgetCompanionContent;
   enabledContents: WidgetContentType[];
+  theme: "system" | "light" | "dark" | "sky";
 }) {
   const idolName = content.idol?.name ?? "";
   const idolImage = content.idol?.image ?? "";
@@ -132,7 +134,7 @@ function WidgetNativeSync({
         decorationLabel,
         songTitle,
         songArtist,
-        theme: settings.theme,
+        theme,
         enabledContents,
         imageData,
       });
@@ -150,7 +152,7 @@ function WidgetNativeSync({
     decorationLabel,
     songTitle,
     songArtist,
-    settings.theme,
+    theme,
     enabledContents,
   ]);
 
@@ -216,6 +218,7 @@ function WidgetPage() {
       <WidgetNativeSync
         content={content}
         enabledContents={prefs.enabledContents}
+        theme={settings.theme}
       />
       <PageHeader title="桌面陪伴" subtitle="讓他每天出現在你的桌面。" />
 
