@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { ExternalLink, Music2, Share2 } from "lucide-react";
+
 import { streamingLink } from "@/lib/idol-music";
 import type { MusicTimelineItem } from "@/lib/music-timeline";
 import {
@@ -13,6 +14,8 @@ type Props = {
   idolName: string;
   items: MusicTimelineItem[];
   ready?: boolean;
+  photo?: string;
+  cutoutPhoto?: string;
 };
 
 const ENGLISH_MONTHS = [
@@ -30,6 +33,21 @@ const ENGLISH_MONTHS = [
   "DECEMBER",
 ];
 
+const CHINESE_MONTHS = [
+  "一月",
+  "二月",
+  "三月",
+  "四月",
+  "五月",
+  "六月",
+  "七月",
+  "八月",
+  "九月",
+  "十月",
+  "十一月",
+  "十二月",
+];
+
 function monthKey(value: MusicMonth) {
   return `${value.year}-${value.month}`;
 }
@@ -42,14 +60,15 @@ export function MonthlyMusicCard({
   idolName,
   items,
   ready = true,
+photo,
+cutoutPhoto,
 }: Props) {
   const months = useMemo(
     () => availableMusicMonths(items),
     [items],
   );
 
-  const [selectedKey, setSelectedKey] =
-    useState("");
+  const [selectedKey, setSelectedKey] = useState("");
   const [sharing, setSharing] = useState(false);
   const [shareError, setShareError] = useState("");
 
@@ -69,13 +88,13 @@ export function MonthlyMusicCard({
     }
   }, [months, selectedKey]);
 
-  const selected = useMemo(() => {
-    return (
+  const selected = useMemo(
+    () =>
       months.find(
         (month) => monthKey(month) === selectedKey,
-      ) ?? null
-    );
-  }, [months, selectedKey]);
+      ) ?? null,
+    [months, selectedKey],
+  );
 
   const summary = useMemo(
     () =>
@@ -92,7 +111,7 @@ export function MonthlyMusicCard({
   if (!ready) {
     return (
       <section className="mt-7">
-        <div className="h-48 animate-pulse rounded-[2rem] bg-surface/60" />
+        <div className="h-56 animate-pulse rounded-[2rem] bg-surface/60" />
       </section>
     );
   }
@@ -101,8 +120,9 @@ export function MonthlyMusicCard({
     return null;
   }
 
-  const monthName =
-    ENGLISH_MONTHS[summary.month - 1];
+  const monthName = ENGLISH_MONTHS[summary.month - 1];
+  const chineseMonth =
+    CHINESE_MONTHS[summary.month - 1];
 
   const remembered = summary.songOfTheMonth;
   const listenUrl = remembered
@@ -117,6 +137,10 @@ export function MonthlyMusicCard({
       await shareMonthlyMusicCard(
         idolName || "MY IDOL",
         summary,
+        {
+          photo,
+          cutoutPhoto,
+        },
       );
     } catch {
       setShareError(
@@ -129,20 +153,19 @@ export function MonthlyMusicCard({
 
   return (
     <section className="mt-7">
-      <div className="rounded-[2rem] border border-border/60 bg-card/80 px-5 py-6 shadow-soft">
+      <div className="overflow-hidden rounded-[2rem] border border-primary/15 bg-gradient-to-br from-primary/10 via-card to-accent/15 px-5 py-6 shadow-soft">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[11px] font-medium tracking-[0.15em] text-primary">
-              MONTHLY MUSIC ♡
+            <p className="text-[10px] font-medium tracking-[0.16em] text-primary">
+              {monthName} IN MUSIC ♡
             </p>
 
-            <h2 className="mt-2 font-display text-[21px] font-semibold">
-              {monthName} WITH{" "}
-              {(idolName || "MY IDOL").toUpperCase()}
+            <h2 className="mt-2 font-display text-[22px] font-semibold">
+              我和 {idolName || "他"} 的{chineseMonth}
             </h2>
 
             <p className="mt-1 text-xs text-muted-foreground">
-              {summary.year} · 我們這個月的聲音
+              {summary.year} · 這個月，我們留下了這些聲音
             </p>
           </div>
 
@@ -153,7 +176,7 @@ export function MonthlyMusicCard({
                 setSelectedKey(event.target.value)
               }
               aria-label="選擇月份"
-              className="shrink-0 rounded-full border border-border/60 bg-background/70 px-3 py-1.5 text-xs outline-none"
+              className="shrink-0 rounded-full border border-border/60 bg-card/80 px-3 py-1.5 text-xs outline-none"
             >
               {months.map((month) => (
                 <option
@@ -167,46 +190,59 @@ export function MonthlyMusicCard({
           ) : null}
         </div>
 
-        <div className="mt-5 rounded-[1.6rem] bg-primary/5 px-4 py-5 text-center">
-          <p className="font-display text-[32px] font-semibold">
+        <div className="mt-6 rounded-[1.7rem] bg-card/65 px-4 py-5 text-center">
+          <p className="font-display text-[38px] font-semibold leading-none">
             {summary.memoryCount}
           </p>
 
-          <p className="mt-1 text-xs text-muted-foreground">
-            次音樂記憶留在這個月 ♡
+          <p className="mt-2 text-xs text-muted-foreground">
+            個音樂回憶留在這個月 ♡
           </p>
         </div>
 
-        <div className="mt-3 grid grid-cols-3 gap-2">
+        <div className="mt-3 grid grid-cols-2 gap-2.5">
           <Stat
             value={summary.uniqueSongCount}
-            label="SONGS"
+            unit="首"
+            label="留下的歌"
+          />
+
+          <Stat
+            value={summary.todaySongCount}
+            unit="天"
+            label="今日歌曲"
           />
 
           <Stat
             value={summary.comebackCount}
-            label="COMEBACK"
+            unit="次"
+            label="回歸"
           />
 
           <Stat
             value={summary.concertCount}
-            label="CONCERT"
+            unit="場"
+            label="演唱會"
           />
         </div>
 
         {remembered ? (
-          <div className="mt-4 rounded-[1.5rem] bg-surface/65 px-4 py-4">
+          <div className="mt-5 rounded-[1.6rem] bg-surface/65 px-4 py-4">
             <p className="text-[10px] font-medium tracking-[0.13em] text-primary">
               SONG OF THE MONTH
             </p>
 
-            <div className="mt-2 flex items-center gap-3">
-              <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <p className="mt-1 text-[11px] text-muted-foreground">
+              這個月最常出現在回憶裡的歌
+            </p>
+
+            <div className="mt-3 flex items-center gap-3">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                 <Music2 className="size-4" />
               </div>
 
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[15px] font-medium">
+                <p className="truncate font-display text-[16px] font-semibold">
                   ♪ {remembered.song.title}
                 </p>
 
@@ -230,19 +266,20 @@ export function MonthlyMusicCard({
               ) : null}
             </div>
 
-            {remembered.count > 1 ? (
-              <p className="mt-3 text-xs text-muted-foreground">
-                這個月在你的回憶裡出現了{" "}
-                {remembered.count} 次 ♡
-              </p>
-            ) : null}
+            <p className="mt-3 text-xs text-muted-foreground">
+              這個月在你的音樂回憶裡出現了{" "}
+              <span className="font-medium text-foreground">
+                {remembered.count}
+              </span>{" "}
+              次 ♡
+            </p>
           </div>
         ) : null}
 
-        <p className="mt-5 text-center font-display text-xs italic text-muted-foreground">
-          {monthName.charAt(0) +
-            monthName.slice(1).toLowerCase()}{" "}
-          sounded like this.
+        <p className="mt-5 text-center font-display text-[13px] leading-6 text-muted-foreground">
+          「{chineseMonth}的我們，
+          <br />
+          後來都有歌可以記得。」
         </p>
 
         <button
@@ -254,7 +291,7 @@ export function MonthlyMusicCard({
           <Share2 className="size-4" />
           {sharing
             ? "正在建立月度回顧…"
-            : `分享我的 ${summary.month} 月音樂 ♡`}
+            : `分享我的 ${summary.month} 月音樂回顧 ♡`}
         </button>
 
         {shareError ? (
@@ -272,18 +309,23 @@ export function MonthlyMusicCard({
 
 function Stat({
   value,
+  unit,
   label,
 }: {
   value: number;
+  unit: string;
   label: string;
 }) {
   return (
-    <div className="rounded-2xl bg-surface/60 px-2 py-3 text-center">
-      <p className="font-display text-xl font-semibold">
+    <div className="rounded-2xl bg-card/70 px-3 py-3.5 text-center">
+      <p className="font-display text-[22px] font-semibold">
         {value}
+        <span className="ml-1 text-[10px] font-normal text-muted-foreground">
+          {unit}
+        </span>
       </p>
 
-      <p className="mt-1 text-[9px] tracking-[0.06em] text-muted-foreground">
+      <p className="mt-1 text-[10px] text-muted-foreground">
         {label}
       </p>
     </div>

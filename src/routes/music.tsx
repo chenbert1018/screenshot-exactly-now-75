@@ -691,6 +691,8 @@ function MusicPage() {
                   items={timelineItems}
 
                   ready={timelineReady}
+                  photo={homeIdol.photo}
+                  cutoutPhoto={homeIdol.cutoutPhoto}
 
                 />
 
@@ -703,6 +705,8 @@ function MusicPage() {
                   items={timelineItems}
 
                   ready={timelineReady}
+                  photo={homeIdol.photo}
+                  cutoutPhoto={homeIdol.cutoutPhoto}
 
                 />
 
