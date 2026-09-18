@@ -302,10 +302,12 @@ function TodaySongCard({
   entry,
   save,
   addSong,
+  musicDays,
 }: {
   idolName: string;
   songs: IdolSong[];
   entry: IdolSongJournalEntry | null;
+  musicDays: number;
   save: (patch: {
     songId?: string | null;
     mood?: SongMood | null;
@@ -382,7 +384,9 @@ function TodaySongCard({
           </p>
 
           <p className="mt-1 text-[16px] font-medium">
-            今天想和 {idolName} 一起聽什麼？
+            {selectedSong
+              ? `今天和 ${idolName} 一起聽`
+              : `今天想和 ${idolName} 一起聽什麼？`}
           </p>
 
           <button
@@ -470,6 +474,30 @@ function TodaySongCard({
               <ArrowRight className="size-3" />
             </a>
           ) : null}
+
+          <div className="mt-4 rounded-[1.35rem] bg-primary/[0.06] px-4 py-3">
+            <p className="text-[13px] leading-relaxed text-foreground/80">
+              今天也有一首歌，陪你喜歡著 {idolName}。
+            </p>
+
+            <div className="mt-3 flex items-end justify-between gap-3 border-t border-primary/10 pt-3">
+              <div>
+                <p className="text-[10px] font-semibold tracking-[0.14em] text-primary">
+                  {musicDays} MUSIC {musicDays === 1 ? "DAY" : "DAYS"} ♡
+                </p>
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  和 {idolName} 留下的音樂日子
+                </p>
+              </div>
+
+              <Link
+                to="/music"
+                className="shrink-0 text-[11px] font-medium text-primary"
+              >
+                音樂日記 →
+              </Link>
+            </div>
+          </div>
         </div>
       ) : null}
 
@@ -681,6 +709,23 @@ function HomePage() {
   const todayJournal = useTodaySongJournal(main?.id);
   const songHistory = useSongJournalHistory(main?.id);
 
+  const musicDays = useMemo(() => {
+    const dates = new Set(
+      songHistory.entries
+        .filter((entry) => Boolean(entry.songId))
+        .map((entry) => entry.entryDate),
+    );
+
+    if (
+      todayJournal.entry?.songId &&
+      todayJournal.entry.entryDate
+    ) {
+      dates.add(todayJournal.entry.entryDate);
+    }
+
+    return dates.size;
+  }, [songHistory.entries, todayJournal.entry]);
+
   const randomSongMemories = useMemo(() => {
     return songHistory.entries.flatMap((entry) => {
       if (!entry.songId) return [];
@@ -800,6 +845,7 @@ function HomePage() {
             idolName={main.name || "他"}
             songs={songs}
             entry={todayJournal.entry}
+            musicDays={musicDays}
             save={todayJournal.save}
             addSong={addSong}
           />
