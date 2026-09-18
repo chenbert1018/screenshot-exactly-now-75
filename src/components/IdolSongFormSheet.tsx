@@ -96,16 +96,14 @@ export function IdolSongFormSheet({
             : current.spotifyUrl,
       }));
 
-      if (result.provider === "spotify") {
+      if (result.title) {
         setLinkMessage(
-          result.title
+          result.provider === "spotify"
             ? "已從 Spotify 帶入歌曲資料 ♡"
-            : "已加入 Spotify 連結",
+            : "已從 Apple Music 帶入歌曲資料 ♡",
         );
       } else {
-        setLinkMessage(
-          "已辨識 Apple Music 連結，歌名與歌手可在下方補上 ♡",
-        );
+        setLinkMessage("已加入歌曲連結");
       }
     } catch (reason) {
       console.error(
