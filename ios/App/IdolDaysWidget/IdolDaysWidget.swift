@@ -54,6 +54,78 @@ struct IdolDaysProvider: TimelineProvider {
 
     private let appGroupID = "group.com.idoldays.app"
 
+    private func parseEventDate(_ value: String) -> Date? {
+        let raw = value.trimmed
+
+        guard !raw.isEmpty else {
+            return nil
+        }
+
+        let datePart = String(raw.prefix(10))
+
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = Calendar.current.timeZone
+        formatter.dateFormat = "yyyy-MM-dd"
+
+        return formatter.date(from: datePart)
+    }
+
+    private func refreshedCountdown(
+        eventDate: String,
+        fallback: String,
+        now: Date = Date()
+    ) -> String {
+        guard let target = parseEventDate(eventDate) else {
+            return fallback
+        }
+
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: now)
+        let eventDay = calendar.startOfDay(for: target)
+
+        guard let days = calendar.dateComponents(
+            [.day],
+            from: today,
+            to: eventDay
+        ).day else {
+            return fallback
+        }
+
+        if days < 0 {
+            return ""
+        }
+
+        if days == 0 {
+            return "今天見 ♡"
+        }
+
+        return "D-\(days)"
+    }
+
+    private func refreshedDecoration(
+        eventDate: String,
+        emoji: String,
+        label: String,
+        now: Date = Date()
+    ) -> (emoji: String, label: String) {
+        guard let target = parseEventDate(eventDate) else {
+            return (emoji, label)
+        }
+
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: now)
+        let eventDay = calendar.startOfDay(for: target)
+
+        if eventDay < today {
+            return ("", "")
+        }
+
+        return (emoji, label)
+    }
+
+
     func placeholder(in context: Context) -> IdolDaysEntry {
         mockEntry
     }
@@ -78,7 +150,7 @@ struct IdolDaysProvider: TimelineProvider {
         let nextUpdate =
             Calendar.current.nextDate(
                 after: Date(),
-                matching: DateComponents(hour: 0, minute: 5),
+                matching: DateComponents(hour: 0, minute: 2),
                 matchingPolicy: .nextTime
             )
             ?? Date().addingTimeInterval(86400)
@@ -130,18 +202,41 @@ struct IdolDaysProvider: TimelineProvider {
                 "COUNTDOWN"
             ]
 
-        return IdolDaysEntry(
-            date: Date(),
-            idolName: snapshot.idolName,
-            eventTitle: snapshot.eventTitle,
-            dDay: snapshot.dDay,
+        let now = Date()
+
+        let countdown = refreshedCountdown(
             eventDate: snapshot.eventDate,
-            location: snapshot.location,
+            fallback: snapshot.dDay,
+            now: now
+        )
+
+        let decoration = refreshedDecoration(
+            eventDate: snapshot.eventDate,
+            emoji: snapshot.decorationEmoji ?? "",
+            label: snapshot.decorationLabel ?? "",
+            now: now
+        )
+
+        let eventHasPassed =
+            parseEventDate(snapshot.eventDate)
+                .map {
+                    Calendar.current.startOfDay(for: $0)
+                        < Calendar.current.startOfDay(for: now)
+                }
+            ?? false
+
+        return IdolDaysEntry(
+            date: now,
+            idolName: snapshot.idolName,
+            eventTitle: eventHasPassed ? "" : snapshot.eventTitle,
+            dDay: countdown,
+            eventDate: eventHasPassed ? "" : snapshot.eventDate,
+            location: eventHasPassed ? "" : snapshot.location,
             quote: snapshot.quote,
             moodEmoji: snapshot.moodEmoji ?? "",
             moodLabel: snapshot.moodLabel ?? "",
-            decorationEmoji: snapshot.decorationEmoji ?? "",
-            decorationLabel: snapshot.decorationLabel ?? "",
+            decorationEmoji: decoration.emoji,
+            decorationLabel: decoration.label,
             songTitle: snapshot.songTitle ?? "",
             songArtist: snapshot.songArtist ?? "",
             enabledContents: enabled
@@ -191,6 +286,40 @@ struct IdolDaysWidgetEntryView: View {
         green: 0.12,
         blue: 0.22
     )
+
+    private var widgetTheme: String {
+        UserDefaults(
+            suiteName: "group.com.idoldays.app"
+        )?.string(forKey: "widgetTheme") ?? "sky"
+    }
+
+    private var mediumBackgroundColors: [Color] {
+        switch widgetTheme {
+        case "dark":
+            return [
+                Color(red: 0.10, green: 0.12, blue: 0.18),
+                Color(red: 0.16, green: 0.19, blue: 0.28)
+            ]
+
+        case "light":
+            return [
+                Color(red: 1.00, green: 0.95, blue: 0.94),
+                Color(red: 0.98, green: 0.86, blue: 0.88)
+            ]
+
+        case "sky":
+            return [
+                Color(red: 0.91, green: 0.96, blue: 1.00),
+                Color(red: 0.76, green: 0.88, blue: 0.98)
+            ]
+
+        default:
+            return [
+                Color(red: 0.91, green: 0.96, blue: 1.00),
+                Color(red: 0.76, green: 0.88, blue: 0.98)
+            ]
+        }
+    }
 
     var body: some View {
         Group {
@@ -369,18 +498,7 @@ struct IdolDaysWidgetEntryView: View {
 
                 ZStack {
                     LinearGradient(
-                        colors: [
-                            Color(
-                                red: 1.00,
-                                green: 0.91,
-                                blue: 0.91
-                            ),
-                            Color(
-                                red: 0.98,
-                                green: 0.79,
-                                blue: 0.84
-                            )
-                        ],
+                        colors: mediumBackgroundColors,
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
@@ -396,7 +514,7 @@ struct IdolDaysWidgetEntryView: View {
                             Text(entry.idolName.uppercased())
                                 .font(
                                     .system(
-                                        size: 19,
+                                        size: 16,
                                         weight: .bold,
                                         design: .rounded
                                     )
@@ -426,7 +544,7 @@ struct IdolDaysWidgetEntryView: View {
                             Text(entry.dDay)
                                 .font(
                                     .system(
-                                        size: 32,
+                                        size: 26,
                                         weight: .bold,
                                         design: .rounded
                                     )
@@ -439,6 +557,58 @@ struct IdolDaysWidgetEntryView: View {
                                     )
                                 )
                                 .lineLimit(1)
+                        }
+
+                        if entry.eventTitle.trimmed.isEmpty,
+                           entry.dDay.trimmed.isEmpty {
+                            Text("OUR DAYS ♡")
+                                .font(
+                                    .system(
+                                        size: 11,
+                                        weight: .semibold,
+                                        design: .rounded
+                                    )
+                                )
+                                .tracking(1.2)
+                                .foregroundStyle(
+                                    ink.opacity(0.58)
+                                )
+
+                            if hasSongOfDay {
+                                VStack(
+                                    alignment: .leading,
+                                    spacing: 2
+                                ) {
+                                    Text("♪ \(entry.songTitle)")
+                                        .font(
+                                            .system(
+                                                size: 13,
+                                                weight: .semibold,
+                                                design: .rounded
+                                            )
+                                        )
+                                        .foregroundStyle(ink)
+                                        .lineLimit(1)
+                                        .minimumScaleFactor(0.7)
+
+                                    if !entry.songArtist.trimmed.isEmpty {
+                                        Text(entry.songArtist)
+                                            .font(
+                                                .system(
+                                                    size: 10,
+                                                    weight: .medium,
+                                                    design: .rounded
+                                                )
+                                            )
+                                            .foregroundStyle(
+                                                ink.opacity(0.62)
+                                            )
+                                            .lineLimit(1)
+                                            .minimumScaleFactor(0.7)
+                                    }
+                                }
+                                .padding(.top, 2)
+                            }
                         }
 
                         Spacer(minLength: 2)
@@ -565,7 +735,7 @@ struct IdolDaysWidgetEntryView: View {
                     HStack(spacing: 8) {
                         if !entry.decorationEmoji.trimmed.isEmpty {
                             Text(prettyDecorationEmoji)
-                                .font(.system(size: 30))
+                                .font(.system(size: 22))
                                 .shadow(
                                     color: Color(
                                         red: 0.38,
@@ -582,7 +752,7 @@ struct IdolDaysWidgetEntryView: View {
                             Text(entry.decorationLabel)
                                 .font(
                                     .system(
-                                        size: 14,
+                                        size: 11,
                                         weight: .semibold,
                                         design: .rounded
                                     )
@@ -621,7 +791,7 @@ struct IdolDaysWidgetEntryView: View {
                                 Text(entry.idolName.uppercased())
                                     .font(
                                         .system(
-                                            size: 28,
+                                            size: 22,
                                             weight: .bold,
                                             design: .rounded
                                         )
@@ -636,7 +806,7 @@ struct IdolDaysWidgetEntryView: View {
                                 Text(entry.eventTitle.uppercased())
                                     .font(
                                         .system(
-                                            size: 15,
+                                            size: 12,
                                             weight: .medium,
                                             design: .rounded
                                         )
@@ -656,7 +826,7 @@ struct IdolDaysWidgetEntryView: View {
                             Text(entry.dDay)
                                 .font(
                                     .system(
-                                        size: 46,
+                                        size: 34,
                                         weight: .bold,
                                         design: .rounded
                                     )
@@ -728,7 +898,7 @@ struct IdolDaysWidgetEntryView: View {
                        !entry.quote.trimmed.isEmpty {
                         HStack(spacing: 7) {
                             Text("💌")
-                                .font(.system(size: 17))
+                                .font(.system(size: 14))
 
                             Text("「\(entry.quote)」")
                                 .lineLimit(1)
@@ -736,7 +906,7 @@ struct IdolDaysWidgetEntryView: View {
                         }
                             .font(
                                 .system(
-                                    size: 13,
+                                    size: 11,
                                     weight: .medium,
                                     design: .rounded
                                 )
