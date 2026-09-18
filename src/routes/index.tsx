@@ -42,7 +42,7 @@ import {
   type SongMood,
 } from "@/lib/idol-song-journal";
 import { RandomSongMemoryCard } from "@/components/RandomSongMemoryCard";
-import { daysSince } from "@/lib/dates";
+import { daysSince, nextAnniversary } from "@/lib/dates";
 import { classifyFanWeather, type FanWeatherInput } from "@/lib/fan-weather";
 
 export const Route = createFileRoute("/")({
@@ -296,6 +296,12 @@ function MemoryCard({
   );
 }
 
+type TodaySongSpecialDay =
+  | "birthday"
+  | "debut"
+  | "our-day"
+  | null;
+
 function TodaySongCard({
   idolName,
   songs,
@@ -303,11 +309,13 @@ function TodaySongCard({
   save,
   addSong,
   musicDays,
+  specialDay,
 }: {
   idolName: string;
   songs: IdolSong[];
   entry: IdolSongJournalEntry | null;
   musicDays: number;
+  specialDay: TodaySongSpecialDay;
   save: (patch: {
     songId?: string | null;
     mood?: SongMood | null;
@@ -323,6 +331,30 @@ function TodaySongCard({
   const selectedSong =
     songs.find((song) => song.id === entry?.songId) ?? fallbackSong;
   const selectedSongId = entry?.songId ?? fallbackSong?.id ?? "";
+
+  const specialDayCopy =
+    specialDay === "birthday"
+      ? {
+          label: "BIRTHDAY SONG ♡",
+          empty: `今天是 ${idolName} 的生日 ♡ 想選哪一首歌陪他過今天？`,
+          selected: `今天是 ${idolName} 的生日 ♡`,
+          companion: "今天這首歌，也會留在我們的生日回憶裡。",
+        }
+      : specialDay === "debut"
+        ? {
+            label: "DEBUT DAY SONG ♡",
+            empty: `今天是 ${idolName} 的出道紀念日 ♡ 想用哪一首歌記住今天？`,
+            selected: `今天是 ${idolName} 的出道紀念日 ♡`,
+            companion: "今天這首歌，也會留在我們的出道紀念回憶裡。",
+          }
+        : specialDay === "our-day"
+          ? {
+              label: "OUR DAY SONG ♡",
+              empty: `今天是你開始喜歡 ${idolName} 的紀念日 ♡ 想留下哪一首歌？`,
+              selected: `今天是你和 ${idolName} 的特別日子 ♡`,
+              companion: "今天這首歌，也會留在我們一起走過的日子裡。",
+            }
+          : null;
 
   async function update(patch: {
     songId?: string | null;
@@ -380,13 +412,17 @@ function TodaySongCard({
 
         <div className="min-w-0 flex-1">
           <p className="text-[11px] font-medium tracking-[0.1em] text-primary">
-            TODAY'S SONG ♡
+            {specialDayCopy?.label ?? "TODAY'S SONG ♡"}
           </p>
 
           <p className="mt-1 text-[16px] font-medium">
-            {selectedSong
-              ? `今天和 ${idolName} 一起聽`
-              : `今天想和 ${idolName} 一起聽什麼？`}
+            {specialDayCopy
+              ? selectedSong
+                ? specialDayCopy.selected
+                : specialDayCopy.empty
+              : selectedSong
+                ? `今天和 ${idolName} 一起聽`
+                : `今天想和 ${idolName} 一起聽什麼？`}
           </p>
 
           <button
@@ -477,7 +513,8 @@ function TodaySongCard({
 
           <div className="mt-4 rounded-[1.35rem] bg-primary/[0.06] px-4 py-3">
             <p className="text-[13px] leading-relaxed text-foreground/80">
-              今天也有一首歌，陪你喜歡著 {idolName}。
+              {specialDayCopy?.companion ??
+                `今天也有一首歌，陪你喜歡著 ${idolName}。`}
             </p>
 
             <div className="mt-3 flex items-end justify-between gap-3 border-t border-primary/10 pt-3">
@@ -750,6 +787,24 @@ function HomePage() {
 
   const companionship = useMemo(() => (main ? daysSince(main.sinceDate) : null), [main]);
 
+  const todaySongSpecialDay = useMemo<TodaySongSpecialDay>(() => {
+    if (!main) return null;
+
+    if (nextAnniversary(main.birthday)?.daysUntil === 0) {
+      return "birthday";
+    }
+
+    if (nextAnniversary(main.debutDate)?.daysUntil === 0) {
+      return "debut";
+    }
+
+    if (nextAnniversary(main.sinceDate)?.daysUntil === 0) {
+      return "our-day";
+    }
+
+    return null;
+  }, [main]);
+
   const nextMainEvent = useMemo(
     () => (main ? nextEvent(events.filter((event) => event.idolId === main.id)) : undefined),
     [events, main],
@@ -846,6 +901,7 @@ function HomePage() {
             songs={songs}
             entry={todayJournal.entry}
             musicDays={musicDays}
+            specialDay={todaySongSpecialDay}
             save={todayJournal.save}
             addSong={addSong}
           />
