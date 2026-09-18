@@ -201,47 +201,97 @@ export function MemoryFormSheet({
             />
           </div>
 
-          <div className="space-y-1.5">
-            <Label>這天的歌</Label>
+          <div className="space-y-2">
+            <div>
+              <p className="text-[10px] font-semibold tracking-[0.14em] text-primary">
+                THIS DAY'S SOUNDTRACK ♡
+              </p>
 
-            <button
-              type="button"
-              onClick={() => setSongPickerOpen(true)}
-              className="flex min-h-12 w-full items-center justify-between gap-3 rounded-2xl border border-input bg-surface/50 px-4 py-3 text-left transition-transform duration-300 active:scale-[0.99]"
-            >
-              <span className="flex min-w-0 items-center gap-3">
-                <Music2
-                  className="size-4 shrink-0 text-primary"
+              <Label className="mt-1 block">這一天的歌</Label>
+
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                有沒有一首歌，會讓你想起這一天？
+              </p>
+            </div>
+
+            {selectedSong ? (
+              <div className="memory-soundtrack-moment">
+                <div
+                  className="memory-soundtrack-moment-disc"
+                  aria-hidden="true"
+                >
+                  <span className="memory-soundtrack-moment-hole" />
+                  <span className="memory-soundtrack-moment-note">
+                    ♪
+                  </span>
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  <p className="memory-soundtrack-moment-label">
+                    OUR MEMORY SONG
+                  </p>
+
+                  <p className="memory-soundtrack-moment-title">
+                    {selectedSong.title}
+                  </p>
+
+                  {selectedSong.artist ? (
+                    <p className="memory-soundtrack-moment-artist">
+                      {selectedSong.artist}
+                    </p>
+                  ) : null}
+                </div>
+
+                <span
+                  className="memory-soundtrack-moment-heart"
+                  aria-hidden="true"
+                >
+                  ♡
+                </span>
+              </div>
+            ) : null}
+
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setSongPickerOpen(true)}
+                className="memory-soundtrack-picker flex min-h-12 flex-1 items-center justify-between gap-3 rounded-2xl border border-input bg-surface/50 px-4 py-3 text-left transition-transform duration-300 active:scale-[0.99]"
+              >
+                <span className="flex min-w-0 items-center gap-3">
+                  <Music2
+                    className="size-4 shrink-0 text-primary"
+                    strokeWidth={1.7}
+                  />
+
+                  <span className="text-sm">
+                    {selectedSong ? "更換歌曲" : "＋ 選一首歌"}
+                  </span>
+                </span>
+
+                <ChevronRight
+                  className="size-4 shrink-0 text-muted-foreground"
                   strokeWidth={1.7}
                 />
+              </button>
 
-                {selectedSong ? (
-                  <span className="min-w-0">
-                    <span className="block truncate text-sm font-medium">
-                      {selectedSong.title}
-                    </span>
+              {selectedSong ? (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setDraft((d) => ({
+                      ...d,
+                      songId: "",
+                    }))
+                  }
+                  className="memory-soundtrack-remove min-h-12 rounded-2xl border border-border/70 px-4 text-xs text-muted-foreground"
+                >
+                  移除
+                </button>
+              ) : null}
+            </div>
 
-                    {selectedSong.artist ? (
-                      <span className="block truncate text-xs text-muted-foreground">
-                        {selectedSong.artist}
-                      </span>
-                    ) : null}
-                  </span>
-                ) : (
-                  <span className="text-sm text-muted-foreground">
-                    ＋ 選擇歌曲
-                  </span>
-                )}
-              </span>
-
-              <ChevronRight
-                className="size-4 shrink-0 text-muted-foreground"
-                strokeWidth={1.7}
-              />
-            </button>
-
-            <p className="text-xs text-muted-foreground">
-              之後「去年的今天」可以再聽一次。
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              選填。留下來之後，這首歌也會一起進入你的音樂日記。
             </p>
           </div>
 
