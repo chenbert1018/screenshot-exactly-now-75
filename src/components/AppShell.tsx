@@ -100,12 +100,13 @@ export function Section({
 export function SoftCard({
   children,
   className = "",
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
+  ...props
+}: React.ComponentPropsWithRef<"div">) {
   return (
-    <div className={`cream-card transition-shadow duration-300 ${className}`}>
+    <div
+      {...props}
+      className={`cream-card transition-shadow duration-300 ${className}`}
+    >
       {children}
     </div>
   );

@@ -1,4 +1,5 @@
-import { ExternalLink, Music2 } from "lucide-react";
+import { ArrowRight, ExternalLink, Music2 } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { streamingLink } from "@/lib/idol-music";
 import type { MusicTimelineItem } from "@/lib/music-timeline";
 
@@ -348,6 +349,33 @@ export function MusicTimeline({
                           <p className="mt-3 border-t border-border/50 pt-3 text-xs leading-5 text-muted-foreground">
                             {item.note}
                           </p>
+                        ) : null}
+
+                        {item.kind === "MEMORY_DAY" &&
+                        item.memoryFolderId &&
+                        item.memoryId ? (
+                          <div className="music-memory-open-day-wrap">
+                            <Link
+                              to="/memories/$folderId"
+                              params={{
+                                folderId: item.memoryFolderId,
+                              }}
+                              search={{
+                                memory: item.memoryId,
+                              }}
+                              className="music-memory-open-day"
+                            >
+                              <span>
+                                <small>FROM OUR DAYS ♡</small>
+                                打開那一天
+                              </span>
+
+                              <ArrowRight
+                                className="size-3.5"
+                                strokeWidth={1.7}
+                              />
+                            </Link>
+                          </div>
                         ) : null}
                       </div>
                     </article>

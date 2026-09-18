@@ -643,12 +643,6 @@ function MusicPage() {
           {/* MEMORIES */}
           <SectionDivider />
 
-          <SectionLabel
-            eyebrow="MY MUSIC DIARY ♡"
-            title="我的追星音樂日記"
-            description="一首歌、一個心情，慢慢變成喜歡他的日子。"
-          />
-
           <button
             type="button"
             onClick={() =>
@@ -664,7 +658,7 @@ function MusicPage() {
 
             <div className="min-w-0 flex-1">
               <p className="font-display text-[15px] font-medium">
-                我和他的音樂日記
+                我的追星音樂日記
               </p>
 
               <p className="mt-1 text-[11px] text-muted-foreground">

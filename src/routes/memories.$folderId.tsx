@@ -1,5 +1,5 @@
 import { StoredImage } from "@/components/StoredImage";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ChevronLeft, Plus, MoreHorizontal, Images } from "lucide-react";
 import { AppShell, EmptyState, SoftCard } from "@/components/AppShell";
@@ -36,6 +36,14 @@ import { toast } from "sonner";
 import { parseLocalDate } from "@/lib/dates";
 
 export const Route = createFileRoute("/memories/$folderId")({
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { memory?: string } => ({
+    memory:
+      typeof search.memory === "string"
+        ? search.memory
+        : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "回憶資料夾｜IdolDays" },
@@ -58,6 +66,7 @@ function dotDate(value?: string) {
 
 function FolderDetailPage() {
   const { folderId } = Route.useParams();
+  const { memory: focusedMemoryId } = Route.useSearch();
   const navigate = useNavigate();
   const { folders, ready, updateFolder, removeFolder, mode } = useMemoryFolderSource();
   const { memories, addMemory, updateMemory, removeMemory } = useMemorySource(folderId);
@@ -74,6 +83,20 @@ function FolderDetailPage() {
   const [editing, setEditing] = useState<Memory | null>(null);
   const [pendingDelete, setPendingDelete] = useState<Memory | null>(null);
   const [deletingMemory, setDeletingMemory] = useState(false);
+  const focusedMemoryRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!focusedMemoryId || memories.length === 0) return;
+
+    const timer = window.setTimeout(() => {
+      focusedMemoryRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }, 250);
+
+    return () => window.clearTimeout(timer);
+  }, [focusedMemoryId, memories.length]);
 
   if (ready && !folder) {
     return (
@@ -230,7 +253,20 @@ function FolderDetailPage() {
                 </p>
                 <div className="mt-4 space-y-5">
                   {g.items.map((m) => (
-                    <SoftCard key={m.id} className="overflow-hidden p-0">
+                    <SoftCard
+                      key={m.id}
+                      ref={
+                        focusedMemoryId === m.id
+                          ? focusedMemoryRef
+                          : undefined
+                      }
+                      id={`memory-${m.id}`}
+                      className={`overflow-hidden p-0 ${
+                        focusedMemoryId === m.id
+                          ? "memory-day-highlight"
+                          : ""
+                      }`}
+                    >
                       {m.photo ? (
                         <StoredImage
                           src={m.photo}
@@ -308,6 +344,7 @@ function FolderDetailPage() {
           submitLabel="儲存"
           onSubmit={async (draft) => {
             await updateFolder(folder.id, draft);
+
             setEditFolder(false);
           }}
         />

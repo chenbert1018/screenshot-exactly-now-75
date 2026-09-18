@@ -2158,3 +2158,109 @@
     animation: none;
   }
 }
+
+
+/* IdolDays Music Experience V3-C — open that memory day */
+
+.music-memory-open-day-wrap {
+  margin-top: 0.85rem;
+  border-top: 1px solid
+    color-mix(in srgb, var(--border) 52%, transparent);
+  padding-top: 0.8rem;
+}
+
+.music-memory-open-day {
+  display: flex;
+  min-height: 3.25rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  overflow: hidden;
+  border: 1px solid
+    color-mix(in srgb, var(--primary) 13%, var(--border));
+  border-radius: 1.15rem;
+  background:
+    linear-gradient(
+      110deg,
+      color-mix(in srgb, var(--primary) 7%, var(--card)),
+      color-mix(in srgb, var(--surface) 84%, var(--card))
+    );
+  padding: 0.65rem 0.85rem 0.65rem 0.95rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease;
+}
+
+.music-memory-open-day small {
+  display: block;
+  margin-bottom: 0.15rem;
+  font-size: 0.48rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--primary);
+}
+
+.music-memory-open-day:active {
+  transform: scale(0.985);
+}
+
+.memory-day-highlight {
+  position: relative;
+  animation: memory-day-arrive 1.6s ease-out both;
+}
+
+.memory-day-highlight::after {
+  content: "OPENED FROM MY MUSIC DIARY ♡";
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 2;
+  max-width: calc(100% - 1.5rem);
+  border: 1px solid
+    color-mix(in srgb, var(--primary) 16%, var(--border));
+  border-radius: 999px;
+  background:
+    color-mix(in srgb, var(--card) 90%, transparent);
+  padding: 0.32rem 0.55rem;
+  font-size: 0.45rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--primary);
+  box-shadow:
+    0 0.25rem 0.8rem
+    color-mix(in srgb, var(--foreground) 5%, transparent);
+  backdrop-filter: blur(10px);
+  pointer-events: none;
+}
+
+@keyframes memory-day-arrive {
+  0% {
+    transform: translateY(0.45rem);
+    box-shadow:
+      0 0 0 0
+      color-mix(in srgb, var(--primary) 0%, transparent);
+  }
+
+  32% {
+    transform: translateY(0);
+    box-shadow:
+      0 0 0 0.28rem
+      color-mix(in srgb, var(--primary) 10%, transparent);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .memory-day-highlight {
+    animation: none;
+  }
+
+  .music-memory-open-day {
+    transition: none;
+  }
+}

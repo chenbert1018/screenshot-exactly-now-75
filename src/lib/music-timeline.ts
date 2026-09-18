@@ -25,6 +25,9 @@ export type MusicTimelineItem = {
   mood?: string | null;
   note?: string;
   songs: MusicTimelineSong[];
+  /** Original Memory identity for MEMORY_DAY navigation. */
+  memoryId?: string;
+  memoryFolderId?: string;
 };
 
 function songById(songs: IdolSong[], id?: string | null) {
@@ -145,6 +148,8 @@ export function buildMusicTimeline(input: {
           song,
         },
       ],
+      memoryId: memory.id,
+      memoryFolderId: memory.folderId,
     });
   }
 
