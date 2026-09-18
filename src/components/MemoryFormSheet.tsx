@@ -1,6 +1,6 @@
 import { StoredImage } from "@/components/StoredImage";
 import { useEffect, useRef, useState } from "react";
-import { ImagePlus, X } from "lucide-react";
+import { ChevronRight, ImagePlus, Music2, Plus, X } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -13,7 +13,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { emptyMemoryDraft, type MemoryDraft } from "@/lib/memories";
 import { prepareUserImage } from "@/lib/image-upload";
-import type { IdolSong } from "@/lib/idol-music";
+import type { IdolSong, IdolSongDraft } from "@/lib/idol-music";
+import { IdolSongFormSheet } from "@/components/IdolSongFormSheet";
 
 function todayValue() {
   const n = new Date();
@@ -29,6 +30,7 @@ export function MemoryFormSheet({
   submitLabel,
   onSubmit,
   songs = [],
+  addSong,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -37,11 +39,33 @@ export function MemoryFormSheet({
   submitLabel: string;
   onSubmit: (draft: MemoryDraft) => void | Promise<void>;
   songs?: IdolSong[];
+  addSong?: (draft: IdolSongDraft) => Promise<IdolSong>;
 }) {
   const [draft, setDraft] = useState<MemoryDraft>(emptyMemoryDraft);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [songPickerOpen, setSongPickerOpen] = useState(false);
+  const [addSongOpen, setAddSongOpen] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const selectedSong = songs.find((song) => song.id === draft.songId);
+
+  async function createAndChooseSong(songDraft: IdolSongDraft) {
+    if (!addSong) {
+      setError("目前無法新增歌曲，請稍後再試");
+      return;
+    }
+
+    try {
+      setError("");
+      const song = await addSong(songDraft);
+      setDraft((d) => ({ ...d, songId: song.id }));
+      setSongPickerOpen(false);
+    } catch {
+      setError("歌曲沒有新增成功，請確認網路後再試一次");
+      throw new Error("song-create-failed");
+    }
+  }
 
   useEffect(() => {
     if (open) {
@@ -178,17 +202,47 @@ export function MemoryFormSheet({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="memory-song">這天的歌</Label>
-            <select
-              id="memory-song"
-              value={draft.songId}
-              onChange={(e) => setDraft((d) => ({ ...d, songId: e.target.value }))}
-              className="min-h-11 w-full rounded-2xl border border-input bg-surface/50 px-3 text-sm"
+            <Label>這天的歌</Label>
+
+            <button
+              type="button"
+              onClick={() => setSongPickerOpen(true)}
+              className="flex min-h-12 w-full items-center justify-between gap-3 rounded-2xl border border-input bg-surface/50 px-4 py-3 text-left transition-transform duration-300 active:scale-[0.99]"
             >
-              <option value="">還沒有綁定歌曲</option>
-              {songs.map((song) => <option key={song.id} value={song.id}>{song.title}{song.artist ? ` · ${song.artist}` : ""}</option>)}
-            </select>
-            <p className="text-xs text-muted-foreground">之後「去年的今天」可以再聽一次。</p>
+              <span className="flex min-w-0 items-center gap-3">
+                <Music2
+                  className="size-4 shrink-0 text-primary"
+                  strokeWidth={1.7}
+                />
+
+                {selectedSong ? (
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-medium">
+                      {selectedSong.title}
+                    </span>
+
+                    {selectedSong.artist ? (
+                      <span className="block truncate text-xs text-muted-foreground">
+                        {selectedSong.artist}
+                      </span>
+                    ) : null}
+                  </span>
+                ) : (
+                  <span className="text-sm text-muted-foreground">
+                    ＋ 選擇歌曲
+                  </span>
+                )}
+              </span>
+
+              <ChevronRight
+                className="size-4 shrink-0 text-muted-foreground"
+                strokeWidth={1.7}
+              />
+            </button>
+
+            <p className="text-xs text-muted-foreground">
+              之後「去年的今天」可以再聽一次。
+            </p>
           </div>
 
           {error ? <p className="text-sm text-destructive">{error}</p> : null}
@@ -211,6 +265,117 @@ export function MemoryFormSheet({
           </div>
         </form>
       </SheetContent>
+
+      <Sheet open={songPickerOpen} onOpenChange={setSongPickerOpen}>
+        <SheetContent
+          side="bottom"
+          className="mx-auto max-h-[78vh] w-full max-w-md overflow-y-auto rounded-t-[2rem] border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
+        >
+          <SheetHeader className="px-0 text-left">
+            <p className="text-[11px] font-semibold tracking-[0.16em] text-primary">
+              OUR MEMORIES ♡
+            </p>
+
+            <SheetTitle className="font-display text-[22px]">
+              選擇這天的歌 ♡
+            </SheetTitle>
+
+            <SheetDescription>
+              把那一天和一首歌留在一起。
+            </SheetDescription>
+          </SheetHeader>
+
+          <div className="space-y-2 pt-2">
+            <button
+              type="button"
+              onClick={() => {
+                setDraft((d) => ({ ...d, songId: "" }));
+                setSongPickerOpen(false);
+              }}
+              className="flex min-h-12 w-full items-center justify-between rounded-2xl border border-border/70 bg-surface/40 px-4 py-3 text-left"
+            >
+              <span className="text-sm">不綁定歌曲</span>
+
+              {!draft.songId ? (
+                <span className="text-xs font-semibold text-primary">
+                  SELECTED ♡
+                </span>
+              ) : null}
+            </button>
+
+            {songs.map((song) => {
+              const active = draft.songId === song.id;
+
+              return (
+                <button
+                  key={song.id}
+                  type="button"
+                  onClick={() => {
+                    setDraft((d) => ({ ...d, songId: song.id }));
+                    setSongPickerOpen(false);
+                  }}
+                  className="flex min-h-14 w-full items-center justify-between gap-3 rounded-2xl border border-border/70 bg-surface/40 px-4 py-3 text-left"
+                >
+                  <span className="flex min-w-0 items-center gap-3">
+                    <Music2
+                      className="size-4 shrink-0 text-primary"
+                      strokeWidth={1.7}
+                    />
+
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-medium">
+                        {song.title}
+                      </span>
+
+                      {song.artist ? (
+                        <span className="block truncate text-xs text-muted-foreground">
+                          {song.artist}
+                        </span>
+                      ) : null}
+                    </span>
+                  </span>
+
+                  {active ? (
+                    <span className="shrink-0 text-xs font-semibold text-primary">
+                      THIS DAY ♡
+                    </span>
+                  ) : null}
+                </button>
+              );
+            })}
+
+            {songs.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-border/70 px-4 py-5 text-center">
+                <p className="text-sm text-muted-foreground">
+                  還沒有收藏歌曲 ♡
+                </p>
+              </div>
+            ) : null}
+
+            {addSong ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setSongPickerOpen(false);
+                  setAddSongOpen(true);
+                }}
+                className="mt-3 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+              >
+                <Plus className="size-4" strokeWidth={1.8} />
+                新增歌曲
+              </button>
+            ) : null}
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {addSong ? (
+        <IdolSongFormSheet
+          open={addSongOpen}
+          onOpenChange={setAddSongOpen}
+          onSubmit={createAndChooseSong}
+        />
+      ) : null}
     </Sheet>
   );
 }

@@ -1,4 +1,12 @@
 import { StoredImage } from "@/components/StoredImage";
+import { IdolSongFormSheet } from "@/components/IdolSongFormSheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
@@ -22,7 +30,11 @@ import { useEventSource } from "@/lib/events.source";
 import { useArchaeologySource } from "@/lib/archaeology.source";
 import { useMemorySource } from "@/lib/memories.source";
 import { useIdolMusicSource } from "@/lib/idol-music.source";
-import { streamingLink, type IdolSong } from "@/lib/idol-music";
+import {
+  streamingLink,
+  type IdolSong,
+  type IdolSongDraft,
+} from "@/lib/idol-music";
 import { useSongJournalHistory, useTodaySongJournal } from "@/lib/idol-song-journal.source";
 import {
   SONG_MOOD_OPTIONS,
@@ -289,27 +301,71 @@ function TodaySongCard({
   songs,
   entry,
   save,
+  addSong,
 }: {
   idolName: string;
   songs: IdolSong[];
   entry: IdolSongJournalEntry | null;
-  save: (patch: { songId?: string | null; mood?: SongMood | null }) => Promise<void>;
+  save: (patch: {
+    songId?: string | null;
+    mood?: SongMood | null;
+  }) => Promise<void>;
+  addSong: (draft: IdolSongDraft) => Promise<IdolSong>;
 }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
+
   const fallbackSong = songs.find((song) => song.isTodayPick);
-  const selectedSong = songs.find((song) => song.id === entry?.songId) ?? fallbackSong;
+  const selectedSong =
+    songs.find((song) => song.id === entry?.songId) ?? fallbackSong;
   const selectedSongId = entry?.songId ?? fallbackSong?.id ?? "";
 
-  async function update(patch: { songId?: string | null; mood?: SongMood | null }) {
+  async function update(patch: {
+    songId?: string | null;
+    mood?: SongMood | null;
+  }) {
     setSaving(true);
     setError("");
+
     try {
       await save(patch);
     } catch {
-      setError("今天的音樂日記沒有儲存成功，請確認網路後再試一次。");
+      setError(
+        "今天的音樂日記沒有儲存成功，請確認網路後再試一次。",
+      );
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function chooseSong(songId: string) {
+    setSaving(true);
+    setError("");
+
+    try {
+      await save({ songId });
+      setPickerOpen(false);
+    } catch {
+      setError(
+        "今天的音樂日記沒有儲存成功，請確認網路後再試一次。",
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function createAndChooseSong(draft: IdolSongDraft) {
+    setError("");
+
+    try {
+      const song = await addSong(draft);
+      await save({ songId: song.id });
+      setPickerOpen(false);
+    } catch (cause) {
+      setError("歌曲沒有新增成功，請確認網路後再試一次。");
+      throw cause;
     }
   }
 
@@ -319,59 +375,90 @@ function TodaySongCard({
         <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
           <Music2 className="size-6" strokeWidth={1.55} />
         </div>
+
         <div className="min-w-0 flex-1">
-          <p className="text-[11px] font-medium tracking-[0.1em] text-primary">TODAY'S SONG ♡</p>
-          <p className="mt-1 text-[16px] font-medium">今天想和 {idolName} 一起聽什麼？</p>
-          {songs.length > 0 ? (
-            <select
-              value={selectedSongId}
-              disabled={saving}
-              onChange={(event) => void update({ songId: event.target.value || null })}
-              aria-label="選擇今天的歌曲"
-              className="mt-3 w-full rounded-xl border border-border/70 bg-surface/60 px-3 py-2 text-sm outline-none"
-            >
-              <option value="">＋ 選一首歌</option>
-              {songs.map((song) => (
-                <option key={song.id} value={song.id}>
-                  ♪ {song.title}
-                  {song.artist ? ` · ${song.artist}` : ""}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <Link
-              to="/music"
-              className="mt-3 inline-flex rounded-full bg-primary px-3.5 py-2 text-xs font-medium text-primary-foreground"
-            >
-              ＋ 加入第一首歌
-            </Link>
-          )}
+          <p className="text-[11px] font-medium tracking-[0.1em] text-primary">
+            TODAY'S SONG ♡
+          </p>
+
+          <p className="mt-1 text-[16px] font-medium">
+            今天想和 {idolName} 一起聽什麼？
+          </p>
+
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() => setPickerOpen(true)}
+            className="mt-3 flex w-full items-center justify-between gap-3 rounded-2xl border border-border/70 bg-surface/60 px-4 py-3 text-left transition-transform active:scale-[0.99] disabled:opacity-50"
+          >
+            <span className="min-w-0">
+              {selectedSong ? (
+                <>
+                  <span className="block truncate text-sm font-medium">
+                    ♪ {selectedSong.title}
+                  </span>
+
+                  {selectedSong.artist ? (
+                    <span className="mt-0.5 block truncate text-xs text-muted-foreground">
+                      {selectedSong.artist}
+                    </span>
+                  ) : null}
+                </>
+              ) : (
+                <span className="text-sm font-medium text-primary">
+                  ＋ 選一首歌
+                </span>
+              )}
+            </span>
+
+            <ArrowRight
+              className="size-4 shrink-0 text-primary"
+              strokeWidth={1.8}
+            />
+          </button>
         </div>
       </div>
 
       {selectedSong ? (
         <div className="mt-4 border-t border-border/60 pt-3">
-          <p className="truncate text-sm font-medium">♪ {selectedSong.title}</p>
+          <p className="truncate text-sm font-medium">
+            ♪ {selectedSong.title}
+          </p>
+
           {selectedSong.artist ? (
-            <p className="mt-0.5 truncate text-xs text-muted-foreground">{selectedSong.artist}</p>
+            <p className="mt-0.5 truncate text-xs text-muted-foreground">
+              {selectedSong.artist}
+            </p>
           ) : null}
+
           <p className="mt-3 text-xs text-muted-foreground">
             今天的心情{entry?.mood ? `：${entry.mood}` : ""}
           </p>
+
           <div className="mt-2 flex gap-2">
             {SONG_MOOD_OPTIONS.map((mood) => (
               <button
                 key={mood}
                 type="button"
                 disabled={saving}
-                onClick={() => void update({ songId: selectedSongId, mood })}
+                onClick={() =>
+                  void update({
+                    songId: selectedSongId,
+                    mood,
+                  })
+                }
                 aria-label={`今天的心情：${mood}`}
-                className={`flex size-9 items-center justify-center rounded-full text-[17px] transition-transform active:scale-90 disabled:opacity-50 ${entry?.mood === mood ? "bg-primary/20 ring-1 ring-primary/50" : "bg-surface/70"}`}
+                className={`flex size-9 items-center justify-center rounded-full text-[17px] transition-transform active:scale-90 disabled:opacity-50 ${
+                  entry?.mood === mood
+                    ? "bg-primary/20 ring-1 ring-primary/50"
+                    : "bg-surface/70"
+                }`}
               >
                 {mood}
               </button>
             ))}
           </div>
+
           {streamingLink(selectedSong) ? (
             <a
               href={streamingLink(selectedSong)}
@@ -379,7 +466,8 @@ function TodaySongCard({
               rel="noreferrer"
               className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary"
             >
-              🎧 再聽一次 <ArrowRight className="size-3" />
+              🎧 再聽一次
+              <ArrowRight className="size-3" />
             </a>
           ) : null}
         </div>
@@ -390,6 +478,98 @@ function TodaySongCard({
           {error}
         </p>
       ) : null}
+
+      <Sheet open={pickerOpen} onOpenChange={setPickerOpen}>
+        <SheetContent
+          side="bottom"
+          className="mx-auto max-h-[78vh] max-w-md overflow-y-auto rounded-t-[2rem] border-border/70 bg-background px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))]"
+        >
+          <SheetHeader className="text-left">
+            <SheetTitle className="font-display text-[22px]">
+              今天想聽哪一首？ ♡
+            </SheetTitle>
+
+            <SheetDescription>
+              從我們的歌裡選一首，或把新的歌收藏進來。
+            </SheetDescription>
+          </SheetHeader>
+
+          {songs.length > 0 ? (
+            <div className="mt-5 space-y-2">
+              {songs.map((song) => {
+                const active = song.id === selectedSongId;
+
+                return (
+                  <button
+                    key={song.id}
+                    type="button"
+                    disabled={saving}
+                    onClick={() => void chooseSong(song.id)}
+                    className={`flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-left transition-transform active:scale-[0.99] ${
+                      active
+                        ? "border-primary/50 bg-primary/10"
+                        : "border-border/70 bg-card/80"
+                    }`}
+                  >
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      ♪
+                    </span>
+
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-medium">
+                        {song.title}
+                      </span>
+
+                      {song.artist ? (
+                        <span className="mt-0.5 block truncate text-xs text-muted-foreground">
+                          {song.artist}
+                        </span>
+                      ) : null}
+                    </span>
+
+                    {active ? (
+                      <span className="shrink-0 text-xs font-medium text-primary">
+                        TODAY ♡
+                      </span>
+                    ) : null}
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="mt-5 rounded-2xl bg-surface/60 px-4 py-5 text-center">
+              <Music2
+                className="mx-auto size-6 text-primary"
+                strokeWidth={1.5}
+              />
+              <p className="mt-2 text-sm font-medium">
+                我們的歌還是空的 ♡
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                把第一首想一起聽的歌收藏進來。
+              </p>
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={() => {
+              setPickerOpen(false);
+              setAddOpen(true);
+            }}
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-primary px-4 py-3 text-sm font-medium text-primary-foreground"
+          >
+            <Plus className="size-4" strokeWidth={2} />
+            新增歌曲
+          </button>
+        </SheetContent>
+      </Sheet>
+
+      <IdolSongFormSheet
+        open={addOpen}
+        onOpenChange={setAddOpen}
+        onSubmit={createAndChooseSong}
+      />
     </section>
   );
 }
@@ -472,7 +652,7 @@ function HomePage() {
   const { items: archaeology } = useArchaeologySource();
   const { all: memories } = useMemorySource();
   const main = homeIdol;
-  const { songs } = useIdolMusicSource(main?.id);
+  const { songs, addSong } = useIdolMusicSource(main?.id);
   const todayJournal = useTodaySongJournal(main?.id);
   const songHistory = useSongJournalHistory(main?.id);
 
@@ -531,7 +711,7 @@ function HomePage() {
 
   return (
     <AppShell showProfileShortcut={false}>
-      <header className="mb-2 flex items-center justify-between px-1">
+      <header className="-mt-4 mb-2 flex items-center justify-between px-1">
         <p className="font-display text-[27px] tracking-[-0.03em] text-primary">IdolDays</p>
         <Link
           to="/profile"
@@ -596,6 +776,7 @@ function HomePage() {
             songs={songs}
             entry={todayJournal.entry}
             save={todayJournal.save}
+            addSong={addSong}
           />
 
           <div className="mt-3">

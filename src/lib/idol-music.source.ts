@@ -50,11 +50,32 @@ export function useIdolMusicSource(idolId?: string) {
 
   const addSong = useCallback(async (draft: IdolSongDraft) => {
     if (!user || !idolId) throw new Error("請先登入並選擇偶像");
-    const { error } = await supabase.from("idol_songs").insert({
-      user_id: user.id, idol_id: idolId, title: draft.title.trim(), artist: draft.artist.trim(), album: draft.album.trim(),
-      apple_music_url: draft.appleMusicUrl.trim(), spotify_url: draft.spotifyUrl.trim(),
-    });
-    if (error) throw error; reload();
+
+    const { data, error } = await supabase
+      .from("idol_songs")
+      .insert({
+        user_id: user.id,
+        idol_id: idolId,
+        title: draft.title.trim(),
+        artist: draft.artist.trim(),
+        album: draft.album.trim(),
+        apple_music_url: draft.appleMusicUrl.trim(),
+        spotify_url: draft.spotifyUrl.trim(),
+      })
+      .select(COLUMNS)
+      .single();
+
+    if (error) throw error;
+
+    const song = toSong(data as SongRow);
+
+    setSongs((current) => [
+      song,
+      ...current.filter((item) => item.id !== song.id),
+    ]);
+
+    reload();
+    return song;
   }, [user?.id, idolId, reload]);
 
   const setTodayPick = useCallback(async (songId: string) => {

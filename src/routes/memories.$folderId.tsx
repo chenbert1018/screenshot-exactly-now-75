@@ -65,7 +65,7 @@ function FolderDetailPage() {
 
   const folder = folders.find((f) => f.id === folderId);
   const idol = folder?.idolId ? idols.find((i) => i.id === folder.idolId) : undefined;
-  const { songs } = useIdolMusicSource(folder?.idolId);
+  const { songs, addSong } = useIdolMusicSource(folder?.idolId);
 
   const [editFolder, setEditFolder] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
@@ -336,6 +336,7 @@ function FolderDetailPage() {
           setEditing(null);
         }}
         songs={songs}
+        addSong={addSong}
       />
 
       <AlertDialog open={deleteFolder} onOpenChange={setDeleteFolder}>
