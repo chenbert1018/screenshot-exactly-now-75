@@ -5,8 +5,26 @@ export type AlbumShareMode = "PRIVATE" | "INVITED" | "PUBLIC";
 export type AlbumShare = { mode: AlbumShareMode; recipients: string[]; publicToken?: string };
 export const defaultAlbumShare: AlbumShare = { mode: "PRIVATE", recipients: [] };
 
+export type AlbumShareCodePreview = {
+  shareId: string;
+  shareTitle: string;
+  shareMessage?: string;
+  folderTitle: string;
+  memoryCount: number;
+};
+
+export type AlbumShareClaim = {
+  shareId: string;
+  folderId: string;
+  shareTitle: string;
+  shareMessage?: string;
+  importedMemoryCount: number;
+};
+
 type ShareRow = { id: string; mode: AlbumShareMode; public_token: string | null };
 type RecipientRow = { recipient_email: string };
+type RpcResponse<T> = { data: T | null; error: { message?: string } | null };
+type ShareRpc = <T>(name: string, args: Record<string, unknown>) => PromiseLike<RpcResponse<T>>;
 
 function asShare(mode: AlbumShareMode, recipients: string[], publicToken: string | null | undefined): AlbumShare {
   return publicToken ? { mode, recipients, publicToken } : { mode, recipients };
@@ -15,7 +33,20 @@ function asShare(mode: AlbumShareMode, recipients: string[], publicToken: string
 function message(error: unknown) {
   return error instanceof Error ? error.message : "分享設定儲存失敗，請稍後再試。";
 }
+function rpcMessage(error: { message?: string } | null, fallback: string) {
+  const raw = error?.message?.toLowerCase() ?? "";
+  if (raw.includes("authentication required")) return "請先登入 IdolDays 再使用分享碼。";
+  if (raw.includes("invalid share code")) return "分享碼格式不正確，請再確認一次。";
+  if (raw.includes("share code not found")) return "找不到這組分享碼，可能已失效或被取消。";
+  if (raw.includes("cannot claim your own share")) return "這是你自己的分享碼 ♡";
+  if (raw.includes("shared folder no longer exists")) return "這份收藏已經不存在了。";
+  return error?.message || fallback;
+}
 function normalizeEmail(value: string) { return value.trim().toLowerCase(); }
+export function normalizeShareCode(value: string) {
+  const compact = value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8);
+  return compact.length > 4 ? `${compact.slice(0, 4)}-${compact.slice(4)}` : compact;
+}
 export function isValidShareEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizeEmail(value));
 }
@@ -26,6 +57,70 @@ export function makeShareToken(): string {
 }
 export function shareLinkFor(token: string): string {
   return `${typeof window !== "undefined" ? window.location.origin : ""}/shared/${token}`;
+}
+
+async function callShareRpc<T>(name: string, args: Record<string, unknown>): Promise<T> {
+  const rpc = supabase.rpc as unknown as ShareRpc;
+  const { data, error } = await rpc<T>(name, args);
+  if (error) throw new Error(rpcMessage(error, "分享功能暫時無法使用，請稍後再試。"));
+  if (data == null) throw new Error("沒有收到分享資料，請稍後再試。");
+  return data;
+}
+
+export async function enableAlbumShareCode(input: {
+  folderId: string;
+  title?: string;
+  message?: string;
+}) {
+  const rows = await callShareRpc<Array<{ share_id: string; share_code: string }>>(
+    "enable_album_share_code",
+    {
+      p_folder_id: input.folderId,
+      p_title: input.title?.trim() || null,
+      p_message: input.message?.trim() || null,
+    },
+  );
+  const row = rows[0];
+  if (!row?.share_code) throw new Error("分享碼沒有產生成功，請再試一次。");
+  return { shareId: row.share_id, shareCode: row.share_code };
+}
+
+export async function previewAlbumShareCode(code: string): Promise<AlbumShareCodePreview> {
+  const rows = await callShareRpc<Array<{
+    share_id: string;
+    share_title: string;
+    share_message: string | null;
+    folder_title: string;
+    memory_count: number | string;
+  }>>("preview_album_share_code", { p_code: normalizeShareCode(code) });
+  const row = rows[0];
+  if (!row) throw new Error("找不到這組分享碼，可能已失效或被取消。");
+  return {
+    shareId: row.share_id,
+    shareTitle: row.share_title,
+    ...(row.share_message ? { shareMessage: row.share_message } : {}),
+    folderTitle: row.folder_title,
+    memoryCount: Number(row.memory_count) || 0,
+  };
+}
+
+export async function claimAlbumShareCode(code: string): Promise<AlbumShareClaim> {
+  const rows = await callShareRpc<Array<{
+    share_id: string;
+    folder_id: string;
+    share_title: string;
+    share_message: string | null;
+    imported_memory_count: number | string;
+  }>>("claim_album_share_code", { p_code: normalizeShareCode(code) });
+  const row = rows[0];
+  if (!row?.folder_id) throw new Error("收藏沒有收進來，請再試一次。");
+  return {
+    shareId: row.share_id,
+    folderId: row.folder_id,
+    shareTitle: row.share_title,
+    ...(row.share_message ? { shareMessage: row.share_message } : {}),
+    importedMemoryCount: Number(row.imported_memory_count) || 0,
+  };
 }
 
 async function userId() {
