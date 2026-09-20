@@ -141,13 +141,16 @@ function FolderDetailPage() {
         </Link>
         {folder ? (
           <DropdownMenu>
-            <DropdownMenuTrigger
-              aria-label="資料夾選單"
-              className="rounded-full bg-card/70 p-2 text-muted-foreground shadow-soft"
-            >
-              <MoreHorizontal className="size-4" strokeWidth={1.8} />
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                aria-label="資料夾選單"
+                className="relative z-10 inline-flex size-9 touch-manipulation items-center justify-center rounded-full bg-card/70 text-muted-foreground shadow-soft active:scale-95"
+              >
+                <MoreHorizontal className="size-4" strokeWidth={1.8} />
+              </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" sideOffset={8} className="z-[80]">
               <DropdownMenuItem onSelect={() => setEditFolder(true)}>編輯資料夾</DropdownMenuItem>
               <DropdownMenuItem onSelect={() => setShareOpen(true)}>分享設定</DropdownMenuItem>
               <DropdownMenuItem
