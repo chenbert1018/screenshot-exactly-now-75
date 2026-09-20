@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, Copy, Gift, Plus, RefreshCw, X } from "lucide-react";
+import { Check, Copy, Gift, Plus, RefreshCw, Share2, X } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -96,6 +96,28 @@ export function AlbumShareSheet({
     }
   }
 
+  async function sendToFriend() {
+    if (!shareCode) return;
+    const title = folderTitle || "IdolDays 收藏";
+    const text = `🎁 我送你一份 IdolDays 收藏 ♡\n${title}\n\n打開 IdolDays，在「收到朋友的收藏？」輸入分享碼：\n${shareCode}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "IDOLDAYS SHARE ♡", text });
+        return;
+      }
+      await navigator.clipboard.writeText(text);
+      toast.success("分享內容已複製，可以貼到 LINE ♡");
+    } catch (cause) {
+      if (cause instanceof DOMException && cause.name === "AbortError") return;
+      try {
+        await navigator.clipboard.writeText(text);
+        toast.success("分享內容已複製，可以貼到 LINE ♡");
+      } catch {
+        toast.error("分享沒有成功，請先複製分享碼。");
+      }
+    }
+  }
+
   async function openPreview() {
     const code = normalizeShareCode(receiveCode);
     if (code.length !== 9) {
@@ -161,16 +183,27 @@ export function AlbumShareSheet({
                 <div className="mt-4 rounded-2xl bg-card px-4 py-4 text-center shadow-soft">
                   <p className="text-[11px] tracking-[0.14em] text-muted-foreground">分享碼 ♡</p>
                   <p className="mt-1 font-display text-[24px] font-semibold tracking-[0.18em]">{shareCode}</p>
-                  <div className="mt-3 flex justify-center">
+                  <div className="mt-3 grid grid-cols-2 gap-2">
                     <button
                       type="button"
                       onClick={() => void copyCode()}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground active:scale-95"
+                      className="inline-flex items-center justify-center gap-1.5 rounded-full bg-card px-3 py-2.5 text-sm font-medium text-foreground shadow-soft active:scale-95"
                     >
                       <Copy className="size-4" strokeWidth={1.8} />
                       複製分享碼
                     </button>
+                    <button
+                      type="button"
+                      onClick={() => void sendToFriend()}
+                      className="inline-flex items-center justify-center gap-1.5 rounded-full bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground shadow-soft active:scale-95"
+                    >
+                      <Share2 className="size-4" strokeWidth={1.8} />
+                      傳給朋友 ♡
+                    </button>
                   </div>
+                  <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
+                    可從 iPhone 分享選單直接選 LINE、訊息、AirDrop 或其他 App。
+                  </p>
                 </div>
               ) : (
                 <button
