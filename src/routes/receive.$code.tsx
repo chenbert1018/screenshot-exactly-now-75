@@ -80,6 +80,7 @@ function ReceiveAlbumPage() {
           </p>
           <Link
             to="/auth"
+            search={{ returnTo: `/receive/${encodeURIComponent(code)}` }}
             className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground shadow-soft"
           >
             登入／建立 IdolDays 帳號 ♡
