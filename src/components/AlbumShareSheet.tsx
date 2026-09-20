@@ -99,10 +99,11 @@ export function AlbumShareSheet({
   async function sendToFriend() {
     if (!shareCode) return;
     const title = folderTitle || "IdolDays 收藏";
-    const text = `🎁 我送你一份 IdolDays 收藏 ♡\n${title}\n\n打開 IdolDays，在「收到朋友的收藏？」輸入分享碼：\n${shareCode}`;
+    const receiveUrl = `${window.location.origin}/receive/${encodeURIComponent(shareCode)}`;
+    const text = `🎁 我送你一份 IdolDays 收藏 ♡\n${title}\n\n點開預覽並收進你的 IdolDays：\n${receiveUrl}\n\n分享碼：${shareCode}`;
     try {
       if (navigator.share) {
-        await navigator.share({ title: "IDOLDAYS SHARE ♡", text });
+        await navigator.share({ title: "IDOLDAYS SHARE ♡", text, url: receiveUrl });
         return;
       }
       await navigator.clipboard.writeText(text);
