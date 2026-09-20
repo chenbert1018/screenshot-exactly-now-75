@@ -15,6 +15,10 @@ import {
 import { emptyDraft, MAX_IDOLS, type Idol } from "@/lib/idols";
 
 export const Route = createFileRoute("/auth")({
+  validateSearch: (search: Record<string, unknown>): { returnTo?: string } => {
+    const value = typeof search.returnTo === "string" ? search.returnTo : undefined;
+    return value?.startsWith("/receive/") ? { returnTo: value } : {};
+  },
   head: () => ({
     meta: [
       { title: "登入雲端｜IdolDays" },
@@ -30,6 +34,13 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const { user, loading } = useAuth();
+  const { returnTo } = Route.useSearch();
+
+  useEffect(() => {
+    if (!loading && user && returnTo) {
+      window.location.assign(returnTo);
+    }
+  }, [loading, returnTo, user]);
 
   return (
     <AppShell>
@@ -42,13 +53,13 @@ function AuthPage() {
       ) : user ? (
         <SignedIn email={user.email ?? ""} userId={user.id} />
       ) : (
-        <SignedOut />
+        <SignedOut returnTo={returnTo} />
       )}
     </AppShell>
   );
 }
 
-function SignedOut() {
+function SignedOut({ returnTo }: { returnTo?: string }) {
   const { signIn, signUp } = useAuthActions();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
@@ -62,8 +73,15 @@ function SignedOut() {
     setMessage(null);
     const error = mode === "signin" ? await signIn(email, password) : await signUp(email, password);
     setBusy(false);
-    if (error) setMessage(error);
-    else if (mode === "signup") setMessage("註冊完成，如果沒有自動登入，請直接用同一組帳密登入。");
+    if (error) {
+      setMessage(error);
+    } else if (mode === "signup") {
+      setMessage(returnTo
+        ? "註冊完成。登入後會帶你回朋友送的收藏 ♡"
+        : "註冊完成，如果沒有自動登入，請直接用同一組帳密登入。");
+    } else if (returnTo) {
+      window.location.assign(returnTo);
+    }
   };
 
   return (
