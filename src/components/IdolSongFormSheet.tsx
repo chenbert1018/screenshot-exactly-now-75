@@ -258,7 +258,7 @@ export function IdolSongFormSheet({
                   {metadata.title}
                 </p>
 
-                <p className="mt-1 text-[10px] font-semibold tracking-[0.12em] text-primary">
+                <p className="mt-1 text-[13px] font-semibold tracking-[0.12em] text-primary">
                   {metadata.provider === "spotify"
                     ? "SPOTIFY ♡"
                     : "APPLE MUSIC ♡"}
@@ -270,7 +270,7 @@ export function IdolSongFormSheet({
                 target="_blank"
                 rel="noreferrer"
                 aria-label="開啟歌曲連結"
-                className="flex size-8 shrink-0 items-center justify-center rounded-full text-muted-foreground"
+                className="flex size-11 shrink-0 items-center justify-center rounded-full text-muted-foreground"
               >
                 <ExternalLink
                   className="size-4"
