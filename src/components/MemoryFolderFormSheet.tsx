@@ -77,7 +77,7 @@ export function MemoryFolderFormSheet({
         className="mx-auto max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-[2rem] border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
       >
         <SheetHeader className="px-0 text-left">
-          <p className="text-[11px] font-semibold tracking-[0.16em] text-primary">
+          <p className="text-[13px] font-semibold tracking-[0.16em] text-primary">
             OUR MEMORIES ♡
           </p>
           <SheetTitle className="font-display text-[22px]">{title}</SheetTitle>
@@ -94,7 +94,7 @@ export function MemoryFolderFormSheet({
                   <button
                     type="button"
                     onClick={() => fileRef.current?.click()}
-                    className="rounded-full bg-card/90 px-3 py-1.5 text-xs shadow-soft"
+                    className="rounded-full bg-card/90 px-3 py-1.5 text-sm shadow-soft"
                   >
                     重新選擇
                   </button>
@@ -219,7 +219,7 @@ export function MemoryFolderFormSheet({
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95 disabled:opacity-60"
+              className="flex-1 rounded-full bg-primary min-h-[50px] py-3 text-base font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95 disabled:opacity-60"
             >
               {saving ? "儲存中…" : submitLabel}
             </button>
