@@ -146,7 +146,7 @@ function EventsPage() {
           <button
             type="button"
             onClick={openCreate}
-            className="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary px-4 py-2 text-xs font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+            className="inline-flex shrink-0 items-center gap-1 min-h-11 rounded-full bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
           >
             <Plus className="size-3.5" strokeWidth={2} />
             新增日子
@@ -155,12 +155,12 @@ function EventsPage() {
       />
 
       <div className="mb-5 flex gap-2 rounded-full bg-surface/70 p-1">
-        <span className="flex-1 rounded-full bg-card py-2 text-center text-xs font-medium text-primary shadow-soft">
+        <span className="flex-1 min-h-11 rounded-full bg-card py-2.5 text-center text-sm font-medium text-primary shadow-soft">
           倒數中的日子
         </span>
         <Link
           to="/calendar"
-          className="flex-1 rounded-full py-2.5 text-center text-xs text-muted-foreground transition-transform duration-300 active:scale-95"
+          className="flex-1 min-h-11 rounded-full py-2.5 text-center text-sm text-muted-foreground transition-transform duration-300 active:scale-95"
         >
           行事曆
         </Link>
@@ -208,7 +208,7 @@ function EventsPage() {
           {past.length > 0 ? (
             <>
               <div className="flex items-center gap-3 pt-6 pb-1">
-              <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground">
+              <p className="text-[13px] font-semibold tracking-[0.12em] text-muted-foreground">
                 ALREADY MET ♡
               </p>
               <span className="h-px flex-1 bg-border/60" />
@@ -227,7 +227,7 @@ function EventsPage() {
       )}
 
       {idols.length === 0 && events.length > 0 ? (
-        <p className="mt-6 text-center text-xs text-muted-foreground">
+        <p className="mt-6 text-center text-sm text-muted-foreground">
           <Link to="/idols" className="underline underline-offset-4">
             前往我的偶像
           </Link>
