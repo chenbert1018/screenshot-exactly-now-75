@@ -175,7 +175,7 @@ export function IdolFormSheet({
         className="mx-auto max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-[2rem] border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
       >
         <SheetHeader className="px-0 text-left">
-          <p className="text-[11px] font-semibold tracking-[0.16em] text-primary">MY IDOL ♡</p>
+          <p className="text-[13px] font-semibold tracking-[0.14em] text-primary">MY IDOL ♡</p>
           <SheetTitle className="font-display text-[22px]">{title}</SheetTitle>
           <SheetDescription>不需要填很多，只留下你想記得的部分就好。</SheetDescription>
         </SheetHeader>
@@ -184,7 +184,7 @@ export function IdolFormSheet({
           <div>
             <div className="mb-3">
               <p className="text-sm font-medium">最喜歡的照片</p>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-1 text-sm text-muted-foreground">
                 這張照片會成為你和他的 IdolDays 主視覺。
               </p>
             </div>
@@ -204,7 +204,7 @@ export function IdolFormSheet({
                     <button
                       type="button"
                       onClick={() => fileRef.current?.click()}
-                      className="rounded-full bg-card/90 px-3 py-1.5 text-xs shadow-soft"
+                      className="rounded-full bg-card/90 min-h-11 px-3 py-2 text-sm shadow-soft"
                     >
                       重新選擇
                     </button>
@@ -217,7 +217,7 @@ export function IdolFormSheet({
                           cutoutPhoto: "",
                         }))
                       }
-                      className="rounded-full bg-card/90 p-1.5 shadow-soft"
+                      className="rounded-full flex size-11 items-center justify-center bg-card/90 shadow-soft"
                       aria-label="移除照片"
                     >
                       <X className="size-4" strokeWidth={1.8} />
@@ -229,7 +229,7 @@ export function IdolFormSheet({
                       type="button"
                       onClick={createCutout}
                       disabled={cutoutBusy}
-                      className="absolute left-3 bottom-3 flex items-center gap-1.5 rounded-full bg-card/90 px-3 py-1.5 text-xs shadow-soft disabled:opacity-60"
+                      className="absolute left-3 bottom-3 flex items-center gap-1.5 rounded-full bg-card/90 min-h-11 px-3 py-2 text-sm shadow-soft disabled:opacity-60"
                     >
                       <Sparkles className="size-3.5" strokeWidth={1.7} />
                       {cutoutBusy ? "人物去背中…" : draft.cutoutPhoto ? "重新去背" : "人物去背"}
@@ -238,7 +238,7 @@ export function IdolFormSheet({
                 </div>
 
                 {draft.cutoutPhoto ? (
-                  <p className="mt-2 text-xs text-muted-foreground">
+                  <p className="mt-2 text-sm text-muted-foreground">
                     已完成本機人物去背，原始照片仍會保留。
                   </p>
                 ) : null}
@@ -283,7 +283,7 @@ export function IdolFormSheet({
 
           <div className="space-y-2">
             <Label>他的代表動物</Label>
-            <p className="text-xs leading-5 text-muted-foreground">
+            <p className="text-sm leading-5 text-muted-foreground">
               選一個最像他的角色，IdolDays 會用它調整陪伴與追星天氣的語氣。
             </p>
             <div className="grid grid-cols-3 gap-2">
@@ -295,7 +295,7 @@ export function IdolFormSheet({
                     type="button"
                     aria-pressed={active}
                     onClick={() => setDraft((d) => ({ ...d, representativeAnimal: animal.value }))}
-                    className={`rounded-2xl border px-2 py-3 text-xs transition-colors ${
+                    className={`rounded-2xl border min-h-12 px-2 py-3 text-sm transition-colors ${
                       active
                         ? "border-primary bg-primary/10 text-primary"
                         : "border-border/70 bg-surface/50 text-muted-foreground"
@@ -314,7 +314,7 @@ export function IdolFormSheet({
           <button
             type="submit"
             disabled={saving}
-            className="w-full rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95 disabled:opacity-60"
+            className="w-full rounded-full bg-primary min-h-[50px] py-3 text-base font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95 disabled:opacity-60"
           >
             {saving ? "儲存中…" : submitLabel}
           </button>
