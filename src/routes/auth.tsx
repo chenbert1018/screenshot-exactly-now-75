@@ -32,15 +32,35 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
+const PENDING_SHARE_RETURN_KEY = "idoldays.pendingShareReturn.v1";
+
+function safeReceiveReturn(value: string | null | undefined) {
+  return value?.startsWith("/receive/") ? value : undefined;
+}
+
 function AuthPage() {
   const { user, loading } = useAuth();
   const { returnTo } = Route.useSearch();
+  const [pendingReturnTo, setPendingReturnTo] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    if (!loading && user && returnTo) {
-      window.location.assign(returnTo);
+    const safe = safeReceiveReturn(returnTo);
+    if (safe) {
+      sessionStorage.setItem(PENDING_SHARE_RETURN_KEY, safe);
+      setPendingReturnTo(safe);
+      return;
     }
-  }, [loading, returnTo, user]);
+    setPendingReturnTo(safeReceiveReturn(sessionStorage.getItem(PENDING_SHARE_RETURN_KEY)));
+  }, [returnTo]);
+
+  const giftReturnTo = safeReceiveReturn(returnTo) ?? pendingReturnTo;
+
+  useEffect(() => {
+    if (!loading && user && giftReturnTo) {
+      sessionStorage.removeItem(PENDING_SHARE_RETURN_KEY);
+      window.location.assign(giftReturnTo);
+    }
+  }, [giftReturnTo, loading, user]);
 
   return (
     <AppShell>
@@ -53,7 +73,7 @@ function AuthPage() {
       ) : user ? (
         <SignedIn email={user.email ?? ""} userId={user.id} />
       ) : (
-        <SignedOut returnTo={returnTo} />
+        <SignedOut returnTo={giftReturnTo} />
       )}
     </AppShell>
   );
@@ -71,7 +91,7 @@ function SignedOut({ returnTo }: { returnTo?: string }) {
     e.preventDefault();
     setBusy(true);
     setMessage(null);
-    const error = mode === "signin" ? await signIn(email, password) : await signUp(email, password);
+    const error = mode === "signin" ? await signIn(email, password) : await signUp(email, password, returnTo);
     setBusy(false);
     if (error) {
       setMessage(error);
