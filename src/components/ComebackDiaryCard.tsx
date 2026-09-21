@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowRight, Music2, Plus } from "lucide-react";
+import { ArrowRight, Music2, Plus, Share2 } from "lucide-react";
 import { emptyComebackDiaryDraft, type ComebackDiaryDraft } from "@/lib/comeback-diary";
 import { useComebackDiary } from "@/lib/comeback-diary.source";
 import type { IdolEvent } from "@/lib/events";
@@ -117,6 +117,33 @@ export function ComebackDiaryCard({ event }: { event: IdolEvent }) {
           : "歌曲沒有新增成功，請再試一次",
       );
       throw cause;
+    }
+  }
+
+  async function shareEra() {
+    const lines = [
+      "COMEBACK DIARY ♡",
+      `${event.title} ERA ✨`,
+      draft.firstListenRating ? `第一次聽：${"💗".repeat(draft.firstListenRating)}` : "",
+      ...songFields.map(({ key, label }) => {
+        const song = selectedSongFor(key);
+        return song ? `${label}：♪ ${song.title}` : "";
+      }),
+      draft.note ? `「${draft.note}」` : "",
+      "",
+      "from IdolDays ♡",
+    ].filter(Boolean);
+    const text = lines.join("\n");
+
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: `${event.title} · COMEBACK DIARY ♡`, text });
+      } else {
+        await navigator.clipboard.writeText(text);
+      }
+    } catch (cause) {
+      if (cause instanceof DOMException && cause.name === "AbortError") return;
+      setSaveError("Comeback Diary 沒有分享成功，請再試一次");
     }
   }
 
@@ -271,13 +298,22 @@ export function ComebackDiaryCard({ event }: { event: IdolEvent }) {
         type="button"
         disabled={!ready || saving}
         onClick={() => void submit()}
-        className="mt-5 w-full rounded-xl bg-primary px-4 py-3 text-sm font-medium text-primary-foreground shadow-soft disabled:opacity-50"
+        className="mt-5 min-h-[52px] w-full rounded-full bg-primary px-4 py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform active:scale-[0.97] disabled:opacity-50"
       >
         {saving
           ? "儲存中…"
           : saved
             ? "已收藏這個 Era ♡"
             : "儲存 Comeback Diary"}
+      </button>
+
+      <button
+        type="button"
+        onClick={() => void shareEra()}
+        className="mt-2 flex min-h-[44px] w-full items-center justify-center gap-2 rounded-full bg-card px-4 py-2.5 text-xs font-medium text-primary shadow-soft transition-transform active:scale-[0.97]"
+      >
+        <Share2 className="size-3.5" strokeWidth={1.8} />
+        分享我的 Era ♡
       </button>
 
       <Sheet
