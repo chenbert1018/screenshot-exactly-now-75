@@ -12,7 +12,8 @@
     "format": "prettier --write .",
     "cap:sync": "cap sync ios",
     "cap:open": "cap open ios",
-    "ios:build": "vite build && cap sync ios"
+    "ios:build": "vite build && cap sync ios",
+    "postbuild": "mkdir -p .output/public/.well-known && cp public/.well-known/apple-app-site-association .output/public/.well-known/apple-app-site-association"
   },
   "overrides": {
     "rolldown": "1.2.1"
