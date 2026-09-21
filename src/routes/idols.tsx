@@ -73,7 +73,7 @@ function IdolsPage() {
         <div className="mt-2 flex items-end justify-between gap-4">
           <div className="min-w-0">
             <h1 className="font-display text-[28px] leading-snug font-semibold">我喜歡的那個人</h1>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            <p className="mt-2 text-base leading-6 text-muted-foreground">
               從一個名字開始，慢慢收藏我們的日子。
             </p>
           </div>
@@ -82,9 +82,9 @@ function IdolsPage() {
             type="button"
             onClick={openAdd}
             aria-label="新增偶像"
-            className="mb-1 flex size-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-soft transition-transform duration-300 active:scale-90"
+            className="mb-1 flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-soft transition-transform duration-300 active:scale-90"
           >
-            <Plus className="size-4" strokeWidth={2} />
+            <Plus className="size-5" strokeWidth={2} />
           </button>
         </div>
       </header>
@@ -102,7 +102,7 @@ function IdolsPage() {
               <RefreshCw className="size-4 text-primary" />
               每日輪換封面偶像
             </p>
-            <p className="mt-1 text-xs leading-5 text-muted-foreground">
+            <p className="mt-1 text-sm leading-5 text-muted-foreground">
               首頁每天自動換一位偶像，收藏內容不會改變。
             </p>
           </div>
@@ -129,7 +129,7 @@ function IdolsPage() {
             <button
               type="button"
               onClick={openAdd}
-              className="inline-flex items-center gap-1.5 rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+              className="inline-flex items-center gap-1.5 min-h-[50px] rounded-full bg-primary px-6 py-3 text-base font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
             >
               <Plus className="size-4" strokeWidth={2} />
               加入喜歡的人
@@ -153,14 +153,14 @@ function IdolsPage() {
       )}
 
       {isPlus ? (
-        <p className="mt-7 text-center text-xs text-muted-foreground">
+        <p className="mt-7 text-center text-sm text-muted-foreground">
           MY IDOL COLLECTION ♡ · 最多收藏 6 位
         </p>
       ) : (
         <button
           type="button"
           onClick={() => setPaywall(true)}
-          className="mt-6 w-full text-center text-xs text-muted-foreground"
+          className="mt-6 min-h-11 w-full text-center text-sm text-muted-foreground"
         >
           免費版可收藏 1 位偶像 · IdolDays+ 最多 6 位（NT$90／月）
         </button>
