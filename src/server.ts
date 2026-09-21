@@ -44,22 +44,6 @@ function isH3SwallowedErrorBody(body: string): boolean {
   }
 }
 
-const idolDaysAppleAppSiteAssociation = JSON.stringify({
-  applinks: {
-    details: [
-      {
-        appIDs: ["6AZ9K269DA.com.idoldays.app"],
-        components: [
-          {
-            "/": "/receive/*",
-            comment: "Open IdolDays gift receive links in the iOS app",
-          },
-        ],
-      },
-    ],
-  },
-});
-
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     const url = new URL(request.url);
