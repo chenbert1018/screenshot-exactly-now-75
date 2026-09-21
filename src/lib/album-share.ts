@@ -21,6 +21,46 @@ export type AlbumShareClaim = {
   importedMemoryCount: number;
 };
 
+export type ClaimedAlbumSource = {
+  senderName: string;
+  claimedAt: string;
+  shareMessage?: string;
+};
+
+export function useClaimedAlbumSource(folderId?: string) {
+  const [source, setSource] = useState<ClaimedAlbumSource | null>(null);
+
+  useEffect(() => {
+    if (!folderId) {
+      setSource(null);
+      return;
+    }
+
+    let active = true;
+    void callShareRpc<Array<{
+      sender_name: string | null;
+      claimed_at: string;
+      share_message: string | null;
+    }>>("get_claimed_album_source", { p_folder_id: folderId })
+      .then((rows) => {
+        if (!active) return;
+        const row = rows[0];
+        setSource(row ? {
+          senderName: row.sender_name?.trim() || "一位 IdolDays 粉絲",
+          claimedAt: row.claimed_at,
+          ...(row.share_message ? { shareMessage: row.share_message } : {}),
+        } : null);
+      })
+      .catch(() => {
+        if (active) setSource(null);
+      });
+
+    return () => { active = false; };
+  }, [folderId]);
+
+  return source;
+}
+
 type ShareRow = { id: string; mode: AlbumShareMode; public_token: string | null };
 type RecipientRow = { recipient_email: string };
 type RpcResponse<T> = { data: T | null; error: { message?: string } | null };
