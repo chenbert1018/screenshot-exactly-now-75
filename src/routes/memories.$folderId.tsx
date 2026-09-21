@@ -20,6 +20,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { AlbumShareSheet } from "@/components/AlbumShareSheet";
+import { useClaimedAlbumSource } from "@/lib/album-share";
 import { MemoryFolderFormSheet } from "@/components/MemoryFolderFormSheet";
 import { MemoryFormSheet } from "@/components/MemoryFormSheet";
 import { useMemoryFolderSource } from "@/lib/memory-folders.source";
@@ -70,6 +71,7 @@ function FolderDetailPage() {
   const navigate = useNavigate();
   const { folders, ready, updateFolder, removeFolder, mode } = useMemoryFolderSource();
   const { memories, addMemory, updateMemory, removeMemory } = useMemorySource(folderId);
+  const claimedSource = useClaimedAlbumSource(folderId);
   const { idols } = useIdolSource();
 
   const folder = folders.find((f) => f.id === folderId);
@@ -181,6 +183,18 @@ function FolderDetailPage() {
           </h1>
           {folder.description ? (
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{folder.description}</p>
+          ) : null}
+          {claimedSource ? (
+            <div className="mt-4 rounded-2xl border border-primary/15 bg-primary/[0.06] px-4 py-3">
+              <p className="text-[10px] font-semibold tracking-[0.14em] text-primary">IDOLDAYS SHARE ♡</p>
+              <p className="mt-1 text-sm font-medium">來自 {claimedSource.senderName} 的收藏 ♡</p>
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                {new Date(claimedSource.claimedAt).toLocaleDateString("zh-TW")} 收下
+              </p>
+              {claimedSource.shareMessage ? (
+                <p className="mt-2 text-xs leading-5 text-muted-foreground">「{claimedSource.shareMessage}」</p>
+              ) : null}
+            </div>
           ) : null}
           <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-[12px] text-muted-foreground">
             {folder.startDate || folder.endDate ? (
