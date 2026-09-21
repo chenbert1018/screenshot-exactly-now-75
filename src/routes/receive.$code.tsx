@@ -27,7 +27,7 @@ function ReceiveAlbumPage() {
   const { user, loading: authLoading } = useAuth();
   const [preview, setPreview] = useState<AlbumShareCodePreview | null | undefined>(undefined);
   const [claiming, setClaiming] = useState(false);
-  const [received, setReceived] = useState<{ folderId: string; title: string; count: number } | null>(null);
+  const [received, setReceived] = useState<{ folderId: string; title: string; count: number; senderName?: string } | null>(null);
 
   useEffect(() => {
     if (authLoading) return;
@@ -48,7 +48,7 @@ function ReceiveAlbumPage() {
     setClaiming(true);
     try {
       const result = await claimAlbumShareCode(code);
-      setReceived({ folderId: result.folderId, title: result.shareTitle, count: result.importedMemoryCount });
+      setReceived({ folderId: result.folderId, title: result.shareTitle, count: result.importedMemoryCount, senderName: preview.senderName });
     } catch (cause) {
       toast.error(cause instanceof Error ? cause.message : "收藏沒有收進來，請稍後再試。");
       setClaiming(false);
@@ -136,7 +136,7 @@ function ReceiveAlbumPage() {
           <p className="mt-2 text-sm text-muted-foreground">這份收藏已經放進你的回憶</p>
           <div className="mt-6 rounded-[1.5rem] bg-surface/80 px-5 py-5 text-left">
             <p className="font-display text-[20px] font-medium">{received.title}</p>
-            <p className="mt-1 text-sm text-muted-foreground">♡ {received.count} 則回憶 · 來自朋友的收藏</p>
+            <p className="mt-1 text-sm text-muted-foreground">♡ {received.count} 則回憶 · 來自 {received.senderName || "一位 IdolDays 粉絲"} 的收藏</p>
           </div>
           <button
             type="button"
@@ -172,7 +172,7 @@ function ReceiveAlbumPage() {
             <p className="text-[10px] font-semibold tracking-[0.16em] text-primary">A GIFT FOR YOU ♡</p>
             <h1 className="mt-2 font-display text-[25px] font-medium leading-snug">{preview.shareTitle}</h1>
             <p className="mt-2 text-sm text-muted-foreground">♡ {preview.memoryCount} 則回憶</p>
-            <p className="mt-4 text-xs text-muted-foreground">來自一位 IdolDays 粉絲的收藏 ♡</p>
+            <p className="mt-4 text-xs text-muted-foreground">來自 {preview.senderName || "一位 IdolDays 粉絲"} 的收藏 ♡</p>
           </div>
 
           {preview.shareMessage ? (
