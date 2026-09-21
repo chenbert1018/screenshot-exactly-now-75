@@ -155,7 +155,7 @@ function ProfilePage() {
             to="/auth"
             className="flex w-full items-center gap-3 px-5 py-4 text-left transition-colors active:bg-surface/70"
           >
-            <div className="flex size-9 items-center justify-center rounded-full bg-accent/30 text-primary">
+            <div className="flex size-11 items-center justify-center rounded-full bg-accent/30 text-primary">
               <Cloud className="size-[17px]" strokeWidth={1.5} />
             </div>
             <span className="min-w-0 flex-1">
@@ -223,7 +223,7 @@ function ProfilePage() {
               onClick={() => setOpenSheet(key)}
               className="flex w-full items-center gap-3 px-5 py-4 text-left transition-colors active:bg-surface/70"
             >
-              <div className="flex size-9 items-center justify-center rounded-full bg-surface text-primary">
+              <div className="flex size-11 items-center justify-center rounded-full bg-surface text-primary">
                 <Icon className="size-[17px]" strokeWidth={1.5} />
               </div>
               <span className="flex-1 text-base">{label}</span>
@@ -235,7 +235,7 @@ function ProfilePage() {
             to="/widget"
             className="flex w-full items-center gap-3 px-5 py-4 text-left transition-colors active:bg-surface/70"
           >
-            <div className="flex size-9 items-center justify-center rounded-full bg-surface text-primary">
+            <div className="flex size-11 items-center justify-center rounded-full bg-surface text-primary">
               <PanelsTopLeft className="size-[17px]" strokeWidth={1.5} />
             </div>
             <span className="flex-1 text-base">桌面陪伴</span>
