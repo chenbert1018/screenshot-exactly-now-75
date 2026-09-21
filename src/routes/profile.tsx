@@ -141,7 +141,7 @@ function ProfilePage() {
           <button
             type="button"
             onClick={() => void editDisplayName()}
-            className="rounded-full border border-border/60 bg-card/70 px-3 py-2 text-xs text-muted-foreground transition-all duration-300 active:scale-95"
+            className="rounded-full border border-border/60 bg-card/70 min-h-11 px-4 py-2.5 text-sm text-muted-foreground transition-all duration-300 active:scale-95"
           >
             設定名稱
           </button>
@@ -159,11 +159,11 @@ function ProfilePage() {
               <Cloud className="size-[17px]" strokeWidth={1.5} />
             </div>
             <span className="min-w-0 flex-1">
-              <span className="block text-sm">
+              <span className="block text-base">
                 {authLoading ? "讀取帳號中…" : user ? "已登入雲端帳號" : "登入／註冊雲端帳號"}
               </span>
               {user?.email ? (
-                <span className="mt-0.5 block truncate text-xs text-muted-foreground">{user.email}</span>
+                <span className="mt-0.5 block truncate text-sm text-muted-foreground">{user.email}</span>
               ) : null}
             </span>
             <ChevronRight className="size-4 text-muted-foreground" strokeWidth={1.6} />
@@ -189,8 +189,8 @@ function ProfilePage() {
               {reminderRows.map((row) => (
                 <li key={row.id} className="flex items-center gap-3 py-3">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm">{row.title}</p>
-                    <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                    <p className="truncate text-base">{row.title}</p>
+                    <p className="mt-0.5 truncate text-sm text-muted-foreground">
                       {row.idolName} · {formatDaysBefore(row.daysBefore)}
                     </p>
                   </div>
@@ -203,7 +203,7 @@ function ProfilePage() {
                     type="button"
                     aria-label={`刪除 ${row.title} 提醒`}
                     onClick={() => void removeReminder(row.id)}
-                    className="rounded-full p-2 text-muted-foreground transition-transform duration-300 active:scale-90"
+                    className="flex size-11 items-center justify-center rounded-full text-muted-foreground transition-transform duration-300 active:scale-90"
                   >
                     <Trash2 className="size-4" strokeWidth={1.6} />
                   </button>
@@ -226,7 +226,7 @@ function ProfilePage() {
               <div className="flex size-9 items-center justify-center rounded-full bg-surface text-primary">
                 <Icon className="size-[17px]" strokeWidth={1.5} />
               </div>
-              <span className="flex-1 text-sm">{label}</span>
+              <span className="flex-1 text-base">{label}</span>
               <ChevronRight className="size-4 text-muted-foreground" strokeWidth={1.6} />
             </button>
           ))}
@@ -238,7 +238,7 @@ function ProfilePage() {
             <div className="flex size-9 items-center justify-center rounded-full bg-surface text-primary">
               <PanelsTopLeft className="size-[17px]" strokeWidth={1.5} />
             </div>
-            <span className="flex-1 text-sm">桌面陪伴</span>
+            <span className="flex-1 text-base">桌面陪伴</span>
             <ChevronRight className="size-4 text-muted-foreground" strokeWidth={1.6} />
           </Link>
         </SoftCard>
