@@ -131,6 +131,7 @@ export async function previewAlbumShareCode(code: string): Promise<AlbumShareCod
     share_id: string;
     share_title: string;
     share_message: string | null;
+    sender_name: string | null;
     folder_title: string;
     memory_count: number | string;
   }>>("preview_album_share_code", { p_code: normalizeShareCode(code) });
@@ -140,6 +141,7 @@ export async function previewAlbumShareCode(code: string): Promise<AlbumShareCod
     shareId: row.share_id,
     shareTitle: row.share_title,
     ...(row.share_message ? { shareMessage: row.share_message } : {}),
+    ...(row.sender_name ? { senderName: row.sender_name } : {}),
     folderTitle: row.folder_title,
     memoryCount: Number(row.memory_count) || 0,
   };
