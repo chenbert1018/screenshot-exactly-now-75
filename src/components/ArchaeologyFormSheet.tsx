@@ -438,7 +438,7 @@ export function ArchaeologyFormSheet({
                     key={tag}
                     type="button"
                     onClick={() => removeTag(tag)}
-                    className="flex items-center gap-1 rounded-full bg-surface px-3 py-1.5 text-xs"
+                    className="flex items-center gap-1 min-h-11 rounded-full bg-surface px-3 py-2 text-sm"
                   >
                     #{tag}
                     <X className="size-3" strokeWidth={1.8} />
@@ -465,7 +465,7 @@ export function ArchaeologyFormSheet({
               <button
                 type="button"
                 onClick={addTag}
-                className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-surface text-muted-foreground"
+                className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-surface text-muted-foreground"
                 aria-label="加入 Tag"
               >
                 <Plus className="size-4" strokeWidth={1.8} />
