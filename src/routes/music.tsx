@@ -264,21 +264,10 @@ function MusicPage() {
 
   return (
     <AppShell>
-      <header className="mb-7">
-        <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">
-          My Music
-        </p>
-
-        <h1 className="mt-2 font-display text-[27px] font-medium">
-          我和他的歌 🎧
-        </h1>
-
-        <p className="mt-2 text-base leading-relaxed text-muted-foreground">
-          喜歡一個人的日子，
-          <br />
-          總會留下幾首歌。
-        </p>
-      </header>
+      <PageHeader
+        title="我和他的歌 🎧"
+        subtitle="喜歡一個人的日子，總會留下幾首歌。"
+      />
 
       {!idolsReady ? (
         <div className="h-40 rounded-3xl bg-surface/50" />
