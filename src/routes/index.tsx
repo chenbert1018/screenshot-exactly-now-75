@@ -111,16 +111,16 @@ function EventCard({ event }: { event: IdolEvent }) {
         <CalendarHeart className="size-6" strokeWidth={1.55} />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-[11px] font-medium tracking-[0.12em] text-primary uppercase">
+        <p className="text-[13px] font-medium tracking-[0.1em] text-primary uppercase">
           Next D-Day
         </p>
         <p className="mt-1 truncate text-[17px] font-medium">{event.title}</p>
-        <p className="mt-1 text-xs text-muted-foreground">{dotDate(event.date)}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{dotDate(event.date)}</p>
       </div>
       <p className="shrink-0 font-display text-[35px] leading-none text-primary">
         {dayLabel(event)}
       </p>
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+      <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
         <ArrowRight className="size-4" strokeWidth={2} />
       </span>
     </Link>
@@ -193,7 +193,7 @@ function FanWeatherCard({ event }: { event: IdolEvent }) {
         <CloudSun className="size-7" strokeWidth={1.45} />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-[11px] font-medium tracking-[0.08em] text-primary">
+        <p className="text-[13px] font-medium tracking-[0.08em] text-primary">
           Fan Weather・{place}
         </p>
         <p className="mt-1 truncate text-[16px] font-medium">
@@ -224,7 +224,7 @@ function ArchaeologyCard({
         )}
       </div>
       <div className="min-w-0 flex-1 py-1">
-        <p className="text-[11px] font-medium tracking-[0.08em] text-primary">FROM OUR DAYS ♡</p>
+        <p className="text-[13px] font-medium tracking-[0.08em] text-primary">FROM OUR DAYS ♡</p>
         <p className="mt-1 truncate text-[17px] font-medium">{item.title}</p>
         <p className="mt-1 text-sm text-muted-foreground">
           {dotDate(item.createdAt.slice(0, 10))}
@@ -259,7 +259,7 @@ function MemoryCard({
           )}
         </div>
         <div className="min-w-0 flex-1 py-1">
-          <p className="text-[11px] font-medium text-primary">▣ 去年的今天</p>
+          <p className="text-[13px] font-medium text-primary">▣ 去年的今天</p>
           <p className="mt-1 text-[17px] font-medium">
             {song ? "一年前，你第一次在現場聽到這首歌。" : dotDate(memory.date)}
           </p>
@@ -732,7 +732,7 @@ function TodaySongCard({
                         : "border-border/70 bg-card/80"
                     }`}
                   >
-                    <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                       ♪
                     </span>
 
@@ -766,7 +766,7 @@ function TodaySongCard({
               <p className="mt-2 text-sm font-medium">
                 我們的歌還是空的 ♡
               </p>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-1 text-sm text-muted-foreground">
                 把第一首想一起聽的歌收藏進來。
               </p>
             </div>
@@ -795,7 +795,7 @@ function TodaySongCard({
         to="/music"
         className="mt-4 flex w-full items-center gap-3 border-t border-border/60 pt-4 text-left"
       >
-        <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+        <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
           <Music2 className="size-4" strokeWidth={1.55} />
         </div>
 
