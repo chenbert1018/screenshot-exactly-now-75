@@ -31,6 +31,7 @@ import {
 import { useIdolMusicSource } from "@/lib/idol-music.source";
 import { useIdolSource } from "@/lib/idols.source";
 import { shareSoundtrackCard } from "@/lib/soundtrack-share";
+import { shareTodaySongCard } from "@/lib/music-diary-share";
 import {
   useSongJournalHistory,
   useTodaySongJournal,
@@ -222,21 +223,14 @@ function MusicPage() {
   const shareTodayFeeling = async () => {
     if (!today) return;
     const mood = todayJournal.entry?.mood;
-    const text = [
-      "TODAY'S SONG ♡",
-      `♪ ${today.title}`,
-      today.artist ? today.artist : "",
-      mood ? `今天的心情：${mood}` : "",
-      "",
-      "from IdolDays ♡",
-    ].filter(Boolean).join("\n");
 
     try {
-      if (navigator.share) {
-        await navigator.share({ title: "TODAY'S SONG ♡", text });
-      } else {
-        await navigator.clipboard.writeText(text);
-      }
+      await shareTodaySongCard({
+        title: today.title,
+        artist: today.artist,
+        mood,
+        idolName: homeIdol?.name,
+      });
     } catch (cause) {
       if (cause instanceof DOMException && cause.name === "AbortError") return;
       setActionError("今天的音樂心情沒有分享成功，請再試一次。");
