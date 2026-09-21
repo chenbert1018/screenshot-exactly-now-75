@@ -44,8 +44,35 @@ function isH3SwallowedErrorBody(body: string): boolean {
   }
 }
 
+const idolDaysAppleAppSiteAssociation = JSON.stringify({
+  applinks: {
+    details: [
+      {
+        appIDs: ["6AZ9K269DA.com.idoldays.app"],
+        components: [
+          {
+            "/": "/receive/*",
+            comment: "Open IdolDays gift receive links in the iOS app",
+          },
+        ],
+      },
+    ],
+  },
+});
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
+    const url = new URL(request.url);
+    if (url.pathname === "/.well-known/apple-app-site-association") {
+      return new Response(idolDaysAppleAppSiteAssociation, {
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "cache-control": "public, max-age=300",
+        },
+      });
+    }
+
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
