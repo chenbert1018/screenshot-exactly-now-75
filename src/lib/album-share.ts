@@ -60,7 +60,7 @@ export function shareLinkFor(token: string): string {
 }
 
 async function callShareRpc<T>(name: string, args: Record<string, unknown>): Promise<T> {
-  const rpc = supabase.rpc as unknown as ShareRpc;
+  const rpc = supabase.rpc.bind(supabase) as unknown as ShareRpc;
   const { data, error } = await rpc<T>(name, args);
   if (error) throw new Error(rpcMessage(error, "分享功能暫時無法使用，請稍後再試。"));
   if (data == null) throw new Error("沒有收到分享資料，請稍後再試。");
