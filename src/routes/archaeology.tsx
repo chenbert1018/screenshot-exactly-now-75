@@ -462,7 +462,7 @@ function VideoFallback({ source, url }: { source: ArchaeologySource; url: string
 
       <p className="mt-2 text-xs">{SOURCE_LABELS[source]} 影片</p>
 
-      <p className="mt-1 text-[11px] text-muted-foreground/70">點一下回原文觀看</p>
+      <p className="mt-1 text-sm text-muted-foreground/70">點一下回原文觀看</p>
     </a>
   );
 }
@@ -539,12 +539,12 @@ function ArchaeologyCard({
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-surface px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
+            <span className="rounded-full bg-surface px-2.5 py-1.5 text-[13px] font-medium text-muted-foreground">
               {SOURCE_LABELS[item.source]}
             </span>
 
             {item.collection ? (
-              <span className="text-[11px] text-muted-foreground">{item.collection}</span>
+              <span className="text-[13px] text-muted-foreground">{item.collection}</span>
             ) : null}
           </div>
 
@@ -571,7 +571,7 @@ function ArchaeologyCard({
           <button
             type="button"
             onClick={onToggleFavorite}
-            className="flex size-9 items-center justify-center rounded-full bg-surface"
+            className="flex size-11 items-center justify-center rounded-full bg-surface"
             aria-label={item.favorite ? "取消最愛" : "加入最愛"}
           >
             <Heart
@@ -586,7 +586,7 @@ function ArchaeologyCard({
           <button
             type="button"
             onClick={() => setMenuOpen((open) => !open)}
-            className="flex size-9 items-center justify-center rounded-full bg-surface text-muted-foreground"
+            className="flex size-11 items-center justify-center rounded-full bg-surface text-muted-foreground"
             aria-label="更多操作"
           >
             <MoreHorizontal className="size-4" strokeWidth={1.7} />
@@ -623,7 +623,7 @@ function ArchaeologyCard({
       </div>
 
       <div className="mt-3 flex items-center justify-between border-t border-border/50 pt-2.5">
-        <span className="text-[11px] text-muted-foreground">
+        <span className="text-[13px] text-muted-foreground">
           {new Date(item.createdAt).toLocaleDateString("zh-TW")}
         </span>
 
@@ -631,7 +631,7 @@ function ArchaeologyCard({
           href={item.url}
           target="_blank"
           rel="noreferrer"
-          className="flex items-center gap-1.5 text-xs font-medium text-primary"
+          className="flex items-center gap-1.5 min-h-11 text-sm font-medium text-primary"
         >
           回原文
           <ExternalLink className="size-3.5" strokeWidth={1.7} />
