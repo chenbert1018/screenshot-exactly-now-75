@@ -48,19 +48,19 @@ function MemoriesPage() {
   return (
     <AppShell>
       <header className="mb-7">
-        <p className="text-xs tracking-[0.28em] text-muted-foreground uppercase">Memories</p>
+        <p className="text-sm tracking-[0.2em] text-muted-foreground uppercase">Memories</p>
         <h1 className="mt-2 font-display text-[26px] leading-snug font-medium">我的追星回憶</h1>
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+        <p className="mt-2 text-base leading-relaxed text-muted-foreground">
           把喜歡過的每一天，留在這裡 ♡
         </p>
       </header>
 
       <div className="mb-5 flex items-baseline justify-between">
-        <h2 className="font-display text-[15px] font-medium tracking-[0.08em]">📁 回憶資料夾</h2>
+        <h2 className="font-display text-[18px] font-semibold tracking-[0.08em]">📁 回憶資料夾</h2>
         {folders.length > 0 ? (
           <button
             onClick={() => setOpen(true)}
-            className="inline-flex items-center gap-1 rounded-full bg-primary px-3.5 py-1.5 text-xs font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+            className="inline-flex items-center gap-1 min-h-11 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
           >
             <Plus className="size-3.5" strokeWidth={2} />
             新增回憶夾
@@ -84,7 +84,7 @@ function MemoriesPage() {
           action={
             <button
               onClick={() => setOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+              className="inline-flex items-center gap-1.5 min-h-[50px] rounded-full bg-primary px-6 py-3 text-base font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
             >
               <Plus className="size-4" strokeWidth={2} />
               新增回憶夾
@@ -110,15 +110,15 @@ function MemoriesPage() {
                   ) : (
                     <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-accent/35 via-card to-lavender/30 text-primary/50">
                       <Images className="size-7" strokeWidth={1.3} />
-                      <span className="text-xs tracking-[0.12em]">OUR DAYS ♡</span>
+                      <span className="text-sm tracking-[0.1em]">OUR DAYS ♡</span>
                     </div>
                   )}
                   <div className="px-5 py-4">
-                    <p className="font-display text-[17px] font-medium">{f.title}</p>
+                    <p className="font-display text-[19px] font-medium">{f.title}</p>
                     {f.description ? (
                       <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{f.description}</p>
                     ) : null}
-                    <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[12px] text-muted-foreground">
+                    <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm text-muted-foreground">
                       {range ? (
                         <span className="tracking-wide">{range}</span>
                       ) : null}
