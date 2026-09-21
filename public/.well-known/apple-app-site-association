@@ -1,0 +1,17 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": [
+          "6AZ9K269DA.com.idoldays.app"
+        ],
+        "components": [
+          {
+            "/": "/receive/*",
+            "comment": "Open IdolDays gift receive links in the iOS app"
+          }
+        ]
+      }
+    ]
+  }
+}
