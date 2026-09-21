@@ -184,7 +184,7 @@ function SignedOut({ returnTo }: { returnTo?: string }) {
           {message}
         </p>
       ) : null}
-      <p className="mt-4 text-xs text-muted-foreground">
+      <p className="mt-4 text-sm text-muted-foreground">
         登入不會刪除這台 iPhone 上原本保存的內容。
       </p>
     </SoftCard>
@@ -253,13 +253,13 @@ function SignedIn({ email, userId }: { email: string; userId: string }) {
     <>
       <SoftCard className="relative mb-8 overflow-hidden px-5 py-6">
         <span aria-hidden className="absolute top-4 right-5 text-primary/25">♡</span>
-        <p className="text-xs font-semibold tracking-[0.14em] text-primary">
+        <p className="text-[13px] font-semibold tracking-[0.12em] text-primary">
           IDOLDAYS CLOUD
         </p>
         <p className="mt-2 text-[17px] font-medium">已經替你收好 ♡</p>
         <p className="mt-1 truncate text-sm text-muted-foreground">{email}</p>
         {profile ? (
-          <p className="mt-1 text-xs text-muted-foreground">
+          <p className="mt-1 text-sm text-muted-foreground">
             個人設定已建立（{profile.language}／{profile.theme}）
           </p>
         ) : null}
@@ -298,10 +298,10 @@ function SignedIn({ email, userId }: { email: string; userId: string }) {
             <ul className="mt-4 divide-y divide-border/60">
               {idols.map((idol) => (
                 <li key={idol.id} className="flex items-center gap-3 py-3">
-                  <span className="min-w-0 flex-1 truncate text-sm">{idol.name}</span>
+                  <span className="min-w-0 flex-1 truncate text-base">{idol.name}</span>
                   <button
                     type="button"
-                    className="rounded-full px-3 py-1 text-xs text-muted-foreground"
+                    className="min-h-11 rounded-full px-3 py-2 text-sm text-muted-foreground"
                     onClick={() => void rename(idol)}
                   >
                     改名
@@ -309,7 +309,7 @@ function SignedIn({ email, userId }: { email: string; userId: string }) {
                   <button
                     type="button"
                     aria-label={`刪除 ${idol.name}`}
-                    className="rounded-full p-2 text-muted-foreground transition-transform duration-300 active:scale-90"
+                    className="flex size-11 items-center justify-center rounded-full text-muted-foreground transition-transform duration-300 active:scale-90"
                     onClick={() => void remove(idol)}
                   >
                     <Trash2 className="size-4" strokeWidth={1.6} />
