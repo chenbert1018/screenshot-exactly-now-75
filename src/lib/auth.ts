@@ -38,11 +38,14 @@ export function useAuth(): AuthState {
 }
 
 export function useAuthActions() {
-  const signUp = useCallback(async (email: string, password: string) => {
+  const signUp = useCallback(async (email: string, password: string, returnTo?: string) => {
+    const safeReturnTo = returnTo?.startsWith("/receive/") ? returnTo : undefined;
+    const authUrl = new URL("/auth", window.location.origin);
+    if (safeReturnTo) authUrl.searchParams.set("returnTo", safeReturnTo);
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: `${window.location.origin}/auth` },
+      options: { emailRedirectTo: authUrl.toString() },
     });
     return error?.message ?? null;
   }, []);
