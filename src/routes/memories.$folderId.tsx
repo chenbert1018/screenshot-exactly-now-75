@@ -136,7 +136,7 @@ function FolderDetailPage() {
       <div className="mb-5 flex items-center justify-between">
         <Link
           to="/memories"
-          className="inline-flex items-center gap-1 rounded-full bg-card/70 px-3 py-1.5 text-sm text-muted-foreground shadow-soft"
+          className="inline-flex items-center gap-1 rounded-full bg-card/70 min-h-11 px-3 py-2 text-base text-muted-foreground shadow-soft"
         >
           <ChevronLeft className="size-4" strokeWidth={1.8} />
           回憶
@@ -147,7 +147,7 @@ function FolderDetailPage() {
               <button
                 type="button"
                 aria-label="資料夾選單"
-                className="relative z-10 inline-flex size-9 touch-manipulation items-center justify-center rounded-full bg-card/70 text-muted-foreground shadow-soft active:scale-95"
+                className="relative z-10 inline-flex size-11 touch-manipulation items-center justify-center rounded-full bg-card/70 text-muted-foreground shadow-soft active:scale-95"
               >
                 <MoreHorizontal className="size-4" strokeWidth={1.8} />
               </button>
@@ -175,28 +175,28 @@ function FolderDetailPage() {
               className="mb-5 aspect-[4/3] w-full rounded-[2rem] object-cover shadow-soft"
             />
           ) : null}
-          <p className="text-[11px] font-semibold tracking-[0.16em] text-primary">
+          <p className="text-[13px] font-semibold tracking-[0.14em] text-primary">
             OUR MEMORIES ♡
           </p>
           <h1 className="mt-2 font-display text-[28px] leading-snug font-semibold">
             {folder.title}
           </h1>
           {folder.description ? (
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{folder.description}</p>
+            <p className="mt-2 text-base leading-relaxed text-muted-foreground">{folder.description}</p>
           ) : null}
           {claimedSource ? (
             <div className="mt-4 rounded-2xl border border-primary/15 bg-primary/[0.06] px-4 py-3">
-              <p className="text-[10px] font-semibold tracking-[0.14em] text-primary">IDOLDAYS SHARE ♡</p>
+              <p className="text-[13px] font-semibold tracking-[0.12em] text-primary">IDOLDAYS SHARE ♡</p>
               <p className="mt-1 text-sm font-medium">來自 {claimedSource.senderName} 的收藏 ♡</p>
-              <p className="mt-1 text-[11px] text-muted-foreground">
+              <p className="mt-1 text-sm text-muted-foreground">
                 {new Date(claimedSource.claimedAt).toLocaleDateString("zh-TW")} 收下
               </p>
               {claimedSource.shareMessage ? (
-                <p className="mt-2 text-xs leading-5 text-muted-foreground">「{claimedSource.shareMessage}」</p>
+                <p className="mt-2 text-sm leading-5 text-muted-foreground">「{claimedSource.shareMessage}」</p>
               ) : null}
             </div>
           ) : null}
-          <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-[12px] text-muted-foreground">
+          <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted-foreground">
             {folder.startDate || folder.endDate ? (
               <span className="tracking-wide">
                 {dotDate(folder.startDate)}
@@ -213,10 +213,10 @@ function FolderDetailPage() {
 
       <div className="mb-5 flex items-baseline justify-between">
         <div>
-          <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground">
+          <p className="text-[13px] font-semibold tracking-[0.12em] text-muted-foreground">
             OUR DAYS
           </p>
-          <h2 className="mt-1 font-display text-[17px] font-medium">
+          <h2 className="mt-1 font-display text-[19px] font-medium">
             一起走過的日子
           </h2>
         </div>
@@ -226,7 +226,7 @@ function FolderDetailPage() {
               setEditing(null);
               setMemoryOpen(true);
             }}
-            className="inline-flex items-center gap-1 rounded-full bg-primary px-3.5 py-1.5 text-xs font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+            className="inline-flex items-center gap-1 min-h-11 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
           >
             <Plus className="size-3.5" strokeWidth={2} />
             留下回憶
@@ -245,7 +245,7 @@ function FolderDetailPage() {
                 setEditing(null);
                 setMemoryOpen(true);
               }}
-              className="inline-flex items-center gap-1.5 rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+              className="inline-flex items-center gap-1.5 min-h-[50px] rounded-full bg-primary px-6 py-3 text-base font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
             >
               <Plus className="size-4" strokeWidth={2} />
               留下回憶
@@ -297,7 +297,7 @@ function FolderDetailPage() {
                       )}
                       <div className="flex items-start gap-3 px-5 py-5">
                         <div className="min-w-0 flex-1">
-                          <p className="font-display text-[17px] font-medium">
+                          <p className="font-display text-[19px] font-medium">
                             {m.title || "未命名的回憶"}
                           </p>
                           {m.note ? (
