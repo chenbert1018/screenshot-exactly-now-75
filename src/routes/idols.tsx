@@ -60,34 +60,20 @@ function IdolsPage() {
 
   return (
     <AppShell>
-      <header className="relative mb-7">
-        <span
-          aria-hidden
-          className="pointer-events-none absolute top-0 right-2 text-xl text-primary/25"
-        >
-          ✦
-        </span>
-
-        <p className="text-xs font-semibold tracking-[0.18em] text-primary">MY IDOL ♡</p>
-
-        <div className="mt-2 flex items-end justify-between gap-4">
-          <div className="min-w-0">
-            <h1 className="font-display text-[28px] leading-snug font-semibold">我喜歡的那個人</h1>
-            <p className="mt-2 text-base leading-6 text-muted-foreground">
-              從一個名字開始，慢慢收藏我們的日子。
-            </p>
-          </div>
-
+      <PageHeader
+        title="我喜歡的那個人"
+        subtitle="從一個名字開始，慢慢收藏我們的日子。"
+        action={
           <button
             type="button"
             onClick={openAdd}
             aria-label="新增偶像"
-            className="mb-1 flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-soft transition-transform duration-300 active:scale-90"
+            className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-soft transition-transform duration-300 active:scale-90"
           >
             <Plus className="size-5" strokeWidth={2} />
           </button>
-        </div>
-      </header>
+        }
+      />
 
       {error ? (
         <CloudRetryNotice onRetry={reload}>
