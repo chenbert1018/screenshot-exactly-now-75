@@ -157,15 +157,16 @@ export function AlbumShareSheet({
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent side="bottom" className="max-h-[88vh] overflow-y-auto">
-          <SheetHeader className="text-left">
+        <SheetContent side="bottom" className="flex max-h-[88dvh] flex-col overflow-hidden p-0">
+          <SheetHeader className="shrink-0 border-b border-border/50 bg-background/95 px-6 pb-4 pt-6 text-left backdrop-blur">
+            <p className="text-[10px] font-semibold tracking-[0.18em] text-primary">IDOLDAYS SHARE ♡</p>
             <SheetTitle className="font-display text-[20px]">分享這本回憶</SheetTitle>
             <SheetDescription>
               分享設定只作用於「{folderTitle || "這本相簿"}」，其他資料不會被看到。
             </SheetDescription>
           </SheetHeader>
 
-          <div className="space-y-3 px-4 pb-6">
+          <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-4 [-webkit-overflow-scrolling:touch]">
             <section className="rounded-[1.75rem] border border-primary/15 bg-primary/[0.05] px-4 py-5 shadow-soft">
               <div className="flex items-start gap-3">
                 <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-card text-primary shadow-soft">
