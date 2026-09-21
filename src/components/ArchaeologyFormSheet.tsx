@@ -271,7 +271,7 @@ export function ArchaeologyFormSheet({
         className="mx-auto max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-[2rem] border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
       >
         <SheetHeader className="px-0 text-left">
-          <SheetTitle className="text-xl">{title}</SheetTitle>
+          <SheetTitle className="text-[22px]">{title}</SheetTitle>
 
           <SheetDescription>把散落在飯圈各處的寶藏收回來 ♡</SheetDescription>
         </SheetHeader>
@@ -312,20 +312,20 @@ export function ArchaeologyFormSheet({
 
                   setError("");
                 }}
-                className="rounded-xl bg-surface/50 pl-10"
+                className="min-h-12 rounded-2xl bg-surface/50 pl-10"
               />
             </div>
 
             {source ? (
-              <p className="text-xs text-muted-foreground">來源：{SOURCE_LABELS[source]}</p>
+              <p className="text-sm text-muted-foreground">來源：{SOURCE_LABELS[source]}</p>
             ) : null}
 
             {previewState === "loading" ? (
-              <p className="text-xs text-muted-foreground">正在讀取連結預覽…</p>
+              <p className="text-sm text-muted-foreground">正在讀取連結預覽…</p>
             ) : null}
 
             {previewState === "error" ? (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 讀不到預覽也沒關係，可以手動填寫標題與封面。
               </p>
             ) : null}
@@ -348,7 +348,7 @@ export function ArchaeologyFormSheet({
                 }));
                 setError("");
               }}
-              className="rounded-xl bg-surface/50"
+              className="min-h-12 rounded-2xl bg-surface/50"
             />
           </div>
 
@@ -368,7 +368,7 @@ export function ArchaeologyFormSheet({
                   imageUrl: e.target.value,
                 }))
               }
-              className="rounded-xl bg-surface/50"
+              className="min-h-12 rounded-2xl bg-surface/50"
             />
             <input
               ref={coverInputRef}
@@ -387,7 +387,7 @@ export function ArchaeologyFormSheet({
             <button
               type="button"
               onClick={() => coverInputRef.current?.click()}
-              className="flex w-full items-center justify-center gap-2 rounded-xl border border-primary/20 bg-primary/8 px-4 py-2.5 text-sm font-medium text-primary"
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-primary/20 bg-primary/8 min-h-[50px] px-4 py-3 text-base font-medium text-primary"
             >
               <ImagePlus className="size-4" strokeWidth={1.7} />
               從相簿選擇影片截圖
@@ -404,7 +404,7 @@ export function ArchaeologyFormSheet({
                 />
               </div>
             ) : null}
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Threads 影片抓不到縮圖時，可以直接選擇影片截圖
             </p>
           </div>
@@ -422,10 +422,10 @@ export function ArchaeologyFormSheet({
                   collection: e.target.value,
                 }))
               }
-              className="rounded-xl bg-surface/50"
+              className="min-h-12 rounded-2xl bg-surface/50"
             />
 
-            <p className="text-xs text-muted-foreground">可以之後再整理</p>
+            <p className="text-sm text-muted-foreground">可以之後再整理</p>
           </div>
 
           <div className="space-y-2">
@@ -459,7 +459,7 @@ export function ArchaeologyFormSheet({
                     addTag();
                   }
                 }}
-                className="rounded-xl bg-surface/50"
+                className="min-h-12 rounded-2xl bg-surface/50"
               />
 
               <button
@@ -487,7 +487,7 @@ export function ArchaeologyFormSheet({
                   note: e.target.value,
                 }))
               }
-              className="rounded-xl bg-surface/50"
+              className="min-h-12 rounded-2xl bg-surface/50"
             />
           </div>
 
@@ -505,7 +505,7 @@ export function ArchaeologyFormSheet({
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95 disabled:opacity-60"
+              className="flex-1 rounded-full bg-primary min-h-[50px] py-3 text-base font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95 disabled:opacity-60"
             >
               {saving ? "儲存中…" : submitLabel}
             </button>
