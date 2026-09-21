@@ -119,29 +119,6 @@ export async function claimAlbumShareCode(code: string): Promise<AlbumShareClaim
     throw new Error("收藏沒有收進來，請再試一次。");
   }
 
-  const { data: mediaResult, error: mediaError } =
-    await supabase.functions.invoke("claim-share-media", {
-      body: {
-        shareId: row.share_id,
-        folderId: row.folder_id,
-      },
-    });
-
-  if (mediaError) {
-    console.error("IdolDays share media copy failed", mediaError);
-    throw new Error(
-      "收藏已收進 IdolDays，但照片還沒有完成搬移。請再按一次收下收藏。",
-    );
-  }
-
-  if (!mediaResult?.ok) {
-    console.error("IdolDays share media copy failed", mediaResult);
-    throw new Error(
-      mediaResult?.error ||
-        "收藏已收進 IdolDays，但照片還沒有完成搬移。請再按一次收下收藏。",
-    );
-  }
-
   return {
     shareId: row.share_id,
     folderId: row.folder_id,
