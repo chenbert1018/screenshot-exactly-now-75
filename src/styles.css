@@ -169,6 +169,26 @@
     text-size-adjust: 100%;
   }
 
+  button,
+  a,
+  input,
+  textarea,
+  select {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button,
+  [role="button"],
+  a {
+    touch-action: manipulation;
+  }
+
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
