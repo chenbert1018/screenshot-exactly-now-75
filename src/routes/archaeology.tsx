@@ -148,14 +148,14 @@ function ArchaeologyPage() {
           ✦
         </span>
 
-        <p className="text-[11px] font-semibold tracking-[0.18em] text-primary">FROM OUR DAYS ♡</p>
+        <p className="text-[13px] font-semibold tracking-[0.14em] text-primary">FROM OUR DAYS ♡</p>
 
         <div className="mt-2 flex items-end justify-between gap-4">
           <div className="min-w-0">
             <h1 className="font-display text-[28px] leading-snug font-semibold">
               以前喜歡過的瞬間
             </h1>
-            <p className="mt-2 max-w-[290px] text-sm leading-6 text-muted-foreground">
+            <p className="mt-2 max-w-[290px] text-base leading-6 text-muted-foreground">
               有些貼文、影片和一句話，過了很久還是會想再看一次。
             </p>
           </div>
@@ -164,7 +164,7 @@ function ArchaeologyPage() {
             type="button"
             onClick={openCreate}
             aria-label="收藏新的考古"
-            className="mb-1 flex size-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-soft transition-transform duration-300 active:scale-90"
+            className="mb-1 flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-soft transition-transform duration-300 active:scale-90"
           >
             <Plus className="size-4" strokeWidth={2} />
           </button>
@@ -188,7 +188,7 @@ function ArchaeologyPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="找找以前收藏過的瞬間..."
-            className="h-11 rounded-full border-border/60 bg-card/70 pl-11 shadow-soft"
+            className="h-12 rounded-full border-border/60 bg-card/70 pl-11 shadow-soft"
           />
         </div>
 
@@ -218,7 +218,7 @@ function ArchaeologyPage() {
         <button
           type="button"
           onClick={openCreate}
-          className="flex w-full items-center justify-center gap-2 rounded-full border border-primary/20 bg-primary/8 px-4 py-3 text-sm font-medium text-primary transition-colors active:bg-primary/12"
+          className="flex w-full items-center justify-center gap-2 rounded-full border border-primary/20 bg-primary/8 min-h-[50px] px-4 py-3 text-base font-medium text-primary transition-colors active:bg-primary/12"
         >
           <Plus className="size-4" strokeWidth={1.8} />
           留下新的寶藏
@@ -227,13 +227,13 @@ function ArchaeologyPage() {
         {view === "COLLECTIONS" ? (
           <section className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-medium">我的收藏集</h2>
+              <h2 className="text-lg font-semibold">我的收藏集</h2>
 
               {activeCollection ? (
                 <button
                   type="button"
                   onClick={() => setActiveCollection(null)}
-                  className="text-xs text-muted-foreground"
+                  className="min-h-11 text-sm text-muted-foreground"
                 >
                   顯示全部
                 </button>
@@ -260,16 +260,16 @@ function ArchaeologyPage() {
                   >
                     <FolderHeart className="mb-3 size-5 text-primary" strokeWidth={1.5} />
 
-                    <p className="truncate text-sm font-medium">{collection.name}</p>
+                    <p className="truncate text-base font-medium">{collection.name}</p>
 
-                    <p className="mt-1 text-xs text-muted-foreground">{collection.count} 篇</p>
+                    <p className="mt-1 text-sm text-muted-foreground">{collection.count} 篇</p>
                   </button>
                 ))}
               </div>
             ) : (
               <SoftCard className="px-5 py-6 text-center">
                 <p className="text-sm font-medium">還沒有收藏集</p>
-                <p className="mt-1 text-xs text-muted-foreground">
+                <p className="mt-1 text-sm text-muted-foreground">
                   收藏考古時，可以順手把它們分進收藏集。
                 </p>
               </SoftCard>
@@ -284,7 +284,7 @@ function ArchaeologyPage() {
             </h2>
 
             {items.length > 0 ? (
-              <span className="text-xs text-muted-foreground">{visibleItems.length} 篇</span>
+              <span className="min-h-11 text-sm text-muted-foreground">{visibleItems.length} 篇</span>
             ) : null}
           </div>
 
@@ -319,7 +319,7 @@ function ArchaeologyPage() {
               <button
                 type="button"
                 onClick={openCreate}
-                className="mt-5 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-soft"
+                className="mt-5 min-h-[50px] rounded-full bg-primary px-5 py-3 text-base font-medium text-primary-foreground shadow-soft"
               >
                 ＋ 留下第一個寶藏
               </button>
@@ -327,7 +327,7 @@ function ArchaeologyPage() {
           ) : (
             <SoftCard className="px-5 py-8 text-center">
               <p className="text-sm font-medium">沒找到那個瞬間</p>
-              <p className="mt-1 text-xs text-muted-foreground">換個關鍵字看看。</p>
+              <p className="mt-1 text-sm text-muted-foreground">換個關鍵字看看。</p>
             </SoftCard>
           )}
         </section>
@@ -376,7 +376,7 @@ function ArchaeologyPage() {
               <button
                 type="button"
                 onClick={() => setPendingDelete(null)}
-                className="flex-1 rounded-full border border-border/70 py-3 text-sm"
+                className="flex-1 rounded-full border border-border/70 min-h-[50px] py-3 text-base"
               >
                 取消
               </button>
@@ -396,7 +396,7 @@ function ArchaeologyPage() {
                     setDeleting(false);
                   }
                 }}
-                className="flex-1 rounded-full bg-destructive py-3 text-sm font-medium text-destructive-foreground disabled:opacity-60"
+                className="flex-1 rounded-full bg-destructive min-h-[50px] py-3 text-base font-medium text-destructive-foreground disabled:opacity-60"
               >
                 {deleting ? "刪除中…" : "刪除"}
               </button>
@@ -424,7 +424,7 @@ function FilterButton({
       type="button"
       onClick={onClick}
       className={[
-        "flex shrink-0 items-center justify-center gap-1.5 rounded-full border px-3.5 py-2 text-xs transition-all",
+        "flex shrink-0 items-center justify-center gap-1.5 rounded-full border min-h-11 px-4 py-2 text-sm transition-all",
         active
           ? "border-primary/30 bg-primary/10 text-foreground"
           : "border-border/60 bg-surface/40 text-muted-foreground",
