@@ -30,16 +30,16 @@ export function BottomNav() {
             <Link
               to={to}
               activeOptions={{ exact: to === "/" }}
-              className="group flex flex-col items-center gap-1 rounded-2xl py-1 text-muted-foreground transition-colors"
+              className="group flex min-h-[56px] flex-col items-center justify-center gap-0.5 rounded-2xl py-1 text-muted-foreground transition-colors active:scale-[0.96]"
               activeProps={{ className: "text-primary [&_.nav-pill]:bg-accent/50" }}
             >
               <span className="nav-pill flex items-center justify-center rounded-full px-3.5 py-1 transition-colors duration-300">
                 <Icon
-                  className="size-[20px] transition-transform duration-300 group-active:scale-90"
+                  className="size-[22px] transition-transform duration-300 group-active:scale-90"
                   strokeWidth={1.5}
                 />
               </span>
-              <span className="text-[13px] tracking-wide">{label}</span>
+              <span className="text-[14px] font-medium tracking-[0.01em]">{label}</span>
 
             </Link>
           </li>
