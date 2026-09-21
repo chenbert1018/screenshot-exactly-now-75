@@ -505,7 +505,7 @@ function MusicPage() {
               }
               className="flex w-full items-center gap-3 rounded-[1.5rem] bg-surface/55 px-4 py-3.5 text-left"
             >
-              <div className="flex size-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <div className="flex size-11 items-center justify-center rounded-full bg-primary/10 text-primary">
                 <Library className="size-4" />
               </div>
 
@@ -652,7 +652,7 @@ function MusicPage() {
                                     ),
                                 )
                               }
-                              className="p-1 text-muted-foreground"
+                              className="flex size-11 items-center justify-center text-muted-foreground"
                             >
                               <Trash2 className="size-4" />
                             </button>
@@ -687,7 +687,7 @@ function MusicPage() {
                 我的追星音樂日記
               </p>
 
-              <p className="mt-1 text-[11px] text-muted-foreground">
+              <p className="mt-1 text-sm text-muted-foreground">
                 今日歌曲 · 回歸 · 演唱會 ·
                 音樂回憶
               </p>
@@ -737,7 +737,7 @@ function MusicPage() {
 
               <div className="min-w-0 flex-1">
 
-                <p className="text-[11px] font-medium tracking-[0.12em] text-primary">
+                <p className="text-[13px] font-medium tracking-[0.1em] text-primary">
 
                   RECAP ♡
 
@@ -749,7 +749,7 @@ function MusicPage() {
 
                 </p>
 
-                <p className="mt-1 text-[11px] text-muted-foreground">
+                <p className="mt-1 text-sm text-muted-foreground">
 
                   這個月與這一年的歌，都替你留在這裡。
 
@@ -831,13 +831,13 @@ function MusicPage() {
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p className="text-[10px] font-semibold tracking-[0.14em] text-primary">
+                    <p className="text-[13px] font-semibold tracking-[0.12em] text-primary">
                       MY IDOL SOUNDTRACK ♡
                     </p>
                     <p className="mt-1 font-display text-[15px] font-medium">
                       六首只屬於我們的歌
                     </p>
-                    <p className="mt-1 text-[11px] text-muted-foreground">
+                    <p className="mt-1 text-sm text-muted-foreground">
                       不是排行榜，是我喜歡你的方式。
                     </p>
                   </div>
@@ -977,7 +977,7 @@ function SectionLabel({
 }) {
   return (
     <div className="mb-3">
-      <p className="text-[10px] font-medium tracking-[0.16em] text-primary">
+      <p className="text-[13px] font-medium tracking-[0.12em] text-primary">
         {eyebrow}
       </p>
 
