@@ -265,7 +265,7 @@ function MusicPage() {
   return (
     <AppShell>
       <header className="mb-7">
-        <p className="text-xs uppercase tracking-[0.28em] text-muted-foreground">
+        <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">
           My Music
         </p>
 
@@ -273,7 +273,7 @@ function MusicPage() {
           我和他的歌 🎧
         </h1>
 
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+        <p className="mt-2 text-base leading-relaxed text-muted-foreground">
           喜歡一個人的日子，
           <br />
           總會留下幾首歌。
@@ -292,7 +292,7 @@ function MusicPage() {
           action={
             <Link
               to="/idols"
-              className="rounded-full bg-primary px-5 py-2.5 text-sm text-primary-foreground"
+              className="min-h-[50px] rounded-full bg-primary px-5 py-3 text-base text-primary-foreground"
             >
               前往偶像
             </Link>
@@ -304,17 +304,17 @@ function MusicPage() {
           <section className="music-diary-now-playing relative overflow-hidden rounded-[2rem] border border-border/70 bg-card/90 p-4 shadow-soft">
             <span
               aria-hidden="true"
-              className="absolute right-5 top-4 text-[10px] text-primary/60"
+              className="absolute right-5 top-4 text-[13px] text-primary/60"
             >
               ✦
             </span>
 
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-[10px] font-semibold tracking-[0.18em] text-primary">
+                <p className="text-[13px] font-semibold tracking-[0.14em] text-primary">
                   TODAY'S SONG ♡
                 </p>
-                <p className="mt-1 text-[12px] text-muted-foreground">
+                <p className="mt-1 text-sm text-muted-foreground">
                   {today ? "NOW PLAYING" : "CHOOSE TODAY'S BGM"}
                 </p>
               </div>
@@ -391,14 +391,14 @@ function MusicPage() {
                   {today?.title || "今天想聽哪一首？"}
                 </p>
 
-                <p className="mt-1.5 truncate text-[12px] text-muted-foreground">
+                <p className="mt-1.5 truncate text-sm text-muted-foreground">
                   {today?.artist || `和 ${homeIdol.name || "他"} 選一首今天的歌`}
                 </p>
 
                 <button
                   type="button"
                   onClick={() => setLibraryOpen(true)}
-                  className="mt-3 inline-flex items-center gap-1 text-[10px] font-semibold tracking-[0.08em] text-primary"
+                  className="mt-3 inline-flex min-h-11 items-center gap-1 text-sm font-semibold tracking-[0.08em] text-primary"
                 >
                   {today ? "CHANGE SONG" : "＋ SELECT SONG"}
                 </button>
@@ -408,7 +408,7 @@ function MusicPage() {
                     href={streamingLink(today)}
                     target="_blank"
                     rel="noreferrer"
-                    className="mt-2 flex w-fit items-center gap-1 text-[10px] text-muted-foreground"
+                    className="mt-1 flex min-h-11 w-fit items-center gap-1 text-sm text-muted-foreground"
                   >
                     ♪ LISTEN
                     <ExternalLink className="size-3" />
@@ -420,12 +420,12 @@ function MusicPage() {
             {today ? (
               <div className="mt-5 border-t border-border/60 pt-4">
                 <div className="flex items-center justify-between">
-                  <p className="text-[9px] font-semibold tracking-[0.16em] text-muted-foreground">
+                  <p className="text-[13px] font-semibold tracking-[0.12em] text-muted-foreground">
                     TODAY'S MOOD
                   </p>
 
                   {todayJournal.entry?.mood ? (
-                    <span className="text-[10px] text-primary">
+                    <span className="text-[13px] text-primary">
                       SAVED ♡
                     </span>
                   ) : null}
@@ -471,7 +471,7 @@ function MusicPage() {
                 <button
                   type="button"
                   onClick={() => void shareTodayFeeling()}
-                  className="mt-4 flex min-h-[44px] w-full items-center justify-center gap-2 rounded-full bg-surface/70 px-4 py-2.5 text-xs font-medium text-primary transition-transform active:scale-[0.97]"
+                  className="mt-4 flex min-h-[44px] w-full items-center justify-center gap-2 rounded-full bg-surface/70 px-4 py-2.5 text-sm font-medium text-primary transition-transform active:scale-[0.97]"
                 >
                   <Share2 className="size-3.5" strokeWidth={1.8} />
                   分享今天的歌與心情
@@ -514,7 +514,7 @@ function MusicPage() {
                   我的歌曲
                 </p>
 
-                <p className="mt-0.5 text-[11px] text-muted-foreground">
+                <p className="mt-0.5 text-sm text-muted-foreground">
                   {songs.length > 0
                     ? `已留下 ${songs.length} 首歌`
                     : "把喜歡的歌收藏進 IdolDays"}
@@ -531,7 +531,7 @@ function MusicPage() {
             {libraryOpen ? (
               <div className="mt-3">
                 <div className="mb-3 flex items-center justify-between">
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-sm text-muted-foreground">
                     選擇今天的歌或管理收藏
                   </p>
 
@@ -540,7 +540,7 @@ function MusicPage() {
                     onClick={() =>
                       setOpen(true)
                     }
-                    className="inline-flex items-center gap-1 rounded-full bg-primary px-3.5 py-1.5 text-xs font-medium text-primary-foreground"
+                    className="inline-flex items-center gap-1 min-h-11 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
                   >
                     <Plus className="size-3.5" />
                     加入歌曲
@@ -562,7 +562,7 @@ function MusicPage() {
                         onClick={() =>
                           setOpen(true)
                         }
-                        className="rounded-full bg-primary px-5 py-2.5 text-sm text-primary-foreground"
+                        className="min-h-[50px] rounded-full bg-primary px-5 py-3 text-base text-primary-foreground"
                       >
                         加入第一首歌
                       </button>
@@ -858,7 +858,7 @@ function MusicPage() {
                         onClick={() =>
                           void share()
                         }
-                        className="inline-flex items-center gap-1 rounded-full bg-primary px-3.5 py-1.5 text-xs font-medium text-primary-foreground disabled:opacity-60"
+                        className="inline-flex items-center gap-1 min-h-11 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
                       >
                         <Share2 className="size-3.5" />
                         {sharing
@@ -998,7 +998,7 @@ function SectionDivider() {
   return (
     <div className="my-8 flex items-center gap-3">
       <div className="h-px flex-1 bg-border/50" />
-      <span className="text-[10px] text-primary/60">
+      <span className="text-[13px] text-primary/60">
         ♡
       </span>
       <div className="h-px flex-1 bg-border/50" />
