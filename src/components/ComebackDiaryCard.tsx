@@ -6,6 +6,7 @@ import type { IdolEvent } from "@/lib/events";
 import { useIdolMusicSource } from "@/lib/idol-music.source";
 import { IdolSongFormSheet } from "@/components/IdolSongFormSheet";
 import type { IdolSongDraft } from "@/lib/idol-music";
+import { shareComebackEraCard } from "@/lib/music-diary-share";
 import {
   Sheet,
   SheetContent,
@@ -121,26 +122,18 @@ export function ComebackDiaryCard({ event }: { event: IdolEvent }) {
   }
 
   async function shareEra() {
-    const lines = [
-      "COMEBACK DIARY ♡",
-      `${event.title} ERA ✨`,
-      draft.firstListenRating ? `第一次聽：${"💗".repeat(draft.firstListenRating)}` : "",
-      ...songFields.map(({ key, label }) => {
-        const song = selectedSongFor(key);
-        return song ? `${label}：♪ ${song.title}` : "";
-      }),
-      draft.note ? `「${draft.note}」` : "",
-      "",
-      "from IdolDays ♡",
-    ].filter(Boolean);
-    const text = lines.join("\n");
+    const eraSongs = songFields.flatMap(({ key, label }) => {
+      const song = selectedSongFor(key);
+      return song ? [{ label, title: song.title }] : [];
+    });
 
     try {
-      if (navigator.share) {
-        await navigator.share({ title: `${event.title} · COMEBACK DIARY ♡`, text });
-      } else {
-        await navigator.clipboard.writeText(text);
-      }
+      await shareComebackEraCard({
+        eraTitle: event.title,
+        rating: draft.firstListenRating,
+        songs: eraSongs,
+        note: draft.note || undefined,
+      });
     } catch (cause) {
       if (cause instanceof DOMException && cause.name === "AbortError") return;
       setSaveError("Comeback Diary 沒有分享成功，請再試一次");
