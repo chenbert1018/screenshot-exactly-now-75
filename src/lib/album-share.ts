@@ -9,6 +9,7 @@ export type AlbumShareCodePreview = {
   shareId: string;
   shareTitle: string;
   shareMessage?: string;
+  senderName?: string;
   folderTitle: string;
   memoryCount: number;
 };
