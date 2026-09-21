@@ -117,7 +117,7 @@ export function Paywall({
             {PLUS_BENEFITS.map((b) => (
               <li
                 key={b}
-                className="flex items-start gap-2 text-sm text-muted-foreground"
+                className="flex items-start gap-2 text-base leading-relaxed text-muted-foreground"
               >
                 <Check
                   className="mt-0.5 size-4 shrink-0 text-primary"
@@ -128,7 +128,7 @@ export function Paywall({
                   <div>{b}</div>
 
                   {b.includes("進階提醒") ? (
-                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground/80">
+                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground/80">
                       含追星天氣、準備提醒、自訂時間與個性化提醒語氣
                     </p>
                   ) : null}
@@ -138,7 +138,7 @@ export function Paywall({
           </ul>
 
           {message ? (
-            <p className="mt-4 text-center text-xs text-muted-foreground">
+            <p className="mt-4 text-center text-sm text-muted-foreground">
               {message}
             </p>
           ) : null}
@@ -147,7 +147,7 @@ export function Paywall({
             type="button"
             onClick={handleSubscribe}
             disabled={isPurchasing || isRestoring}
-            className="mt-6 w-full rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-6 min-h-[52px] w-full rounded-full bg-primary px-6 py-3 text-base font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isPurchasing ? "正在連接 Apple…" : PLUS_CTA}
           </button>
@@ -156,7 +156,7 @@ export function Paywall({
             type="button"
             onClick={handleRestorePurchases}
             disabled={isPurchasing || isRestoring}
-            className="mt-2 w-full rounded-full px-6 py-2.5 text-sm font-medium text-primary transition-colors active:bg-surface/70 disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-2 min-h-11 w-full rounded-full px-6 py-2.5 text-base font-medium text-primary transition-colors active:bg-surface/70 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isRestoring ? "正在恢復購買…" : "恢復購買"}
           </button>
@@ -165,7 +165,7 @@ export function Paywall({
             type="button"
             onClick={() => onOpenChange(false)}
             disabled={isPurchasing || isRestoring}
-            className="mt-1 w-full rounded-full px-6 py-2.5 text-sm text-muted-foreground transition-colors active:bg-surface/70 disabled:opacity-60"
+            className="mt-1 min-h-11 w-full rounded-full px-6 py-2.5 text-base text-muted-foreground transition-colors active:bg-surface/70 disabled:opacity-60"
           >
             {PLUS_SECONDARY_CTA}
           </button>
