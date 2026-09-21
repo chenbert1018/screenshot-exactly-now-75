@@ -219,6 +219,30 @@ function MusicPage() {
     });
   };
 
+  const shareTodayFeeling = async () => {
+    if (!today) return;
+    const mood = todayJournal.entry?.mood;
+    const text = [
+      "TODAY'S SONG ♡",
+      `♪ ${today.title}`,
+      today.artist ? today.artist : "",
+      mood ? `今天的心情：${mood}` : "",
+      "",
+      "from IdolDays ♡",
+    ].filter(Boolean).join("\n");
+
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "TODAY'S SONG ♡", text });
+      } else {
+        await navigator.clipboard.writeText(text);
+      }
+    } catch (cause) {
+      if (cause instanceof DOMException && cause.name === "AbortError") return;
+      setActionError("今天的音樂心情沒有分享成功，請再試一次。");
+    }
+  };
+
   const share = async () => {
     if (!homeIdol) return;
 
@@ -450,6 +474,14 @@ function MusicPage() {
                     );
                   })}
                 </div>
+                <button
+                  type="button"
+                  onClick={() => void shareTodayFeeling()}
+                  className="mt-4 flex min-h-[44px] w-full items-center justify-center gap-2 rounded-full bg-surface/70 px-4 py-2.5 text-xs font-medium text-primary transition-transform active:scale-[0.97]"
+                >
+                  <Share2 className="size-3.5" strokeWidth={1.8} />
+                  分享今天的歌與心情
+                </button>
               </div>
             ) : null}
           </section>
