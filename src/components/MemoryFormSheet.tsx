@@ -112,7 +112,7 @@ export function MemoryFormSheet({
         className="mx-auto max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-[2rem] border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
       >
         <SheetHeader className="px-0 text-left">
-          <p className="text-[11px] font-semibold tracking-[0.16em] text-primary">
+          <p className="text-[13px] font-semibold tracking-[0.14em] text-primary">
             OUR MEMORIES ♡
           </p>
           <SheetTitle className="font-display text-[22px]">{title}</SheetTitle>
@@ -129,14 +129,14 @@ export function MemoryFormSheet({
                   <button
                     type="button"
                     onClick={() => fileRef.current?.click()}
-                    className="rounded-full bg-card/90 px-3 py-1.5 text-xs shadow-soft"
+                    className="rounded-full bg-card/90 min-h-11 px-3 py-2 text-sm shadow-soft"
                   >
                     重新選擇
                   </button>
                   <button
                     type="button"
                     onClick={() => setDraft((d) => ({ ...d, photo: "" }))}
-                    className="rounded-full bg-card/90 p-1.5 shadow-soft"
+                    className="rounded-full flex size-11 items-center justify-center bg-card/90 shadow-soft"
                     aria-label="移除照片"
                   >
                     <X className="size-4" strokeWidth={1.8} />
@@ -203,13 +203,13 @@ export function MemoryFormSheet({
 
           <div className="space-y-2">
             <div>
-              <p className="text-[10px] font-semibold tracking-[0.14em] text-primary">
+              <p className="text-[13px] font-semibold tracking-[0.12em] text-primary">
                 THIS DAY'S SOUNDTRACK ♡
               </p>
 
               <Label className="mt-1 block">這一天的歌</Label>
 
-              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                 有沒有一首歌，會讓你想起這一天？
               </p>
             </div>
@@ -283,14 +283,14 @@ export function MemoryFormSheet({
                       songId: "",
                     }))
                   }
-                  className="memory-soundtrack-remove min-h-12 rounded-2xl border border-border/70 px-4 text-xs text-muted-foreground"
+                  className="memory-soundtrack-remove min-h-12 rounded-2xl border border-border/70 px-4 text-sm text-muted-foreground"
                 >
                   移除
                 </button>
               ) : null}
             </div>
 
-            <p className="text-xs leading-relaxed text-muted-foreground">
+            <p className="text-sm leading-relaxed text-muted-foreground">
               選填。留下來之後，這首歌也會一起進入你的音樂日記。
             </p>
           </div>
@@ -301,14 +301,14 @@ export function MemoryFormSheet({
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="flex-1 rounded-full border border-border/70 py-3 text-sm transition-transform duration-300 active:scale-95"
+              className="flex-1 rounded-full border border-border/70 min-h-[50px] py-3 text-base transition-transform duration-300 active:scale-95"
             >
               取消
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95 disabled:opacity-60"
+              className="flex-1 rounded-full bg-primary min-h-[50px] py-3 text-base font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95 disabled:opacity-60"
             >
               {saving ? "儲存中…" : submitLabel}
             </button>
@@ -322,7 +322,7 @@ export function MemoryFormSheet({
           className="mx-auto max-h-[78vh] w-full max-w-md overflow-y-auto rounded-t-[2rem] border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
         >
           <SheetHeader className="px-0 text-left">
-            <p className="text-[11px] font-semibold tracking-[0.16em] text-primary">
+            <p className="text-[13px] font-semibold tracking-[0.14em] text-primary">
               OUR MEMORIES ♡
             </p>
 
@@ -347,7 +347,7 @@ export function MemoryFormSheet({
               <span className="text-sm">不綁定歌曲</span>
 
               {!draft.songId ? (
-                <span className="text-xs font-semibold text-primary">
+                <span className="text-[13px] font-semibold text-primary">
                   SELECTED ♡
                 </span>
               ) : null}
@@ -378,7 +378,7 @@ export function MemoryFormSheet({
                       </span>
 
                       {song.artist ? (
-                        <span className="block truncate text-xs text-muted-foreground">
+                        <span className="block truncate text-sm text-muted-foreground">
                           {song.artist}
                         </span>
                       ) : null}
@@ -386,7 +386,7 @@ export function MemoryFormSheet({
                   </span>
 
                   {active ? (
-                    <span className="shrink-0 text-xs font-semibold text-primary">
+                    <span className="shrink-0 text-[13px] font-semibold text-primary">
                       THIS DAY ♡
                     </span>
                   ) : null}
@@ -409,7 +409,7 @@ export function MemoryFormSheet({
                   setSongPickerOpen(false);
                   setAddSongOpen(true);
                 }}
-                className="mt-3 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+                className="mt-3 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-5 min-h-[50px] py-3 text-base font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
               >
                 <Plus className="size-4" strokeWidth={1.8} />
                 新增歌曲
