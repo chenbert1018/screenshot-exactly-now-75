@@ -85,7 +85,7 @@ export function EventFormSheet({
         className="mx-auto max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-[2rem] border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
       >
         <SheetHeader className="px-0 text-left">
-          <SheetTitle className="text-xl">{title}</SheetTitle>
+          <SheetTitle className="text-[22px]">{title}</SheetTitle>
           <SheetDescription>把值得期待的日子留下來</SheetDescription>
         </SheetHeader>
 
@@ -95,7 +95,7 @@ export function EventFormSheet({
             <Link
               to="/idols"
               onClick={() => onOpenChange(false)}
-              className="mt-5 inline-flex rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
+              className="mt-5 inline-flex rounded-full bg-primary min-h-[50px] px-6 py-3 text-base font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
             >
               前往我的偶像
             </Link>
@@ -118,7 +118,7 @@ export function EventFormSheet({
                           weatherTone: weatherToneForAnimal(idol.representativeAnimal),
                         }))
                       }
-                      className={`rounded-full border px-4 py-2 text-sm transition-colors ${
+                      className={`min-h-11 rounded-full border px-4 py-2 text-sm transition-colors ${
                         active
                           ? "border-primary bg-primary text-primary-foreground"
                           : "border-border/70 bg-surface/50 text-muted-foreground"
@@ -299,14 +299,14 @@ export function EventFormSheet({
               <button
                 type="button"
                 onClick={() => onOpenChange(false)}
-                className="flex-1 rounded-full border border-border/70 py-3 text-sm transition-transform duration-300 active:scale-95"
+                className="flex-1 rounded-full border border-border/70 min-h-[50px] py-3 text-base transition-transform duration-300 active:scale-95"
               >
                 取消
               </button>
               <button
                 type="submit"
                 disabled={saving}
-                className="flex-1 rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95 disabled:opacity-60"
+                className="flex-1 rounded-full bg-primary min-h-[50px] py-3 text-base font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95 disabled:opacity-60"
               >
                 {saving ? "儲存中…" : submitLabel}
               </button>
