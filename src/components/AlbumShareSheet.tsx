@@ -161,7 +161,7 @@ export function AlbumShareSheet({
         <SheetContent side="bottom" className="flex max-h-[92dvh] flex-col overflow-hidden rounded-t-[2rem] p-0 pb-[env(safe-area-inset-bottom)]">
           <div className="mx-auto mt-2 h-1.5 w-10 shrink-0 rounded-full bg-foreground/10" />
           <SheetHeader className="shrink-0 border-b border-border/50 bg-background/95 px-6 pb-4 pt-4 text-left backdrop-blur">
-            <p className="text-[10px] font-semibold tracking-[0.18em] text-primary">IDOLDAYS SHARE ♡</p>
+            <p className="text-[13px] font-semibold tracking-[0.14em] text-primary">IDOLDAYS SHARE ♡</p>
             <SheetTitle className="font-display text-[20px]">分享這本回憶</SheetTitle>
             <SheetDescription>
               分享設定只作用於「{folderTitle || "這本相簿"}」，其他資料不會被看到。
@@ -171,11 +171,11 @@ export function AlbumShareSheet({
           <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-4 [-webkit-overflow-scrolling:touch]">
             <section className="rounded-[1.75rem] border border-primary/15 bg-primary/[0.05] px-4 py-5 shadow-soft">
               <div className="flex items-start gap-3">
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-card text-primary shadow-soft">
+                <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-card text-primary shadow-soft">
                   <Gift className="size-4" strokeWidth={1.7} />
                 </span>
                 <div className="min-w-0">
-                  <p className="text-[11px] font-semibold tracking-[0.16em] text-primary">IDOLDAYS SHARE ♡</p>
+                  <p className="text-[13px] font-semibold tracking-[0.14em] text-primary">IDOLDAYS SHARE ♡</p>
                   <h3 className="mt-1 font-display text-[17px] font-medium">把這份收藏送給朋友 ♡</h3>
                   <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                     像送出一張只屬於你們的追星收藏卡，不會公開到動態牆。
@@ -185,7 +185,7 @@ export function AlbumShareSheet({
 
               {!shareCode ? (
                 <div className="mt-4 rounded-2xl bg-card px-4 py-4 shadow-soft">
-                  <label htmlFor="idoldays-gift-message" className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground">
+                  <label htmlFor="idoldays-gift-message" className="text-[13px] font-semibold tracking-[0.12em] text-muted-foreground">
                     寫一句話給對方
                   </label>
                   <textarea
@@ -196,19 +196,19 @@ export function AlbumShareSheet({
                     placeholder="希望你也喜歡這段回憶 ♡"
                     className="mt-2 w-full resize-none rounded-2xl bg-surface/80 px-4 py-3 text-sm leading-relaxed outline-none placeholder:text-muted-foreground/60"
                   />
-                  <p className="mt-1 text-right text-[10px] text-muted-foreground">{giftMessage.length}/120</p>
+                  <p className="mt-1 text-right text-[13px] text-muted-foreground">{giftMessage.length}/120</p>
                 </div>
               ) : null}
 
               {shareCode ? (
                 <div className="mt-4 rounded-2xl bg-card px-4 py-4 text-center shadow-soft">
-                  <p className="text-[11px] tracking-[0.14em] text-muted-foreground">分享碼 ♡</p>
+                  <p className="text-[13px] tracking-[0.12em] text-muted-foreground">分享碼 ♡</p>
                   <p className="mt-1 font-display text-[24px] font-semibold tracking-[0.18em]">{shareCode}</p>
                   <div className="mt-3 grid grid-cols-2 gap-2">
                     <button
                       type="button"
                       onClick={() => void copyCode()}
-                      className="inline-flex items-center justify-center gap-1.5 rounded-full bg-card px-3 py-2.5 text-sm font-medium text-foreground shadow-soft active:scale-95"
+                      className="inline-flex items-center justify-center gap-1.5 min-h-11 rounded-full bg-card px-3 py-2.5 text-sm font-medium text-foreground shadow-soft active:scale-95"
                     >
                       <Copy className="size-4" strokeWidth={1.8} />
                       複製分享碼
@@ -216,13 +216,13 @@ export function AlbumShareSheet({
                     <button
                       type="button"
                       onClick={() => void sendToFriend()}
-                      className="inline-flex items-center justify-center gap-1.5 rounded-full bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground shadow-soft active:scale-95"
+                      className="inline-flex items-center justify-center gap-1.5 min-h-11 rounded-full bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground shadow-soft active:scale-95"
                     >
                       <Share2 className="size-4" strokeWidth={1.8} />
                       傳給朋友 ♡
                     </button>
                   </div>
-                  <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                     可從 iPhone 分享選單直接選 LINE、訊息、AirDrop 或其他 App。
                   </p>
                 </div>
@@ -260,7 +260,7 @@ export function AlbumShareSheet({
                   type="button"
                   disabled={previewing || receiveCode.length !== 9}
                   onClick={() => void openPreview()}
-                  className="shrink-0 rounded-full bg-card px-4 py-2.5 text-sm font-medium shadow-soft active:scale-95 disabled:opacity-50"
+                  className="min-h-11 shrink-0 rounded-full bg-card px-4 py-2.5 text-sm font-medium shadow-soft active:scale-95 disabled:opacity-50"
                 >
                   {previewing ? "確認中…" : "預覽"}
                 </button>
@@ -268,7 +268,7 @@ export function AlbumShareSheet({
 
               {preview ? (
                 <div className="mt-4 rounded-2xl border border-border/60 bg-card px-4 py-4">
-                  <p className="text-[11px] font-semibold tracking-[0.14em] text-primary">A GIFT FOR YOU ♡</p>
+                  <p className="text-[13px] font-semibold tracking-[0.12em] text-primary">A GIFT FOR YOU ♡</p>
                   <h4 className="mt-1.5 font-display text-[18px] font-medium">{preview.shareTitle}</h4>
                   <p className="mt-1 text-sm text-muted-foreground">♡ {preview.memoryCount} 則回憶</p>
                   {preview.shareMessage ? (
@@ -278,11 +278,11 @@ export function AlbumShareSheet({
                     type="button"
                     disabled={claiming}
                     onClick={() => void claimPreview()}
-                    className="mt-4 w-full rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-soft active:scale-[0.98] disabled:opacity-60"
+                    className="mt-4 min-h-[50px] w-full rounded-full bg-primary px-5 py-3 text-base font-medium text-primary-foreground shadow-soft active:scale-[0.98] disabled:opacity-60"
                   >
                     {claiming ? "正在收進來…" : "收進我的 IdolDays ♡"}
                   </button>
-                  <p className="mt-2 text-center text-[11px] leading-relaxed text-muted-foreground">
+                  <p className="mt-2 text-center text-sm leading-relaxed text-muted-foreground">
                     收下後會成為你自己的收藏，不會跟著原收藏一起改動。
                   </p>
                 </div>
@@ -290,7 +290,7 @@ export function AlbumShareSheet({
             </section>
 
             <div className="pt-2">
-              <p className="px-1 text-[11px] font-semibold tracking-[0.14em] text-muted-foreground">其他分享方式</p>
+              <p className="px-1 text-[13px] font-semibold tracking-[0.12em] text-muted-foreground">其他分享方式</p>
             </div>
 
             {!ready ? <p className="text-sm text-muted-foreground">正在載入分享設定…</p> : null}
@@ -348,7 +348,7 @@ export function AlbumShareSheet({
                     placeholder="輸入對方 Email"
                     className="min-w-0 flex-1 rounded-full bg-card px-4 py-2.5 text-sm shadow-soft outline-none"
                   />
-                  <button type="submit" aria-label="新增分享對象" disabled={loading} className="rounded-full bg-primary p-2.5 text-primary-foreground shadow-soft active:scale-95">
+                  <button type="submit" aria-label="新增分享對象" disabled={loading} className="flex size-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-soft active:scale-95">
                     <Plus className="size-4" strokeWidth={2} />
                   </button>
                 </form>
@@ -356,7 +356,7 @@ export function AlbumShareSheet({
                   {share.recipients.length === 0 ? (
                     <p className="text-sm text-muted-foreground">還沒有分享給任何人。</p>
                   ) : share.recipients.map((r) => (
-                    <div key={r} className="flex items-center justify-between rounded-full bg-card px-4 py-2 text-sm">
+                    <div key={r} className="flex items-center justify-between min-h-11 rounded-full bg-card px-4 py-2 text-sm">
                       <span className="min-w-0 truncate">{r}</span>
                       <button
                         type="button"
@@ -367,7 +367,7 @@ export function AlbumShareSheet({
                             .then(() => toast.success("已移除分享對象"))
                             .catch(() => toast.error("移除失敗，請稍後再試。"));
                         }}
-                        className="ml-2 shrink-0 rounded-full p-1 text-muted-foreground"
+                        className="ml-2 flex size-11 shrink-0 items-center justify-center rounded-full text-muted-foreground"
                       >
                         <X className="size-4" strokeWidth={1.8} />
                       </button>
@@ -390,7 +390,7 @@ export function AlbumShareSheet({
                         .then(() => toast.success("已複製連結 ♡"))
                         .catch(() => toast.error("複製失敗，請手動選取"));
                     }}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-soft active:scale-95"
+                    className="inline-flex items-center gap-1.5 min-h-11 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-soft active:scale-95"
                   >
                     <Copy className="size-4" strokeWidth={1.8} />
                     複製連結
@@ -403,7 +403,7 @@ export function AlbumShareSheet({
                         .then(() => toast.success("已重新產生連結，舊連結失效"))
                         .catch(() => toast.error("重新產生連結失敗，請稍後再試。"));
                     }}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-card px-4 py-2 text-sm text-muted-foreground shadow-soft active:scale-95"
+                    className="inline-flex items-center gap-1.5 min-h-11 rounded-full bg-card px-4 py-2 text-sm text-muted-foreground shadow-soft active:scale-95"
                   >
                     <RefreshCw className="size-4" strokeWidth={1.8} />
                     換一組
