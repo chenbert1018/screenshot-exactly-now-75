@@ -56,6 +56,7 @@ export function AlbumShareSheet({
 
   const [paywall, setPaywall] = useState(false);
   const [name, setName] = useState("");
+  const [giftMessage, setGiftMessage] = useState("");
   const [shareCode, setShareCode] = useState("");
   const [creatingCode, setCreatingCode] = useState(false);
   const [receiveCode, setReceiveCode] = useState("");
@@ -76,7 +77,7 @@ export function AlbumShareSheet({
     if (creatingCode) return;
     setCreatingCode(true);
     try {
-      const result = await enableAlbumShareCode({ folderId, title: folderTitle });
+      const result = await enableAlbumShareCode({ folderId, title: folderTitle, message: giftMessage });
       setShareCode(result.shareCode);
       toast.success("分享碼準備好了 ♡");
     } catch (cause) {
@@ -157,8 +158,9 @@ export function AlbumShareSheet({
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent side="bottom" className="flex max-h-[88dvh] flex-col overflow-hidden p-0">
-          <SheetHeader className="shrink-0 border-b border-border/50 bg-background/95 px-6 pb-4 pt-6 text-left backdrop-blur">
+        <SheetContent side="bottom" className="flex max-h-[92dvh] flex-col overflow-hidden rounded-t-[2rem] p-0 pb-[env(safe-area-inset-bottom)]">
+          <div className="mx-auto mt-2 h-1.5 w-10 shrink-0 rounded-full bg-foreground/10" />
+          <SheetHeader className="shrink-0 border-b border-border/50 bg-background/95 px-6 pb-4 pt-4 text-left backdrop-blur">
             <p className="text-[10px] font-semibold tracking-[0.18em] text-primary">IDOLDAYS SHARE ♡</p>
             <SheetTitle className="font-display text-[20px]">分享這本回憶</SheetTitle>
             <SheetDescription>
@@ -176,10 +178,27 @@ export function AlbumShareSheet({
                   <p className="text-[11px] font-semibold tracking-[0.16em] text-primary">IDOLDAYS SHARE ♡</p>
                   <h3 className="mt-1 font-display text-[17px] font-medium">把這份收藏送給朋友 ♡</h3>
                   <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                    不是公開貼文，只分享給你想分享的人。
+                    像送出一張只屬於你們的追星收藏卡，不會公開到動態牆。
                   </p>
                 </div>
               </div>
+
+              {!shareCode ? (
+                <div className="mt-4 rounded-2xl bg-card px-4 py-4 shadow-soft">
+                  <label htmlFor="idoldays-gift-message" className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground">
+                    寫一句話給對方
+                  </label>
+                  <textarea
+                    id="idoldays-gift-message"
+                    value={giftMessage}
+                    onChange={(event) => setGiftMessage(event.target.value.slice(0, 120))}
+                    rows={2}
+                    placeholder="希望你也喜歡這段回憶 ♡"
+                    className="mt-2 w-full resize-none rounded-2xl bg-surface/80 px-4 py-3 text-sm leading-relaxed outline-none placeholder:text-muted-foreground/60"
+                  />
+                  <p className="mt-1 text-right text-[10px] text-muted-foreground">{giftMessage.length}/120</p>
+                </div>
+              ) : null}
 
               {shareCode ? (
                 <div className="mt-4 rounded-2xl bg-card px-4 py-4 text-center shadow-soft">
@@ -212,7 +231,7 @@ export function AlbumShareSheet({
                   type="button"
                   disabled={creatingCode}
                   onClick={() => void createShareCode()}
-                  className="mt-4 w-full rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-soft active:scale-[0.98] disabled:opacity-60"
+                  className="mt-4 min-h-[52px] w-full rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform active:scale-[0.97] disabled:opacity-60"
                 >
                   {creatingCode ? "正在準備分享碼…" : "產生分享碼 ♡"}
                 </button>
