@@ -225,7 +225,7 @@ export function EventFormSheet({
                     <p className="text-[15px] font-medium">
                       ☁️ 追星天氣
                     </p>
-                    <span className="rounded-full bg-primary/10 px-2.5 py-1 text-[10px] font-medium text-primary">
+                    <span className="rounded-full bg-primary/10 px-2.5 py-1 text-[13px] font-medium text-primary">
                       IdolDays+
                     </span>
                   </div>
@@ -240,7 +240,7 @@ export function EventFormSheet({
                 </span>
               </div>
 
-              <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
+              <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
                 <div className="rounded-2xl bg-card px-3 py-2">
                   🌧️ 雨天準備
                 </div>
