@@ -2,7 +2,7 @@ import { StoredImage } from "@/components/StoredImage";
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { FolderHeart, Plus, Images } from "lucide-react";
-import { AppShell, EmptyState, SoftCard } from "@/components/AppShell";
+import { AppShell, PageHeader, EmptyState, SoftCard } from "@/components/AppShell";
 import { MemoryFolderFormSheet } from "@/components/MemoryFolderFormSheet";
 import { type MemoryFolder } from "@/lib/memory-folders";
 import { useMemoryFolderSource } from "@/lib/memory-folders.source";
@@ -47,13 +47,10 @@ function MemoriesPage() {
 
   return (
     <AppShell>
-      <header className="mb-7">
-        <p className="text-sm tracking-[0.2em] text-muted-foreground uppercase">Memories</p>
-        <h1 className="mt-2 font-display text-[26px] leading-snug font-medium">我的追星回憶</h1>
-        <p className="mt-2 text-base leading-relaxed text-muted-foreground">
-          把喜歡過的每一天，留在這裡 ♡
-        </p>
-      </header>
+      <PageHeader
+        title="我的追星回憶"
+        subtitle="把喜歡過的每一天，留在這裡 ♡"
+      />
 
       <div className="mb-5 flex items-baseline justify-between">
         <h2 className="font-display text-[18px] font-semibold tracking-[0.08em]">📁 回憶資料夾</h2>
