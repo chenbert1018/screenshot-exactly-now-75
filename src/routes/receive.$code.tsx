@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useAuth } from "@/lib/auth";
-import { Gift } from "lucide-react";
+import { Check, Gift, Sparkles } from "lucide-react";
 import {
   claimAlbumShareCode,
   normalizeShareCode,
@@ -27,6 +27,7 @@ function ReceiveAlbumPage() {
   const { user, loading: authLoading } = useAuth();
   const [preview, setPreview] = useState<AlbumShareCodePreview | null | undefined>(undefined);
   const [claiming, setClaiming] = useState(false);
+  const [received, setReceived] = useState<{ folderId: string; title: string; count: number } | null>(null);
 
   useEffect(() => {
     if (authLoading) return;
@@ -47,8 +48,7 @@ function ReceiveAlbumPage() {
     setClaiming(true);
     try {
       const result = await claimAlbumShareCode(code);
-      toast.success(`「${result.shareTitle}」已收進你的 IdolDays ♡`);
-      window.location.assign(`/memories/${result.folderId}`);
+      setReceived({ folderId: result.folderId, title: result.shareTitle, count: result.importedMemoryCount });
     } catch (cause) {
       toast.error(cause instanceof Error ? cause.message : "收藏沒有收進來，請稍後再試。");
       setClaiming(false);
@@ -122,32 +122,77 @@ function ReceiveAlbumPage() {
     );
   }
 
+  if (received) {
+    return (
+      <main className="mx-auto flex min-h-[100dvh] max-w-xl items-end justify-center bg-gradient-to-b from-background via-background to-primary/[0.06] px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[env(safe-area-inset-top)] sm:items-center sm:px-5">
+        <section className="relative w-full overflow-hidden rounded-[2rem] border border-primary/15 bg-card px-6 py-8 text-center shadow-soft">
+          <Sparkles className="absolute left-8 top-8 size-4 animate-pulse text-primary/35" strokeWidth={1.4} />
+          <Sparkles className="absolute right-10 top-16 size-3 animate-pulse text-primary/25" strokeWidth={1.4} />
+          <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-primary/10 text-primary animate-in zoom-in-75 duration-500">
+            <Check className="size-7" strokeWidth={1.8} />
+          </div>
+          <p className="mt-5 text-[11px] font-semibold tracking-[0.18em] text-primary">IDOLDAYS SHARE ♡</p>
+          <h1 className="mt-2 font-display text-[26px] font-medium">收到了 ♡</h1>
+          <p className="mt-2 text-sm text-muted-foreground">這份收藏已經放進你的回憶</p>
+          <div className="mt-6 rounded-[1.5rem] bg-surface/80 px-5 py-5 text-left">
+            <p className="font-display text-[20px] font-medium">{received.title}</p>
+            <p className="mt-1 text-sm text-muted-foreground">♡ {received.count} 則回憶 · 來自朋友的收藏</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => window.location.assign(`/memories/${received.folderId}`)}
+            className="mt-6 min-h-[52px] w-full rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform active:scale-[0.97]"
+          >
+            打開收藏
+          </button>
+          <Link to="/" className="mt-2 inline-flex min-h-[44px] items-center justify-center px-5 text-sm text-muted-foreground">
+            先回首頁
+          </Link>
+        </section>
+      </main>
+    );
+  }
+
   return (
-    <main className="mx-auto flex min-h-screen max-w-xl items-center justify-center px-5 py-10">
-      <section className="w-full rounded-[2rem] border border-primary/15 bg-card px-5 py-7 shadow-soft">
-        <div className="flex size-11 items-center justify-center rounded-full bg-primary/10 text-primary">
-          <Gift className="size-5" strokeWidth={1.6} />
-        </div>
-        <p className="mt-5 text-[11px] font-semibold tracking-[0.18em] text-primary">A GIFT FOR YOU ♡</p>
-        <p className="mt-2 text-sm text-muted-foreground">有人分享了一份收藏給你 ♡</p>
-        <h1 className="mt-3 font-display text-[25px] font-medium leading-snug">{preview.shareTitle}</h1>
-        <p className="mt-2 text-sm text-muted-foreground">♡ {preview.memoryCount} 則回憶</p>
-        {preview.shareMessage ? (
-          <p className="mt-4 rounded-2xl bg-surface px-4 py-3 text-sm leading-relaxed text-muted-foreground">
-            「{preview.shareMessage}」
+    <main className="mx-auto flex min-h-[100dvh] max-w-xl items-end justify-center bg-gradient-to-b from-background via-background to-primary/[0.06] px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[env(safe-area-inset-top)] sm:items-center sm:px-5">
+      <section className="w-full overflow-hidden rounded-[2rem] border border-primary/15 bg-card shadow-soft">
+        <div className="mx-auto mt-2 h-1.5 w-10 rounded-full bg-foreground/10 sm:hidden" />
+        <div className="px-5 pb-7 pt-5">
+          <div className="flex items-center gap-3">
+            <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <Gift className="size-5" strokeWidth={1.6} />
+            </div>
+            <div>
+              <p className="text-[11px] font-semibold tracking-[0.18em] text-primary">IDOLDAYS SHARE ♡</p>
+              <p className="mt-0.5 text-sm text-muted-foreground">一份回憶正在等你收下</p>
+            </div>
+          </div>
+
+          <div className="mt-5 rounded-[1.6rem] border border-primary/10 bg-gradient-to-b from-primary/[0.07] to-surface/70 px-5 py-6">
+            <p className="text-[10px] font-semibold tracking-[0.16em] text-primary">A GIFT FOR YOU ♡</p>
+            <h1 className="mt-2 font-display text-[25px] font-medium leading-snug">{preview.shareTitle}</h1>
+            <p className="mt-2 text-sm text-muted-foreground">♡ {preview.memoryCount} 則回憶</p>
+            <p className="mt-4 text-xs text-muted-foreground">來自一位 IdolDays 粉絲的收藏 ♡</p>
+          </div>
+
+          {preview.shareMessage ? (
+            <p className="mt-4 rounded-2xl bg-surface px-4 py-3 text-sm leading-relaxed text-muted-foreground">
+              「{preview.shareMessage}」
+            </p>
+          ) : null}
+
+          <button
+            type="button"
+            disabled={claiming}
+            onClick={() => void receive()}
+            className="mt-6 min-h-[52px] w-full rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform active:scale-[0.97] disabled:opacity-60"
+          >
+            {claiming ? "正在收進你的回憶…" : "收進我的 IdolDays ♡"}
+          </button>
+          <p className="mt-3 text-center text-[11px] leading-relaxed text-muted-foreground">
+            分享碼 {code} · 收下前不會修改你的任何收藏
           </p>
-        ) : null}
-        <button
-          type="button"
-          disabled={claiming}
-          onClick={() => void receive()}
-          className="mt-6 w-full rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground shadow-soft active:scale-[0.98] disabled:opacity-60"
-        >
-          {claiming ? "正在收進來…" : "收進我的 IdolDays ♡"}
-        </button>
-        <p className="mt-3 text-center text-[11px] leading-relaxed text-muted-foreground">
-          分享碼 {code} · 收下後會建立在你的帳號中
-        </p>
+        </div>
       </section>
     </main>
   );
