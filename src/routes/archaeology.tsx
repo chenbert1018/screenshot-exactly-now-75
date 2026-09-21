@@ -12,7 +12,7 @@ import {
   Trash2,
 } from "lucide-react";
 
-import { AppShell, SoftCard } from "@/components/AppShell";
+import { AppShell, PageHeader, SoftCard } from "@/components/AppShell";
 import { ArchaeologyFormSheet } from "@/components/ArchaeologyFormSheet";
 import { StoredImage } from "@/components/StoredImage";
 import { Input } from "@/components/ui/input";
@@ -140,26 +140,10 @@ function ArchaeologyPage() {
 
   return (
     <AppShell>
-      <header className="relative mb-7">
-        <span
-          aria-hidden
-          className="pointer-events-none absolute top-0 right-2 text-xl text-primary/25"
-        >
-          ✦
-        </span>
-
-        <p className="text-[13px] font-semibold tracking-[0.14em] text-primary">FROM OUR DAYS ♡</p>
-
-        <div className="mt-2 flex items-end justify-between gap-4">
-          <div className="min-w-0">
-            <h1 className="font-display text-[28px] leading-snug font-semibold">
-              以前喜歡過的瞬間
-            </h1>
-            <p className="mt-2 max-w-[290px] text-base leading-6 text-muted-foreground">
-              有些貼文、影片和一句話，過了很久還是會想再看一次。
-            </p>
-          </div>
-
+      <PageHeader
+        title="以前喜歡過的瞬間"
+        subtitle="有些貼文、影片和一句話，過了很久還是會想再看一次。"
+        action={
           <button
             type="button"
             onClick={openCreate}
@@ -168,8 +152,8 @@ function ArchaeologyPage() {
           >
             <Plus className="size-4" strokeWidth={2} />
           </button>
-        </div>
-      </header>
+        }
+      />
 
       {error ? (
         <CloudRetryNotice onRetry={reload}>
