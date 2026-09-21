@@ -125,11 +125,11 @@ export function IdolSongFormSheet({
         className="mx-auto max-h-[92vh] w-full max-w-md overflow-y-auto rounded-t-3xl border-border/60 bg-card px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
       >
         <SheetHeader className="px-0 text-left">
-          <p className="text-[10px] font-semibold tracking-[0.16em] text-primary">
+          <p className="text-[13px] font-semibold tracking-[0.14em] text-primary">
             OUR SONGS ♡
           </p>
 
-          <SheetTitle className="font-display text-xl">
+          <SheetTitle className="font-display text-[22px]">
             加進我們的歌
           </SheetTitle>
 
@@ -222,15 +222,15 @@ export function IdolSongFormSheet({
             </div>
 
             {resolving ? (
-              <p className="text-xs text-primary">
+              <p className="text-sm text-primary">
                 ✦ 正在讀取歌曲資料…
               </p>
             ) : linkMessage ? (
-              <p className="text-xs leading-relaxed text-muted-foreground">
+              <p className="text-sm leading-relaxed text-muted-foreground">
                 {linkMessage}
               </p>
             ) : (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 貼上連結後，會自動辨識音樂平台。
               </p>
             )}
@@ -359,7 +359,7 @@ export function IdolSongFormSheet({
             <button
               type="submit"
               disabled={saving || resolving}
-              className="flex-1 rounded-full bg-primary py-3 text-sm font-medium text-primary-foreground shadow-soft disabled:opacity-60"
+              className="flex-1 rounded-full bg-primary min-h-[50px] py-3 text-base font-medium text-primary-foreground shadow-soft disabled:opacity-60"
             >
               {saving ? "儲存中…" : "加入歌曲"}
             </button>
