@@ -135,106 +135,40 @@ export function RandomSongMemoryCard({ items, ready = true }: Props) {
   const link = streamingLink(item);
 
   return (
-    <section className="music-memory-resurface text-card-foreground">
-      <div className="music-memory-resurface-heading">
-        <div>
-          <p className="music-memory-resurface-kicker">
+    <section className="mt-3 rounded-[1.55rem] border border-border/70 bg-card/85 px-4 py-3.5 text-card-foreground shadow-soft">
+      <div className="flex items-center gap-3">
+        <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <Music2 className="size-5" strokeWidth={1.5} />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-[13px] font-semibold text-primary">
             {onThisDay ? "去年的今天 ♡" : "♪ 又遇見這首歌 ♡"}
           </p>
-
-          <p className="music-memory-resurface-title">
-            {onThisDay
-              ? yearsAgo === 1
-                ? "去年的今天，我們聽了這首歌"
-                : `${yearsAgo} 年前的今天，我們聽了這首歌`
-              : "今天，又遇見那時候聽的歌。"}
+          <p className="mt-0.5 truncate text-[16px] font-medium">♪ {item.title}</p>
+          <p className="mt-0.5 truncate text-[14px] text-muted-foreground">
+            {item.artist ? `${item.artist}・` : ""}{formatMemoryDate(item.date)}
+            {item.mood ? `・${item.mood}` : ""}
           </p>
         </div>
-
-        <span
-          className="music-memory-resurface-spark"
-          aria-hidden="true"
-        >
-          ✦
-        </span>
-      </div>
-
-      <div className="music-memory-polaroid">
-        <div
-          className="music-memory-polaroid-photo"
-          aria-hidden="true"
-        >
-          <div className="music-memory-polaroid-disc">
-            <span className="music-memory-polaroid-disc-hole" />
-
-            <Music2
-              className="music-memory-polaroid-note"
-              strokeWidth={1.4}
-            />
-          </div>
-
-          <span className="music-memory-polaroid-date">
-            {formatMemoryDate(item.date)}
-          </span>
-        </div>
-
-        <div className="music-memory-polaroid-caption">
-          <p className="music-memory-polaroid-song">
-            ♪ {item.title}
-          </p>
-
-          {item.artist ? (
-            <p className="music-memory-polaroid-artist">
-              {item.artist}
-            </p>
-          ) : null}
-
-          <div className="music-memory-polaroid-meta">
-            <span>{onThisDay ? "那一天 ♡" : "又想起了 ♡"}</span>
-
-            {item.mood ? (
-              <span
-                className="music-memory-polaroid-mood"
-                aria-label={`那天的心情：${item.mood}`}
-              >
-                {item.mood}
-              </span>
-            ) : (
-              <span aria-hidden="true">♡</span>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <p className="music-memory-resurface-copy">
-        {onThisDay
-          ? "有些歌一響起，就會回到那一天。"
-          : "有些喜歡過的日子，會被一首歌重新想起。"}
-      </p>
-
-      <div className="music-memory-resurface-actions">
-        {link ? (
-          <a
-            href={link}
-            target="_blank"
-            rel="noreferrer"
-            className="music-memory-resurface-listen"
-          >
-            ♪ 再聽一次
-            <ArrowRight className="size-3" />
-          </a>
-        ) : (
-          <span />
-        )}
-
         <Link
           to="/music"
-          className="music-memory-resurface-diary"
+          aria-label="打開音樂日記"
+          className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/[0.08] text-primary transition-transform active:scale-90"
         >
-          音樂日記
-          <ArrowRight className="size-3" />
+          <ArrowRight className="size-4" strokeWidth={1.8} />
         </Link>
       </div>
+      {link ? (
+        <a
+          href={link}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-2.5 inline-flex min-h-11 items-center gap-1.5 text-[14px] font-medium text-primary"
+        >
+          ♪ 再聽一次
+          <ArrowRight className="size-3.5" />
+        </a>
+      ) : null}
     </section>
   );
 }
