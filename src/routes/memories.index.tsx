@@ -78,20 +78,6 @@ function MemoriesPage() {
         subtitle="照片・日子・歌 ♡"
       />
 
-      <Link
-        to="/collection"
-        className="mb-6 flex items-center gap-4 rounded-[1.6rem] border border-primary/15 bg-primary/[0.06] px-5 py-4 shadow-soft transition-transform active:scale-[0.98]"
-      >
-        <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-          <Package className="size-5" strokeWidth={1.6} />
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block text-base font-semibold">💎 我的收藏</span>
-          <span className="mt-1 block text-sm text-muted-foreground">專輯・小卡・票根・應援物</span>
-        </span>
-        <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
-      </Link>
-
       <div className="mb-5 flex items-baseline justify-between">
         <h2 className="font-display text-[18px] font-semibold tracking-[0.08em]">📁 回憶資料夾</h2>
         {folders.length > 0 ? (
@@ -100,7 +86,7 @@ function MemoriesPage() {
             className="inline-flex items-center gap-1 min-h-11 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
           >
             <Plus className="size-3.5" strokeWidth={2} />
-            新增回憶夾
+            ＋ 回憶夾
           </button>
         ) : null}
       </div>
@@ -124,7 +110,7 @@ function MemoriesPage() {
               className="inline-flex items-center gap-1.5 min-h-[50px] rounded-full bg-primary px-6 py-3 text-base font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
             >
               <Plus className="size-4" strokeWidth={2} />
-              新增回憶夾
+              ＋ 建立第一個回憶夾
             </button>
           }
         />
@@ -173,6 +159,20 @@ function MemoriesPage() {
           })}
         </div>
       )}
+
+      <Link
+        to="/collection"
+        className="mt-5 flex min-h-[56px] items-center gap-3 rounded-[1.35rem] border border-border/60 bg-surface/45 px-4 py-2.5 text-muted-foreground transition-transform active:scale-[0.98]"
+      >
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+          <Package className="size-4" strokeWidth={1.6} />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-medium text-foreground">💎 我的收藏</span>
+          <span className="block truncate text-xs">專輯・小卡・票根・應援物</span>
+        </span>
+        <ChevronRight className="size-4 shrink-0" />
+      </Link>
 
       <MemoryFolderFormSheet
         open={open}
