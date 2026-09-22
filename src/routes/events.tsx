@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { emptyEventDraft, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Bell, CalendarDays, Plus } from "lucide-react";
 import { AppShell, EmptyState, PageHeader, SoftCard } from "@/components/AppShell";
@@ -23,6 +23,7 @@ import { scheduleEventNotifications } from "@/lib/event-notifications";
 import { CloudRetryNotice } from "@/components/CloudRetryNotice";
 
 export const Route = createFileRoute("/events")({
+  validateSearch: (s: Record<string, unknown>) => ({ idol: typeof s.idol === "string" ? s.idol : undefined }),
   head: () => ({
     meta: [
       { title: "我的日子｜IdolDays" },
@@ -87,6 +88,7 @@ function EventCard({
 }
 
 function EventsPage() {
+  const search = Route.useSearch();
   const { idols, findIdol } = useIdolSource();
   const { events, ready, addEvent, updateEvent, removeEvent, error, reload } = useEventSource();
 
