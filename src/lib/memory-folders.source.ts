@@ -237,7 +237,7 @@ export type MemoryFolderSource = {
   ready: boolean;
   mode: "local" | "cloud";
   error: string | null;
-  addFolder: (draft: MemoryFolderDraft) => Promise<void>;
+  addFolder: (draft: MemoryFolderDraft) => Promise<MemoryFolder>;
   updateFolder: (id: string, draft: MemoryFolderDraft) => Promise<void>;
   removeFolder: (id: string) => Promise<void>;
   reload: () => void;
@@ -296,9 +296,9 @@ export function useMemoryFolderSource(): MemoryFolderSource {
         const created = await createMemoryFolder(draft, userId);
         await storeFolderCover(userId, created.id, draft);
         reload();
-        return;
+        return created;
       }
-      local.addFolder(draft);
+      return local.addFolder(draft);
     },
     [isCloud, userId, local, reload],
   );
