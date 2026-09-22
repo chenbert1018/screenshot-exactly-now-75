@@ -12,6 +12,7 @@ export function ConcertPersonalMemoryCard({ event }: { event: IdolEvent }) {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -19,6 +20,7 @@ export function ConcertPersonalMemoryCard({ event }: { event: IdolEvent }) {
     setSeat(draft.seat ?? "");
     setMoment(draft.unforgettableMoment ?? "");
     setPhoto(draft.photo ?? "");
+    setMoreOpen(Boolean(draft.seat));
   }, [entry?.eventId]);
 
   const dirty = () => setSaved(false);
@@ -62,18 +64,21 @@ export function ConcertPersonalMemoryCard({ event }: { event: IdolEvent }) {
       <p className="mt-1 text-xs leading-5 text-muted-foreground">先留下一張照片和最忘不了的一刻就好 ♡</p>
 
       <div className="mt-5 space-y-4">
-        <label className="block">
-          <span className="text-xs text-muted-foreground">我坐在哪裡？（選填）</span>
-          <input value={seat} onChange={(e)=>{setSeat(e.target.value);dirty()}} placeholder="例：A3 區 12 排 8 號" className="mt-1.5 min-h-[50px] w-full rounded-2xl bg-surface px-4 text-base outline-none" />
-        </label>
-        <label className="block">
-          <span className="text-xs text-muted-foreground">這場最忘不了的一刻</span>
-          <textarea value={moment} onChange={(e)=>{setMoment(e.target.value);dirty()}} maxLength={500} placeholder="他走到延伸台看向這邊的時候，我真的忘記呼吸了。" className="mt-1.5 min-h-24 w-full resize-none rounded-2xl bg-surface px-4 py-3 text-base outline-none" />
-        </label>
         <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e)=>choosePhoto(e.target.files?.[0])} />
         <button type="button" onClick={()=>inputRef.current?.click()} className="flex aspect-[16/9] w-full items-center justify-center overflow-hidden rounded-[1.5rem] bg-surface active:scale-[.99]">
           {photo ? <img src={photo} alt="演唱會現場回憶" className="size-full object-cover" /> : <span className="flex flex-col items-center gap-2 text-sm text-muted-foreground"><Camera className="size-6" strokeWidth={1.6}/>留一張那天的照片</span>}
         </button>
+        <label className="block">
+          <span className="text-xs text-muted-foreground">這場最忘不了的一刻 ♡</span>
+          <textarea value={moment} onChange={(e)=>{setMoment(e.target.value);dirty()}} maxLength={500} placeholder="他走到延伸台看向這邊的時候，我真的忘記呼吸了。" className="mt-1.5 min-h-24 w-full resize-none rounded-2xl bg-surface px-4 py-3 text-base outline-none" />
+        </label>
+        <button type="button" onClick={()=>setMoreOpen((value)=>!value)} className="flex min-h-11 w-full items-center justify-between rounded-2xl px-1 text-sm font-medium text-primary">
+          <span>＋ 座位</span><span>{moreOpen ? "收起" : ""}</span>
+        </button>
+        {moreOpen ? <label className="block">
+          <span className="text-xs text-muted-foreground">我坐在哪裡？（選填）</span>
+          <input value={seat} onChange={(e)=>{setSeat(e.target.value);dirty()}} placeholder="例：A3 區 12 排 8 號" className="mt-1.5 min-h-[50px] w-full rounded-2xl bg-surface px-4 text-base outline-none" />
+        </label> : null}
       </div>
 
       <button type="button" disabled={!ready || saving} onClick={()=>void submit()} className="mt-5 min-h-[52px] w-full rounded-full bg-primary px-5 text-base font-medium text-primary-foreground shadow-soft transition-transform active:scale-[0.98] disabled:opacity-50">
