@@ -1,6 +1,6 @@
 import { StoredImage } from "@/components/StoredImage";
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { FolderHeart, Plus, Images } from "lucide-react";
 import { AppShell, PageHeader, EmptyState, SoftCard } from "@/components/AppShell";
 import { MemoryFolderFormSheet } from "@/components/MemoryFolderFormSheet";
@@ -44,6 +44,7 @@ function MemoriesPage() {
   const { all } = useMemorySource();
   const { idols } = useIdolSource();
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <AppShell>
@@ -140,8 +141,20 @@ function MemoriesPage() {
         title="建立回憶夾"
         submitLabel="建立"
         onSubmit={async (draft) => {
-          await addFolder(draft);
+          const created = await addFolder(draft);
           setOpen(false);
+          const folderId =
+            typeof created === "string"
+              ? created
+              : created && typeof created === "object" && "id" in created
+                ? String(created.id)
+                : undefined;
+          if (folderId) {
+            await navigate({
+              to: "/memories/$folderId",
+              params: { folderId },
+            });
+          }
         }}
       />
     </AppShell>
