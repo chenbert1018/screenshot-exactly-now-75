@@ -45,7 +45,7 @@ export function ConcertPersonalMemoryCard({ event }: { event: IdolEvent }) {
       <section className="mt-5 overflow-hidden rounded-[1.9rem] border border-border/70 bg-card/90 shadow-soft">
         {entry.photo ? <img src={entry.photo} alt="演唱會現場回憶" className="aspect-[16/9] w-full object-cover" /> : null}
         <div className="px-5 py-5">
-          <p className="text-[12px] font-semibold tracking-[0.14em] text-primary">MY CONCERT DAY ♡</p>
+          <p className="text-[12px] font-semibold tracking-[0.14em] text-primary">演唱會回憶 ♡</p>
           <h3 className="mt-1 font-display text-[20px] font-semibold">那一天，我真的在台下。</h3>
           {entry.seat ? <p className="mt-3 text-sm text-muted-foreground">🎫 {entry.seat}</p> : null}
           {entry.unforgettableMoment ? <p className="mt-3 text-[15px] leading-relaxed">「{entry.unforgettableMoment}」</p> : null}
@@ -57,9 +57,9 @@ export function ConcertPersonalMemoryCard({ event }: { event: IdolEvent }) {
 
   return (
     <section className="mt-5 rounded-[1.9rem] border border-border/70 bg-card/85 px-5 py-6 shadow-soft">
-      <p className="text-[12px] font-semibold tracking-[0.14em] text-primary">I WAS THERE ♡</p>
+      <p className="text-[12px] font-semibold tracking-[0.14em] text-primary">我在現場 ♡</p>
       <h3 className="mt-1 font-display text-[19px] font-semibold">我真的和他一起度過了這一天。</h3>
-      <p className="mt-1 text-xs leading-5 text-muted-foreground">不用寫完整日記，只留下你最想記得的現場。</p>
+      <p className="mt-1 text-xs leading-5 text-muted-foreground">先留下一張照片和最忘不了的一刻就好 ♡</p>
 
       <div className="mt-5 space-y-4">
         <label className="block">
