@@ -98,7 +98,7 @@ function dailyAnimalLine(idol: Idol) {
 
 function dayLabel(event: IdolEvent) {
   const days = eventCountdown(event.date)?.daysUntil ?? 0;
-  return days === 0 ? "TODAY" : `D - ${Math.max(0, days)}`;
+  return days === 0 ? "今天" : `D-${Math.max(0, days)}`;
 }
 
 function EventCard({ event }: { event: IdolEvent }) {
@@ -1025,7 +1025,7 @@ function HomePage() {
           />
           {coverRotation && idols.length > 1 ? (
             <p className="mt-2 px-2 text-right text-[11px] text-muted-foreground">
-              每日輪換中・按右上角可立即指定另一位
+              ✦ 今天由 {main.name} 陪你
             </p>
           ) : null}
           {companionship && !companionship.isFuture && companionship.days !== null ? (
@@ -1036,7 +1036,7 @@ function HomePage() {
             >
               <div>
                 <p className="text-[10px] font-semibold tracking-[0.14em] text-primary">
-                  TOGETHER ♡
+                  一起走過 ♡
                 </p>
                 <p className="mt-1 text-sm text-muted-foreground">和 {main.name} 一起走過</p>
               </div>
@@ -1083,18 +1083,18 @@ function HomePage() {
           </p>
         </>
       ) : (
-        <Section title="我的偶像">
+        <Section title="我的本命 ♡">
           <EmptyState
             icon={<Heart className="size-5" strokeWidth={1.6} />}
-            title="還沒有你的第一位偶像"
-            description="今天也可以從一個名字開始，收藏屬於你的追星日子。"
+            title="先加入你的本命 ♡"
+            description="名字＋一張照片，就可以開始。"
             action={
               <Link
                 to="/idols"
                 className="inline-flex items-center gap-1.5 rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
               >
                 <Plus className="size-4" strokeWidth={2} />
-                加入第一位偶像
+                ＋ 加入本命
               </Link>
             }
           />
