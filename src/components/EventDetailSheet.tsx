@@ -281,7 +281,7 @@ export function EventDetailSheet({
               </div>
               {c?.status === "COMPLETED" || c?.status === "TODAY" ? <MeetMemoryCard event={event} /> : null}
 
-              <section className="mt-5 rounded-[1.9rem] border border-primary/15 bg-primary/[0.05] px-5 py-5 shadow-soft">
+              {c?.status === "COMPLETED" || c?.status === "TODAY" ? <section className="mt-5 rounded-[1.9rem] border border-primary/15 bg-primary/[0.05] px-5 py-5 shadow-soft">
                 <p className="text-[12px] font-semibold tracking-[0.14em] text-primary">THINGS I BROUGHT HOME ♡</p>
                 <h3 className="mt-1 font-display text-[18px] font-semibold">那天帶回家的東西</h3>
                 <p className="mt-1 text-xs leading-5 text-muted-foreground">官方特典、小卡、禮物、周邊，還有飯制應援物，都可以和這次見面一起留下。</p>
@@ -303,7 +303,7 @@ export function EventDetailSheet({
                 <Link to="/collection" search={{ event: event.id }} className="mt-3 inline-flex min-h-11 items-center rounded-full px-1 text-sm font-medium text-primary transition-transform active:scale-95">
                   {eventKeepsakes.length > 0 ? "查看這次見面的收藏 →" : "＋ 留下這次見面的收藏"}
                 </Link>
-              </section>
+              </section> : null}
               </>
           ) : null}
           {event.type === "CONCERT" ? (
@@ -314,7 +314,7 @@ export function EventDetailSheet({
               </div>
               <ConcertMusicMemoryCard event={event} />
               {c?.status === "COMPLETED" || c?.status === "TODAY" ? <ConcertPersonalMemoryCard event={event} /> : null}
-              <section className="mt-5 rounded-[1.9rem] border border-primary/15 bg-primary/[0.05] px-5 py-5 shadow-soft">
+              {c?.status === "COMPLETED" || c?.status === "TODAY" ? <section className="mt-5 rounded-[1.9rem] border border-primary/15 bg-primary/[0.05] px-5 py-5 shadow-soft">
                 <p className="text-[12px] font-semibold tracking-[0.14em] text-primary">THINGS I BROUGHT HOME ♡</p>
                 <h3 className="mt-1 font-display text-[18px] font-semibold">那天帶回家的東西</h3>
                 <p className="mt-1 text-xs leading-5 text-muted-foreground">官方周邊、票根、小卡，還有飯制手幅與應援物，都可以和這場一起留下。</p>
@@ -336,7 +336,7 @@ export function EventDetailSheet({
                 <Link to="/collection" search={{ event: event.id }} className="mt-3 inline-flex min-h-11 items-center rounded-full px-1 text-sm font-medium text-primary transition-transform active:scale-95">
                   {eventKeepsakes.length > 0 ? "查看這場的收藏 →" : "＋ 留下這場的收藏"}
                 </Link>
-              </section>
+              </section> : null}
             </>
           ) : null}
 
