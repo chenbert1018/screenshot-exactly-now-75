@@ -2,7 +2,7 @@ export const COLLECTION_CATEGORIES = ["ALBUM","PHOTOCARD","MERCH","TICKET","LIGH
 export type CollectionCategory = (typeof COLLECTION_CATEGORIES)[number];
 export type CollectionOrigin = "USER" | "OFFICIAL" | "PARTNER";
 export type CollectionItem = {
-  id:string; idolId?:string; category:CollectionCategory; title:string; photo?:string;
+  id:string; idolId?:string; eventId?:string; category:CollectionCategory; title:string; photo?:string;
   acquiredDate?:string; source?:string; note?:string; favorite:boolean; origin:CollectionOrigin; createdAt:string;
 };
 export type CollectionDraft = Omit<CollectionItem,"id"|"createdAt"|"origin">;
