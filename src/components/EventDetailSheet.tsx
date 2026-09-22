@@ -265,7 +265,7 @@ export function EventDetailSheet({
 
           {c?.status === "TODAY" && ["CONCERT", "FAN_MEETING"].includes(event.type) ? (
             <section className="mt-5 rounded-[1.9rem] border border-primary/20 bg-primary/10 px-5 py-5 shadow-soft">
-              <p className="text-[11px] font-semibold tracking-[0.14em] text-primary">TODAY IS THE DAY ♡</p>
+              <p className="text-[11px] font-semibold tracking-[0.14em] text-primary">就是今天 ♡</p>
               <h3 className="mt-1 font-display text-[21px] font-semibold">{event.type === "CONCERT" ? "今天，去好好聽他唱歌。" : "今天，真的要見到他了。"}</h3>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">{event.type === "CONCERT" ? "不用急著記錄。先把手機放下，好好看、好好聽；最捨不得忘記的，回來再收進 IdolDays。" : "不用把每句話都準備得完美。先去見他，回來再把真正留在心裡的那一刻收好。"}</p>
               <div className="mt-4 flex flex-wrap gap-2 text-xs">
@@ -281,7 +281,7 @@ export function EventDetailSheet({
               <div className="flex items-start gap-3">
                 <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-card text-primary shadow-soft"><Heart className="size-5" strokeWidth={1.7} /></span>
                 <div className="min-w-0">
-                  <p className="text-[11px] font-semibold tracking-[0.14em] text-primary">WELCOME BACK ♡</p>
+                  <p className="text-[11px] font-semibold tracking-[0.14em] text-primary">回來啦 ♡</p>
                   <h3 className="mt-1 font-display text-[20px] font-semibold">{event.type === "CONCERT" ? "回來了嗎？先留下最捨不得忘記的一刻。" : "真的見到他了。先把最想記住的那一刻留下來。"}</h3>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">{event.type === "CONCERT" ? "不用整理完整心得。座位、一張照片，或一句「那時候我真的好開心」就夠了。" : "不用把整場重新寫一次。一句話、一個眼神，或一張照片，就能把今天收好。"}</p>
                 </div>
@@ -293,7 +293,7 @@ export function EventDetailSheet({
           {event.note ? (
             <div className="mt-8">
               <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground">
-                MY NOTE ♡
+                我的小記 ♡
               </p>
               <p className="mt-2 text-[15px] leading-relaxed">{event.note}</p>
             </div>
@@ -303,13 +303,13 @@ export function EventDetailSheet({
           {event.type === "FAN_MEETING" ? (
             <>
               <div className="mt-8 rounded-[1.9rem] bg-surface/45 px-5 py-4">
-                <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground">{c?.status === "COMPLETED" ? "THAT DAY ♡" : c?.status === "TODAY" ? "TODAY ♡" : "BEFORE WE MEET ♡"}</p>
+                <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground">{c?.status === "COMPLETED" ? "見到他的那天 ♡" : c?.status === "TODAY" ? "就是今天 ♡" : "見面前 ♡"}</p>
                 <p className="mt-1 text-sm leading-6">{c?.status === "COMPLETED" ? "先記得見到他的那一刻，再看看那天一起帶回家的東西。" : c?.status === "TODAY" ? "就是今天。先去好好見他，想說的話不用全部說得完 ♡" : "還沒見面的日子，先把期待和最想說的那句話放在這裡。"}</p>
               </div>
               {c?.status === "COMPLETED" || c?.status === "TODAY" ? <MeetMemoryCard event={event} /> : null}
 
               {c?.status === "COMPLETED" || c?.status === "TODAY" ? <section className="mt-5 rounded-[1.9rem] border border-primary/15 bg-primary/[0.05] px-5 py-5 shadow-soft">
-                <p className="text-[12px] font-semibold tracking-[0.14em] text-primary">THINGS I BROUGHT HOME ♡</p>
+                <p className="text-[12px] font-semibold tracking-[0.14em] text-primary">帶回家的戰利品 ♡</p>
                 <h3 className="mt-1 font-display text-[18px] font-semibold">那天帶回家的東西</h3>
                 <p className="mt-1 text-xs leading-5 text-muted-foreground">官方特典、小卡、禮物、周邊，還有飯制應援物，都可以和這次見面一起留下。</p>
                 {eventKeepsakes.length > 0 ? (
@@ -336,13 +336,13 @@ export function EventDetailSheet({
           {event.type === "CONCERT" ? (
             <>
               <div className="mt-8 rounded-[1.9rem] bg-surface/45 px-5 py-4">
-                <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground">{c?.status === "COMPLETED" ? "MY CONCERT DAY ♡" : c?.status === "TODAY" ? "TODAY ♡" : "BEFORE THE CONCERT ♡"}</p>
+                <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground">{c?.status === "COMPLETED" ? "演唱會那天 ♡" : c?.status === "TODAY" ? "就是今天 ♡" : "演唱會前 ♡"}</p>
                 <p className="mt-1 text-sm leading-6">{c?.status === "COMPLETED" ? "先留下那天聽見的歌，再收好真正發生在你身上的那一刻。" : c?.status === "TODAY" ? "就是今天。去好好聽、好好看，回來再把最捨不得忘記的瞬間收好 ♡" : "演唱會還沒到，先留一首最想在現場聽見的歌。其他的，等那天真的發生。"}</p>
               </div>
               <ConcertMusicMemoryCard event={event} />
               {c?.status === "COMPLETED" || c?.status === "TODAY" ? <ConcertPersonalMemoryCard event={event} /> : null}
               {c?.status === "COMPLETED" || c?.status === "TODAY" ? <section className="mt-5 rounded-[1.9rem] border border-primary/15 bg-primary/[0.05] px-5 py-5 shadow-soft">
-                <p className="text-[12px] font-semibold tracking-[0.14em] text-primary">THINGS I BROUGHT HOME ♡</p>
+                <p className="text-[12px] font-semibold tracking-[0.14em] text-primary">帶回家的戰利品 ♡</p>
                 <h3 className="mt-1 font-display text-[18px] font-semibold">那天帶回家的東西</h3>
                 <p className="mt-1 text-xs leading-5 text-muted-foreground">官方周邊、票根、小卡，還有飯制手幅與應援物，都可以和這場一起留下。</p>
                 {eventKeepsakes.length > 0 ? (
