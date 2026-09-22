@@ -219,10 +219,10 @@ function FanWeatherCard({ event }: { event: IdolEvent }) {
         <CloudSun className="size-5" strokeWidth={1.45} />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-[13px] font-medium tracking-[0.08em] text-primary">
+        <p className="text-[14px] font-medium tracking-[0.06em] text-primary">
           追星天氣・{place}
         </p>
-        <p className="mt-0.5 truncate text-sm text-muted-foreground">{timing}・{detail}</p>
+        <p className="mt-1 truncate text-[15px] text-muted-foreground">{timing}・{detail}</p>
       </div>
       <ArrowRight className="size-5 shrink-0 text-primary" strokeWidth={1.8} />
     </Link>
@@ -247,7 +247,7 @@ function ArchaeologyCard({
         )}
       </div>
       <div className="min-w-0 flex-1 py-1">
-        <p className="text-[13px] font-medium tracking-[0.08em] text-primary">那時候的我們 ♡</p>
+        <p className="text-[14px] font-medium tracking-[0.06em] text-primary">那時候的我們 ♡</p>
         <p className="mt-1 truncate text-[17px] font-medium">{item.title}</p>
         <p className="mt-1 text-sm text-muted-foreground">
           {dotDate(item.createdAt.slice(0, 10))}
@@ -629,11 +629,11 @@ function TodaySongCard({
 
             <div className="mt-3 flex items-center justify-between gap-3">
               <div>
-                <p className="text-[10px] tracking-[0.12em] text-muted-foreground">
+                <p className="text-[13px] tracking-[0.06em] text-muted-foreground">
                   今天的心情
                 </p>
                 {entry?.mood ? (
-                  <p className="mt-1 text-[11px] text-muted-foreground">
+                  <p className="mt-1 text-[13px] text-muted-foreground">
                     今天是 {entry.mood} 的心情
                   </p>
                 ) : null}
@@ -696,10 +696,10 @@ function TodaySongCard({
 
             <div className="mt-4 flex items-center justify-between gap-3 rounded-[1.35rem] bg-primary/[0.055] px-4 py-3">
               <div className="min-w-0">
-                <p className="text-[10px] font-semibold tracking-[0.14em] text-primary">
+                <p className="text-[13px] font-semibold tracking-[0.08em] text-primary">
                   已經留下 {musicDays} 個音樂日子 ♡
                 </p>
-                <p className="mt-1 truncate text-[11px] text-muted-foreground">
+                <p className="mt-1 truncate text-[14px] text-muted-foreground">
                   {specialDayCopy?.companion ??
                     `和 ${idolName} 留下的音樂日子`}
                 </p>
@@ -707,7 +707,7 @@ function TodaySongCard({
 
               <Link
                 to="/music"
-                className="inline-flex shrink-0 items-center gap-1 text-[10px] font-semibold tracking-[0.05em] text-primary"
+                className="inline-flex shrink-0 items-center gap-1 text-[14px] font-semibold text-primary"
               >
                 音樂日記
                 <ArrowRight className="size-3" strokeWidth={1.6} />
@@ -823,13 +823,13 @@ function TodaySongCard({
         </div>
 
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-medium tracking-[0.12em] text-primary">
+          <p className="text-[13px] font-medium tracking-[0.08em] text-primary">
             ♪ 音樂日記 ♡
           </p>
           <p className="mt-0.5 text-sm font-medium">
             看我和他的音樂日記
           </p>
-          <p className="mt-0.5 truncate text-[10px] text-muted-foreground">
+          <p className="mt-1 truncate text-[13px] text-muted-foreground">
             今日一曲・回歸・演唱會
           </p>
         </div>
@@ -1058,7 +1058,7 @@ function HomePage() {
               className="mt-3 flex min-h-[56px] items-center justify-between rounded-[1.35rem] border border-border/60 bg-card/75 px-4 py-2.5 shadow-soft backdrop-blur-xl transition-transform active:scale-[0.99]"
             >
               <div>
-                <p className="text-[10px] font-semibold tracking-[0.14em] text-primary">
+                <p className="text-[13px] font-semibold tracking-[0.08em] text-primary">
                   一起走過 ♡
                 </p>
                 <p className="mt-0.5 text-sm text-muted-foreground">和 {main.name}</p>
@@ -1075,12 +1075,12 @@ function HomePage() {
             to="/memories"
             className="mt-6 block rounded-[1.8rem] bg-gradient-to-br from-primary/[0.11] via-card/80 to-accent/45 px-5 py-4 shadow-soft transition-transform active:scale-[0.99]"
           >
-            <p className="text-[12px] font-semibold tracking-[0.1em] text-primary">今天和他 ♡</p>
+            <p className="text-[14px] font-semibold tracking-[0.06em] text-primary">今天和他 ♡</p>
             <h2 className="mt-1.5 font-display text-[21px] font-medium leading-snug tracking-[-0.02em] text-foreground">
               今天，想留下什麼？
             </h2>
-            <p className="mt-1 text-[13px] text-muted-foreground">和 {main.name} 的今天</p>
-            <div className="mt-3 flex items-center gap-2 text-[12px] font-medium text-primary">
+            <p className="mt-1.5 text-[15px] text-muted-foreground">和 {main.name} 的今天</p>
+            <div className="mt-3 flex items-center gap-2 text-[14px] font-medium text-primary">
               <span>♪ 一首歌</span>
               <span aria-hidden="true">·</span>
               <span>♡ 一句話</span>
