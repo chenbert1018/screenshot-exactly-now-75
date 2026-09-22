@@ -359,6 +359,7 @@ export function MusicTimeline({
                             </p>
                             <Link
                               to="/memories"
+                              search={{ create: "comeback", title: item.title, date: item.date }}
                               className="mt-2 inline-flex min-h-11 items-center gap-1 text-sm font-medium text-primary"
                             >
                               把這段 Era 留進回憶
