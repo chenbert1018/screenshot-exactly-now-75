@@ -15,7 +15,7 @@ import { linkComebackEra } from "@/lib/comeback-era.source";
 
 export const Route = createFileRoute("/memories/")({
   validateSearch: (search: Record<string, unknown>) => ({
-    create: search.create === "comeback" ? ("comeback" as const) : undefined,
+    create: search.create === "comeback" ? ("comeback" as const) : search.create === "1" ? ("1" as const) : undefined,
     title: typeof search.title === "string" ? search.title : undefined,
     date: typeof search.date === "string" ? search.date : undefined,
     event: typeof search.event === "string" ? search.event : undefined,
@@ -68,14 +68,14 @@ function MemoriesPage() {
     : undefined;
 
   useEffect(() => {
-    if (search.create === "comeback") setOpen(true);
+    if (search.create === "comeback" || search.create === "1") setOpen(true);
   }, [search.create]);
 
   return (
     <AppShell>
       <PageHeader
-        title="我的追星回憶"
-        subtitle="把喜歡過的每一天，留在這裡 ♡"
+        title="我的回憶 📸"
+        subtitle="照片・日子・歌 ♡"
       />
 
       <Link
@@ -86,8 +86,8 @@ function MemoriesPage() {
           <Package className="size-5" strokeWidth={1.6} />
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block text-base font-semibold">MY COLLECTION ♡</span>
-          <span className="mt-1 block text-sm text-muted-foreground">專輯、小卡、周邊與票根，也都是喜歡他的痕跡。</span>
+          <span className="block text-base font-semibold">💎 我的收藏</span>
+          <span className="mt-1 block text-sm text-muted-foreground">專輯・小卡・票根・應援物</span>
         </span>
         <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
       </Link>
@@ -147,7 +147,7 @@ function MemoriesPage() {
                   ) : (
                     <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-accent/35 via-card to-lavender/30 text-primary/50">
                       <Images className="size-7" strokeWidth={1.3} />
-                      <span className="text-sm tracking-[0.1em]">OUR DAYS ♡</span>
+                      <span className="text-sm tracking-[0.1em]">我們的日子 ♡</span>
                     </div>
                   )}
                   <div className="px-5 py-4">
@@ -178,12 +178,12 @@ function MemoriesPage() {
         open={open}
         onOpenChange={(next) => {
           setOpen(next);
-          if (!next && search.create === "comeback") {
+          if (!next && search.create) {
             void navigate({ to: "/memories", search: {} });
           }
         }}
-        initial={comebackInitial}
-        title={search.create === "comeback" ? "建立 Comeback Era 回憶" : "建立回憶夾"}
+        initial={comebackInitial ?? (search.create === "1" && search.idol ? { title: "", description: "", coverPhoto: "", startDate: "", endDate: "", idolId: search.idol } : undefined)}
+        title={search.create === "comeback" ? "建立回歸回憶 ♡" : "建立回憶夾 ♡"}
         submitLabel="建立"
         onSubmit={async (draft) => {
           const created = await addFolder(draft);
