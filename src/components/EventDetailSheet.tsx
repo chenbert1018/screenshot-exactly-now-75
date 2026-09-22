@@ -289,6 +289,17 @@ export function EventDetailSheet({
             </section>
           ) : null}
 
+          {c?.status === "COMPLETED" && ["CONCERT", "FAN_MEETING"].includes(event.type) ? (
+            <Link
+              to="/memories"
+              search={{ create: "1", event: event.id, idol: event.idolId, date: event.date, title: event.title } as never}
+              onClick={() => onOpenChange(false)}
+              className="mt-5 flex min-h-[52px] w-full items-center justify-center rounded-full bg-primary px-5 text-base font-medium text-primary-foreground shadow-soft transition-transform active:scale-[0.98]"
+            >
+              📸 把這一天收進回憶
+            </Link>
+          ) : null}
+
           {/* Note */}
           {event.note ? (
             <div className="mt-8">
