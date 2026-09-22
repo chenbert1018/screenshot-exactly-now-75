@@ -19,7 +19,7 @@ const REF_PREFIX = "storage:";
 const SIGNED_TTL_SECONDS = 60 * 60; // 1 小時
 const SIGNED_CACHE_MS = 50 * 60 * 1000;
 
-export type MediaKind = "idols" | "memories" | "memory-folders" | "sugar" | "archaeology";
+export type MediaKind = "idols" | "memories" | "memory-folders" | "sugar" | "archaeology" | "collection" | "concert-memories" | "meet-memories";
 
 /* ------------------------------ reference ------------------------------ */
 
