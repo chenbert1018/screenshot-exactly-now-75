@@ -151,7 +151,7 @@ function EventsPage() {
             className="inline-flex shrink-0 items-center gap-1 min-h-11 rounded-full bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
           >
             <Plus className="size-3.5" strokeWidth={2} />
-            新增日子
+            ＋ 日子
           </button>
         }
       />
@@ -174,12 +174,12 @@ function EventsPage() {
         </CloudRetryNotice>
       ) : null}
 
-      <div className="mb-5 rounded-2xl border border-border/60 bg-surface/50 px-4 py-4">
-        <p className="text-sm font-medium">
-          <Bell className="mr-2 inline size-4 text-primary" strokeWidth={1.6} />{activeReminderCount} 個提醒
+      {activeReminderCount > 0 ? (
+        <p className="mb-4 flex min-h-11 items-center gap-2 px-1 text-sm text-muted-foreground">
+          <Bell className="size-4 text-primary" strokeWidth={1.6} />
+          已替你記住 {activeReminderCount} 個提醒 ♡
         </p>
-        {activeReminderCount === 0 ? <p className="mt-1 text-xs text-muted-foreground">活動前再提醒你 ♡</p> : null}
-      </div>
+      ) : null}
 
       {!ready ? (
         <div className="h-40 rounded-2xl border border-border/60 bg-surface/40" aria-hidden />
@@ -195,7 +195,7 @@ function EventsPage() {
               className="inline-flex items-center gap-1.5 rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
             >
               <Plus className="size-4" strokeWidth={2} />
-              新增第一個日子
+              ＋ 記下第一個日子
             </button>
           }
         />
