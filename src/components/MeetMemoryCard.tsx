@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { Camera } from "lucide-react";
+import { StoredImage } from "@/components/StoredImage";
 import type { IdolEvent } from "@/lib/events";
 import { emptyMeetMemoryDraft } from "@/lib/meet-memory";
 import { useMeetMemory } from "@/lib/meet-memory.source";
 
 export function MeetMemoryCard({ event }: { event: IdolEvent }) {
-  const { entry, ready, save } = useMeetMemory(event.id);
+  const { entry, ready, save } = useMeetMemory(event.id, event.idolId);
   const [wantedToSay, setWantedToSay] = useState("");
   const [actuallySaid, setActuallySaid] = useState("");
   const [idolMoment, setIdolMoment] = useState("");
@@ -46,7 +47,7 @@ export function MeetMemoryCard({ event }: { event: IdolEvent }) {
   if (entry && !editing) {
     return (
       <section className="mt-8 overflow-hidden rounded-[1.9rem] border border-primary/20 bg-card/90 shadow-soft">
-        {entry.photo ? <img src={entry.photo} alt="Fan Meeting 回憶" className="aspect-[16/9] w-full object-cover" /> : null}
+        {entry.photo ? <StoredImage src={entry.photo} alt="見面會回憶" className="aspect-[16/9] w-full object-cover" /> : null}
         <div className="px-5 py-5">
           <p className="text-[12px] font-semibold tracking-[0.14em] text-primary">見到你的那天 ♡</p>
           <h3 className="mt-1 font-display text-[20px] font-semibold">那一天，我真的見到你了。</h3>
