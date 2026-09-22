@@ -1,6 +1,7 @@
 import {
   cancelEventNotifications,
 } from "./event-notifications";
+import { unlinkComebackEraByEvent } from "./comeback-era.source";
 
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "./auth";
@@ -362,7 +363,8 @@ export function useEventSource(): EventSource {
       await cancelEventNotifications(id);
 
       if (isCloud) {
-        // 雲端會一併刪除該日子的里程碑（不影響偶像與帳號）
+        // Comeback Era 使用明確 unlink → delete，避免資料庫 cascade 偷刪個人回憶。
+        await unlinkComebackEraByEvent(id);
         await deleteCloudEvent(id);
         removeFanWeatherSettings(id);
         reload();
