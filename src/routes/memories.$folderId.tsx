@@ -36,8 +36,6 @@ import { streamingLink } from "@/lib/idol-music";
 import { toast } from "sonner";
 import { parseLocalDate } from "@/lib/dates";
 import { useComebackEra } from "@/lib/comeback-era.source";
-import { useEventSource } from "@/lib/events.source";
-import { useConcertMusicMemoryHistory } from "@/lib/concert-music-memory.source";
 
 export const Route = createFileRoute("/memories/$folderId")({
   validateSearch: (
@@ -81,8 +79,6 @@ function FolderDetailPage() {
   const idol = folder?.idolId ? idols.find((i) => i.id === folder.idolId) : undefined;
   const { songs, addSong } = useIdolMusicSource(folder?.idolId);
   const comebackEra = useComebackEra(folderId);
-  const { events } = useEventSource();
-  const concertHistory = useConcertMusicMemoryHistory(folder?.idolId);
 
   const [editFolder, setEditFolder] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
@@ -299,98 +295,6 @@ function FolderDetailPage() {
           </div>
         </header>
       ) : null}
-
-      {folder && comebackEra.link ? (() => {
-        const start = folder.startDate || "";
-        const eraMemories = memories.map((memory) => ({
-          id: `memory-${memory.id}`,
-          date: memory.date || memory.createdAt,
-          label: memory.songId ? "MEMORY + MUSIC" : "MEMORY",
-          title: memory.title || "我們的一天",
-          song: memory.songId ? songs.find((song) => song.id === memory.songId)?.title : undefined,
-        }));
-        const concertItems = concertHistory.entries
-          .map((entry) => {
-            const event = events.find((item) => item.id === entry.eventId);
-            if (!event || (start && event.date < start)) return null;
-            const songIds = [
-              entry.openingSongId,
-              entry.finallyHeardSongId,
-              entry.unforgettableSongId,
-            ].filter(Boolean);
-            const song = songIds
-              .map((id) => songs.find((item) => item.id === id)?.title)
-              .find(Boolean);
-            return {
-              id: `concert-${entry.id}`,
-              date: event.date || entry.createdAt,
-              label: "CONCERT",
-              title: event.title || "Concert Music Memory",
-              song,
-            };
-          })
-          .filter((item): item is NonNullable<typeof item> => Boolean(item));
-        const diary = comebackEra.diary;
-        const favoriteChanged =
-          diary?.firstFavoriteSongId &&
-          diary?.laterFavoriteSongId &&
-          diary.firstFavoriteSongId !== diary.laterFavoriteSongId;
-
-        const favoriteChangeItem = favoriteChanged
-          ? (() => {
-              const firstSong = songs.find((song) => song.id === diary.firstFavoriteSongId);
-              const laterSong = songs.find((song) => song.id === diary.laterFavoriteSongId);
-              if (!laterSong) return null;
-              return {
-                id: `favorite-change-${diary.id}`,
-                date: diary.updatedAt || diary.createdAt,
-                label: "MY TASTE CHANGED ♡",
-                title: firstSong
-                  ? `從 ♪ ${firstSong.title}，慢慢變成最喜歡 ♪ ${laterSong.title}`
-                  : `後來最喜歡的是 ♪ ${laterSong.title}`,
-                song: laterSong.title,
-              };
-            })()
-          : null;
-
-        const growth = [
-          ...eraMemories,
-          ...concertItems,
-          ...(favoriteChangeItem ? [favoriteChangeItem] : []),
-        ]
-          .filter((item) => !start || item.date >= start)
-          .sort((a, b) => a.date.localeCompare(b.date));
-
-        if (growth.length === 0) return null;
-
-        return (
-          <section className="mb-8">
-            <p className="text-[13px] font-semibold tracking-[0.14em] text-primary">
-              THIS ERA, SO FAR ♡
-            </p>
-            <h2 className="mt-1 font-display text-[20px] font-semibold">
-              這段 Era，正在慢慢長大
-            </h2>
-            <div className="relative mt-5 pl-6">
-              <span aria-hidden className="absolute bottom-2 left-[7px] top-2 w-px bg-primary/20" />
-              <div className="space-y-5">
-                {growth.map((item) => (
-                  <div key={item.id} className="relative">
-                    <span aria-hidden className="absolute top-2 -left-6 size-[15px] rounded-full border-2 border-primary/50 bg-card" />
-                    <p className="text-[13px] font-medium tracking-[0.08em] text-muted-foreground">
-                      {dotDate(item.date)} · {item.label}
-                    </p>
-                    <p className="mt-1 text-base font-medium">{item.title}</p>
-                    {item.song ? (
-                      <p className="mt-1 text-sm text-primary">♪ {item.song}</p>
-                    ) : null}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        );
-      })() : null}
 
       <div className="mb-5 flex items-baseline justify-between">
         <div>
