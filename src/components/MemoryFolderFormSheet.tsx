@@ -34,6 +34,7 @@ export function MemoryFolderFormSheet({
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const isCreating = !initial;
 
   useEffect(() => {
     if (open) {
@@ -85,6 +86,31 @@ export function MemoryFolderFormSheet({
         </SheetHeader>
 
         <form onSubmit={submit} className="space-y-5 pt-1">
+          {isCreating ? (
+            <div className="rounded-[1.5rem] bg-primary/[0.06] px-4 py-4">
+              <p className="text-sm font-medium text-foreground">想先收藏哪一段日子？</p>
+              <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+                {[
+                  ["Comeback", "Comeback Diary"],
+                  ["演唱會", "演唱會"],
+                  ["生日應援", "生日應援"],
+                  ["第一次見面", "第一次見面"],
+                  ["聖地巡禮", "聖地巡禮"],
+                ].map(([label, value]) => (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={() => setDraft((d) => ({ ...d, title: d.title.trim() ? d.title : value }))}
+                    className="min-h-11 shrink-0 rounded-full border border-primary/15 bg-card px-4 text-sm font-medium text-primary transition-transform active:scale-95"
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">先選一個也可以，名稱、照片和日期之後都能再改。</p>
+            </div>
+          ) : null}
+
           <div>
             <p className="mb-2 text-sm font-medium">封面照片</p>
             {draft.coverPhoto ? (
@@ -137,7 +163,7 @@ export function MemoryFolderFormSheet({
             <Input
               id="folder-title"
               value={draft.title}
-              placeholder="例如：2026 巡迴演唱會"
+              placeholder="例如：GOLDEN Comeback、2026 巡迴演唱會"
               onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))}
               className="min-h-11 rounded-2xl border-border/70 bg-surface/50"
             />
