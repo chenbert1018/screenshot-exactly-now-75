@@ -1,7 +1,7 @@
 import { StoredImage } from "@/components/StoredImage";
 import { useEffect, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { FolderHeart, Plus, Images } from "lucide-react";
+import { FolderHeart, Plus, Images, PackageHeart, ChevronRight } from "lucide-react";
 import { AppShell, PageHeader, EmptyState, SoftCard } from "@/components/AppShell";
 import { MemoryFolderFormSheet } from "@/components/MemoryFolderFormSheet";
 import { type MemoryFolder } from "@/lib/memory-folders";
@@ -77,6 +77,20 @@ function MemoriesPage() {
         title="我的追星回憶"
         subtitle="把喜歡過的每一天，留在這裡 ♡"
       />
+
+      <Link
+        to="/collection"
+        className="mb-6 flex items-center gap-4 rounded-[1.6rem] border border-primary/15 bg-primary/[0.06] px-5 py-4 shadow-soft transition-transform active:scale-[0.98]"
+      >
+        <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <PackageHeart className="size-5" strokeWidth={1.6} />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-base font-semibold">MY COLLECTION ♡</span>
+          <span className="mt-1 block text-sm text-muted-foreground">專輯、小卡、周邊與票根，也都是喜歡他的痕跡。</span>
+        </span>
+        <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+      </Link>
 
       <div className="mb-5 flex items-baseline justify-between">
         <h2 className="font-display text-[18px] font-semibold tracking-[0.08em]">📁 回憶資料夾</h2>
