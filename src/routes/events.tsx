@@ -151,7 +151,7 @@ function EventsPage() {
             className="inline-flex shrink-0 items-center gap-1 min-h-11 rounded-full bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
           >
             <Plus className="size-3.5" strokeWidth={2} />
-            ＋ 日子
+            日子
           </button>
         }
       />
@@ -195,7 +195,7 @@ function EventsPage() {
               className="inline-flex items-center gap-1.5 rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
             >
               <Plus className="size-4" strokeWidth={2} />
-              ＋ 記下第一個日子
+              記下第一個日子
             </button>
           }
         />
