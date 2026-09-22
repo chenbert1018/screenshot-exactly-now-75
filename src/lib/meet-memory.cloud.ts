@@ -1,0 +1,7 @@
+import { supabase } from "@/integrations/supabase/client";
+import type { MeetMemory,MeetMemoryDraft } from "./meet-memory";
+type Row={event_id:string;wanted_to_say:string|null;actually_said:string|null;idol_moment:string|null;afterthought:string|null;photo:string|null;created_at:string;updated_at:string};
+const cols="event_id,wanted_to_say,actually_said,idol_moment,afterthought,photo,created_at,updated_at";
+const toEntry=(r:Row):MeetMemory=>({eventId:r.event_id,wantedToSay:r.wanted_to_say??undefined,actuallySaid:r.actually_said??undefined,idolMoment:r.idol_moment??undefined,afterthought:r.afterthought??undefined,photo:r.photo??undefined,createdAt:r.created_at,updatedAt:r.updated_at});
+export async function getCloudMeetMemory(eventId:string){const {data,error}=await supabase.from("meet_memories").select(cols).eq("event_id",eventId).maybeSingle();if(error)throw error;return data?toEntry(data as unknown as Row):null}
+export async function saveCloudMeetMemory(userId:string,eventId:string,idolId:string,d:MeetMemoryDraft){const {data,error}=await supabase.from("meet_memories").upsert({user_id:userId,event_id:eventId,idol_id:idolId||null,wanted_to_say:d.wantedToSay.trim()||null,actually_said:d.actuallySaid.trim()||null,idol_moment:d.idolMoment.trim()||null,afterthought:d.afterthought.trim()||null,photo:d.photo||null,updated_at:new Date().toISOString()},{onConflict:"user_id,event_id"}).select(cols).single();if(error)throw error;return toEntry(data as unknown as Row)}
