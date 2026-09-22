@@ -573,7 +573,7 @@ function TodaySongCard({
                   </span>
                 ) : null}
                 <span className="mt-2 inline-flex items-center gap-1 text-[10px] font-medium text-primary">
-                  CHANGE SONG
+                  換一首歌
                   <ArrowRight className="size-3" strokeWidth={1.6} />
                 </span>
               </button>
@@ -596,7 +596,7 @@ function TodaySongCard({
             <div className="flex items-center gap-2" aria-hidden="true">
               <span className="h-px flex-1 bg-border/70" />
               <span className="text-[9px] tracking-[0.18em] text-muted-foreground">
-                NOW PLAYING
+                今天和他一起聽
               </span>
               <span className="h-px flex-1 bg-border/70" />
             </div>
@@ -604,7 +604,7 @@ function TodaySongCard({
             <div className="mt-3 flex items-center justify-between gap-3">
               <div>
                 <p className="text-[10px] tracking-[0.12em] text-muted-foreground">
-                  TODAY'S MOOD
+                  今天的心情
                 </p>
                 {entry?.mood ? (
                   <p className="mt-1 text-[11px] text-muted-foreground">
@@ -621,7 +621,7 @@ function TodaySongCard({
                   className="inline-flex shrink-0 items-center gap-1 rounded-full bg-surface/70 px-3 py-1.5 text-[10px] font-medium text-primary transition-transform duration-300 active:scale-95"
                 >
                   <span aria-hidden="true">♪</span>
-                  LISTEN
+                  去聽這首
                 </a>
               ) : null}
             </div>
@@ -671,7 +671,7 @@ function TodaySongCard({
             <div className="mt-4 flex items-center justify-between gap-3 rounded-[1.35rem] bg-primary/[0.055] px-4 py-3">
               <div className="min-w-0">
                 <p className="text-[10px] font-semibold tracking-[0.14em] text-primary">
-                  {musicDays} MUSIC {musicDays === 1 ? "DAY" : "DAYS"} ♡
+                  已經留下 {musicDays} 個音樂日子 ♡
                 </p>
                 <p className="mt-1 truncate text-[11px] text-muted-foreground">
                   {specialDayCopy?.companion ??
@@ -683,7 +683,7 @@ function TodaySongCard({
                 to="/music"
                 className="inline-flex shrink-0 items-center gap-1 text-[10px] font-semibold tracking-[0.05em] text-primary"
               >
-                DIARY
+                音樂日記
                 <ArrowRight className="size-3" strokeWidth={1.6} />
               </Link>
             </div>
@@ -747,7 +747,7 @@ function TodaySongCard({
 
                     {active ? (
                       <span className="shrink-0 text-xs font-medium text-primary">
-                        TODAY ♡
+                        今天 ♡
                       </span>
                     ) : null}
                   </button>
@@ -1045,6 +1045,15 @@ function HomePage() {
             </Link>
           ) : null}
 
+          <div className="mt-5 flex items-end justify-between px-1">
+            <div>
+              <p className="text-[11px] font-medium tracking-[0.12em] text-primary">今天和他 ♡</p>
+              <h2 className="mt-1 font-display text-[22px] leading-tight text-foreground">
+                今天也和 {main.name} 留下一點什麼
+              </h2>
+            </div>
+          </div>
+
           {nextMainEvent ? <EventCard event={nextMainEvent} /> : null}
           {nextMainEvent && canUseFanWeather(nextMainEvent) ? (
             <FanWeatherCard event={nextMainEvent} />
@@ -1060,6 +1069,22 @@ function HomePage() {
             save={todayJournal.save}
             addSong={addSong}
           />
+
+          <Link
+            to="/memories"
+            className="mt-3 flex min-h-[64px] items-center gap-3 rounded-[1.45rem] border border-primary/15 bg-primary/[0.055] px-4 py-3 shadow-soft transition-transform active:scale-[0.99]"
+          >
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-card text-primary">
+              ♡
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-[13px] font-medium text-primary">今天想替他記住 ♡</span>
+              <span className="mt-0.5 block text-sm text-muted-foreground">
+                一張照片、一句話，也可以成為我們的今天。
+              </span>
+            </span>
+            <ArrowRight className="size-4 shrink-0 text-primary" strokeWidth={1.8} />
+          </Link>
 
           {memoryFromToday ? (
             <MemoryCard
