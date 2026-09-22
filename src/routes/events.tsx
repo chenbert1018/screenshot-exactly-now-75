@@ -288,7 +288,7 @@ function EventsPage() {
         <section className="mt-5 rounded-[1.6rem] border border-primary/15 bg-primary/[0.05] px-5 py-5">
           <p className="text-[13px] font-semibold tracking-[0.14em] text-primary">THINGS I BROUGHT HOME ♡</p>
           <p className="mt-2 font-display text-[18px] font-medium">那天帶回家的東西</p>
-          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">小卡、海報、票根、Tour Merch 或 VIP Gift，也都是這場演唱會留下來的回憶。</p>
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">小卡、海報、票根、Tour Merch、VIP Gift，還有粉絲送你的飯制應援物，也都是這場演唱會留下來的回憶。</p>
           <Link
             to="/collection"
             search={{ event: detail.id }}
