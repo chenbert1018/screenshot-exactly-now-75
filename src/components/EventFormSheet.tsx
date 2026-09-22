@@ -36,6 +36,7 @@ export function EventFormSheet({
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [paywallOpen, setPaywallOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const { isPlus } = useSubscription();
 
   useEffect(() => {
@@ -50,6 +51,7 @@ export function EventFormSheet({
       });
       setError("");
       setSaving(false);
+      setMoreOpen(Boolean(base.locationName || base.city || base.note || base.weatherEnabled));
     }
   }, [open, initial, idols]);
 
@@ -86,7 +88,7 @@ export function EventFormSheet({
       >
         <SheetHeader className="px-0 text-left">
           <SheetTitle className="text-[22px]">{title}</SheetTitle>
-          <SheetDescription>把值得期待的日子留下來</SheetDescription>
+          <SheetDescription>💿 回歸・🎤 演唱會・💌 見面會</SheetDescription>
         </SheetHeader>
 
         {idols.length === 0 ? (
@@ -180,6 +182,10 @@ export function EventFormSheet({
               />
             </div>
 
+            <button type="button" onClick={() => setMoreOpen((value) => !value)} className="flex min-h-11 w-full items-center justify-between rounded-2xl bg-surface/45 px-4 text-sm text-muted-foreground">
+              <span>＋ 地點・追星天氣・備註</span><span aria-hidden>{moreOpen ? "−" : "＋"}</span>
+            </button>
+            {moreOpen ? <div className="space-y-5">
             <div className="space-y-1.5">
               <Label htmlFor="event-location">活動地點</Label>
               <Input
@@ -194,9 +200,7 @@ export function EventFormSheet({
                 }
                 className="min-h-11 rounded-2xl border-border/70 bg-surface/50"
               />
-              <p className="text-xs leading-5 text-muted-foreground">
-                演唱會、Fan Meeting、應援或追星旅行可以加入地點
-              </p>
+
             </div>
 
             <div className="space-y-1.5">
@@ -213,9 +217,7 @@ export function EventFormSheet({
                 }
                 className="min-h-11 rounded-2xl border-border/70 bg-surface/50"
               />
-              <p className="text-xs leading-5 text-muted-foreground">
-                追星天氣會依這個地區取得活動當地的天氣
-              </p>
+
             </div>
 
             <div className="rounded-[1.75rem] border border-border/60 bg-surface/40 px-4 py-4">
@@ -230,9 +232,7 @@ export function EventFormSheet({
                     </span>
                   </div>
 
-                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                    根據活動地點與真實天氣，自動準備你的追星提醒。
-                  </p>
+
                 </div>
 
                 <span className="shrink-0 rounded-full bg-card px-3 py-1.5 text-xs text-muted-foreground">
@@ -293,20 +293,22 @@ export function EventFormSheet({
               />
             </div>
 
+
+            </div> : null}
             {error ? <p className="text-sm text-destructive">{error}</p> : null}
 
             <div className="flex gap-3 pt-1">
               <button
                 type="button"
                 onClick={() => onOpenChange(false)}
-                className="flex-1 rounded-full border border-border/70 min-h-[50px] py-3 text-base transition-transform duration-300 active:scale-95"
+                className="min-h-[50px] rounded-full px-4 py-3 text-base text-muted-foreground transition-transform active:scale-95"
               >
                 取消
               </button>
               <button
                 type="submit"
                 disabled={saving}
-                className="flex-1 rounded-full bg-primary min-h-[50px] py-3 text-base font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95 disabled:opacity-60"
+                className="min-h-[52px] flex-1 rounded-full bg-primary py-3 text-base font-medium text-primary-foreground shadow-soft transition-transform active:scale-[0.98] disabled:opacity-60"
               >
                 {saving ? "儲存中…" : submitLabel}
               </button>
