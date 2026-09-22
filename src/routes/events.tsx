@@ -141,7 +141,7 @@ function EventsPage() {
     <AppShell>
       <PageHeader
         title="我的日子 ♡"
-        subtitle="D-DAY・COMEBACK・CONCERT"
+        subtitle="D-DAY・回歸・演唱會"
         action={
           <button
             type="button"
@@ -207,7 +207,7 @@ function EventsPage() {
             <>
               <div className="flex items-center gap-3 pt-6 pb-1">
               <p className="text-[13px] font-semibold tracking-[0.12em] text-muted-foreground">
-                ALREADY MET ♡
+                已經見過啦 ♡
               </p>
               <span className="h-px flex-1 bg-border/60" />
             </div>
