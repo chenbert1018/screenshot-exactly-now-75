@@ -1,7 +1,7 @@
 import { StoredImage } from "@/components/StoredImage";
 import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ChevronLeft, Plus, MoreHorizontal, Images } from "lucide-react";
+import { ChevronLeft, Plus, MoreHorizontal, Images, Share2 } from "lucide-react";
 import { AppShell, EmptyState, SoftCard } from "@/components/AppShell";
 import {
   DropdownMenu,
@@ -142,7 +142,17 @@ function FolderDetailPage() {
           回憶
         </Link>
         {folder ? (
-          <DropdownMenu>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShareOpen(true)}
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-soft transition-transform active:scale-95"
+              aria-label="分享這本回憶"
+            >
+              <Share2 className="size-4" strokeWidth={1.8} />
+              分享
+            </button>
+            <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
@@ -162,7 +172,8 @@ function FolderDetailPage() {
                 刪除資料夾
               </DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu>
+            </DropdownMenu>
+          </div>
         ) : null}
       </div>
 
@@ -178,6 +189,19 @@ function FolderDetailPage() {
           <p className="text-[13px] font-semibold tracking-[0.14em] text-primary">
             OUR MEMORIES ♡
           </p>
+          <button
+            type="button"
+            onClick={() => setShareOpen(true)}
+            className="mt-4 flex w-full items-center justify-between gap-4 rounded-[1.5rem] border border-primary/15 bg-primary/[0.07] px-5 py-4 text-left transition-transform active:scale-[0.98]"
+          >
+            <span className="min-w-0">
+              <span className="block text-base font-semibold text-foreground">把這本回憶送給一起追星的人 ♡</span>
+              <span className="mt-1 block text-sm leading-relaxed text-muted-foreground">對方可以預覽，再收進自己的 IdolDays。</span>
+            </span>
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-soft">
+              <Share2 className="size-5" strokeWidth={1.8} />
+            </span>
+          </button>
           <h1 className="mt-2 font-display text-[28px] leading-snug font-semibold">
             {folder.title}
           </h1>
