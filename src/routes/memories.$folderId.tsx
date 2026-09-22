@@ -35,6 +35,7 @@ import { useIdolMusicSource } from "@/lib/idol-music.source";
 import { streamingLink } from "@/lib/idol-music";
 import { toast } from "sonner";
 import { parseLocalDate } from "@/lib/dates";
+import { useComebackEra } from "@/lib/comeback-era.source";
 
 export const Route = createFileRoute("/memories/$folderId")({
   validateSearch: (
@@ -77,6 +78,7 @@ function FolderDetailPage() {
   const folder = folders.find((f) => f.id === folderId);
   const idol = folder?.idolId ? idols.find((i) => i.id === folder.idolId) : undefined;
   const { songs, addSong } = useIdolMusicSource(folder?.idolId);
+  const comebackEra = useComebackEra(folderId);
 
   const [editFolder, setEditFolder] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
@@ -220,6 +222,65 @@ function FolderDetailPage() {
               ) : null}
             </div>
           ) : null}
+          {comebackEra.link ? (
+            <section className="mt-5 rounded-[1.75rem] border border-primary/15 bg-gradient-to-br from-primary/[0.08] via-card to-accent/20 px-5 py-5 shadow-soft">
+              <p className="text-[13px] font-semibold tracking-[0.14em] text-primary">
+                THE ERA BEGINS ♡
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {dotDate(folder.startDate)} · COMEBACK
+              </p>
+              <h2 className="mt-3 font-display text-[20px] font-semibold">
+                {folder.title}
+              </h2>
+
+              {comebackEra.diary ? (
+                <>
+                  {comebackEra.diary.firstListenRating != null ? (
+                    <p className="mt-3 text-base font-medium">
+                      第一耳 {"★".repeat(comebackEra.diary.firstListenRating)}
+                      <span className="text-muted-foreground">
+                        {"☆".repeat(5 - comebackEra.diary.firstListenRating)}
+                      </span>
+                    </p>
+                  ) : null}
+
+                  <div className="mt-4 space-y-2">
+                    {[
+                      ["第一耳最喜歡", comebackEra.diary.firstFavoriteSongId],
+                      ["後來最喜歡", comebackEra.diary.laterFavoriteSongId],
+                      ["最想現場聽", comebackEra.diary.wantToHearLiveSongId],
+                    ].map(([role, songId]) => {
+                      if (!songId) return null;
+                      const song = songs.find((item) => item.id === songId);
+                      if (!song) return null;
+                      return (
+                        <div key={role} className="rounded-2xl bg-card/70 px-4 py-3">
+                          <p className="text-[13px] text-muted-foreground">{role}</p>
+                          <p className="mt-0.5 text-base font-medium">♪ {song.title}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {comebackEra.diary.note ? (
+                    <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+                      {comebackEra.diary.note}
+                    </p>
+                  ) : null}
+                </>
+              ) : (
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                  這次 Comeback 是這段 Era 的開始。之後留下的照片、歌和日子，都會從這裡往下長。
+                </p>
+              )}
+
+              <p className="mt-4 border-t border-primary/10 pt-4 text-sm font-medium text-primary">
+                這是這段 Era 的開始。
+              </p>
+            </section>
+          ) : null}
+
           <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted-foreground">
             {folder.startDate || folder.endDate ? (
               <span className="tracking-wide">
