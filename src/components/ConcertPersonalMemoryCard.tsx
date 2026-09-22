@@ -1,0 +1,67 @@
+import { useEffect, useRef, useState } from "react";
+import { Camera } from "lucide-react";
+import type { IdolEvent } from "@/lib/events";
+import { emptyConcertPersonalMemoryDraft } from "@/lib/concert-personal-memory";
+import { useConcertPersonalMemory } from "@/lib/concert-personal-memory.source";
+
+export function ConcertPersonalMemoryCard({ event }: { event: IdolEvent }) {
+  const { entry, ready, save } = useConcertPersonalMemory(event.id);
+  const [seat, setSeat] = useState("");
+  const [moment, setMoment] = useState("");
+  const [photo, setPhoto] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const draft = entry ?? emptyConcertPersonalMemoryDraft;
+    setSeat(draft.seat ?? "");
+    setMoment(draft.unforgettableMoment ?? "");
+    setPhoto(draft.photo ?? "");
+  }, [entry?.eventId]);
+
+  const dirty = () => setSaved(false);
+  const choosePhoto = (file?: File) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => { setPhoto(typeof reader.result === "string" ? reader.result : ""); dirty(); };
+    reader.readAsDataURL(file);
+  };
+
+  const submit = async () => {
+    setSaving(true);
+    try {
+      await save({ seat, unforgettableMoment: moment, photo });
+      setSaved(true);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <section className="mt-5 rounded-[1.9rem] border border-border/70 bg-card/85 px-5 py-6 shadow-soft">
+      <p className="text-[12px] font-semibold tracking-[0.14em] text-primary">I WAS THERE ♡</p>
+      <h3 className="mt-1 font-display text-[19px] font-semibold">我真的和他一起度過了這一天。</h3>
+      <p className="mt-1 text-xs leading-5 text-muted-foreground">不用寫完整日記，只留下你最想記得的現場。</p>
+
+      <div className="mt-5 space-y-4">
+        <label className="block">
+          <span className="text-xs text-muted-foreground">我坐在哪裡？（選填）</span>
+          <input value={seat} onChange={(e)=>{setSeat(e.target.value);dirty()}} placeholder="例：A3 區 12 排 8 號" className="mt-1.5 min-h-[50px] w-full rounded-2xl bg-surface px-4 text-base outline-none" />
+        </label>
+        <label className="block">
+          <span className="text-xs text-muted-foreground">這場最忘不了的一刻</span>
+          <textarea value={moment} onChange={(e)=>{setMoment(e.target.value);dirty()}} maxLength={500} placeholder="他走到延伸台看向這邊的時候，我真的忘記呼吸了。" className="mt-1.5 min-h-24 w-full resize-none rounded-2xl bg-surface px-4 py-3 text-base outline-none" />
+        </label>
+        <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e)=>choosePhoto(e.target.files?.[0])} />
+        <button type="button" onClick={()=>inputRef.current?.click()} className="flex aspect-[16/9] w-full items-center justify-center overflow-hidden rounded-[1.5rem] bg-surface active:scale-[.99]">
+          {photo ? <img src={photo} alt="演唱會現場回憶" className="size-full object-cover" /> : <span className="flex flex-col items-center gap-2 text-sm text-muted-foreground"><Camera className="size-6" strokeWidth={1.6}/>留一張那天的照片</span>}
+        </button>
+      </div>
+
+      <button type="button" disabled={!ready || saving} onClick={()=>void submit()} className="mt-5 min-h-[50px] w-full rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground disabled:opacity-50">
+        {saving ? "儲存中…" : saved ? "這一天收好了 ♡" : "把這一天收進 IdolDays ♡"}
+      </button>
+    </section>
+  );
+}
