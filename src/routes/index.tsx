@@ -1071,13 +1071,14 @@ function HomePage() {
             </Link>
           ) : null}
 
-          <div className="mt-5 flex items-end justify-between px-1">
+          <div className="mt-6 rounded-[1.8rem] bg-gradient-to-br from-primary/[0.11] via-card/80 to-accent/45 px-5 py-4 shadow-soft">
             <div>
-              <p className="text-[11px] font-medium tracking-[0.12em] text-primary">今天和他 ♡</p>
-              <h2 className="mt-1 font-display text-[22px] leading-tight text-foreground">
-                今天也和 {main.name} 留下一點什麼
+              <p className="text-[12px] font-semibold tracking-[0.1em] text-primary">今天和他 ♡</p>
+              <h2 className="mt-1.5 font-display text-[24px] leading-tight text-foreground">
+                今天最想和 {main.name} 留下什麼？
               </h2>
             </div>
+            <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">一首歌、一張照片、一句話就好。</p>
           </div>
 
           {nextMainEvent && eventCountdown(nextMainEvent.date)?.status === "TODAY" ? (
@@ -1107,9 +1108,13 @@ function HomePage() {
               ♡
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block text-[13px] font-medium text-primary">今天想替他記住 ♡</span>
+              <span className="block text-[13px] font-medium text-primary">
+                {todayJournal.entry?.songId || todayJournal.entry?.mood ? "今天已經留下了一點 ♡" : "今天想替他記住 ♡"}
+              </span>
               <span className="mt-0.5 block text-sm text-muted-foreground">
-                一張照片、一句話，也可以成為我們的今天。
+                {todayJournal.entry?.songId || todayJournal.entry?.mood
+                  ? "還想再留一張照片或一句話嗎？"
+                  : "一張照片、一句話，也可以成為我們的今天。"}
               </span>
             </span>
             <ArrowRight className="size-4 shrink-0 text-primary" strokeWidth={1.8} />
@@ -1128,7 +1133,7 @@ function HomePage() {
             <RandomSongMemoryCard items={randomSongMemories} ready={songHistory.ready} />
           </div>
 
-          <p className="mt-8 px-8 text-center font-display text-[16px] leading-relaxed text-muted-foreground/80">
+          <p className="mt-6 px-8 pb-2 text-center font-display text-[15px] leading-relaxed text-muted-foreground/75">
             一起走過的每一天，
             <br />
             都是珍貴的回憶 ♡
