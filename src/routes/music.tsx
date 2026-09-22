@@ -266,7 +266,7 @@ function MusicPage() {
     <AppShell>
       <PageHeader
         title="我和他的歌 🎧"
-        subtitle="喜歡一個人的日子，總會留下幾首歌。"
+        subtitle="今日一曲・心情・回歸歌單 ♡"
       />
 
       {!idolsReady ? (
@@ -289,7 +289,7 @@ function MusicPage() {
         />
       ) : (
         <>
-          {/* TODAY */}
+          {/* 今日 */}
           <section className="music-diary-now-playing relative overflow-hidden rounded-[2rem] border border-border/70 bg-card/90 p-4 shadow-soft">
             <span
               aria-hidden="true"
@@ -301,15 +301,15 @@ function MusicPage() {
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-[13px] font-semibold tracking-[0.14em] text-primary">
-                  TODAY'S SONG ♡
+                  今日一曲 ♡
                 </p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {today ? "NOW PLAYING" : "CHOOSE TODAY'S BGM"}
+                  {today ? "正在播放 ♪" : "選今天的歌 ♪"}
                 </p>
               </div>
 
               <span className="music-diary-date-mark" aria-hidden="true">
-                TODAY
+                今日
               </span>
             </div>
 
@@ -389,7 +389,7 @@ function MusicPage() {
                   onClick={() => setLibraryOpen(true)}
                   className="mt-3 inline-flex min-h-11 items-center gap-1 text-sm font-semibold tracking-[0.08em] text-primary"
                 >
-                  {today ? "CHANGE SONG" : "＋ SELECT SONG"}
+                  {today ? "換一首" : "＋ 選一首"}
                 </button>
 
                 {today && streamingLink(today) ? (
@@ -399,7 +399,7 @@ function MusicPage() {
                     rel="noreferrer"
                     className="mt-1 flex min-h-11 w-fit items-center gap-1 text-sm text-muted-foreground"
                   >
-                    ♪ LISTEN
+                    ♪ 去聽
                     <ExternalLink className="size-3" />
                   </a>
                 ) : null}
@@ -410,12 +410,12 @@ function MusicPage() {
               <div className="mt-5 border-t border-border/60 pt-4">
                 <div className="flex items-center justify-between">
                   <p className="text-[13px] font-semibold tracking-[0.12em] text-muted-foreground">
-                    TODAY'S MOOD
+                    今日'S MOOD
                   </p>
 
                   {todayJournal.entry?.mood ? (
                     <span className="text-[13px] text-primary">
-                      SAVED ♡
+                      收好了 ♡
                     </span>
                   ) : null}
                 </div>
