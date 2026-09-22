@@ -1,51 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import type { MeetMemory, MeetMemoryDraft } from "./meet-memory";
-
-const KEY = "idoldays.meetMemories.v1";
-
-function read(): MeetMemory[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const parsed = JSON.parse(localStorage.getItem(KEY) || "[]");
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
-function write(items: MeetMemory[]) {
-  localStorage.setItem(KEY, JSON.stringify(items));
-}
-
-export function useMeetMemory(eventId?: string) {
-  const [entry, setEntry] = useState<MeetMemory | null>(null);
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    setEntry(eventId ? read().find((item) => item.eventId === eventId) ?? null : null);
-    setReady(true);
-  }, [eventId]);
-
-  const save = useCallback(async (draft: MeetMemoryDraft) => {
-    if (!eventId) throw new Error("找不到這次見面");
-    const now = new Date().toISOString();
-    const current = read();
-    const previous = current.find((item) => item.eventId === eventId);
-    const nextEntry: MeetMemory = {
-      eventId,
-      wantedToSay: draft.wantedToSay.trim() || undefined,
-      actuallySaid: draft.actuallySaid.trim() || undefined,
-      idolMoment: draft.idolMoment.trim() || undefined,
-      afterthought: draft.afterthought.trim() || undefined,
-      photo: draft.photo || undefined,
-      createdAt: previous?.createdAt ?? now,
-      updatedAt: now,
-    };
-    const next = [nextEntry, ...current.filter((item) => item.eventId !== eventId)];
-    write(next);
-    setEntry(nextEntry);
-    return nextEntry;
-  }, [eventId]);
-
-  return useMemo(() => ({ entry, ready, save }), [entry, ready, save]);
-}
+import { useCallback,useEffect,useMemo,useState } from "react";
+import type { MeetMemory,MeetMemoryDraft } from "./meet-memory"; import { useAuth } from "./auth"; import { getCloudMeetMemory,saveCloudMeetMemory } from "./meet-memory.cloud"; import { ensureEventMigration } from "./events.source"; import { isDataUrl,uploadImage } from "./storage";
+const KEY="idoldays.meetMemories.v1",MIGRATION_KEY="idoldays.cloudMigration.meetMemories.v1";
+function read():MeetMemory[]{if(typeof window==="undefined")return[];try{const p=JSON.parse(localStorage.getItem(KEY)||"[]");return Array.isArray(p)?p:[]}catch{return[]}} function write(v:MeetMemory[]){localStorage.setItem(KEY,JSON.stringify(v))}
+export function useMeetMemory(eventId?:string,idolId?:string){const {user,loading}=useAuth();const [entry,setEntry]=useState<MeetMemory|null>(null);const [ready,setReady]=useState(false);const userId=user?.id??null;
+useEffect(()=>{let active=true;setReady(false);void(async()=>{if(!eventId){setEntry(null);setReady(true);return}if(userId){const {eventMap}=await ensureEventMigration(userId);const cloudEventId=eventMap[eventId]??eventId;let found=await getCloudMeetMemory(cloudEventId);if(!found&&localStorage.getItem(MIGRATION_KEY)!==userId){const old=read().find(x=>x.eventId===eventId);if(old){let photo=old.photo||"";const draft={wantedToSay:old.wantedToSay||"",actuallySaid:old.actuallySaid||"",idolMoment:old.idolMoment||"",afterthought:old.afterthought||"",photo};found=await saveCloudMeetMemory(userId,cloudEventId,idolId||"",draft);if(photo&&isDataUrl(photo)){const ref=await uploadImage(userId,"meet-memories",cloudEventId,photo);if(ref)found=await saveCloudMeetMemory(userId,cloudEventId,idolId||"",{...draft,photo:ref})}}localStorage.setItem(MIGRATION_KEY,userId)}if(active)setEntry(found)}else if(active)setEntry(read().find(x=>x.eventId===eventId)??null);if(active)setReady(true)})().catch(()=>{if(active)setReady(true)});return()=>{active=false}},[eventId,idolId,userId]);
+const save=useCallback(async(d:MeetMemoryDraft)=>{if(!eventId)throw new Error("找不到這次見面");if(userId){let draft=d;if(d.photo&&isDataUrl(d.photo)){const ref=await uploadImage(userId,"meet-memories",eventId,d.photo);if(ref)draft={...d,photo:ref}}const saved=await saveCloudMeetMemory(userId,eventId,idolId||"",draft);setEntry(saved);return saved}const now=new Date().toISOString(),current=read(),previous=current.find(x=>x.eventId===eventId);const nextEntry:MeetMemory={eventId,wantedToSay:d.wantedToSay.trim()||undefined,actuallySaid:d.actuallySaid.trim()||undefined,idolMoment:d.idolMoment.trim()||undefined,afterthought:d.afterthought.trim()||undefined,photo:d.photo||undefined,createdAt:previous?.createdAt??now,updatedAt:now};write([nextEntry,...current.filter(x=>x.eventId!==eventId)]);setEntry(nextEntry);return nextEntry},[eventId,idolId,userId]);
+return useMemo(()=>({entry,ready:ready&&!loading,save}),[entry,ready,loading,save])}
