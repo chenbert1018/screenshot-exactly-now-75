@@ -166,6 +166,7 @@ export function EventDetailSheet({
   const since = idol ? daysSince(idol.sinceDate, base) : null;
   const fanWeatherReady = canUseFanWeather(event);
   const eventKeepsakes = ["CONCERT", "FAN_MEETING"].includes(event.type) ? collectionItems.filter((item) => item.eventId === event.id) : [];
+  const isMemoryDay = c?.status === "COMPLETED" && ["CONCERT", "FAN_MEETING"].includes(event.type);
 
   function submitMilestone(draft: MilestoneDraft) {
     if (!event) return;
@@ -222,7 +223,7 @@ export function EventDetailSheet({
 
           {/* Photo, then separate D-Day cards — never cover the idol */}
           <section className="mt-1">
-            <div className="relative h-[300px] overflow-hidden rounded-[2rem] bg-gradient-to-b from-accent/55 via-card to-background">
+            <div className={`relative overflow-hidden rounded-[2rem] bg-gradient-to-b from-accent/55 via-card to-background ${isMemoryDay ? "h-[220px]" : "h-[300px]"}`}>
               {idol?.photo ? (
                 <StoredImage
                   src={idol.photo}
@@ -251,7 +252,7 @@ export function EventDetailSheet({
               <p className="mt-2 text-xs text-muted-foreground">{dotDate(event.date)}</p>
             </div>
 
-            {since && !since.isFuture && since.days !== null ? (
+            {since && !since.isFuture && since.days !== null && !isMemoryDay ? (
               <div className="mt-3 rounded-[1.75rem] border border-border/70 bg-card/80 px-5 py-4 text-center text-card-foreground shadow-soft">
                 <p className="text-[11px] font-medium text-muted-foreground">陪伴總走過</p>
                 <p className="mt-0.5 font-display text-[30px] leading-none text-foreground">
@@ -366,7 +367,7 @@ export function EventDetailSheet({
             </>
           ) : null}
 
-          <section className="mt-8 overflow-hidden rounded-[1.75rem] border border-border/60 bg-card/55 shadow-soft">
+          <section className={`${isMemoryDay ? "mt-5" : "mt-8"} overflow-hidden rounded-[1.75rem] border border-border/60 bg-card/55 shadow-soft`}>
             <button type="button" aria-expanded={moreOpen} onClick={() => setMoreOpen((value) => !value)} className="flex min-h-[52px] w-full items-center justify-between gap-3 px-5 py-3 text-left transition-transform active:scale-[0.99]">
               <span><span className="block text-sm font-medium">更多關於這一天</span><span className="mt-0.5 block text-[11px] text-muted-foreground">提醒、追星天氣與里程碑</span></span>
               <ChevronDown className={`size-5 shrink-0 text-muted-foreground transition-transform ${moreOpen ? "rotate-180" : ""}`} strokeWidth={1.8} />
