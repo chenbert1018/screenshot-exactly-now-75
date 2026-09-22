@@ -351,6 +351,22 @@ export function MusicTimeline({
                           </p>
                         ) : null}
 
+                        {item.kind === "COMEBACK" ? (
+                          <div className="mt-3 rounded-[1.25rem] bg-primary/[0.06] px-3.5 py-3">
+                            <p className="text-[13px] font-semibold tracking-[0.08em] text-primary">COMEBACK ERA ♡</p>
+                            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                              這次回歸選過的歌和第一耳心情，會一起留在你的追星時間線。
+                            </p>
+                            <Link
+                              to="/memories"
+                              className="mt-2 inline-flex min-h-11 items-center gap-1 text-sm font-medium text-primary"
+                            >
+                              把這段 Era 留進回憶
+                              <ArrowRight className="size-3.5" strokeWidth={1.7} />
+                            </Link>
+                          </div>
+                        ) : null}
+
                         {item.kind === "MEMORY_DAY" &&
                         item.memoryFolderId &&
                         item.memoryId ? (
