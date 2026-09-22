@@ -276,10 +276,10 @@ export function EventDetailSheet({
           {event.type === "FAN_MEETING" ? (
             <>
               <div className="mt-8 rounded-[1.9rem] bg-surface/45 px-5 py-4">
-                <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground">THAT DAY ♡</p>
-                <p className="mt-1 text-sm leading-6">先記得見到他的那一刻，再看看那天一起帶回家的東西。</p>
+                <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground">{c?.status === "COMPLETED" ? "THAT DAY ♡" : c?.status === "TODAY" ? "TODAY ♡" : "BEFORE WE MEET ♡"}</p>
+                <p className="mt-1 text-sm leading-6">{c?.status === "COMPLETED" ? "先記得見到他的那一刻，再看看那天一起帶回家的東西。" : c?.status === "TODAY" ? "就是今天。先去好好見他，想說的話不用全部說得完 ♡" : "還沒見面的日子，先把期待和最想說的那句話放在這裡。"}</p>
               </div>
-              <MeetMemoryCard event={event} />
+              {c?.status === "COMPLETED" || c?.status === "TODAY" ? <MeetMemoryCard event={event} /> : null}
 
               <section className="mt-5 rounded-[1.9rem] border border-primary/15 bg-primary/[0.05] px-5 py-5 shadow-soft">
                 <p className="text-[12px] font-semibold tracking-[0.14em] text-primary">THINGS I BROUGHT HOME ♡</p>
@@ -309,11 +309,11 @@ export function EventDetailSheet({
           {event.type === "CONCERT" ? (
             <>
               <div className="mt-8 rounded-[1.9rem] bg-surface/45 px-5 py-4">
-                <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground">MY CONCERT DAY ♡</p>
-                <p className="mt-1 text-sm leading-6">先留下那天聽見的歌，再收好真正發生在你身上的那一刻。</p>
+                <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground">{c?.status === "COMPLETED" ? "MY CONCERT DAY ♡" : c?.status === "TODAY" ? "TODAY ♡" : "BEFORE THE CONCERT ♡"}</p>
+                <p className="mt-1 text-sm leading-6">{c?.status === "COMPLETED" ? "先留下那天聽見的歌，再收好真正發生在你身上的那一刻。" : c?.status === "TODAY" ? "就是今天。去好好聽、好好看，回來再把最捨不得忘記的瞬間收好 ♡" : "演唱會還沒到，先留一首最想在現場聽見的歌。其他的，等那天真的發生。"}</p>
               </div>
               <ConcertMusicMemoryCard event={event} />
-              <ConcertPersonalMemoryCard event={event} />
+              {c?.status === "COMPLETED" || c?.status === "TODAY" ? <ConcertPersonalMemoryCard event={event} /> : null}
               <section className="mt-5 rounded-[1.9rem] border border-primary/15 bg-primary/[0.05] px-5 py-5 shadow-soft">
                 <p className="text-[12px] font-semibold tracking-[0.14em] text-primary">THINGS I BROUGHT HOME ♡</p>
                 <h3 className="mt-1 font-display text-[18px] font-semibold">那天帶回家的東西</h3>
