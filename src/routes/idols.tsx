@@ -140,7 +140,7 @@ function IdolsPage() {
 
       {isPlus ? (
         <p className="mt-7 text-center text-sm text-muted-foreground">
-          MY IDOL COLLECTION ♡ · 最多收藏 6 位
+          我的本命收藏 ♡ · 最多收藏 6 位
         </p>
       ) : (
         <button
