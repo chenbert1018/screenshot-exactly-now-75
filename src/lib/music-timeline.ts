@@ -28,6 +28,9 @@ export type MusicTimelineItem = {
   /** Original Memory identity for MEMORY_DAY navigation. */
   memoryId?: string;
   memoryFolderId?: string;
+  /** Canonical Comeback identity for Era creation. */
+  eventId?: string;
+  idolId?: string;
 };
 
 function songById(songs: IdolSong[], id?: string | null) {
@@ -103,6 +106,8 @@ export function buildMusicTimeline(input: {
           : undefined,
       note: diary.note,
       songs: diarySongs,
+      eventId: diary.eventId,
+      idolId: diary.idolId,
     });
   }
 
