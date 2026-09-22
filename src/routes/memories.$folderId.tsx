@@ -408,10 +408,29 @@ function FolderDetailPage() {
         title={editing ? "編輯回憶" : "把這一天留下來 📸"}
         submitLabel={editing ? "儲存" : "留下來"}
         onSubmit={async (draft) => {
-          if (editing) await updateMemory(editing.id, draft);
-          else await addMemory(folderId, draft, folder?.idolId);
-          setMemoryOpen(false);
-          setEditing(null);
+          if (editing) {
+            await updateMemory(editing.id, draft);
+            setMemoryOpen(false);
+            setEditing(null);
+            toast.success("回憶更新好了 ♡");
+          } else {
+            const wasFirstMemory = memories.length === 0;
+            await addMemory(folderId, draft, folder?.idolId);
+            setMemoryOpen(false);
+            setEditing(null);
+            if (wasFirstMemory) {
+              toast.success("第一則回憶收好了 ♡", {
+                description: "這本回憶已經開始了，之後也可以送給一起追星的人。",
+                action: {
+                  label: "分享",
+                  onClick: () => setShareOpen(true),
+                },
+                duration: 6500,
+              });
+            } else {
+              toast.success("這一天收進回憶了 ♡");
+            }
+          }
         }}
         songs={songs}
         addSong={addSong}
