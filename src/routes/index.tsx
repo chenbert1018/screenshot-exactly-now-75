@@ -112,7 +112,7 @@ function EventCard({ event }: { event: IdolEvent }) {
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-[13px] font-medium tracking-[0.1em] text-primary uppercase">
-          Next D-Day
+          下一個 D-DAY
         </p>
         <p className="mt-1 truncate text-[17px] font-medium">{event.title}</p>
         <p className="mt-1 text-sm text-muted-foreground">{dotDate(event.date)}</p>
@@ -194,7 +194,7 @@ function FanWeatherCard({ event }: { event: IdolEvent }) {
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-[13px] font-medium tracking-[0.08em] text-primary">
-          Fan Weather・{place}
+          追星天氣・{place}
         </p>
         <p className="mt-1 truncate text-[16px] font-medium">
           {timing}・{event.title}
@@ -224,7 +224,7 @@ function ArchaeologyCard({
         )}
       </div>
       <div className="min-w-0 flex-1 py-1">
-        <p className="text-[13px] font-medium tracking-[0.08em] text-primary">FROM OUR DAYS ♡</p>
+        <p className="text-[13px] font-medium tracking-[0.08em] text-primary">那時候的我們 ♡</p>
         <p className="mt-1 truncate text-[17px] font-medium">{item.title}</p>
         <p className="mt-1 text-sm text-muted-foreground">
           {dotDate(item.createdAt.slice(0, 10))}
