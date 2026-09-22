@@ -13,6 +13,7 @@ export function MeetMemoryCard({ event }: { event: IdolEvent }) {
   const [photo, setPhoto] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [editing, setEditing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -36,8 +37,24 @@ export function MeetMemoryCard({ event }: { event: IdolEvent }) {
     try {
       await save({ wantedToSay, actuallySaid, idolMoment, afterthought, photo });
       setSaved(true);
+      setEditing(false);
     } finally { setSaving(false); }
   };
+
+  if (entry && !editing) {
+    return (
+      <section className="mt-8 overflow-hidden rounded-[1.9rem] border border-primary/20 bg-card/90 shadow-soft">
+        {entry.photo ? <img src={entry.photo} alt="Fan Meeting 回憶" className="aspect-[16/9] w-full object-cover" /> : null}
+        <div className="px-5 py-5">
+          <p className="text-[12px] font-semibold tracking-[0.14em] text-primary">THE DAY I MET YOU ♡</p>
+          <h3 className="mt-1 font-display text-[20px] font-semibold">那一天，我真的見到你了。</h3>
+          {entry.idolMoment ? <p className="mt-3 text-[15px] leading-relaxed">「{entry.idolMoment}」</p> : entry.afterthought ? <p className="mt-3 text-[15px] leading-relaxed">「{entry.afterthought}」</p> : null}
+          {entry.actuallySaid ? <div className="mt-4 rounded-2xl bg-surface/70 px-4 py-3"><p className="text-[11px] text-muted-foreground">那天我真的說了</p><p className="mt-1 text-sm">{entry.actuallySaid}</p></div> : null}
+          <button type="button" onClick={()=>setEditing(true)} className="mt-4 min-h-11 text-sm font-medium text-primary">編輯這天的回憶</button>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="mt-8 rounded-[1.9rem] border border-primary/20 bg-primary/5 px-5 py-6 shadow-soft">
