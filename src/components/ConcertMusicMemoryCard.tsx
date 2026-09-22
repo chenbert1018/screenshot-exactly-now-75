@@ -108,6 +108,7 @@ export function ConcertMusicMemoryCard({
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
   const [saved, setSaved] = useState(false);
+  const [editing, setEditing] = useState(false);
 
   const [songPickerField, setSongPickerField] =
     useState<ConcertSongField | null>(null);
@@ -171,6 +172,7 @@ export function ConcertMusicMemoryCard({
     try {
       await save(draft);
       setSaved(true);
+      setEditing(false);
     } catch (cause) {
       setSaveError(
         cause instanceof Error
@@ -233,6 +235,18 @@ export function ConcertMusicMemoryCard({
   const activeField = SONG_FIELDS.find(
     (field) => field.key === songPickerField,
   );
+
+  if (entry && !editing) {
+    const remembered = SONG_FIELDS.map((field) => ({ field, song: selectedSongFor(field.key) })).filter((item) => item.song);
+    return (
+      <section className="mt-5 rounded-[1.9rem] border border-primary/20 bg-primary/5 px-5 py-5 shadow-soft">
+        <div className="flex items-center gap-3"><span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-primary/12 text-lg">🎤</span><div><p className="text-[12px] font-semibold tracking-[0.13em] text-primary">MY CONCERT SOUNDTRACK</p><p className="mt-0.5 text-sm text-muted-foreground">這一場，只屬於你的歌。</p></div></div>
+        {remembered.length > 0 ? <div className="mt-4 flex flex-wrap gap-2">{remembered.map(({field,song})=><span key={field.key} className="max-w-full rounded-full bg-card px-3 py-2 text-xs"><span className="text-muted-foreground">{field.label.replace("演唱會前：","")}</span>　♪ {song?.title}</span>)}</div> : null}
+        {entry.note ? <p className="mt-4 text-[15px] leading-relaxed">「{entry.note}」</p> : null}
+        <button type="button" onClick={()=>setEditing(true)} className="mt-4 min-h-11 text-sm font-medium text-primary">編輯這場的歌</button>
+      </section>
+    );
+  }
 
   return (
     <section className="mt-8 rounded-[1.9rem] border border-primary/20 bg-primary/5 px-5 py-6 shadow-soft">
