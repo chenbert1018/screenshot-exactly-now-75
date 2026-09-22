@@ -330,7 +330,34 @@ function FolderDetailPage() {
             };
           })
           .filter((item): item is NonNullable<typeof item> => Boolean(item));
-        const growth = [...eraMemories, ...concertItems]
+        const diary = comebackEra.diary;
+        const favoriteChanged =
+          diary?.firstFavoriteSongId &&
+          diary?.laterFavoriteSongId &&
+          diary.firstFavoriteSongId !== diary.laterFavoriteSongId;
+
+        const favoriteChangeItem = favoriteChanged
+          ? (() => {
+              const firstSong = songs.find((song) => song.id === diary.firstFavoriteSongId);
+              const laterSong = songs.find((song) => song.id === diary.laterFavoriteSongId);
+              if (!laterSong) return null;
+              return {
+                id: `favorite-change-${diary.id}`,
+                date: diary.updatedAt || diary.createdAt,
+                label: "MY TASTE CHANGED ♡",
+                title: firstSong
+                  ? `從 ♪ ${firstSong.title}，慢慢變成最喜歡 ♪ ${laterSong.title}`
+                  : `後來最喜歡的是 ♪ ${laterSong.title}`,
+                song: laterSong.title,
+              };
+            })()
+          : null;
+
+        const growth = [
+          ...eraMemories,
+          ...concertItems,
+          ...(favoriteChangeItem ? [favoriteChangeItem] : []),
+        ]
           .filter((item) => !start || item.date >= start)
           .sort((a, b) => a.date.localeCompare(b.date));
 
