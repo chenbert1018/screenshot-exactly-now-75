@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { Camera } from "lucide-react";
+import { StoredImage } from "@/components/StoredImage";
 import type { IdolEvent } from "@/lib/events";
 import { emptyConcertPersonalMemoryDraft } from "@/lib/concert-personal-memory";
 import { useConcertPersonalMemory } from "@/lib/concert-personal-memory.source";
 
 export function ConcertPersonalMemoryCard({ event }: { event: IdolEvent }) {
-  const { entry, ready, save } = useConcertPersonalMemory(event.id);
+  const { entry, ready, save } = useConcertPersonalMemory(event.id, event.idolId);
   const [seat, setSeat] = useState("");
   const [moment, setMoment] = useState("");
   const [photo, setPhoto] = useState("");
@@ -45,7 +46,7 @@ export function ConcertPersonalMemoryCard({ event }: { event: IdolEvent }) {
   if (entry && !editing) {
     return (
       <section className="mt-5 overflow-hidden rounded-[1.9rem] border border-border/70 bg-card/90 shadow-soft">
-        {entry.photo ? <img src={entry.photo} alt="演唱會現場回憶" className="aspect-[16/9] w-full object-cover" /> : null}
+        {entry.photo ? <StoredImage src={entry.photo} alt="演唱會現場回憶" className="aspect-[16/9] w-full object-cover" /> : null}
         <div className="px-5 py-5">
           <p className="text-[12px] font-semibold tracking-[0.14em] text-primary">演唱會回憶 ♡</p>
           <h3 className="mt-1 font-display text-[20px] font-semibold">那一天，我真的在台下。</h3>
