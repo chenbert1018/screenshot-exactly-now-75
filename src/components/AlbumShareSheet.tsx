@@ -101,7 +101,7 @@ export function AlbumShareSheet({
     if (!shareCode) return;
     const title = folderTitle || "IdolDays 收藏";
     const receiveUrl = `${window.location.origin}/receive/${encodeURIComponent(shareCode)}`;
-    const text = `🎁 我送你一份 IdolDays 收藏 ♡\n${title}\n\n點開預覽並收進你的 IdolDays：\n${receiveUrl}\n\n分享碼：${shareCode}`;
+    const text = `💌 想把這份追星回憶送給你 ♡\n\n「${title}」${giftMessage.trim() ? `\n${giftMessage.trim()}` : ""}\n\n打開看看，喜歡的話就收進你的 IdolDays ♡\n${receiveUrl}\n\nIDOLDAYS SHARE · ${shareCode}`;
     try {
       if (navigator.share) {
         await navigator.share({ title: "IDOLDAYS SHARE ♡", text, url: receiveUrl });
