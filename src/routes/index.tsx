@@ -814,31 +814,6 @@ function TodaySongCard({
         onOpenChange={setAddOpen}
         onSubmit={createAndChooseSong}
       />
-      <Link
-        to="/music"
-        className="mt-4 flex w-full items-center gap-3 border-t border-border/60 pt-4 text-left"
-      >
-        <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-          <Music2 className="size-4" strokeWidth={1.55} />
-        </div>
-
-        <div className="min-w-0 flex-1">
-          <p className="text-[13px] font-medium tracking-[0.08em] text-primary">
-            ♪ 音樂日記 ♡
-          </p>
-          <p className="mt-0.5 text-sm font-medium">
-            看我和他的音樂日記
-          </p>
-          <p className="mt-1 truncate text-[13px] text-muted-foreground">
-            今日一曲・回歸・演唱會
-          </p>
-        </div>
-
-        <ArrowRight
-          className="size-4 shrink-0 text-primary"
-          strokeWidth={1.8}
-        />
-      </Link>
     </section>
   );
 }
@@ -1108,26 +1083,6 @@ function HomePage() {
             save={todayJournal.save}
             addSong={addSong}
           />
-
-          <Link
-            to="/memories"
-            className="mt-3 flex min-h-[64px] items-center gap-3 rounded-[1.45rem] border border-primary/15 bg-primary/[0.055] px-4 py-3 shadow-soft transition-transform active:scale-[0.99]"
-          >
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-card text-primary">
-              ♡
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block text-[13px] font-medium text-primary">
-                {todayJournal.entry?.songId || todayJournal.entry?.mood ? "今天已經留下了一點 ♡" : "今天想替他記住 ♡"}
-              </span>
-              <span className="mt-0.5 block text-sm text-muted-foreground">
-                {todayJournal.entry?.songId || todayJournal.entry?.mood
-                  ? "還想再留一張照片或一句話嗎？"
-                  : "一張照片、一句話，也可以成為我們的今天。"}
-              </span>
-            </span>
-            <ArrowRight className="size-4 shrink-0 text-primary" strokeWidth={1.8} />
-          </Link>
 
           {memoryFromToday ? (
             <MemoryCard
