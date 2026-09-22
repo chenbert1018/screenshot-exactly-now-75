@@ -1,5 +1,11 @@
+import { useState } from "react";
 import { ArrowRight, Music2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import {
+  SONG_MOOD_OPTIONS,
+  type SongMood,
+} from "@/lib/idol-song-journal";
+import { useListenAgainHistory } from "@/lib/listen-again.source";
 
 type SongMemoryItem = {
   id: string;
@@ -127,14 +133,52 @@ function streamingLink(item: SongMemoryItem) {
 }
 
 export function RandomSongMemoryCard({ items, ready = true }: Props) {
-  if (!ready) return null;
-
   const memory = chooseMemory(items);
+  const idolId = memory?.item.idolId;
 
-  if (!memory) return null;
+  const listenAgainHistory = useListenAgainHistory(idolId);
+  const [choosingMood, setChoosingMood] = useState(false);
+  const [savingMood, setSavingMood] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  if (!ready || !memory) return null;
 
   const { item, onThisDay, yearsAgo } = memory;
   const link = streamingLink(item);
+
+  const savedListenAgain =
+    listenAgainHistory.entries.find(
+      (entry) =>
+        entry.songId === item.songId &&
+        entry.originalDate === item.date,
+    ) ?? null;
+
+  async function chooseNowMood(mood: SongMood) {
+    if (savingMood) return;
+
+    setSavingMood(true);
+    setSaveError(null);
+
+    try {
+      await listenAgainHistory.saveListenAgain({
+        songId: item.songId,
+        sourceJournalEntryId: item.journalEntryId ?? null,
+        originalDate: item.date,
+        originalMood: (item.mood as SongMood | null | undefined) ?? null,
+        currentMood: mood,
+      });
+
+      setChoosingMood(false);
+    } catch (error) {
+      setSaveError(
+        error instanceof Error
+          ? error.message
+          : "這次的心情沒有儲存成功，請再試一次。",
+      );
+    } finally {
+      setSavingMood(false);
+    }
+  }
 
   return (
     <section className="mt-3 rounded-[1.55rem] border border-border/70 bg-card/85 px-4 py-3.5 text-card-foreground shadow-soft">
