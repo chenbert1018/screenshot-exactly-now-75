@@ -46,6 +46,7 @@ export function MemoryFormSheet({
   const [saving, setSaving] = useState(false);
   const [songPickerOpen, setSongPickerOpen] = useState(false);
   const [addSongOpen, setAddSongOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const selectedSong = songs.find((song) => song.id === draft.songId);
@@ -73,6 +74,7 @@ export function MemoryFormSheet({
       setDraft(initial ?? { ...emptyMemoryDraft, date: todayValue() });
       setError("");
       setSaving(false);
+      setMoreOpen(Boolean(initial?.note || initial?.songId));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
@@ -91,14 +93,14 @@ export function MemoryFormSheet({
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!draft.title.trim()) return setError("幫這段回憶取一個名字");
+    const title = draft.title.trim() || (draft.photo ? "今天的回憶 ♡" : draft.note.trim().slice(0, 24)) || "今天的回憶 ♡";
     if (!draft.date) return setError("請選擇日期");
 
     setSaving(true);
     setError("");
 
     try {
-      await onSubmit({ ...draft, title: draft.title.trim() });
+      await onSubmit({ ...draft, title });
     } catch {
       setError("回憶沒有儲存成功，請確認網路後再試一次");
     } finally {
@@ -114,7 +116,7 @@ export function MemoryFormSheet({
       >
         <SheetHeader className="px-0 text-left">
           <p className="text-[13px] font-semibold tracking-[0.14em] text-primary">
-            OUR MEMORIES ♡
+            📸 我們的回憶 ♡
           </p>
           <SheetTitle className="font-display text-[22px]">{title}</SheetTitle>
           <SheetDescription>{isCreating ? "一張照片、一句話，就能把這一天留下來 ♡" : "把這一天的心情寫下來 ♡"}</SheetDescription>
@@ -169,7 +171,7 @@ export function MemoryFormSheet({
 
           <div className="space-y-1.5">
             <Label htmlFor="memory-title">
-              標題<span className="ml-1 text-primary">*</span>
+              標題 <span className="font-normal text-muted-foreground">· 選填</span>
             </Label>
             <Input
               id="memory-title"
@@ -191,6 +193,11 @@ export function MemoryFormSheet({
             />
           </div>
 
+          <button type="button" onClick={() => setMoreOpen((v) => !v)} className="flex min-h-12 w-full items-center justify-between rounded-2xl bg-surface/60 px-4 text-sm font-medium">
+            <span>＋ 一句話・這天的歌</span><ChevronRight className={`size-4 transition-transform ${moreOpen ? "rotate-90" : ""}`} />
+          </button>
+          {moreOpen ? (
+            <div className="space-y-5">
           <div className="space-y-1.5">
             <Label htmlFor="memory-note">{isCreating ? "想記住的一句話" : "心得"}</Label>
             <Textarea
@@ -204,9 +211,10 @@ export function MemoryFormSheet({
           </div>
 
           <div className="space-y-2">
+
             <div>
               <p className="text-[13px] font-semibold tracking-[0.12em] text-primary">
-                THIS DAY'S SOUNDTRACK ♡
+                ♪ 這天的歌 ♡
               </p>
 
               <Label className="mt-1 block">這一天的歌 <span className="font-normal text-muted-foreground">· 選填</span></Label>
@@ -230,7 +238,7 @@ export function MemoryFormSheet({
 
                 <div className="min-w-0 flex-1">
                   <p className="memory-soundtrack-moment-label">
-                    OUR MEMORY SONG
+                    我們的回憶歌
                   </p>
 
                   <p className="memory-soundtrack-moment-title">
@@ -297,6 +305,9 @@ export function MemoryFormSheet({
             </p>
           </div>
 
+            </div>
+          ) : null}
+
           {error ? <p className="text-sm text-destructive">{error}</p> : null}
 
           <div className="flex gap-3 pt-1">
@@ -325,7 +336,7 @@ export function MemoryFormSheet({
         >
           <SheetHeader className="px-0 text-left">
             <p className="text-[13px] font-semibold tracking-[0.14em] text-primary">
-              OUR MEMORIES ♡
+              📸 我們的回憶 ♡
             </p>
 
             <SheetTitle className="font-display text-[22px]">
@@ -350,7 +361,7 @@ export function MemoryFormSheet({
 
               {!draft.songId ? (
                 <span className="text-[13px] font-semibold text-primary">
-                  SELECTED ♡
+                  已選 ♡
                 </span>
               ) : null}
             </button>
@@ -389,7 +400,7 @@ export function MemoryFormSheet({
 
                   {active ? (
                     <span className="shrink-0 text-[13px] font-semibold text-primary">
-                      THIS DAY ♡
+                      這一首 ♡
                     </span>
                   ) : null}
                 </button>
