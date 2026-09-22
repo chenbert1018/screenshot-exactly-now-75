@@ -49,6 +49,7 @@ import { useMemorySource } from "@/lib/memories.source";
 export const Route = createFileRoute("/music")({
   validateSearch: (search: Record<string, unknown>) => ({
     addSong: search.addSong === "1" ? "1" : undefined,
+    idol: typeof search.idol === "string" ? search.idol : undefined,
   }),
   component: MusicPage,
 });
@@ -58,8 +59,10 @@ function MusicPage() {
 
   const {
     homeIdol,
+    findIdol,
     ready: idolsReady,
   } = useIdolSource();
+  const activeIdol = search.idol ? findIdol(search.idol) ?? homeIdol : homeIdol;
 
   const {
     songs,
@@ -70,19 +73,19 @@ function MusicPage() {
     setTodayPick,
     assignRole,
     removeSong,
-  } = useIdolMusicSource(homeIdol?.id);
+  } = useIdolMusicSource(activeIdol?.id);
 
   const songHistory =
-    useSongJournalHistory(homeIdol?.id);
+    useSongJournalHistory(activeIdol?.id);
 
   const todayJournal =
-    useTodaySongJournal(homeIdol?.id);
+    useTodaySongJournal(activeIdol?.id);
 
   const comebackHistory =
-    useComebackDiaryHistory(homeIdol?.id);
+    useComebackDiaryHistory(activeIdol?.id);
 
   const concertHistory =
-    useConcertMusicMemoryHistory(homeIdol?.id);
+    useConcertMusicMemoryHistory(activeIdol?.id);
 
   const eventSource = useEventSource();
   const memorySource = useMemorySource();
@@ -91,12 +94,12 @@ function MusicPage() {
     () =>
       memorySource.all.filter(
         (memory) =>
-          memory.idolId === homeIdol?.id &&
+          memory.idolId === activeIdol?.id &&
           Boolean(memory.songId),
       ),
     [
       memorySource.all,
-      homeIdol?.id,
+      activeIdol?.id,
     ],
   );
 
@@ -104,11 +107,11 @@ function MusicPage() {
     () =>
       eventSource.events.filter(
         (event) =>
-          event.idolId === homeIdol?.id,
+          event.idolId === activeIdol?.id,
       ),
     [
       eventSource.events,
-      homeIdol?.id,
+      activeIdol?.id,
     ],
   );
 
@@ -229,7 +232,7 @@ function MusicPage() {
         title: today.title,
         artist: today.artist,
         mood,
-        idolName: homeIdol?.name,
+        idolName: activeIdol?.name,
       });
     } catch (cause) {
       if (cause instanceof DOMException && cause.name === "AbortError") return;
@@ -238,14 +241,14 @@ function MusicPage() {
   };
 
   const share = async () => {
-    if (!homeIdol) return;
+    if (!activeIdol) return;
 
     setSharing(true);
     setActionError("");
 
     try {
       await shareSoundtrackCard(
-        homeIdol.name || "MY IDOL",
+        activeIdol.name || "MY IDOL",
         SONG_ROLE_OPTIONS.map(
           ([role]) => ({
             role,
@@ -271,7 +274,7 @@ function MusicPage() {
 
       {!idolsReady ? (
         <div className="h-40 rounded-3xl bg-surface/50" />
-      ) : !homeIdol ? (
+      ) : !activeIdol ? (
         <EmptyState
           icon={
             <Music2 className="size-5" />
@@ -335,27 +338,27 @@ function MusicPage() {
                 </span>
 
                 <span className="music-diary-photocard absolute bottom-0 left-0 z-10 h-[106px] w-[78px] overflow-hidden rounded-[0.9rem] border border-border/70 bg-surface shadow-soft">
-                  {homeIdol.cutoutPhoto ? (
+                  {activeIdol.cutoutPhoto ? (
                     <>
                       <span
                         aria-hidden="true"
                         className="absolute inset-0 bg-gradient-to-b from-primary/10 via-surface/50 to-card"
                       />
                       <StoredImage
-                        src={homeIdol.cutoutPhoto}
-                        alt={`${homeIdol.name} 的照片`}
+                        src={activeIdol.cutoutPhoto}
+                        alt={`${activeIdol.name} 的照片`}
                         className="relative z-10 size-full object-contain object-bottom"
                       />
                     </>
-                  ) : homeIdol.photo ? (
+                  ) : activeIdol.photo ? (
                     <StoredImage
-                      src={homeIdol.photo}
-                      alt={`${homeIdol.name} 的照片`}
+                      src={activeIdol.photo}
+                      alt={`${activeIdol.name} 的照片`}
                       className="size-full object-cover object-center"
                     />
                   ) : (
                     <span className="flex size-full items-center justify-center font-display text-[22px] text-primary">
-                      {homeIdol.name.trim().slice(0, 1) || "♡"}
+                      {activeIdol.name.trim().slice(0, 1) || "♡"}
                     </span>
                   )}
 
@@ -381,7 +384,7 @@ function MusicPage() {
                 </p>
 
                 <p className="mt-1.5 truncate text-sm text-muted-foreground">
-                  {today?.artist || `和 ${homeIdol.name || "他"} 選一首今天的歌`}
+                  {today?.artist || `和 ${activeIdol.name || "他"} 選一首今天的歌`}
                 </p>
 
                 <button
@@ -410,7 +413,7 @@ function MusicPage() {
               <div className="mt-5 border-t border-border/60 pt-4">
                 <div className="flex items-center justify-between">
                   <p className="text-[13px] font-semibold tracking-[0.12em] text-muted-foreground">
-                    今日'S MOOD
+                    今天的心情
                   </p>
 
                   {todayJournal.entry?.mood ? (
@@ -781,28 +784,28 @@ function MusicPage() {
                 <MonthlyMusicCard
 
                   idolName={
-                    homeIdol.name || "他"
+                    activeIdol.name || "他"
                   }
 
                   items={timelineItems}
 
                   ready={timelineReady}
-                  photo={homeIdol.photo}
-                  cutoutPhoto={homeIdol.cutoutPhoto}
+                  photo={activeIdol.photo}
+                  cutoutPhoto={activeIdol.cutoutPhoto}
 
                 />
 
                 <YearInMusicCard
 
                   idolName={
-                    homeIdol.name || "他"
+                    activeIdol.name || "他"
                   }
 
                   items={timelineItems}
 
                   ready={timelineReady}
-                  photo={homeIdol.photo}
-                  cutoutPhoto={homeIdol.cutoutPhoto}
+                  photo={activeIdol.photo}
+                  cutoutPhoto={activeIdol.cutoutPhoto}
 
                 />
 
