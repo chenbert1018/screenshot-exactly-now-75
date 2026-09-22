@@ -80,6 +80,26 @@ export async function updateCloudEvent(id: string, draft: EventDraft): Promise<I
 
 /** 刪除 Event，資料庫會一併刪除其 Milestones（不影響 Idol） */
 export async function deleteCloudEvent(id: string): Promise<void> {
+  // 個人收藏不應因刪除日子而消失；只解除 event 關聯。
+  const { error: collectionError } = await supabase
+    .from("collection_items")
+    .update({ event_id: null })
+    .eq("event_id", id);
+  if (collectionError) throw collectionError;
+
+  // 活動專屬的輕量回憶屬於這個 event lifecycle，明確刪除，不依賴 cascade。
+  const { error: concertError } = await supabase
+    .from("concert_personal_memories")
+    .delete()
+    .eq("event_id", id);
+  if (concertError) throw concertError;
+
+  const { error: meetError } = await supabase
+    .from("meet_memories")
+    .delete()
+    .eq("event_id", id);
+  if (meetError) throw meetError;
+
   const { error } = await supabase.from("events").delete().eq("id", id);
   if (error) throw error;
 }
