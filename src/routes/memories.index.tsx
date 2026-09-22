@@ -86,7 +86,7 @@ function MemoriesPage() {
             className="inline-flex items-center gap-1 min-h-11 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
           >
             <Plus className="size-3.5" strokeWidth={2} />
-            ＋ 回憶夾
+            回憶夾
           </button>
         ) : null}
       </div>
@@ -110,7 +110,7 @@ function MemoriesPage() {
               className="inline-flex items-center gap-1.5 min-h-[50px] rounded-full bg-primary px-6 py-3 text-base font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
             >
               <Plus className="size-4" strokeWidth={2} />
-              ＋ 建立第一個回憶夾
+              建立第一個回憶夾
             </button>
           }
         />
