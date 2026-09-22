@@ -1,7 +1,7 @@
 import { StoredImage } from "@/components/StoredImage";
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { MoreHorizontal, Plus } from "lucide-react";
+import { ChevronDown, MoreHorizontal, Plus } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import {
   DropdownMenu,
@@ -155,6 +155,7 @@ export function EventDetailSheet({
   const [confirmRestore, setConfirmRestore] = useState(false);
   const [restoreDate, setRestoreDate] = useState("");
   const [paywallOpen, setPaywallOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const { isPlus } = useSubscription();
   const { items: collectionItems } = useCollectionSource();
 
@@ -339,9 +340,15 @@ export function EventDetailSheet({
             </>
           ) : null}
 
+          <section className="mt-8 overflow-hidden rounded-[1.75rem] border border-border/60 bg-card/55 shadow-soft">
+            <button type="button" aria-expanded={moreOpen} onClick={() => setMoreOpen((value) => !value)} className="flex min-h-[52px] w-full items-center justify-between gap-3 px-5 py-3 text-left transition-transform active:scale-[0.99]">
+              <span><span className="block text-sm font-medium">更多關於這一天</span><span className="mt-0.5 block text-[11px] text-muted-foreground">提醒、追星天氣與里程碑</span></span>
+              <ChevronDown className={`size-5 shrink-0 text-muted-foreground transition-transform ${moreOpen ? "rotate-180" : ""}`} strokeWidth={1.8} />
+            </button>
+            {moreOpen ? <div className="border-t border-border/50 px-5 pb-5">
           {/* Reminder（S2-C Reminder 已建立時顯示入口） */}
           {reminderSummary ? (
-            <div className="mt-8 flex items-center justify-between gap-3 rounded-2xl bg-surface/60 px-4 py-3">
+            <div className="mt-5 flex items-center justify-between gap-3 rounded-2xl bg-surface/60 px-4 py-3">
               <div className="min-w-0">
                 <p className="text-xs tracking-wide text-muted-foreground">🔔 提醒</p>
                 <p className="mt-0.5 truncate text-sm">{reminderSummary}</p>
@@ -419,7 +426,7 @@ export function EventDetailSheet({
           </div>
 
           {/* Milestones */}
-          <div className="mt-10 rounded-[1.9rem] border border-border/60 bg-card/65 px-5 py-6 text-card-foreground shadow-soft">
+          <div className="mt-5 rounded-[1.9rem] border border-border/60 bg-card/65 px-5 py-6 text-card-foreground shadow-soft">
             <h3 className="font-display text-[17px] font-semibold">里程碑</h3>
             <p className="mt-1 text-xs text-muted-foreground">為這一天留下幾個小小的節點。</p>
 
@@ -472,6 +479,10 @@ export function EventDetailSheet({
               </>
             )}
           </div>
+
+
+            </div> : null}
+          </section>
 
           {confirmRestore && onRestore ? (
             <div className="mt-10 rounded-2xl bg-surface/60 px-5 py-5">
