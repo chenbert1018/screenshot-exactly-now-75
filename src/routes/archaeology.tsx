@@ -199,15 +199,6 @@ function ArchaeologyPage() {
           />
         </div>
 
-        <button
-          type="button"
-          onClick={openCreate}
-          className="flex w-full items-center justify-center gap-2 rounded-full border border-primary/20 bg-primary/8 min-h-[50px] px-4 py-3 text-base font-medium text-primary transition-colors active:bg-primary/12"
-        >
-          <Plus className="size-4" strokeWidth={1.8} />
-          ＋ 收進考古
-        </button>
-
         {view === "COLLECTIONS" ? (
           <section className="space-y-3">
             <div className="flex items-center justify-between">
