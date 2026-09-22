@@ -11,6 +11,7 @@ export function ConcertPersonalMemoryCard({ event }: { event: IdolEvent }) {
   const [photo, setPhoto] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [editing, setEditing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -33,10 +34,26 @@ export function ConcertPersonalMemoryCard({ event }: { event: IdolEvent }) {
     try {
       await save({ seat, unforgettableMoment: moment, photo });
       setSaved(true);
+      setEditing(false);
     } finally {
       setSaving(false);
     }
   };
+
+  if (entry && !editing) {
+    return (
+      <section className="mt-5 overflow-hidden rounded-[1.9rem] border border-border/70 bg-card/90 shadow-soft">
+        {entry.photo ? <img src={entry.photo} alt="演唱會現場回憶" className="aspect-[16/9] w-full object-cover" /> : null}
+        <div className="px-5 py-5">
+          <p className="text-[12px] font-semibold tracking-[0.14em] text-primary">MY CONCERT DAY ♡</p>
+          <h3 className="mt-1 font-display text-[20px] font-semibold">那一天，我真的在台下。</h3>
+          {entry.seat ? <p className="mt-3 text-sm text-muted-foreground">🎫 {entry.seat}</p> : null}
+          {entry.unforgettableMoment ? <p className="mt-3 text-[15px] leading-relaxed">「{entry.unforgettableMoment}」</p> : null}
+          <button type="button" onClick={()=>setEditing(true)} className="mt-4 min-h-11 text-sm font-medium text-primary">編輯這天的回憶</button>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="mt-5 rounded-[1.9rem] border border-border/70 bg-card/85 px-5 py-6 shadow-soft">
