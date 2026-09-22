@@ -262,6 +262,19 @@ export function EventDetailSheet({
             ) : null}
           </section>
 
+          {c?.status === "TODAY" && ["CONCERT", "FAN_MEETING"].includes(event.type) ? (
+            <section className="mt-5 rounded-[1.9rem] border border-primary/20 bg-primary/10 px-5 py-5 shadow-soft">
+              <p className="text-[11px] font-semibold tracking-[0.14em] text-primary">TODAY IS THE DAY ♡</p>
+              <h3 className="mt-1 font-display text-[21px] font-semibold">{event.type === "CONCERT" ? "今天，去好好聽他唱歌。" : "今天，真的要見到他了。"}</h3>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">{event.type === "CONCERT" ? "不用急著記錄。先把手機放下，好好看、好好聽；最捨不得忘記的，回來再收進 IdolDays。" : "不用把每句話都準備得完美。先去見他，回來再把真正留在心裡的那一刻收好。"}</p>
+              <div className="mt-4 flex flex-wrap gap-2 text-xs">
+                <span className="rounded-full bg-card px-3 py-2">{event.type === "CONCERT" ? "🎫 票券" : "💌 想說的話"}</span>
+                <span className="rounded-full bg-card px-3 py-2">🔋 手機電量</span>
+                <span className="rounded-full bg-card px-3 py-2">♡ 好好享受今天</span>
+              </div>
+            </section>
+          ) : null}
+
           {/* Note */}
           {event.note ? (
             <div className="mt-8">
