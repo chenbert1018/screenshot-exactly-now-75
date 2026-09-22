@@ -20,6 +20,7 @@ import { useMilestoneSource } from "@/lib/milestones.source";
 import { ComebackDiaryCard } from "@/components/ComebackDiaryCard";
 import { ConcertMusicMemoryCard } from "@/components/ConcertMusicMemoryCard";
 import { ConcertPersonalMemoryCard } from "@/components/ConcertPersonalMemoryCard";
+import { MeetMemoryCard } from "@/components/MeetMemoryCard";
 import { useCollectionSource } from "@/lib/collection.source";
 import { COLLECTION_PROVENANCE_OPTIONS, collectionCategoryMeta } from "@/lib/collection";
 
@@ -271,6 +272,7 @@ export function EventDetailSheet({
           ) : null}
 
           {event.type === "COMEBACK" ? <ComebackDiaryCard event={event} /> : null}
+          {event.type === "FAN_MEETING" ? <MeetMemoryCard event={event} /> : null}
           {event.type === "CONCERT" ? (
             <>
               <ConcertMusicMemoryCard event={event} />
