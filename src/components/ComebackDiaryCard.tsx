@@ -136,7 +136,7 @@ export function ComebackDiaryCard({ event }: { event: IdolEvent }) {
       });
     } catch (cause) {
       if (cause instanceof DOMException && cause.name === "AbortError") return;
-      setSaveError("Comeback Diary 沒有分享成功，請再試一次");
+      setSaveError("回歸日記沒有分享成功，請再試一次");
     }
   }
 
@@ -167,15 +167,15 @@ export function ComebackDiaryCard({ event }: { event: IdolEvent }) {
 
         <div>
           <p className="text-xs font-medium tracking-[0.13em] text-primary">
-            COMEBACK DIARY
+            回歸日記 ♡
           </p>
 
           <h3 className="mt-1 font-display text-[18px] font-semibold">
-            {event.title} ERA ✨
+            {event.title} ✨
           </h3>
 
           <p className="mt-1 text-xs leading-5 text-muted-foreground">
-            第一首喜歡和後來最愛可能不同，這才是屬於你的回歸記憶。
+            把第一次聽見的心情，和後來真正留下來的歌收在一起。
           </p>
         </div>
       </div>
@@ -266,7 +266,7 @@ export function ComebackDiaryCard({ event }: { event: IdolEvent }) {
 
         <label className="block">
           <span className="text-xs text-muted-foreground">
-            這次 Era 的一句話
+            這次回歸的一句話
           </span>
 
           <textarea
@@ -296,8 +296,8 @@ export function ComebackDiaryCard({ event }: { event: IdolEvent }) {
         {saving
           ? "儲存中…"
           : saved
-            ? "已收藏這個 Era ♡"
-            : "儲存 Comeback Diary"}
+            ? "這次回歸收好了 ♡"
+            : "收好這次回歸 ♡"}
       </button>
 
       <button
@@ -306,7 +306,7 @@ export function ComebackDiaryCard({ event }: { event: IdolEvent }) {
         className="mt-2 flex min-h-[44px] w-full items-center justify-center gap-2 rounded-full bg-card px-4 py-2.5 text-xs font-medium text-primary shadow-soft transition-transform active:scale-[0.97]"
       >
         <Share2 className="size-3.5" strokeWidth={1.8} />
-        分享我的 Era ♡
+        分享這次回歸 ♡
       </button>
 
       <Sheet
@@ -332,7 +332,7 @@ export function ComebackDiaryCard({ event }: { event: IdolEvent }) {
                     (item) =>
                       item.key === songPickerField,
                   )?.label
-                : "Comeback Diary"}
+                 : "回歸日記"}
             </SheetDescription>
           </SheetHeader>
 
@@ -387,7 +387,7 @@ export function ComebackDiaryCard({ event }: { event: IdolEvent }) {
               />
 
               <p className="mt-2 text-sm font-medium">
-                這個 Era 還沒有收藏歌曲 ♡
+                這次回歸還沒有收藏歌曲 ♡
               </p>
 
               <p className="mt-1 text-xs text-muted-foreground">
