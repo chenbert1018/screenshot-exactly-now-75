@@ -14,6 +14,7 @@ import {
 } from "./memory-folders.cloud";
 import { getMigrationRecord, migrateLocalIdols } from "./idols.source";
 import { isDataUrl, uploadImage } from "./storage";
+import { unlinkComebackEraByFolder } from "./comeback-era.source";
 
 async function storeFolderCover(
   userId: string,
@@ -319,7 +320,8 @@ export function useMemoryFolderSource(): MemoryFolderSource {
   const removeFolder = useCallback(
     async (id: string) => {
       if (isCloud) {
-        // 雲端會一併刪除資料夾底下的回憶（不影響偶像、日子、里程碑、帳號）
+        // Era folder 先解除活動關聯，再刪除資料夾本身。
+        await unlinkComebackEraByFolder(id);
         await deleteMemoryFolder(id);
         reload();
         return;
