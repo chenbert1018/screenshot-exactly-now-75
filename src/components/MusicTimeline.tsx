@@ -79,6 +79,8 @@ function kindLabel(kind: MusicTimelineItem["kind"]) {
       return "CONCERT";
     case "MEMORY_DAY":
       return "MEMORY";
+    case "LISTEN_AGAIN":
+      return "LISTEN AGAIN";
   }
 }
 
@@ -144,6 +146,17 @@ function collectibleVisual(
           <span className="music-collectible-polaroid-note">
             OUR DAY
           </span>
+        </span>
+      );
+    case "LISTEN_AGAIN":
+      return (
+        <span
+          className="music-collectible music-collectible--disc"
+          aria-hidden="true"
+        >
+          <span className="music-collectible-disc-shine" />
+          <span className="music-collectible-disc-hole" />
+          <span className="music-collectible-disc-note">↻</span>
         </span>
       );
   }

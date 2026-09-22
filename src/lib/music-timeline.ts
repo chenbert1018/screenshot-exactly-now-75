@@ -4,12 +4,15 @@ import type { ComebackDiary } from "./comeback-diary";
 import type { ConcertMusicMemory } from "./concert-music-memory";
 import type { IdolEvent } from "./events";
 import type { Memory } from "./memories";
+import type { ListenAgainEntry } from "./listen-again";
+import type { SongMood } from "./idol-song-journal";
 
 export type MusicTimelineKind =
   | "TODAY_SONG"
   | "COMEBACK"
   | "CONCERT"
-  | "MEMORY_DAY";
+  | "MEMORY_DAY"
+  | "LISTEN_AGAIN";
 
 export type MusicTimelineSong = {
   role: string;
@@ -23,6 +26,8 @@ export type MusicTimelineItem = {
   title: string;
   subtitle?: string;
   mood?: string | null;
+  previousMood?: SongMood | null;
+  currentMood?: SongMood | null;
   note?: string;
   songs: MusicTimelineSong[];
   /** Original Memory identity for MEMORY_DAY navigation. */
@@ -55,6 +60,7 @@ export function buildMusicTimeline(input: {
   concertMemories: ConcertMusicMemory[];
   events: IdolEvent[];
   memories?: Memory[];
+  listenAgainEntries?: ListenAgainEntry[];
 }): MusicTimelineItem[] {
   const {
     songs,
@@ -63,6 +69,7 @@ export function buildMusicTimeline(input: {
     concertMemories,
     events,
     memories = [],
+    listenAgainEntries = [],
   } = input;
 
   const items: MusicTimelineItem[] = [];
@@ -131,6 +138,29 @@ export function buildMusicTimeline(input: {
       subtitle: "MY CONCERT SOUNDTRACK",
       note: memory.note,
       songs: memorySongs,
+    });
+  }
+
+  for (const entry of listenAgainEntries) {
+    const song = songById(songs, entry.songId);
+    if (!song) continue;
+
+    items.push({
+      id: `listen-again-${entry.id}`,
+      kind: "LISTEN_AGAIN",
+      date: entry.listenAgainDate,
+      title: "再聽一次",
+      subtitle: "LISTEN AGAIN",
+      mood: entry.currentMood,
+      previousMood: entry.originalMood,
+      currentMood: entry.currentMood,
+      songs: [
+        {
+          role: "LISTEN AGAIN",
+          song,
+        },
+      ],
+      idolId: entry.idolId,
     });
   }
 

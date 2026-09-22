@@ -3,6 +3,8 @@ import { Link } from "@tanstack/react-router";
 
 type SongMemoryItem = {
   id: string;
+  journalEntryId?: string | null;
+  idolId: string;
   songId: string;
   title: string;
   artist?: string | null;
@@ -158,17 +160,86 @@ export function RandomSongMemoryCard({ items, ready = true }: Props) {
           <ArrowRight className="size-4" strokeWidth={1.8} />
         </Link>
       </div>
-      {link ? (
-        <a
-          href={link}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-2.5 inline-flex min-h-11 items-center gap-1.5 text-[14px] font-medium text-primary"
-        >
-          ♪ 再聽一次
-          <ArrowRight className="size-3.5" />
-        </a>
-      ) : null}
+      {savedListenAgain ? (
+        <div className="mt-3 rounded-2xl bg-primary/[0.06] px-4 py-3">
+          <div className="flex items-center gap-3 text-sm">
+            {savedListenAgain.originalMood ? (
+              <>
+                <span className="text-muted-foreground">
+                  THEN
+                </span>
+                <span className="text-lg">
+                  {savedListenAgain.originalMood}
+                </span>
+                <span className="text-muted-foreground">
+                  →
+                </span>
+              </>
+            ) : null}
+            <span className="text-muted-foreground">
+              NOW
+            </span>
+            <span className="text-lg">
+              {savedListenAgain.currentMood}
+            </span>
+          </div>
+
+          <p className="mt-2 text-[13px] leading-5 text-muted-foreground">
+            同一首歌，現在聽起來已經不一樣了。
+          </p>
+        </div>
+      ) : choosingMood ? (
+        <div className="mt-3 rounded-2xl bg-primary/[0.06] px-4 py-3">
+          <p className="text-[13px] font-medium">
+            現在聽，是什麼心情？
+          </p>
+
+          <div className="mt-2 flex flex-wrap gap-2">
+            {SONG_MOOD_OPTIONS.map((mood) => (
+              <button
+                key={mood}
+                type="button"
+                disabled={savingMood}
+                onClick={() => void chooseNowMood(mood)}
+                className="flex size-10 items-center justify-center rounded-full bg-card text-lg shadow-sm transition-transform active:scale-90 disabled:opacity-50"
+                aria-label={`現在的心情 ${mood}`}
+              >
+                {mood}
+              </button>
+            ))}
+          </div>
+
+          {saveError ? (
+            <p className="mt-2 text-xs text-destructive">
+              {saveError}
+            </p>
+          ) : null}
+        </div>
+      ) : (
+        <div className="mt-2.5 flex flex-wrap items-center gap-4">
+          {link ? (
+            <a
+              href={link}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => setChoosingMood(true)}
+              className="inline-flex min-h-11 items-center gap-1.5 text-[14px] font-medium text-primary"
+            >
+              ♪ 再聽一次
+              <ArrowRight className="size-3.5" />
+            </a>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setChoosingMood(true)}
+              className="inline-flex min-h-11 items-center gap-1.5 text-[14px] font-medium text-primary"
+            >
+              ♪ 再聽一次
+              <ArrowRight className="size-3.5" />
+            </button>
+          )}
+        </div>
+      )}
     </section>
   );
 }

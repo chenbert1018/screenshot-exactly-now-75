@@ -45,6 +45,7 @@ import { useConcertMusicMemoryHistory } from "@/lib/concert-music-memory.source"
 import { buildMusicTimeline } from "@/lib/music-timeline";
 import { useEventSource } from "@/lib/events.source";
 import { useMemorySource } from "@/lib/memories.source";
+import { useListenAgainHistory } from "@/lib/listen-again.source";
 
 export const Route = createFileRoute("/music")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -89,6 +90,8 @@ function MusicPage() {
 
   const eventSource = useEventSource();
   const memorySource = useMemorySource();
+  const listenAgainHistory =
+    useListenAgainHistory(activeIdol?.id);
 
   const timelineMemories = useMemo(
     () =>
@@ -127,6 +130,8 @@ function MusicPage() {
           concertHistory.entries,
         events: timelineEvents,
         memories: timelineMemories,
+        listenAgainEntries:
+          listenAgainHistory.entries,
       }),
     [
       songs,
@@ -135,6 +140,7 @@ function MusicPage() {
       concertHistory.entries,
       timelineEvents,
       timelineMemories,
+      listenAgainHistory.entries,
     ],
   );
 
@@ -143,7 +149,8 @@ function MusicPage() {
     comebackHistory.ready &&
     concertHistory.ready &&
     eventSource.ready &&
-    memorySource.ready;
+    memorySource.ready &&
+    listenAgainHistory.ready;
 
   const [open, setOpen] =
     useState(false);

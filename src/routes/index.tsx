@@ -927,6 +927,8 @@ function HomePage() {
       return [
         {
           id: entry.id,
+          journalEntryId: entry.id,
+          idolId: entry.idolId,
           songId: song.id,
           title: song.title,
           artist: song.artist,
