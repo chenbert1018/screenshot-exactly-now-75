@@ -16,7 +16,8 @@ import {
 } from "@/lib/concert-music-memory";
 
 import { useConcertMusicMemory } from "@/lib/concert-music-memory.source";
-import type { IdolEvent } from "@/lib/events";
+import { eventCountdown, type IdolEvent } from "@/lib/events";
+import { today } from "@/lib/dates";
 import type { IdolSongDraft } from "@/lib/idol-music";
 import { useIdolMusicSource } from "@/lib/idol-music.source";
 
@@ -235,6 +236,10 @@ export function ConcertMusicMemoryCard({
   const activeField = SONG_FIELDS.find(
     (field) => field.key === songPickerField,
   );
+  const eventStatus = eventCountdown(event.date, today())?.status;
+  const visibleSongFields = SONG_FIELDS.filter(
+    (field) => eventStatus === "UPCOMING" ? field.section === "before" : true,
+  );
 
   if (entry && !editing) {
     const remembered = SONG_FIELDS.map((field) => ({ field, song: selectedSongFor(field.key) })).filter((item) => item.song);
@@ -271,33 +276,24 @@ export function ConcertMusicMemoryCard({
       </div>
 
       <div className="mt-5 space-y-4">
-        {SONG_FIELDS
+        {visibleSongFields
           .filter((field) => field.section === "before")
           .map((field) => (
-            <SongField
-              key={field.key}
-              field={field}
-            />
+            <SongField key={field.key} field={field} />
           ))}
 
-        <div className="border-t border-border/50 pt-4">
-          <p className="mb-3 text-xs font-medium text-primary">
-            演唱會後，慢慢留下
-          </p>
-
-          <div className="space-y-4">
-            {SONG_FIELDS
-              .filter((field) => field.section === "after")
-              .map((field) => (
-                <SongField
-                  key={field.key}
-                  field={field}
-                />
+        {eventStatus !== "UPCOMING" ? (
+          <div className="border-t border-border/50 pt-4">
+            <p className="mb-3 text-xs font-medium text-primary">演唱會後，慢慢留下</p>
+            <div className="space-y-4">
+              {visibleSongFields.filter((field) => field.section === "after").map((field) => (
+                <SongField key={field.key} field={field} />
               ))}
+            </div>
           </div>
-        </div>
+        ) : null}
 
-        <label className="block">
+        {eventStatus !== "UPCOMING" ? <label className="block">
           <span className="text-xs text-muted-foreground">
             這場想留的一句話
           </span>
@@ -311,7 +307,7 @@ export function ConcertMusicMemoryCard({
             placeholder="唱到這首的時候真的哭了。"
             className="mt-1.5 min-h-24 w-full resize-none rounded-2xl border border-border/70 bg-background px-3 py-3 text-sm text-foreground placeholder:text-muted-foreground"
           />
-        </label>
+        </label> : null}
       </div>
 
       {error || saveError ? (
@@ -330,7 +326,7 @@ export function ConcertMusicMemoryCard({
           ? "儲存中…"
           : saved
             ? "已收藏這場原聲帶 ♡"
-            : "儲存 Concert Music Memory"}
+            : eventStatus === "UPCOMING" ? "先收好最想聽的歌 ♡" : "儲存 Concert Music Memory"}
       </button>
 
       <Sheet
