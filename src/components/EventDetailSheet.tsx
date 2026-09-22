@@ -19,6 +19,7 @@ import { type Milestone, type MilestoneDraft } from "@/lib/milestones";
 import { useMilestoneSource } from "@/lib/milestones.source";
 import { ComebackDiaryCard } from "@/components/ComebackDiaryCard";
 import { ConcertMusicMemoryCard } from "@/components/ConcertMusicMemoryCard";
+import { ConcertPersonalMemoryCard } from "@/components/ConcertPersonalMemoryCard";
 import { useCollectionSource } from "@/lib/collection.source";
 import { COLLECTION_PROVENANCE_OPTIONS, collectionCategoryMeta } from "@/lib/collection";
 
@@ -273,6 +274,7 @@ export function EventDetailSheet({
           {event.type === "CONCERT" ? (
             <>
               <ConcertMusicMemoryCard event={event} />
+              <ConcertPersonalMemoryCard event={event} />
               <section className="mt-5 rounded-[1.9rem] border border-primary/15 bg-primary/[0.05] px-5 py-5 shadow-soft">
                 <p className="text-[12px] font-semibold tracking-[0.14em] text-primary">THINGS I BROUGHT HOME ♡</p>
                 <h3 className="mt-1 font-display text-[18px] font-semibold">那天帶回家的東西</h3>
