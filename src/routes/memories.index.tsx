@@ -11,7 +11,7 @@ import { useIdolSource } from "@/lib/idols.source";
 import { parseLocalDate } from "@/lib/dates";
 import { CloudRetryNotice } from "@/components/CloudRetryNotice";
 import { useAuth } from "@/lib/auth";
-import { linkComebackEra } from "@/lib/comeback-era.source";
+import { getComebackEraByEvent, linkComebackEra } from "@/lib/comeback-era.source";
 
 export const Route = createFileRoute("/memories/")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -68,7 +68,7 @@ function MemoriesPage() {
     : undefined;
   const comebackInitial = search.create === "comeback"
     ? {
-        title: search.title?.trim() || "Comeback Diary",
+        title: search.title?.trim() || "回歸回憶",
         description: "這次回歸的歌、心情和追星回憶 ♡",
         coverPhoto: "",
         startDate: search.date?.slice(0, 10) || "",
@@ -78,8 +78,38 @@ function MemoriesPage() {
     : undefined;
 
   useEffect(() => {
-    if (search.create === "comeback" || search.create === "1") setOpen(true);
-  }, [search.create]);
+    if (search.create === "1") {
+      setOpen(true);
+      return;
+    }
+    if (search.create !== "comeback") return;
+    if (!search.event) {
+      setOpen(true);
+      return;
+    }
+
+    let active = true;
+    void (async () => {
+      try {
+        const existing = await getComebackEraByEvent(search.event!);
+        if (!active) return;
+        if (existing?.folderId) {
+          await navigate({
+            to: "/memories/$folderId",
+            params: { folderId: existing.folderId },
+          });
+          return;
+        }
+        setOpen(true);
+      } catch {
+        if (active) setOpen(true);
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [search.create, search.event, navigate]);
 
   return (
     <AppShell>
