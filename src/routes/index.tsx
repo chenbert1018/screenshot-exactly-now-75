@@ -101,6 +101,32 @@ function dayLabel(event: IdolEvent) {
   return days === 0 ? "今天" : `D-${Math.max(0, days)}`;
 }
 
+function TodayEventMomentCard({ event }: { event: IdolEvent }) {
+  const meta = event.type === "COMEBACK"
+    ? { icon: "💿", eyebrow: "今天回歸 ♡", line: "第一個感覺，也值得替自己留下來。" }
+    : event.type === "CONCERT"
+      ? { icon: "🎤", eyebrow: "今天見面了 ♡", line: "一張照片、一個瞬間，先替今天留住。" }
+      : event.type === "FAN_MEETING"
+        ? { icon: "💌", eyebrow: "今天見到他 ♡", line: "最想說的話、他的反應，都可以留在今天。" }
+        : null;
+  if (!meta) return null;
+
+  return (
+    <Link
+      to="/events"
+      className="mt-3 flex min-h-[72px] items-center gap-3 rounded-[1.55rem] border border-primary/20 bg-primary/[0.07] px-4 py-3.5 shadow-soft transition-transform active:scale-[0.99]"
+    >
+      <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-card text-[20px]">{meta.icon}</span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-[13px] font-semibold text-primary">{meta.eyebrow}</span>
+        <span className="mt-0.5 block truncate text-sm font-medium text-foreground">{event.title}</span>
+        <span className="mt-0.5 block text-[12px] text-muted-foreground">{meta.line}</span>
+      </span>
+      <ArrowRight className="size-4 shrink-0 text-primary" strokeWidth={1.8} />
+    </Link>
+  );
+}
+
 function EventCard({ event }: { event: IdolEvent }) {
   return (
     <Link
@@ -1054,6 +1080,9 @@ function HomePage() {
             </div>
           </div>
 
+          {nextMainEvent && eventCountdown(nextMainEvent.date)?.status === "TODAY" ? (
+            <TodayEventMomentCard event={nextMainEvent} />
+          ) : null}
           {nextMainEvent ? <EventCard event={nextMainEvent} /> : null}
           {nextMainEvent && canUseFanWeather(nextMainEvent) ? (
             <FanWeatherCard event={nextMainEvent} />
