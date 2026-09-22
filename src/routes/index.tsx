@@ -187,19 +187,16 @@ function FanWeatherCard({ event }: { event: IdolEvent }) {
     <Link
       to="/weather/$eventId"
       params={{ eventId: event.id }}
-      className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 px-5 py-4 text-card-foreground shadow-soft backdrop-blur-xl transition-transform active:scale-[0.99]"
+      className="mt-2.5 flex min-h-[60px] items-center gap-3 rounded-[1.45rem] border border-border/70 bg-card/80 px-4 py-2.5 text-card-foreground shadow-soft backdrop-blur-xl transition-transform active:scale-[0.99]"
     >
-      <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-accent/60 text-primary">
-        <CloudSun className="size-7" strokeWidth={1.45} />
+      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent/60 text-primary">
+        <CloudSun className="size-5" strokeWidth={1.45} />
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-[13px] font-medium tracking-[0.08em] text-primary">
           追星天氣・{place}
         </p>
-        <p className="mt-1 truncate text-[16px] font-medium">
-          {timing}・{event.title}
-        </p>
-        <p className="mt-1 truncate text-sm text-muted-foreground">{detail}</p>
+        <p className="mt-0.5 truncate text-sm text-muted-foreground">{timing}・{detail}</p>
       </div>
       <ArrowRight className="size-5 shrink-0 text-primary" strokeWidth={1.8} />
     </Link>
@@ -1064,17 +1061,18 @@ function HomePage() {
             addSong={addSong}
           />
 
-          <div className="mt-3">
-            <RandomSongMemoryCard items={randomSongMemories} ready={songHistory.ready} />
-          </div>
-
-          {latestArchaeology ? <ArchaeologyCard item={latestArchaeology} /> : null}
           {memoryFromToday ? (
             <MemoryCard
               memory={memoryFromToday}
               song={songs.find((song) => song.id === memoryFromToday.songId)}
             />
           ) : null}
+
+          {latestArchaeology ? <ArchaeologyCard item={latestArchaeology} /> : null}
+
+          <div className="mt-3">
+            <RandomSongMemoryCard items={randomSongMemories} ready={songHistory.ready} />
+          </div>
 
           <p className="mt-8 px-8 text-center font-display text-[16px] leading-relaxed text-muted-foreground/80">
             一起走過的每一天，
