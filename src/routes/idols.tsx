@@ -116,7 +116,7 @@ function IdolsPage() {
               className="inline-flex items-center gap-1.5 min-h-[50px] rounded-full bg-primary px-6 py-3 text-base font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
             >
               <Plus className="size-4" strokeWidth={2} />
-              ＋ 加入本命
+              加入本命
             </button>
           }
         />
@@ -137,16 +137,16 @@ function IdolsPage() {
       )}
 
       {isPlus ? (
-        <p className="mt-7 text-center text-sm text-muted-foreground">
-          ♡ 最多 6 位本命
+        <p className="mt-6 text-center text-xs text-muted-foreground">
+          ♡ 可以收藏最多 6 位本命
         </p>
       ) : (
         <button
           type="button"
           onClick={() => setPaywall(true)}
-          className="mt-6 min-h-11 w-full text-center text-sm text-muted-foreground"
+          className="mt-5 min-h-11 w-full text-center text-xs text-muted-foreground"
         >
-          ♡ 目前 1 位 · IdolDays+ 可收 6 位
+          ♡ IdolDays+ 可以收藏更多本命
         </button>
       )}
 
