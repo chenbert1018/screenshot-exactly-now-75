@@ -49,6 +49,7 @@ export function MemoryFormSheet({
   const fileRef = useRef<HTMLInputElement>(null);
 
   const selectedSong = songs.find((song) => song.id === draft.songId);
+  const isCreating = !initial;
 
   async function createAndChooseSong(songDraft: IdolSongDraft) {
     if (!addSong) {
@@ -116,12 +117,12 @@ export function MemoryFormSheet({
             OUR MEMORIES ♡
           </p>
           <SheetTitle className="font-display text-[22px]">{title}</SheetTitle>
-          <SheetDescription>把這一天的心情寫下來 ♡</SheetDescription>
+          <SheetDescription>{isCreating ? "一張照片、一句話，就能把這一天留下來 ♡" : "把這一天的心情寫下來 ♡"}</SheetDescription>
         </SheetHeader>
 
         <form onSubmit={submit} className="space-y-5 pt-1">
           <div>
-            <p className="mb-2 text-sm font-medium">照片</p>
+            <p className="mb-2 text-sm font-medium">{isCreating ? "先從一張照片開始" : "照片"}</p>
             {draft.photo ? (
               <div className="relative overflow-hidden rounded-[1.75rem] border border-border/60">
                 <StoredImage src={draft.photo} alt="回憶照片預覽" className="aspect-[4/3] w-full object-cover" />
@@ -150,7 +151,8 @@ export function MemoryFormSheet({
                 className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 rounded-[1.75rem] border border-dashed border-border bg-surface/50 text-muted-foreground"
               >
                 <ImagePlus className="size-6" strokeWidth={1.4} />
-                <span className="text-sm">放一張那天的照片（可略過）</span>
+                <span className="text-sm">選一張想留下來的照片</span>
+                <span className="text-[13px]">沒有照片也可以繼續 ♡</span>
               </button>
             )}
             <input
@@ -172,7 +174,7 @@ export function MemoryFormSheet({
             <Input
               id="memory-title"
               value={draft.title}
-              placeholder="例如：演唱會 Day 1"
+              placeholder={isCreating ? "例如：終於見到你的這一天 ♡" : "例如：演唱會 Day 1"}
               onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))}
               className="min-h-11 rounded-2xl border-border/70 bg-surface/50"
             />
@@ -190,12 +192,12 @@ export function MemoryFormSheet({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="memory-note">心得</Label>
+            <Label htmlFor="memory-note">{isCreating ? "想記住的一句話" : "心得"}</Label>
             <Textarea
               id="memory-note"
               rows={4}
               value={draft.note}
-              placeholder="今天真的見到他了⋯"
+              placeholder={isCreating ? "不用寫很多，留下一句當時的心情就好。" : "今天真的見到他了⋯"}
               onChange={(e) => setDraft((d) => ({ ...d, note: e.target.value }))}
               className="min-h-11 rounded-2xl border-border/70 bg-surface/50"
             />
@@ -207,7 +209,7 @@ export function MemoryFormSheet({
                 THIS DAY'S SOUNDTRACK ♡
               </p>
 
-              <Label className="mt-1 block">這一天的歌</Label>
+              <Label className="mt-1 block">這一天的歌 <span className="font-normal text-muted-foreground">· 選填</span></Label>
 
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                 有沒有一首歌，會讓你想起這一天？
