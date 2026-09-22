@@ -141,8 +141,8 @@ function ArchaeologyPage() {
   return (
     <AppShell>
       <PageHeader
-        title="以前喜歡過的瞬間"
-        subtitle="有些貼文、影片和一句話，過了很久還是會想再看一次。"
+        title="考古 🔎"
+        subtitle="Threads・X・直拍・名場面 ♡"
         action={
           <button
             type="button"
@@ -171,7 +171,7 @@ function ArchaeologyPage() {
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="找找以前收藏過的瞬間..."
+            placeholder="搜貼文、直拍、名場面…"
             className="h-12 rounded-full border-border/60 bg-card/70 pl-11 shadow-soft"
           />
         </div>
@@ -205,7 +205,7 @@ function ArchaeologyPage() {
           className="flex w-full items-center justify-center gap-2 rounded-full border border-primary/20 bg-primary/8 min-h-[50px] px-4 py-3 text-base font-medium text-primary transition-colors active:bg-primary/12"
         >
           <Plus className="size-4" strokeWidth={1.8} />
-          留下新的寶藏
+          ＋ 收進考古
         </button>
 
         {view === "COLLECTIONS" ? (
@@ -294,10 +294,10 @@ function ArchaeologyPage() {
                 <Bookmark className="size-5 text-muted-foreground" strokeWidth={1.5} />
               </div>
 
-              <p className="mt-4 text-[15px] font-medium">還沒有留下以前的寶藏</p>
+              <p className="mt-4 text-[15px] font-medium">還沒開始考古</p>
 
               <p className="mx-auto mt-2 max-w-[250px] text-sm leading-relaxed text-muted-foreground">
-                下次在 Threads、X 或 YouTube 遇見捨不得忘記的瞬間，就把它留在這裡。
+                刷到捨不得忘記的物料，就收進來 ♡
               </p>
 
               <button
@@ -305,7 +305,7 @@ function ArchaeologyPage() {
                 onClick={openCreate}
                 className="mt-5 min-h-[50px] rounded-full bg-primary px-5 py-3 text-base font-medium text-primary-foreground shadow-soft"
               >
-                ＋ 留下第一個寶藏
+                ＋ 第一篇考古
               </button>
             </SoftCard>
           ) : (
