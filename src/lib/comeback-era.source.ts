@@ -41,6 +41,23 @@ export async function linkComebackEra(
   return toLink(data as Row);
 }
 
+/** Explicitly unlink an Era before deleting its Event or Memory Folder. */
+export async function unlinkComebackEraByEvent(eventId: string): Promise<void> {
+  const { error } = await supabase
+    .from("comeback_era_memory_folders")
+    .delete()
+    .eq("event_id", eventId);
+  if (error) throw error;
+}
+
+export async function unlinkComebackEraByFolder(folderId: string): Promise<void> {
+  const { error } = await supabase
+    .from("comeback_era_memory_folders")
+    .delete()
+    .eq("folder_id", folderId);
+  if (error) throw error;
+}
+
 export async function getComebackEraByEvent(
   eventId: string,
 ): Promise<ComebackEraLink | null> {
