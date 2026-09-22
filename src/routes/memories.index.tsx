@@ -56,6 +56,16 @@ function MemoriesPage() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const search = Route.useSearch();
+  const eventInitial = search.create === "1" && search.event
+    ? {
+        title: search.title?.trim() || "",
+        description: "",
+        coverPhoto: "",
+        startDate: search.date?.slice(0, 10) || "",
+        endDate: "",
+        idolId: search.idol || "",
+      }
+    : undefined;
   const comebackInitial = search.create === "comeback"
     ? {
         title: search.title?.trim() || "Comeback Diary",
@@ -182,7 +192,7 @@ function MemoriesPage() {
             void navigate({ to: "/memories", search: {} });
           }
         }}
-        initial={comebackInitial ?? (search.create === "1" && search.idol ? { title: "", description: "", coverPhoto: "", startDate: "", endDate: "", idolId: search.idol } : undefined)}
+        initial={comebackInitial ?? eventInitial ?? (search.create === "1" && search.idol ? { title: "", description: "", coverPhoto: "", startDate: "", endDate: "", idolId: search.idol } : undefined)}
         title={search.create === "comeback" ? "建立回歸回憶 ♡" : "建立回憶夾 ♡"}
         submitLabel="建立"
         onSubmit={async (draft) => {
