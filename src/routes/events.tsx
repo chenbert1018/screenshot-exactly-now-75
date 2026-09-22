@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarHeart, Plus, Package } from "lucide-react";
+import { CalendarHeart, Plus } from "lucide-react";
 import { AppShell, EmptyState, PageHeader, SoftCard } from "@/components/AppShell";
 import { EventFormSheet } from "@/components/EventFormSheet";
 import {
@@ -21,8 +21,6 @@ import { DEFAULT_DAYS_BEFORE, formatReminderSummary } from "@/lib/reminders";
 import { useReminderSource } from "@/lib/reminders.source";
 import { scheduleEventNotifications } from "@/lib/event-notifications";
 import { CloudRetryNotice } from "@/components/CloudRetryNotice";
-import { useCollectionSource } from "@/lib/collection.source";
-import { COLLECTION_PROVENANCE_OPTIONS, collectionCategoryMeta } from "@/lib/collection";
 
 export const Route = createFileRoute("/events")({
   head: () => ({
@@ -91,7 +89,6 @@ function EventCard({
 function EventsPage() {
   const { idols, findIdol } = useIdolSource();
   const { events, ready, addEvent, updateEvent, removeEvent, error, reload } = useEventSource();
-  const { items: collectionItems } = useCollectionSource();
 
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<IdolEvent | null>(null);
@@ -139,7 +136,6 @@ function EventsPage() {
   }
 
   const detailCountdown = detail ? eventCountdown(detail.date) : null;
-  const detailCollection = detail ? collectionItems.filter((item) => item.eventId === detail.id) : [];
 
   return (
     <AppShell>
@@ -287,40 +283,6 @@ function EventsPage() {
         onOpenReminder={() => setReminderOpen(true)}
       />
 
-
-      {detail?.type === "CONCERT" ? (
-        <section className="mt-5 rounded-[1.6rem] border border-primary/15 bg-primary/[0.05] px-5 py-5">
-          <p className="text-[13px] font-semibold tracking-[0.14em] text-primary">THINGS I BROUGHT HOME ♡</p>
-          <p className="mt-2 font-display text-[18px] font-medium">那天帶回家的東西</p>
-          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">小卡、海報、票根、Tour Merch、VIP Gift，還有粉絲送你的飯制應援物，也都是這場演唱會留下來的回憶。</p>
-          {detailCollection.length > 0 ? (
-            <div className="mt-4 flex gap-3 overflow-x-auto pb-1">
-              {detailCollection.slice(0,6).map((item) => {
-                const meta = collectionCategoryMeta[item.category];
-                const provenance = COLLECTION_PROVENANCE_OPTIONS.find((option) => option.value === (item.provenance || "UNSPECIFIED"));
-                return <div key={item.id} className="w-[118px] shrink-0 overflow-hidden rounded-2xl bg-card shadow-soft">
-                  {item.photo ? <img src={item.photo} alt="" className="aspect-square w-full object-cover"/> : <div className="flex aspect-square items-center justify-center bg-surface text-3xl">{meta.emoji}</div>}
-                  <div className="px-3 py-2.5">
-                    <p className="truncate text-sm font-medium">{item.title}</p>
-                    <p className="mt-1 truncate text-[11px] text-muted-foreground">{item.provenance && item.provenance !== "UNSPECIFIED" ? `${provenance?.emoji || ""} ${provenance?.label || ""}` : meta.label}</p>
-                  </div>
-                </div>;
-              })}
-            </div>
-          ) : (
-            <p className="mt-4 rounded-2xl bg-card/70 px-4 py-3 text-sm text-muted-foreground">這場還沒有留下收藏。散場後拿到的小卡、手幅或票根，都可以從這裡收進來 ♡</p>
-          )}
-          {detailCollection.length > 0 ? <p className="mt-3 text-[13px] text-muted-foreground">這場已留下 {detailCollection.length} 件收藏 ♡</p> : null}
-          <Link
-            to="/collection"
-            search={{ event: detail.id }}
-            className="mt-4 flex min-h-[48px] items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-transform active:scale-[0.98]"
-          >
-            <Package className="size-4" strokeWidth={1.6} />
-            看收藏／留下這場的收藏
-          </Link>
-        </section>
-      ) : null}
 
       {detail ? (
         <ReminderSheet
