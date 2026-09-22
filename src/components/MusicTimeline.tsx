@@ -223,14 +223,21 @@ export function MusicTimeline({
           />
 
           <p className="mt-3 text-sm font-medium">
-            音樂日記還在等第一首歌
+            你的音樂故事，會從第一首歌開始。
           </p>
 
           <p className="mt-1 text-xs leading-5 text-muted-foreground">
-            Today's Song、Comeback 和演唱會留下的歌，
+            今天聽過的歌、回歸、演唱會與再次想起的旋律，
             <br />
-            都會慢慢收進這本日記裡 ♡
+            都會慢慢留在這條時間線裡 ♡
           </p>
+
+          <Link
+            to="/"
+            className="mt-4 inline-flex min-h-11 items-center justify-center rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground transition-transform active:scale-95"
+          >
+            ＋ 選今天的一首歌
+          </Link>
         </div>
       ) : (
         <div className="space-y-9">
@@ -346,7 +353,37 @@ export function MusicTimeline({
                           </div>
                         ) : null}
 
-                        {item.mood ? (
+                        {item.kind === "LISTEN_AGAIN" &&
+                        item.currentMood ? (
+                          <div className="mt-3 rounded-[1.2rem] bg-primary/[0.06] px-3.5 py-3">
+                            <div className="flex flex-wrap items-center gap-2">
+                              {item.previousMood ? (
+                                <>
+                                  <span className="text-[10px] font-semibold tracking-[0.12em] text-muted-foreground">
+                                    THEN
+                                  </span>
+                                  <span className="text-lg">
+                                    {item.previousMood}
+                                  </span>
+                                  <span className="text-xs text-muted-foreground">
+                                    →
+                                  </span>
+                                </>
+                              ) : null}
+
+                              <span className="text-[10px] font-semibold tracking-[0.12em] text-primary">
+                                NOW
+                              </span>
+                              <span className="text-lg">
+                                {item.currentMood}
+                              </span>
+                            </div>
+
+                            <p className="mt-1.5 text-xs leading-5 text-muted-foreground">
+                              同一首歌，現在聽起來已經不一樣了。
+                            </p>
+                          </div>
+                        ) : item.mood ? (
                           <div className="mt-3 flex items-center gap-2">
                             <span className="text-lg">
                               {item.mood}
