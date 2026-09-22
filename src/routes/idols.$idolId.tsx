@@ -1,7 +1,7 @@
 import { StoredImage } from "@/components/StoredImage";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { ChevronLeft, ImageIcon, Pencil } from "lucide-react";
+import { CalendarPlus, ChevronLeft, ImageIcon, Music2, Pencil } from "lucide-react";
 import { AppShell, SoftCard } from "@/components/AppShell";
 import { IdolFormSheet } from "@/components/IdolFormSheet";
 import {
@@ -105,7 +105,7 @@ function IdolDetailPage() {
       <div className="mb-5 flex items-center justify-between">
         <Link to="/idols" className="inline-flex items-center gap-1 text-sm text-muted-foreground">
           <ChevronLeft className="size-4" strokeWidth={1.8} />
-          我的偶像
+          我的本命
         </Link>
         <button
           type="button"
@@ -139,7 +139,7 @@ function IdolDetailPage() {
           )}
         </div>
         <div className="px-6 py-6 text-center">
-          <p className="text-[11px] font-semibold tracking-[0.18em] text-primary">MY IDOL ♡</p>
+          <p className="text-[11px] font-semibold tracking-[0.18em] text-primary">我的本命 ♡</p>
           <h1 className="mt-1.5 font-display text-[28px] font-semibold">{idol.name}</h1>
           {idol.groupName ? (
             <p className="mt-1.5 text-sm text-muted-foreground">{idol.groupName}</p>
@@ -153,7 +153,7 @@ function IdolDetailPage() {
             ✦
           </span>
           <p className="text-[10px] font-semibold tracking-[0.14em] text-muted-foreground">
-            NEXT DAY ♡
+            下一個 D-DAY ♡
           </p>
           <p className="mt-1 text-xs text-muted-foreground">{day ? day.title : "下一個重要日子"}</p>
           <p className="mt-2 font-display text-[28px] leading-none font-semibold text-primary">
@@ -165,7 +165,7 @@ function IdolDetailPage() {
         </SoftCard>
         <SoftCard className="px-4 py-5 text-center">
           <p className="text-[10px] font-semibold tracking-[0.14em] text-muted-foreground">
-            TOGETHER ♡
+            一起走過 ♡
           </p>
           <p className="mt-1 text-xs text-muted-foreground">我們一起走過</p>
           <p className="mt-2 font-display text-[28px] leading-none font-semibold text-primary">
@@ -177,10 +177,19 @@ function IdolDetailPage() {
         </SoftCard>
       </div>
 
+      <div className="mt-5 grid grid-cols-2 gap-3">
+        <Link to="/events" search={{ idol: idol.id } as never} className="flex min-h-[52px] items-center justify-center gap-2 rounded-full bg-primary text-sm font-medium text-primary-foreground shadow-soft transition-transform active:scale-[0.98]">
+          <CalendarPlus className="size-4" strokeWidth={1.8} />＋ 記一個日子
+        </Link>
+        <Link to="/music" search={{ idol: idol.id } as never} className="flex min-h-[52px] items-center justify-center gap-2 rounded-full bg-surface text-sm font-medium transition-transform active:scale-[0.98]">
+          <Music2 className="size-4 text-primary" strokeWidth={1.8} />♪ 今日一曲
+        </Link>
+      </div>
+
       <section className="mt-8">
         <div className="mb-3">
           <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground">
-            ABOUT HIM ♡
+            關於他 ♡
           </p>
           <h2 className="mt-1 font-display text-[18px] font-medium">想替他記住的事</h2>
         </div>
