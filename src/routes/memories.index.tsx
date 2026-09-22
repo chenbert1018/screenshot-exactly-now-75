@@ -10,12 +10,16 @@ import { useMemorySource } from "@/lib/memories.source";
 import { useIdolSource } from "@/lib/idols.source";
 import { parseLocalDate } from "@/lib/dates";
 import { CloudRetryNotice } from "@/components/CloudRetryNotice";
+import { useAuth } from "@/lib/auth";
+import { linkComebackEra } from "@/lib/comeback-era.source";
 
 export const Route = createFileRoute("/memories/")({
   validateSearch: (search: Record<string, unknown>) => ({
     create: search.create === "comeback" ? ("comeback" as const) : undefined,
     title: typeof search.title === "string" ? search.title : undefined,
     date: typeof search.date === "string" ? search.date : undefined,
+    event: typeof search.event === "string" ? search.event : undefined,
+    idol: typeof search.idol === "string" ? search.idol : undefined,
   }),
   head: () => ({
     meta: [
@@ -46,6 +50,7 @@ function rangeLabel(folder: MemoryFolder) {
 
 function MemoriesPage() {
   const { folders, ready, addFolder, error, reload } = useMemoryFolderSource();
+  const { user } = useAuth();
   const { all } = useMemorySource();
   const { idols } = useIdolSource();
   const [open, setOpen] = useState(false);
@@ -58,7 +63,7 @@ function MemoriesPage() {
         coverPhoto: "",
         startDate: search.date?.slice(0, 10) || "",
         endDate: "",
-        idolId: "",
+        idolId: search.idol || "",
       }
     : undefined;
 
@@ -168,13 +173,17 @@ function MemoriesPage() {
         submitLabel="建立"
         onSubmit={async (draft) => {
           const created = await addFolder(draft);
+          const folderId = created.id;
+
+          if (
+            search.create === "comeback" &&
+            search.event &&
+            user?.id
+          ) {
+            await linkComebackEra(user.id, search.event, folderId);
+          }
+
           setOpen(false);
-          const folderId =
-            typeof created === "string"
-              ? created
-              : created && typeof created === "object" && "id" in created
-                ? String(created.id)
-                : undefined;
           if (folderId) {
             await navigate({
               to: "/memories/$folderId",
