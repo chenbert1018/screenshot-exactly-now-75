@@ -91,6 +91,7 @@ export function ArchaeologyFormSheet({
   const [tagInput, setTagInput] = useState("");
   const [error, setError] = useState("");
   const [previewState, setPreviewState] = useState<"idle" | "loading" | "done" | "error">("idle");
+  const [moreOpen, setMoreOpen] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -110,6 +111,7 @@ export function ArchaeologyFormSheet({
     setError("");
     setSaving(false);
     setPreviewState("idle");
+    setMoreOpen(Boolean(initial?.imageUrl || initial?.collection || initial?.tags.length || initial?.note));
   }, [open, initial]);
 
   const source = draft.url.trim() ? detectArchaeologySource(draft.url) : null;
@@ -273,7 +275,7 @@ export function ArchaeologyFormSheet({
         <SheetHeader className="px-0 text-left">
           <SheetTitle className="text-[22px]">{title}</SheetTitle>
 
-          <SheetDescription>把散落在飯圈各處的寶藏收回來 ♡</SheetDescription>
+          <SheetDescription>貼連結，就收進考古 ♡</SheetDescription>
         </SheetHeader>
 
         <form onSubmit={submit} className="space-y-5 pt-1">
@@ -352,6 +354,8 @@ export function ArchaeologyFormSheet({
             />
           </div>
 
+          <button type="button" onClick={() => setMoreOpen((value) => !value)} className="flex min-h-11 w-full items-center justify-between rounded-2xl bg-surface/50 px-4 text-sm text-muted-foreground"><span>＋ 封面・收藏集・標籤・小記</span><span aria-hidden>{moreOpen ? "−" : "＋"}</span></button>
+          {moreOpen ? <div className="space-y-5">
           <div className="space-y-1.5">
             <Label htmlFor="archaeology-image">封面圖</Label>
             <Input
@@ -404,9 +408,7 @@ export function ArchaeologyFormSheet({
                 />
               </div>
             ) : null}
-            <p className="text-sm text-muted-foreground">
-              Threads 影片抓不到縮圖時，可以直接選擇影片截圖
-            </p>
+
           </div>
 
           <div className="space-y-1.5">
@@ -425,11 +427,11 @@ export function ArchaeologyFormSheet({
               className="min-h-12 rounded-2xl bg-surface/50"
             />
 
-            <p className="text-sm text-muted-foreground">可以之後再整理</p>
+            
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="archaeology-tag">Tags</Label>
+            <Label htmlFor="archaeology-tag">標籤</Label>
 
             {draft.tags.length > 0 ? (
               <div className="flex flex-wrap gap-2">
@@ -491,13 +493,15 @@ export function ArchaeologyFormSheet({
             />
           </div>
 
+
+          </div> : null}
           {error ? <p className="text-sm text-destructive">{error}</p> : null}
 
           <div className="flex gap-3 pt-1">
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="flex-1 rounded-full border border-border/70 py-3 text-sm transition-transform duration-300 active:scale-95"
+              className="min-h-[50px] rounded-full px-4 py-3 text-base text-muted-foreground transition-transform active:scale-95"
             >
               取消
             </button>
@@ -505,7 +509,7 @@ export function ArchaeologyFormSheet({
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 rounded-full bg-primary min-h-[50px] py-3 text-base font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95 disabled:opacity-60"
+              className="min-h-[52px] flex-1 rounded-full bg-primary py-3 text-base font-medium text-primary-foreground shadow-soft transition-transform active:scale-[0.98] disabled:opacity-60"
             >
               {saving ? "儲存中…" : submitLabel}
             </button>
