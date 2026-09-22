@@ -61,8 +61,8 @@ function IdolsPage() {
   return (
     <AppShell>
       <PageHeader
-        title="我喜歡的那個人"
-        subtitle="從一個名字開始，慢慢收藏我們的日子。"
+        title="我的本命 ♡"
+        subtitle="照片・D-DAY・一起走過的日子"
         action={
           <button
             type="button"
@@ -86,11 +86,9 @@ function IdolsPage() {
           <div className="min-w-0">
             <p className="flex items-center gap-1.5 text-sm font-medium">
               <RefreshCw className="size-4 text-primary" />
-              每日輪換封面偶像
+              ✦ 每天換一位陪你
             </p>
-            <p className="mt-1 text-sm leading-5 text-muted-foreground">
-              首頁每天自動換一位偶像，收藏內容不會改變。
-            </p>
+
           </div>
           <button
             type="button"
@@ -109,8 +107,8 @@ function IdolsPage() {
       {ready && idols.length === 0 ? (
         <EmptyState
           icon={<Heart className="size-5" strokeWidth={1.6} />}
-          title="還沒有加入你的第一位偶像"
-          description="從一個名字開始，收藏屬於你的追星日子。"
+          title="先加入你的本命 ♡"
+          description="名字＋一張照片，就可以開始。"
           action={
             <button
               type="button"
@@ -118,7 +116,7 @@ function IdolsPage() {
               className="inline-flex items-center gap-1.5 min-h-[50px] rounded-full bg-primary px-6 py-3 text-base font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
             >
               <Plus className="size-4" strokeWidth={2} />
-              加入喜歡的人
+              ＋ 加入本命
             </button>
           }
         />
@@ -140,7 +138,7 @@ function IdolsPage() {
 
       {isPlus ? (
         <p className="mt-7 text-center text-sm text-muted-foreground">
-          我的本命收藏 ♡ · 最多收藏 6 位
+          ♡ 最多 6 位本命
         </p>
       ) : (
         <button
@@ -148,15 +146,15 @@ function IdolsPage() {
           onClick={() => setPaywall(true)}
           className="mt-6 min-h-11 w-full text-center text-sm text-muted-foreground"
         >
-          免費版可收藏 1 位偶像 · IdolDays+ 最多 6 位（NT$90／月）
+          ♡ 目前 1 位 · IdolDays+ 可收 6 位
         </button>
       )}
 
       <IdolFormSheet
         open={open}
         onOpenChange={setOpen}
-        title="加入喜歡的人"
-        submitLabel="收進 IdolDays"
+        title="加入本命 ♡"
+        submitLabel="收好 ♡"
         onSubmit={handleCreate}
       />
 
