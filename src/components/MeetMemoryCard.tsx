@@ -14,6 +14,7 @@ export function MeetMemoryCard({ event }: { event: IdolEvent }) {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -23,6 +24,7 @@ export function MeetMemoryCard({ event }: { event: IdolEvent }) {
     setIdolMoment(draft.idolMoment ?? "");
     setAfterthought(draft.afterthought ?? "");
     setPhoto(draft.photo ?? "");
+    setMoreOpen(Boolean(draft.wantedToSay || draft.actuallySaid || draft.afterthought));
   }, [entry?.eventId]);
 
   const change = (setter: (value: string) => void) => (value: string) => { setter(value); setSaved(false); };
@@ -63,14 +65,19 @@ export function MeetMemoryCard({ event }: { event: IdolEvent }) {
       <p className="mt-1 text-xs leading-5 text-muted-foreground">先留下最想記住的那一刻就好 ♡</p>
 
       <div className="mt-5 space-y-4">
-        <label className="block"><span className="text-xs text-muted-foreground">見面前，最想對他說什麼？</span><textarea value={wantedToSay} onChange={(e)=>change(setWantedToSay)(e.target.value)} maxLength={300} placeholder="一直想告訴你的那句話…" className="mt-1.5 min-h-20 w-full resize-none rounded-2xl bg-background px-4 py-3 text-base outline-none"/></label>
-        <label className="block"><span className="text-xs text-muted-foreground">最後真的說了什麼？</span><textarea value={actuallySaid} onChange={(e)=>change(setActuallySaid)(e.target.value)} maxLength={300} placeholder="輪到我的時候，最後說出口的是…" className="mt-1.5 min-h-20 w-full resize-none rounded-2xl bg-background px-4 py-3 text-base outline-none"/></label>
-        <label className="block"><span className="text-xs text-muted-foreground">他做了什麼，讓我一直記得？ ♡</span><textarea value={idolMoment} onChange={(e)=>change(setIdolMoment)(e.target.value)} maxLength={400} placeholder="一個眼神、一句話、一個動作都可以。" className="mt-1.5 min-h-24 w-full resize-none rounded-2xl bg-background px-4 py-3 text-base outline-none"/></label>
-        <label className="block"><span className="text-xs text-muted-foreground">回家後，最想留下的一句話</span><textarea value={afterthought} onChange={(e)=>change(setAfterthought)(e.target.value)} maxLength={300} placeholder="原來真的見到你的那一天，是這種感覺。" className="mt-1.5 min-h-20 w-full resize-none rounded-2xl bg-background px-4 py-3 text-base outline-none"/></label>
         <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e)=>choosePhoto(e.target.files?.[0])}/>
         <button type="button" onClick={()=>inputRef.current?.click()} className="flex aspect-[16/9] w-full items-center justify-center overflow-hidden rounded-[1.5rem] bg-background active:scale-[.99]">
-          {photo ? <img src={photo} alt="Fan Meeting 回憶" className="size-full object-cover"/> : <span className="flex flex-col items-center gap-2 text-sm text-muted-foreground"><Camera className="size-6" strokeWidth={1.6}/>留一張那天的照片</span>}
+          {photo ? <img src={photo} alt="見面會回憶" className="size-full object-cover"/> : <span className="flex flex-col items-center gap-2 text-sm text-muted-foreground"><Camera className="size-6" strokeWidth={1.6}/>留一張那天的照片</span>}
         </button>
+        <label className="block"><span className="text-xs text-muted-foreground">最想記住的一刻 ♡</span><textarea value={idolMoment} onChange={(e)=>change(setIdolMoment)(e.target.value)} maxLength={400} placeholder="一個眼神、一句話、一個動作都可以。" className="mt-1.5 min-h-24 w-full resize-none rounded-2xl bg-background px-4 py-3 text-base outline-none"/></label>
+        <button type="button" onClick={()=>setMoreOpen((value)=>!value)} className="flex min-h-11 w-full items-center justify-between rounded-2xl px-1 text-sm font-medium text-primary">
+          <span>＋ 那天說的話・回家後的心情</span><span>{moreOpen ? "收起" : ""}</span>
+        </button>
+        {moreOpen ? <div className="space-y-4">
+          <label className="block"><span className="text-xs text-muted-foreground">見面前，最想對他說什麼？</span><textarea value={wantedToSay} onChange={(e)=>change(setWantedToSay)(e.target.value)} maxLength={300} placeholder="一直想告訴你的那句話…" className="mt-1.5 min-h-20 w-full resize-none rounded-2xl bg-background px-4 py-3 text-base outline-none"/></label>
+          <label className="block"><span className="text-xs text-muted-foreground">最後真的說了什麼？</span><textarea value={actuallySaid} onChange={(e)=>change(setActuallySaid)(e.target.value)} maxLength={300} placeholder="輪到我的時候，最後說出口的是…" className="mt-1.5 min-h-20 w-full resize-none rounded-2xl bg-background px-4 py-3 text-base outline-none"/></label>
+          <label className="block"><span className="text-xs text-muted-foreground">回家後，最想留下的一句話</span><textarea value={afterthought} onChange={(e)=>change(setAfterthought)(e.target.value)} maxLength={300} placeholder="原來真的見到你的那一天，是這種感覺。" className="mt-1.5 min-h-20 w-full resize-none rounded-2xl bg-background px-4 py-3 text-base outline-none"/></label>
+        </div> : null}
       </div>
       <button type="button" disabled={!ready||saving} onClick={()=>void submit()} className="mt-5 min-h-[52px] w-full rounded-full bg-primary px-5 text-base font-medium text-primary-foreground shadow-soft transition-transform active:scale-[0.98] disabled:opacity-50">{saving?"儲存中…":saved?"見到你的這一天收好了 ♡":"把見到你的這一天收起來 ♡"}</button>
     </section>
