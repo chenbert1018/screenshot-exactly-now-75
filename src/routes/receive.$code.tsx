@@ -152,7 +152,13 @@ function ReceiveAlbumPage() {
           >
             打開收藏
           </button>
-          <Link to="/" className="mt-2 inline-flex min-h-[44px] items-center justify-center px-5 text-sm text-muted-foreground">
+          <Link
+            to="/memories"
+            className="mt-3 inline-flex min-h-[48px] w-full items-center justify-center rounded-full border border-primary/15 bg-primary/[0.06] px-5 text-base font-medium text-primary transition-transform active:scale-[0.98]"
+          >
+            也做一份屬於我的回憶 ♡
+          </Link>
+          <Link to="/" className="mt-1 inline-flex min-h-[44px] items-center justify-center px-5 text-sm text-muted-foreground">
             先回首頁
           </Link>
         </section>
