@@ -139,7 +139,7 @@ export function RandomSongMemoryCard({ items, ready = true }: Props) {
       <div className="music-memory-resurface-heading">
         <div>
           <p className="music-memory-resurface-kicker">
-            {onThisDay ? "ON THIS DAY ♡" : "A SONG FOUND YOU AGAIN ♡"}
+            {onThisDay ? "去年的今天 ♡" : "♪ 又遇見這首歌 ♡"}
           </p>
 
           <p className="music-memory-resurface-title">
@@ -147,7 +147,7 @@ export function RandomSongMemoryCard({ items, ready = true }: Props) {
               ? yearsAgo === 1
                 ? "去年的今天，我們聽了這首歌"
                 : `${yearsAgo} 年前的今天，我們聽了這首歌`
-              : "今天，這首歌又回來找你了。"}
+              : "今天，又遇見那時候聽的歌。"}
           </p>
         </div>
 
@@ -190,7 +190,7 @@ export function RandomSongMemoryCard({ items, ready = true }: Props) {
           ) : null}
 
           <div className="music-memory-polaroid-meta">
-            <span>{onThisDay ? "OUR DAY" : "FOUND AGAIN"}</span>
+            <span>{onThisDay ? "那一天 ♡" : "又想起了 ♡"}</span>
 
             {item.mood ? (
               <span
