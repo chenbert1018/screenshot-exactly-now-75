@@ -801,13 +801,13 @@ function TodaySongCard({
 
         <div className="min-w-0 flex-1">
           <p className="text-[10px] font-medium tracking-[0.12em] text-primary">
-            MUSIC DIARY ♡
+            ♪ 音樂日記 ♡
           </p>
           <p className="mt-0.5 text-sm font-medium">
             看我和他的音樂日記
           </p>
           <p className="mt-0.5 truncate text-[10px] text-muted-foreground">
-            今日歌曲 · 回歸 · 演唱會 · 音樂回憶
+            今日一曲・回歸・演唱會
           </p>
         </div>
 
@@ -1032,16 +1032,16 @@ function HomePage() {
             <Link
               to="/idols/$idolId"
               params={{ idolId: main.id }}
-              className="mt-4 flex items-center justify-between rounded-[1.6rem] border border-border/60 bg-card/75 px-5 py-3.5 shadow-soft backdrop-blur-xl transition-transform active:scale-[0.99]"
+              className="mt-3 flex min-h-[56px] items-center justify-between rounded-[1.35rem] border border-border/60 bg-card/75 px-4 py-2.5 shadow-soft backdrop-blur-xl transition-transform active:scale-[0.99]"
             >
               <div>
                 <p className="text-[10px] font-semibold tracking-[0.14em] text-primary">
                   一起走過 ♡
                 </p>
-                <p className="mt-1 text-sm text-muted-foreground">和 {main.name} 一起走過</p>
+                <p className="mt-0.5 text-sm text-muted-foreground">和 {main.name}</p>
               </div>
 
-              <p className="font-display text-[30px] leading-none text-foreground">
+              <p className="font-display text-[27px] leading-none text-foreground">
                 {companionship.days}
                 <span className="ml-1 text-sm text-muted-foreground">天</span>
               </p>
