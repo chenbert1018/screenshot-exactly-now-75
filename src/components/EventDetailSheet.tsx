@@ -1,7 +1,7 @@
 import { StoredImage } from "@/components/StoredImage";
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ChevronDown, MoreHorizontal, Plus } from "lucide-react";
+import { ChevronDown, Heart, MoreHorizontal, Plus } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import {
   DropdownMenu,
@@ -271,6 +271,19 @@ export function EventDetailSheet({
                 <span className="rounded-full bg-card px-3 py-2">{event.type === "CONCERT" ? "🎫 票券" : "💌 想說的話"}</span>
                 <span className="rounded-full bg-card px-3 py-2">🔋 手機電量</span>
                 <span className="rounded-full bg-card px-3 py-2">♡ 好好享受今天</span>
+              </div>
+            </section>
+          ) : null}
+
+          {c?.status === "COMPLETED" && ["CONCERT", "FAN_MEETING"].includes(event.type) ? (
+            <section className="mt-5 rounded-[1.9rem] border border-primary/20 bg-gradient-to-b from-primary/10 to-card px-5 py-5 shadow-soft">
+              <div className="flex items-start gap-3">
+                <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-card text-primary shadow-soft"><Heart className="size-5" strokeWidth={1.7} /></span>
+                <div className="min-w-0">
+                  <p className="text-[11px] font-semibold tracking-[0.14em] text-primary">WELCOME BACK ♡</p>
+                  <h3 className="mt-1 font-display text-[20px] font-semibold">{event.type === "CONCERT" ? "回來了嗎？先留下最捨不得忘記的一刻。" : "真的見到他了。先把最想記住的那一刻留下來。"}</h3>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{event.type === "CONCERT" ? "不用整理完整心得。座位、一張照片，或一句「那時候我真的好開心」就夠了。" : "不用把整場重新寫一次。一句話、一個眼神，或一張照片，就能把今天收好。"}</p>
+                </div>
               </div>
             </section>
           ) : null}
