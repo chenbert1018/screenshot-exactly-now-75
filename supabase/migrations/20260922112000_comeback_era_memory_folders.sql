@@ -1,8 +1,8 @@
 -- Link a user's Comeback event to exactly one Memory Folder without copying diary content.
 create table public.comeback_era_memory_folders (
-  user_id uuid not null references auth.users(id) on delete cascade,
-  event_id uuid not null references public.events(id) on delete cascade,
-  folder_id uuid not null references public.memory_folders(id) on delete cascade,
+  user_id uuid not null references auth.users(id),
+  event_id uuid not null references public.events(id),
+  folder_id uuid not null references public.memory_folders(id),
   created_at timestamptz not null default now(),
   primary key (user_id, event_id),
   unique (folder_id)
@@ -31,11 +31,7 @@ with check (
   )
 );
 
-create policy "Users can delete own comeback era folders"
-on public.comeback_era_memory_folders for delete to authenticated
-using ((select auth.uid()) = user_id);
-
-create index comeback_era_memory_folders_folder_idx
+create index if not exists comeback_era_memory_folders_folder_idx
 on public.comeback_era_memory_folders (folder_id);
 
 comment on table public.comeback_era_memory_folders is
