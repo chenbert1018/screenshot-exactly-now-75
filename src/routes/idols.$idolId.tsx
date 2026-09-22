@@ -1,7 +1,7 @@
 import { StoredImage } from "@/components/StoredImage";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { CalendarPlus, ChevronLeft, ImageIcon, Music2, Pencil } from "lucide-react";
+import { CalendarPlus, ChevronLeft, ImageIcon, Images, Music2, Pencil } from "lucide-react";
 import { AppShell, SoftCard } from "@/components/AppShell";
 import { IdolFormSheet } from "@/components/IdolFormSheet";
 import {
@@ -177,12 +177,15 @@ function IdolDetailPage() {
         </SoftCard>
       </div>
 
-      <div className="mt-5 grid grid-cols-2 gap-3">
-        <Link to="/events" search={{ idol: idol.id } as never} className="flex min-h-[52px] items-center justify-center gap-2 rounded-full bg-primary text-sm font-medium text-primary-foreground shadow-soft transition-transform active:scale-[0.98]">
-          <CalendarPlus className="size-4" strokeWidth={1.8} />＋ 記一個日子
+      <div className="mt-5 grid grid-cols-3 gap-2">
+        <Link to="/events" search={{ idol: idol.id } as never} className="flex min-h-[56px] flex-col items-center justify-center gap-1 rounded-2xl bg-primary px-2 text-xs font-medium text-primary-foreground shadow-soft transition-transform active:scale-[0.98]">
+          <CalendarPlus className="size-4" strokeWidth={1.8} /><span>＋ 日子</span>
         </Link>
-        <Link to="/music" search={{ idol: idol.id } as never} className="flex min-h-[52px] items-center justify-center gap-2 rounded-full bg-surface text-sm font-medium transition-transform active:scale-[0.98]">
-          <Music2 className="size-4 text-primary" strokeWidth={1.8} />♪ 今日一曲
+        <Link to="/memories" search={{ create: "1", idol: idol.id } as never} className="flex min-h-[56px] flex-col items-center justify-center gap-1 rounded-2xl bg-surface px-2 text-xs font-medium transition-transform active:scale-[0.98]">
+          <Images className="size-4 text-primary" strokeWidth={1.8} /><span>📸 回憶</span>
+        </Link>
+        <Link to="/music" search={{ idol: idol.id } as never} className="flex min-h-[56px] flex-col items-center justify-center gap-1 rounded-2xl bg-surface px-2 text-xs font-medium transition-transform active:scale-[0.98]">
+          <Music2 className="size-4 text-primary" strokeWidth={1.8} /><span>♪ 今日一曲</span>
         </Link>
       </div>
 
