@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarHeart, Plus } from "lucide-react";
+import { Bell, CalendarDays, Plus } from "lucide-react";
 import { AppShell, EmptyState, PageHeader, SoftCard } from "@/components/AppShell";
 import { EventFormSheet } from "@/components/EventFormSheet";
 import {
@@ -140,8 +140,8 @@ function EventsPage() {
   return (
     <AppShell>
       <PageHeader
-        title="我的日子"
-        subtitle="把所有值得期待的日子，放在這裡。"
+        title="我的日子 ♡"
+        subtitle="D-DAY・COMEBACK・CONCERT"
         action={
           <button
             type="button"
@@ -174,18 +174,16 @@ function EventsPage() {
 
       <div className="mb-5 rounded-2xl border border-border/60 bg-surface/50 px-4 py-4">
         <p className="text-sm font-medium">
-          🔔 為你記住的日子 · {activeReminderCount} 個提醒
+          <Bell className="mr-2 inline size-4 text-primary" strokeWidth={1.6} />{activeReminderCount} 個提醒
         </p>
-        <p className="mt-1 text-xs text-muted-foreground">
-          已儲存的提醒會在 App 與 iPhone 通知中使用。
-        </p>
+        {activeReminderCount === 0 ? <p className="mt-1 text-xs text-muted-foreground">活動前再提醒你 ♡</p> : null}
       </div>
 
       {!ready ? (
         <div className="h-40 rounded-2xl border border-border/60 bg-surface/40" aria-hidden />
       ) : events.length === 0 ? (
         <EmptyState
-          icon={<CalendarHeart className="size-5" strokeWidth={1.6} />}
+          icon={<CalendarDays className="size-5" strokeWidth={1.6} />}
           title="還沒有在倒數的日子 👀"
           description="把下一個期待的日子先放進來吧。"
           action={
