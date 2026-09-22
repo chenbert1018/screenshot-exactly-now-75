@@ -339,21 +339,21 @@ function TodaySongCard({
   const specialDayCopy =
     specialDay === "birthday"
       ? {
-          label: "BIRTHDAY SONG ♡",
+          label: "生日這天的歌 ♡",
           empty: `今天是 ${idolName} 的生日 ♡ 想選哪一首歌陪他過今天？`,
           selected: `今天是 ${idolName} 的生日 ♡`,
           companion: "今天這首歌，也會留在我們的生日回憶裡。",
         }
       : specialDay === "debut"
         ? {
-            label: "DEBUT DAY SONG ♡",
+            label: "出道紀念日的歌 ♡",
             empty: `今天是 ${idolName} 的出道紀念日 ♡ 想用哪一首歌記住今天？`,
             selected: `今天是 ${idolName} 的出道紀念日 ♡`,
             companion: "今天這首歌，也會留在我們的出道紀念回憶裡。",
           }
         : specialDay === "our-day"
           ? {
-              label: "OUR DAY SONG ♡",
+              label: "我們這天的歌 ♡",
               empty: `今天是你開始喜歡 ${idolName} 的紀念日 ♡ 想留下哪一首歌？`,
               selected: `今天是你和 ${idolName} 的特別日子 ♡`,
               companion: "今天這首歌，也會留在我們一起走過的日子裡。",
@@ -547,7 +547,7 @@ function TodaySongCard({
 
           <div className="min-w-0 flex-1 pt-1">
             <p className="text-[10px] font-semibold tracking-[0.16em] text-primary">
-              {specialDayCopy?.label ?? "TODAY'S SONG ♡"}
+              {specialDayCopy?.label ?? "今日一曲 ♡"}
             </p>
 
             <p className="mt-1.5 text-[15px] font-medium leading-snug">
