@@ -272,8 +272,14 @@ export function EventDetailSheet({
           ) : null}
 
           {event.type === "COMEBACK" ? <ComebackDiaryCard event={event} /> : null}
-          {event.type === "FAN_MEETING" ? <MeetMemoryCard event={event} /> : null}
           {event.type === "FAN_MEETING" ? (
+            <>
+              <div className="mt-8 rounded-[1.9rem] bg-surface/45 px-5 py-4">
+                <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground">THAT DAY ♡</p>
+                <p className="mt-1 text-sm leading-6">先記得見到他的那一刻，再看看那天一起帶回家的東西。</p>
+              </div>
+              <MeetMemoryCard event={event} />
+
               <section className="mt-5 rounded-[1.9rem] border border-primary/15 bg-primary/[0.05] px-5 py-5 shadow-soft">
                 <p className="text-[12px] font-semibold tracking-[0.14em] text-primary">THINGS I BROUGHT HOME ♡</p>
                 <h3 className="mt-1 font-display text-[18px] font-semibold">那天帶回家的東西</h3>
@@ -297,9 +303,14 @@ export function EventDetailSheet({
                   {eventKeepsakes.length > 0 ? "管理這次見面的收藏" : "＋ 留下這次見面的收藏"}
                 </Link>
               </section>
+              </>
           ) : null}
           {event.type === "CONCERT" ? (
             <>
+              <div className="mt-8 rounded-[1.9rem] bg-surface/45 px-5 py-4">
+                <p className="text-[11px] font-semibold tracking-[0.14em] text-muted-foreground">MY CONCERT DAY ♡</p>
+                <p className="mt-1 text-sm leading-6">先留下那天聽見的歌，再收好真正發生在你身上的那一刻。</p>
+              </div>
               <ConcertMusicMemoryCard event={event} />
               <ConcertPersonalMemoryCard event={event} />
               <section className="mt-5 rounded-[1.9rem] border border-primary/15 bg-primary/[0.05] px-5 py-5 shadow-soft">
