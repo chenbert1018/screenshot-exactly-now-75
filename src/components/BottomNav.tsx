@@ -4,7 +4,7 @@ import {
   Star,
   CalendarDays,
   Images,
-  Gem,
+  Search,
 } from "lucide-react";
 
 const items = [
@@ -12,7 +12,7 @@ const items = [
   { to: "/idols", label: "偶像", Icon: Star },
   { to: "/events", label: "日子", Icon: CalendarDays },
   { to: "/memories", label: "回憶", Icon: Images },
-  { to: "/archaeology", label: "寶藏", Icon: Gem },
+  { to: "/archaeology", label: "考古", Icon: Search },
 ] as const;
 
 
