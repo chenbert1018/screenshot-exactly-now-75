@@ -188,22 +188,7 @@ function FolderDetailPage() {
               className="mb-5 aspect-[4/3] w-full rounded-[2rem] object-cover shadow-soft"
             />
           ) : null}
-          <p className="text-[13px] font-semibold tracking-[0.14em] text-primary">
-            OUR MEMORIES ♡
-          </p>
-          <button
-            type="button"
-            onClick={() => setShareOpen(true)}
-            className="mt-4 flex w-full items-center justify-between gap-4 rounded-[1.5rem] border border-primary/15 bg-primary/[0.07] px-5 py-4 text-left transition-transform active:scale-[0.98]"
-          >
-            <span className="min-w-0">
-              <span className="block text-base font-semibold text-foreground">把這本回憶送給一起追星的人 ♡</span>
-              <span className="mt-1 block text-sm leading-relaxed text-muted-foreground">對方可以預覽，再收進自己的 IdolDays。</span>
-            </span>
-            <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-soft">
-              <Share2 className="size-5" strokeWidth={1.8} />
-            </span>
-          </button>
+          <p className="text-[13px] font-semibold tracking-[0.14em] text-primary">📸 我們的回憶 ♡</p>
           <h1 className="mt-2 font-display text-[28px] leading-snug font-semibold">
             {folder.title}
           </h1>
@@ -212,7 +197,7 @@ function FolderDetailPage() {
           ) : null}
           {claimedSource ? (
             <div className="mt-4 rounded-2xl border border-primary/15 bg-primary/[0.06] px-4 py-3">
-              <p className="text-[13px] font-semibold tracking-[0.12em] text-primary">IDOLDAYS SHARE ♡</p>
+              <p className="text-[13px] font-semibold tracking-[0.12em] text-primary">朋友送來的回憶 ♡</p>
               <p className="mt-1 text-sm font-medium">來自 {claimedSource.senderName} 的收藏 ♡</p>
               <p className="mt-1 text-sm text-muted-foreground">
                 {new Date(claimedSource.claimedAt).toLocaleDateString("zh-TW")} 收下
@@ -225,10 +210,10 @@ function FolderDetailPage() {
           {comebackEra.link ? (
             <section className="mt-5 rounded-[1.75rem] border border-primary/15 bg-gradient-to-br from-primary/[0.08] via-card to-accent/20 px-5 py-5 shadow-soft">
               <p className="text-[13px] font-semibold tracking-[0.14em] text-primary">
-                THE ERA BEGINS ♡
+                回歸從這天開始 ♡
               </p>
               <p className="mt-1 text-sm text-muted-foreground">
-                {dotDate(folder.startDate)} · COMEBACK
+                {dotDate(folder.startDate)} · 回歸
               </p>
               <h2 className="mt-3 font-display text-[20px] font-semibold">
                 {folder.title}
@@ -271,12 +256,12 @@ function FolderDetailPage() {
                 </>
               ) : (
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                  這次 Comeback 是這段 Era 的開始。之後留下的照片、歌和日子，都會從這裡往下長。
+                  這次回歸從這裡開始。照片、歌和日子，慢慢收進來 ♡
                 </p>
               )}
 
               <p className="mt-4 border-t border-primary/10 pt-4 text-sm font-medium text-primary">
-                這是這段 Era 的開始。
+                這段回歸，從這天開始 ♡
               </p>
             </section>
           ) : null}
@@ -299,7 +284,7 @@ function FolderDetailPage() {
       <div className="mb-5 flex items-baseline justify-between">
         <div>
           <p className="text-[13px] font-semibold tracking-[0.12em] text-muted-foreground">
-            OUR DAYS
+            我們的日子
           </p>
           <h2 className="mt-1 font-display text-[19px] font-medium">
             一起走過的日子
@@ -314,7 +299,7 @@ function FolderDetailPage() {
             className="inline-flex items-center gap-1 min-h-11 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
           >
             <Plus className="size-3.5" strokeWidth={2} />
-            留下回憶
+            📸 留下
           </button>
         ) : null}
       </div>
@@ -333,7 +318,7 @@ function FolderDetailPage() {
               className="inline-flex items-center gap-1.5 min-h-[50px] rounded-full bg-primary px-6 py-3 text-base font-medium text-primary-foreground shadow-soft transition-transform duration-300 active:scale-95"
             >
               <Plus className="size-4" strokeWidth={2} />
-              留下回憶
+              📸 留下第一張
             </button>
           }
         />
