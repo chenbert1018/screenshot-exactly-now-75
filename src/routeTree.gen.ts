@@ -14,6 +14,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as ArchaeologyRouteImport } from './routes/archaeology'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CalendarRouteImport } from './routes/calendar'
+import { Route as CollectionRouteImport } from './routes/collection'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as HeartRouteImport } from './routes/heart'
 import { Route as HomeRouteImport } from './routes/home'
@@ -36,6 +37,7 @@ import { Route as ApiWeatherRouteImport } from './routes/api.weather'
 import { Route as IdolsIdolIdRouteImport } from './routes/idols.$idolId'
 import { Route as MemoriesIndexRouteImport } from './routes/memories.index'
 import { Route as MemoriesFolderIdRouteImport } from './routes/memories.$folderId'
+import { Route as ReceiveCodeRouteImport } from './routes/receive.$code'
 import { Route as SharedTokenRouteImport } from './routes/shared.$token'
 import { Route as WeatherEventIdRouteImport } from './routes/weather.$eventId'
 
@@ -62,6 +64,11 @@ const AuthRoute = AuthRouteImport.update({
 const CalendarRoute = CalendarRouteImport.update({
   id: '/calendar',
   path: '/calendar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollectionRoute = CollectionRouteImport.update({
+  id: '/collection',
+  path: '/collection',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EventsRoute = EventsRouteImport.update({
@@ -174,6 +181,11 @@ const MemoriesFolderIdRoute = MemoriesFolderIdRouteImport.update({
   path: '/memories/$folderId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReceiveCodeRoute = ReceiveCodeRouteImport.update({
+  id: '/receive/$code',
+  path: '/receive/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SharedTokenRoute = SharedTokenRouteImport.update({
   id: '/shared/$token',
   path: '/shared/$token',
@@ -191,6 +203,7 @@ export interface FileRoutesByFullPath {
   '/archaeology': typeof ArchaeologyRoute
   '/auth': typeof AuthRoute
   '/calendar': typeof CalendarRoute
+  '/collection': typeof CollectionRoute
   '/events': typeof EventsRoute
   '/heart': typeof HeartRoute
   '/home': typeof HomeRoute
@@ -211,6 +224,7 @@ export interface FileRoutesByFullPath {
   '/api/weather': typeof ApiWeatherRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
   '/memories/$folderId': typeof MemoriesFolderIdRoute
+  '/receive/$code': typeof ReceiveCodeRoute
   '/shared/$token': typeof SharedTokenRoute
   '/weather/$eventId': typeof WeatherEventIdRoute
   '/admin/': typeof AdminIndexRoute
@@ -221,6 +235,7 @@ export interface FileRoutesByTo {
   '/archaeology': typeof ArchaeologyRoute
   '/auth': typeof AuthRoute
   '/calendar': typeof CalendarRoute
+  '/collection': typeof CollectionRoute
   '/events': typeof EventsRoute
   '/heart': typeof HeartRoute
   '/home': typeof HomeRoute
@@ -241,6 +256,7 @@ export interface FileRoutesByTo {
   '/api/weather': typeof ApiWeatherRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
   '/memories/$folderId': typeof MemoriesFolderIdRoute
+  '/receive/$code': typeof ReceiveCodeRoute
   '/shared/$token': typeof SharedTokenRoute
   '/weather/$eventId': typeof WeatherEventIdRoute
   '/admin': typeof AdminIndexRoute
@@ -253,6 +269,7 @@ export interface FileRoutesById {
   '/archaeology': typeof ArchaeologyRoute
   '/auth': typeof AuthRoute
   '/calendar': typeof CalendarRoute
+  '/collection': typeof CollectionRoute
   '/events': typeof EventsRoute
   '/heart': typeof HeartRoute
   '/home': typeof HomeRoute
@@ -273,6 +290,7 @@ export interface FileRoutesById {
   '/api/weather': typeof ApiWeatherRoute
   '/idols/$idolId': typeof IdolsIdolIdRoute
   '/memories/$folderId': typeof MemoriesFolderIdRoute
+  '/receive/$code': typeof ReceiveCodeRoute
   '/shared/$token': typeof SharedTokenRoute
   '/weather/$eventId': typeof WeatherEventIdRoute
   '/admin/': typeof AdminIndexRoute
@@ -286,6 +304,7 @@ export interface FileRouteTypes {
     | '/archaeology'
     | '/auth'
     | '/calendar'
+    | '/collection'
     | '/events'
     | '/heart'
     | '/home'
@@ -306,6 +325,7 @@ export interface FileRouteTypes {
     | '/api/weather'
     | '/idols/$idolId'
     | '/memories/$folderId'
+    | '/receive/$code'
     | '/shared/$token'
     | '/weather/$eventId'
     | '/admin/'
@@ -316,6 +336,7 @@ export interface FileRouteTypes {
     | '/archaeology'
     | '/auth'
     | '/calendar'
+    | '/collection'
     | '/events'
     | '/heart'
     | '/home'
@@ -336,6 +357,7 @@ export interface FileRouteTypes {
     | '/api/weather'
     | '/idols/$idolId'
     | '/memories/$folderId'
+    | '/receive/$code'
     | '/shared/$token'
     | '/weather/$eventId'
     | '/admin'
@@ -347,6 +369,7 @@ export interface FileRouteTypes {
     | '/archaeology'
     | '/auth'
     | '/calendar'
+    | '/collection'
     | '/events'
     | '/heart'
     | '/home'
@@ -367,6 +390,7 @@ export interface FileRouteTypes {
     | '/api/weather'
     | '/idols/$idolId'
     | '/memories/$folderId'
+    | '/receive/$code'
     | '/shared/$token'
     | '/weather/$eventId'
     | '/admin/'
@@ -379,6 +403,7 @@ export interface RootRouteChildren {
   ArchaeologyRoute: typeof ArchaeologyRoute
   AuthRoute: typeof AuthRoute
   CalendarRoute: typeof CalendarRoute
+  CollectionRoute: typeof CollectionRoute
   EventsRoute: typeof EventsRoute
   HeartRoute: typeof HeartRoute
   HomeRoute: typeof HomeRoute
@@ -391,6 +416,7 @@ export interface RootRouteChildren {
   ApiLinkPreviewImageRoute: typeof ApiLinkPreviewImageRoute
   ApiWeatherRoute: typeof ApiWeatherRoute
   MemoriesFolderIdRoute: typeof MemoriesFolderIdRoute
+  ReceiveCodeRoute: typeof ReceiveCodeRoute
   SharedTokenRoute: typeof SharedTokenRoute
   WeatherEventIdRoute: typeof WeatherEventIdRoute
   MemoriesIndexRoute: typeof MemoriesIndexRoute
@@ -431,6 +457,13 @@ declare module '@tanstack/react-router' {
       path: '/calendar'
       fullPath: '/calendar'
       preLoaderRoute: typeof CalendarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collection': {
+      id: '/collection'
+      path: '/collection'
+      fullPath: '/collection'
+      preLoaderRoute: typeof CollectionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/events': {
@@ -587,6 +620,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MemoriesFolderIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/receive/$code': {
+      id: '/receive/$code'
+      path: '/receive/$code'
+      fullPath: '/receive/$code'
+      preLoaderRoute: typeof ReceiveCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/shared/$token': {
       id: '/shared/$token'
       path: '/shared/$token'
@@ -644,6 +684,7 @@ const rootRouteChildren: RootRouteChildren = {
   ArchaeologyRoute: ArchaeologyRoute,
   AuthRoute: AuthRoute,
   CalendarRoute: CalendarRoute,
+  CollectionRoute: CollectionRoute,
   EventsRoute: EventsRoute,
   HeartRoute: HeartRoute,
   HomeRoute: HomeRoute,
@@ -656,6 +697,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiLinkPreviewImageRoute: ApiLinkPreviewImageRoute,
   ApiWeatherRoute: ApiWeatherRoute,
   MemoriesFolderIdRoute: MemoriesFolderIdRoute,
+  ReceiveCodeRoute: ReceiveCodeRoute,
   SharedTokenRoute: SharedTokenRoute,
   WeatherEventIdRoute: WeatherEventIdRoute,
   MemoriesIndexRoute: MemoriesIndexRoute,
