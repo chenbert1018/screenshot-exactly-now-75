@@ -41,6 +41,19 @@ export async function linkComebackEra(
   return toLink(data as Row);
 }
 
+export async function getComebackEraByEvent(
+  eventId: string,
+): Promise<ComebackEraLink | null> {
+  const { data, error } = await supabase
+    .from("comeback_era_memory_folders")
+    .select("user_id, event_id, folder_id, created_at")
+    .eq("event_id", eventId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data ? toLink(data as Row) : null;
+}
+
 export async function getComebackEraByFolder(
   folderId: string,
 ): Promise<ComebackEraLink | null> {
