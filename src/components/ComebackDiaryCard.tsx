@@ -52,9 +52,12 @@ export function ComebackDiaryCard({ event }: { event: IdolEvent }) {
     >(null);
 
   const [addSongOpen, setAddSongOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
 
   useEffect(() => {
-    setDraft(draftFromEntry(entry));
+    const next = draftFromEntry(entry);
+    setDraft(next);
+    setMoreOpen(Boolean(next.laterFavoriteSongId || next.wantToHearLiveSongId || next.note));
   }, [entry?.id, event.id]);
 
   const set = <K extends keyof ComebackDiaryDraft>(
@@ -220,7 +223,7 @@ export function ComebackDiaryCard({ event }: { event: IdolEvent }) {
           </div>
         </div>
 
-        {songFields.map(({ key, label }) => {
+        {songFields.filter(({ key }) => key === "firstFavoriteSongId").map(({ key, label }) => {
           const selectedSong = selectedSongFor(key);
 
           return (
@@ -264,21 +267,62 @@ export function ComebackDiaryCard({ event }: { event: IdolEvent }) {
           );
         })}
 
-        <label className="block">
-          <span className="text-xs text-muted-foreground">
-            這次回歸的一句話
-          </span>
+        <button type="button" onClick={() => setMoreOpen((value) => !value)} className="flex min-h-11 w-full items-center justify-between rounded-2xl px-1 text-sm font-medium text-primary">
+          <span>＋ 後來最愛・最想現場聽・一句話</span><span>{moreOpen ? "收起" : ""}</span>
+        </button>
 
-          <textarea
-            value={draft.note}
-            maxLength={500}
-            onChange={(event) =>
-              set("note", event.target.value)
-            }
-            placeholder="第一次聽的心情，留給以後的自己…"
-            className="mt-1.5 min-h-24 w-full resize-none rounded-2xl border border-border/70 bg-background px-3 py-3 text-sm text-foreground placeholder:text-muted-foreground"
-          />
-        </label>
+        {moreOpen ? (
+          <div className="space-y-4">
+        {songFields.filter(({ key }) => key !== "firstFavoriteSongId").map(({ key, label }) => {
+          const selectedSong = selectedSongFor(key);
+
+          return (
+            <div key={key}>
+              <p className="text-xs text-muted-foreground">
+                {label}
+              </p>
+
+              <button
+                type="button"
+                disabled={!songsReady}
+                onClick={() => setSongPickerField(key)}
+                className="mt-1.5 flex w-full items-center justify-between gap-3 rounded-2xl border border-border/70 bg-background px-4 py-3 text-left transition-transform active:scale-[0.99] disabled:opacity-50"
+              >
+                <span className="min-w-0">
+                  {selectedSong ? (
+                    <>
+                      <span className="block truncate text-sm font-medium text-foreground">
+                        ♪ {selectedSong.title}
+                      </span>
+
+                      {selectedSong.artist ? (
+                        <span className="mt-0.5 block truncate text-xs text-muted-foreground">
+                          {selectedSong.artist}
+                        </span>
+                      ) : null}
+                    </>
+                  ) : (
+                    <span className="text-sm font-medium text-primary">
+                      ＋ 選擇歌曲
+                    </span>
+                  )}
+                </span>
+
+                <ArrowRight
+                  className="size-4 shrink-0 text-primary"
+                  strokeWidth={1.8}
+                />
+              </button>
+            </div>
+          );
+        })}
+
+            <label className="block">
+              <span className="text-xs text-muted-foreground">這次回歸的一句話</span>
+              <textarea value={draft.note} maxLength={500} onChange={(event) => set("note", event.target.value)} placeholder="第一次聽的心情，留給以後的自己…" className="mt-1.5 min-h-24 w-full resize-none rounded-2xl border border-border/70 bg-background px-3 py-3 text-sm text-foreground placeholder:text-muted-foreground" />
+            </label>
+          </div>
+        ) : null}
       </div>
 
       {error || saveError ? (
