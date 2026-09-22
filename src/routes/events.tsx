@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarHeart, Plus } from "lucide-react";
+import { CalendarHeart, Plus, Package } from "lucide-react";
 import { AppShell, EmptyState, PageHeader, SoftCard } from "@/components/AppShell";
 import { EventFormSheet } from "@/components/EventFormSheet";
 import {
@@ -283,6 +283,22 @@ function EventsPage() {
         onOpenReminder={() => setReminderOpen(true)}
       />
 
+
+      {detail?.type === "CONCERT" ? (
+        <section className="mt-5 rounded-[1.6rem] border border-primary/15 bg-primary/[0.05] px-5 py-5">
+          <p className="text-[13px] font-semibold tracking-[0.14em] text-primary">THINGS I BROUGHT HOME ♡</p>
+          <p className="mt-2 font-display text-[18px] font-medium">那天帶回家的東西</p>
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">小卡、海報、票根、Tour Merch 或 VIP Gift，也都是這場演唱會留下來的回憶。</p>
+          <Link
+            to="/collection"
+            search={{ event: detail.id }}
+            className="mt-4 flex min-h-[48px] items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-transform active:scale-[0.98]"
+          >
+            <Package className="size-4" strokeWidth={1.6} />
+            看收藏／留下這場的收藏
+          </Link>
+        </section>
+      ) : null}
 
       {detail ? (
         <ReminderSheet
