@@ -8,13 +8,14 @@ import { useIdolSource } from "@/lib/idols.source";
 import { useEventSource } from "@/lib/events.source";
 import { eventTypeMeta } from "@/lib/events";
 
-export const Route=createFileRoute("/collection")({component:CollectionPage});
+export const Route=createFileRoute("/collection")({validateSearch:(s:Record<string,unknown>)=>({event:typeof s.event==="string"?s.event:undefined}),component:CollectionPage});
 function CollectionPage(){
+ const search=Route.useSearch();
  const {items,ready,addItem,updateItem,removeItem}=useCollectionSource(); const {idols,homeIdol}=useIdolSource(); const {events}=useEventSource();
  const inputRef=useRef<HTMLInputElement>(null); const [open,setOpen]=useState(false); const [editing,setEditing]=useState<CollectionItem|null>(null);
- const [category,setCategory]=useState<CollectionCategory>("ALBUM"); const [eventId,setEventId]=useState(""); const [title,setTitle]=useState(""); const [photo,setPhoto]=useState(""); const [date,setDate]=useState(""); const [source,setSource]=useState(""); const [note,setNote]=useState(""); const [favorite,setFavorite]=useState(false);
+ const [category,setCategory]=useState<CollectionCategory>("ALBUM"); const [eventId,setEventId]=useState(search.event||""); const [title,setTitle]=useState(""); const [photo,setPhoto]=useState(""); const [date,setDate]=useState(""); const [source,setSource]=useState(""); const [note,setNote]=useState(""); const [favorite,setFavorite]=useState(false);
  const reset=()=>{setEditing(null);setCategory("ALBUM");setEventId("");setTitle("");setPhoto("");setDate("");setSource("");setNote("");setFavorite(false)};
- const startNew=()=>{reset();setOpen(true)};
+ const startNew=()=>{reset();setEventId(search.event||"");setOpen(true)};
  const startEdit=(i:CollectionItem)=>{setEditing(i);setCategory(i.category);setEventId(i.eventId||"");setTitle(i.title);setPhoto(i.photo||"");setDate(i.acquiredDate||"");setSource(i.source||"");setNote(i.note||"");setFavorite(i.favorite);setOpen(true)};
  const choosePhoto=(file?:File)=>{if(!file)return;const reader=new FileReader();reader.onload=()=>setPhoto(typeof reader.result==="string"?reader.result:"");reader.readAsDataURL(file)};
  const submit=async()=>{if(!title.trim())return;const draft={idolId:editing?.idolId||homeIdol?.id,eventId:eventId||undefined,category,title:title.trim(),photo:photo||undefined,acquiredDate:date||undefined,source:source.trim()||undefined,note:note.trim()||undefined,favorite};if(editing)await updateItem(editing.id,draft);else await addItem(draft);setOpen(false);reset()};
