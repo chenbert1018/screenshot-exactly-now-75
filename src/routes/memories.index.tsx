@@ -1,5 +1,5 @@
 import { StoredImage } from "@/components/StoredImage";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { FolderHeart, Plus, Images } from "lucide-react";
 import { AppShell, PageHeader, EmptyState, SoftCard } from "@/components/AppShell";
@@ -12,6 +12,11 @@ import { parseLocalDate } from "@/lib/dates";
 import { CloudRetryNotice } from "@/components/CloudRetryNotice";
 
 export const Route = createFileRoute("/memories/")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    create: search.create === "comeback" ? ("comeback" as const) : undefined,
+    title: typeof search.title === "string" ? search.title : undefined,
+    date: typeof search.date === "string" ? search.date : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "我的追星回憶｜IdolDays" },
@@ -45,6 +50,21 @@ function MemoriesPage() {
   const { idols } = useIdolSource();
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const search = Route.useSearch();
+  const comebackInitial = search.create === "comeback"
+    ? {
+        title: search.title?.trim() || "Comeback Diary",
+        description: "這次回歸的歌、心情和追星回憶 ♡",
+        coverPhoto: "",
+        startDate: search.date?.slice(0, 10) || "",
+        endDate: "",
+        idolId: "",
+      }
+    : undefined;
+
+  useEffect(() => {
+    if (search.create === "comeback") setOpen(true);
+  }, [search.create]);
 
   return (
     <AppShell>
@@ -137,8 +157,14 @@ function MemoriesPage() {
 
       <MemoryFolderFormSheet
         open={open}
-        onOpenChange={setOpen}
-        title="建立回憶夾"
+        onOpenChange={(next) => {
+          setOpen(next);
+          if (!next && search.create === "comeback") {
+            void navigate({ to: "/memories", search: {} });
+          }
+        }}
+        initial={comebackInitial}
+        title={search.create === "comeback" ? "建立 Comeback Era 回憶" : "建立回憶夾"}
         submitLabel="建立"
         onSubmit={async (draft) => {
           const created = await addFolder(draft);
