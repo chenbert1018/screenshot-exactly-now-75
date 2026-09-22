@@ -49,7 +49,7 @@ export function ConcertPersonalMemoryCard({ event }: { event: IdolEvent }) {
           <h3 className="mt-1 font-display text-[20px] font-semibold">那一天，我真的在台下。</h3>
           {entry.seat ? <p className="mt-3 text-sm text-muted-foreground">🎫 {entry.seat}</p> : null}
           {entry.unforgettableMoment ? <p className="mt-3 text-[15px] leading-relaxed">「{entry.unforgettableMoment}」</p> : null}
-          <button type="button" onClick={()=>setEditing(true)} className="mt-4 min-h-11 text-sm font-medium text-primary">編輯這天的回憶</button>
+          <button type="button" onClick={()=>setEditing(true)} className="mt-4 inline-flex min-h-11 items-center rounded-full px-1 text-sm font-medium text-primary transition-transform active:scale-95">編輯這天的回憶</button>
         </div>
       </section>
     );
@@ -76,7 +76,7 @@ export function ConcertPersonalMemoryCard({ event }: { event: IdolEvent }) {
         </button>
       </div>
 
-      <button type="button" disabled={!ready || saving} onClick={()=>void submit()} className="mt-5 min-h-[50px] w-full rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground disabled:opacity-50">
+      <button type="button" disabled={!ready || saving} onClick={()=>void submit()} className="mt-5 min-h-[52px] w-full rounded-full bg-primary px-5 text-base font-medium text-primary-foreground shadow-soft transition-transform active:scale-[0.98] disabled:opacity-50">
         {saving ? "儲存中…" : saved ? "這一天收好了 ♡" : "把這一天收進 IdolDays ♡"}
       </button>
     </section>
