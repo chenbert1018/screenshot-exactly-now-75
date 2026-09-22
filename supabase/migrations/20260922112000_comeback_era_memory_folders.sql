@@ -31,6 +31,10 @@ with check (
   )
 );
 
+create policy "Users can delete own comeback era folders"
+on public.comeback_era_memory_folders for delete to authenticated
+using ((select auth.uid()) = user_id);
+
 create index if not exists comeback_era_memory_folders_folder_idx
 on public.comeback_era_memory_folders (folder_id);
 
