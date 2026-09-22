@@ -19,6 +19,8 @@ import { type Milestone, type MilestoneDraft } from "@/lib/milestones";
 import { useMilestoneSource } from "@/lib/milestones.source";
 import { ComebackDiaryCard } from "@/components/ComebackDiaryCard";
 import { ConcertMusicMemoryCard } from "@/components/ConcertMusicMemoryCard";
+import { useCollectionSource } from "@/lib/collection.source";
+import { COLLECTION_PROVENANCE_OPTIONS, collectionCategoryMeta } from "@/lib/collection";
 
 /** 依倒數狀態選擇陪伴文案（App 的口吻，不是偶像本人發言） */
 function companionLine(status: string, daysUntil: number | null) {
@@ -152,6 +154,7 @@ export function EventDetailSheet({
   const [restoreDate, setRestoreDate] = useState("");
   const [paywallOpen, setPaywallOpen] = useState(false);
   const { isPlus } = useSubscription();
+  const { items: collectionItems } = useCollectionSource();
 
   if (!event) return null;
 
@@ -159,6 +162,7 @@ export function EventDetailSheet({
   const meta = eventTypeMeta(event.type);
   const since = idol ? daysSince(idol.sinceDate, base) : null;
   const fanWeatherReady = canUseFanWeather(event);
+  const concertKeepsakes = event.type === "CONCERT" ? collectionItems.filter((item) => item.eventId === event.id) : [];
 
   function submitMilestone(draft: MilestoneDraft) {
     if (!event) return;
@@ -266,7 +270,34 @@ export function EventDetailSheet({
           ) : null}
 
           {event.type === "COMEBACK" ? <ComebackDiaryCard event={event} /> : null}
-          {event.type === "CONCERT" ? <ConcertMusicMemoryCard event={event} /> : null}
+          {event.type === "CONCERT" ? (
+            <>
+              <ConcertMusicMemoryCard event={event} />
+              <section className="mt-5 rounded-[1.9rem] border border-primary/15 bg-primary/[0.05] px-5 py-5 shadow-soft">
+                <p className="text-[12px] font-semibold tracking-[0.14em] text-primary">THINGS I BROUGHT HOME ♡</p>
+                <h3 className="mt-1 font-display text-[18px] font-semibold">那天帶回家的東西</h3>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">官方周邊、票根、小卡，還有飯制手幅與應援物，都可以和這場一起留下。</p>
+                {concertKeepsakes.length > 0 ? (
+                  <>
+                    <div className="mt-4 flex gap-3 overflow-x-auto pb-1">
+                      {concertKeepsakes.slice(0, 6).map((item) => {
+                        const meta = collectionCategoryMeta[item.category];
+                        const provenance = COLLECTION_PROVENANCE_OPTIONS.find((option) => option.value === (item.provenance || "UNSPECIFIED"));
+                        return <div key={item.id} className="w-[116px] shrink-0 overflow-hidden rounded-2xl bg-card shadow-soft">
+                          {item.photo ? <img src={item.photo} alt="" className="aspect-square w-full object-cover" /> : <div className="flex aspect-square items-center justify-center bg-surface text-3xl">{meta.emoji}</div>}
+                          <div className="px-3 py-2.5"><p className="truncate text-sm font-medium">{item.title}</p><p className="mt-1 truncate text-[11px] text-muted-foreground">{item.provenance && item.provenance !== "UNSPECIFIED" ? `${provenance?.emoji || ""} ${provenance?.label || ""}` : meta.label}</p></div>
+                        </div>;
+                      })}
+                    </div>
+                    <p className="mt-3 text-[12px] text-muted-foreground">這場已留下 {concertKeepsakes.length} 件收藏 ♡</p>
+                  </>
+                ) : <p className="mt-4 rounded-2xl bg-card/70 px-4 py-3 text-sm text-muted-foreground">散場後拿到的小卡、手幅、海報或票根，都可以從這裡收進來 ♡</p>}
+                <Link to="/collection" search={{ event: event.id }} className="mt-4 flex min-h-[48px] w-full items-center justify-center rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-transform active:scale-[0.98]">
+                  {concertKeepsakes.length > 0 ? "管理這場的收藏" : "＋ 留下這場的收藏"}
+                </Link>
+              </section>
+            </>
+          ) : null}
 
           {/* Reminder（S2-C Reminder 已建立時顯示入口） */}
           {reminderSummary ? (
