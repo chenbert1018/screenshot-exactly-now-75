@@ -287,11 +287,11 @@ export function EventDetailSheet({
                 <p className="mt-1 text-xs leading-5 text-muted-foreground">官方特典、小卡、禮物、周邊，還有飯制應援物，都可以和這次見面一起留下。</p>
                 {eventKeepsakes.length > 0 ? (
                   <>
-                    <div className="mt-4 flex gap-3 overflow-x-auto pb-1">
-                      {eventKeepsakes.slice(0, 6).map((item) => {
+                    <div className="mt-4 grid grid-cols-3 gap-2">
+                      {eventKeepsakes.slice(0, 3).map((item) => {
                         const meta = collectionCategoryMeta[item.category];
                         const provenance = COLLECTION_PROVENANCE_OPTIONS.find((option) => option.value === (item.provenance || "UNSPECIFIED"));
-                        return <div key={item.id} className="w-[116px] shrink-0 overflow-hidden rounded-2xl bg-card shadow-soft">
+                        return <div key={item.id} className="min-w-0 overflow-hidden rounded-2xl bg-card shadow-soft">
                           {item.photo ? <img src={item.photo} alt="" className="aspect-square w-full object-cover" /> : <div className="flex aspect-square items-center justify-center bg-surface text-3xl">{meta.emoji}</div>}
                           <div className="px-3 py-2.5"><p className="truncate text-sm font-medium">{item.title}</p><p className="mt-1 truncate text-[11px] text-muted-foreground">{item.provenance && item.provenance !== "UNSPECIFIED" ? `${provenance?.emoji || ""} ${provenance?.label || ""}` : meta.label}</p></div>
                         </div>;
@@ -300,8 +300,8 @@ export function EventDetailSheet({
                     <p className="mt-3 text-[12px] text-muted-foreground">這次見面已留下 {eventKeepsakes.length} 件收藏 ♡</p>
                   </>
                 ) : <p className="mt-4 rounded-2xl bg-card/70 px-4 py-3 text-sm text-muted-foreground">那天拿到的官方特典、小卡、禮物或飯制應援物，都可以從這裡收進來 ♡</p>}
-                <Link to="/collection" search={{ event: event.id }} className="mt-4 flex min-h-[48px] w-full items-center justify-center rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-transform active:scale-[0.98]">
-                  {eventKeepsakes.length > 0 ? "管理這次見面的收藏" : "＋ 留下這次見面的收藏"}
+                <Link to="/collection" search={{ event: event.id }} className="mt-3 inline-flex min-h-11 items-center rounded-full px-1 text-sm font-medium text-primary transition-transform active:scale-95">
+                  {eventKeepsakes.length > 0 ? "查看這次見面的收藏 →" : "＋ 留下這次見面的收藏"}
                 </Link>
               </section>
               </>
@@ -320,11 +320,11 @@ export function EventDetailSheet({
                 <p className="mt-1 text-xs leading-5 text-muted-foreground">官方周邊、票根、小卡，還有飯制手幅與應援物，都可以和這場一起留下。</p>
                 {eventKeepsakes.length > 0 ? (
                   <>
-                    <div className="mt-4 flex gap-3 overflow-x-auto pb-1">
-                      {eventKeepsakes.slice(0, 6).map((item) => {
+                    <div className="mt-4 grid grid-cols-3 gap-2">
+                      {eventKeepsakes.slice(0, 3).map((item) => {
                         const meta = collectionCategoryMeta[item.category];
                         const provenance = COLLECTION_PROVENANCE_OPTIONS.find((option) => option.value === (item.provenance || "UNSPECIFIED"));
-                        return <div key={item.id} className="w-[116px] shrink-0 overflow-hidden rounded-2xl bg-card shadow-soft">
+                        return <div key={item.id} className="min-w-0 overflow-hidden rounded-2xl bg-card shadow-soft">
                           {item.photo ? <img src={item.photo} alt="" className="aspect-square w-full object-cover" /> : <div className="flex aspect-square items-center justify-center bg-surface text-3xl">{meta.emoji}</div>}
                           <div className="px-3 py-2.5"><p className="truncate text-sm font-medium">{item.title}</p><p className="mt-1 truncate text-[11px] text-muted-foreground">{item.provenance && item.provenance !== "UNSPECIFIED" ? `${provenance?.emoji || ""} ${provenance?.label || ""}` : meta.label}</p></div>
                         </div>;
@@ -333,8 +333,8 @@ export function EventDetailSheet({
                     <p className="mt-3 text-[12px] text-muted-foreground">這場已留下 {eventKeepsakes.length} 件收藏 ♡</p>
                   </>
                 ) : <p className="mt-4 rounded-2xl bg-card/70 px-4 py-3 text-sm text-muted-foreground">散場後拿到的小卡、手幅、海報或票根，都可以從這裡收進來 ♡</p>}
-                <Link to="/collection" search={{ event: event.id }} className="mt-4 flex min-h-[48px] w-full items-center justify-center rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-transform active:scale-[0.98]">
-                  {eventKeepsakes.length > 0 ? "管理這場的收藏" : "＋ 留下這場的收藏"}
+                <Link to="/collection" search={{ event: event.id }} className="mt-3 inline-flex min-h-11 items-center rounded-full px-1 text-sm font-medium text-primary transition-transform active:scale-95">
+                  {eventKeepsakes.length > 0 ? "查看這場的收藏 →" : "＋ 留下這場的收藏"}
                 </Link>
               </section>
             </>
