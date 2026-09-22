@@ -690,10 +690,26 @@ function MusicPage() {
           </button>
 
           {memoriesOpen ? (
-            <MusicTimeline
-              items={timelineItems}
-              ready={timelineReady}
-            />
+            <div className="mt-3">
+              <div className="mb-3 flex items-center justify-between gap-3 rounded-[1.4rem] bg-primary/[0.06] px-4 py-3">
+                <div className="min-w-0">
+                  <p className="text-[13px] font-semibold tracking-[0.1em] text-primary">MEMORY × MUSIC ♡</p>
+                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                    回憶裡選過的歌，也會一起留在這條音樂時間線。
+                  </p>
+                </div>
+                <Link
+                  to="/memories"
+                  className="inline-flex min-h-11 shrink-0 items-center rounded-full border border-primary/15 bg-card px-3.5 text-sm font-medium text-primary transition-transform active:scale-95"
+                >
+                  看回憶
+                </Link>
+              </div>
+              <MusicTimeline
+                items={timelineItems}
+                ready={timelineReady}
+              />
+            </div>
           ) : null}
 
           {/* RECAP */}
