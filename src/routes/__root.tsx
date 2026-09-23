@@ -16,6 +16,7 @@ import { useEventSource } from "../lib/events.source";
 import { useFanWeatherLifecycle } from "../lib/fan-weather-lifecycle";
 import { useNotificationNavigation } from "../lib/notification-navigation";
 import { useSettings } from "../lib/settings";
+import { WidgetNativeSynchronizer } from "@/components/WidgetNativeSynchronizer";
 
 /**
  * 主題必須在 App 首次掛載時就同步；不可等到「我的」頁才讀設定，
@@ -154,6 +155,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AppThemeSynchronizer />
+      <WidgetNativeSynchronizer />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <Toaster position="top-center" />
