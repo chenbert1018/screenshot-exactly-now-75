@@ -66,8 +66,27 @@ public class IdolDaysWidgetBridgePlugin: CAPPlugin, CAPBridgedPlugin {
         let theme = call.getString("theme") ?? "sky"
         let enabledContents = call.getArray("enabledContents", String.self) ?? []
 
-        guard !idolName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            call.reject("idolName is required")
+        if idolName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            let snapshotURL = containerURL
+                .appendingPathComponent("widget-snapshot.json")
+            let imageURL = containerURL
+                .appendingPathComponent("idol-photo.jpg")
+
+            do {
+                if FileManager.default.fileExists(atPath: snapshotURL.path) {
+                    try FileManager.default.removeItem(at: snapshotURL)
+                }
+                if FileManager.default.fileExists(atPath: imageURL.path) {
+                    try FileManager.default.removeItem(at: imageURL)
+                }
+
+                WidgetCenter.shared.reloadTimelines(ofKind: widgetKind)
+                call.resolve(["success": true])
+            } catch {
+                call.reject(
+                    "Failed to clear IdolDays Widget: \(error.localizedDescription)"
+                )
+            }
             return
         }
 
