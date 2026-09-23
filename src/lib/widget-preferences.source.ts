@@ -12,6 +12,7 @@ import {
   updateWidgetPreferences as updateCloudWidgetPreferences,
 } from "./widget-preferences.cloud";
 import { ensureEventMigration } from "./events.source";
+import { requestWidgetSync } from "./widget-sync-event";
 
 /**
  * Widget 設定資料來源切換層。
@@ -193,10 +194,12 @@ export function useWidgetPreferenceSource(): WidgetPreferenceSource {
     async (patch: Partial<WidgetPreferences>) => {
       if (!isCloud || !userId) {
         setLocalPrefs(updateLocalWidgetPreferences(patch));
+        requestWidgetSync();
         return;
       }
       const next = await updateCloudWidgetPreferences(patch, userId);
       setCloudPrefs(next);
+      requestWidgetSync();
     },
     [isCloud, userId],
   );
