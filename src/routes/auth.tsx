@@ -373,7 +373,8 @@ function PasswordRecovery({ email }: { email: string }) {
 }
 
 function SignedIn({ email, userId }: { email: string; userId: string }) {
-  const { signOut } = useAuthActions();
+  const { signOut, deleteAccount } = useAuthActions();
+  const [deletingAccount, setDeletingAccount] = useState(false);
   const [profile, setProfile] = useState<CloudProfile | null>(null);
   const [idols, setIdols] = useState<Idol[]>([]);
   const [name, setName] = useState("");
@@ -452,6 +453,34 @@ function SignedIn({ email, userId }: { email: string; userId: string }) {
         >
           登出
         </Button>
+        <button
+          type="button"
+          disabled={deletingAccount}
+          className="mt-3 min-h-11 w-full rounded-full px-4 py-2 text-sm text-destructive disabled:opacity-50"
+          onClick={() => {
+            if (
+              !window.confirm(
+                "確定要永久刪除 IdolDays 帳號嗎？雲端帳號與雲端資料將無法復原。這台 iPhone 的本機資料不會自動刪除。",
+              )
+            ) {
+              return;
+            }
+
+            void (async () => {
+              setDeletingAccount(true);
+              setError(null);
+              const deleteError = await deleteAccount();
+              if (deleteError) {
+                setError(deleteError);
+                setDeletingAccount(false);
+                return;
+              }
+              window.location.assign("/auth");
+            })();
+          }}
+        >
+          {deletingAccount ? "正在刪除帳號…" : "永久刪除帳號"}
+        </button>
       </SoftCard>
 
       <Section title="雲端收藏" hint={`${idols.length}／${MAX_IDOLS}`}>
