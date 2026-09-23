@@ -252,14 +252,28 @@ function CalendarPage() {
         type: editing.type,
         date: editing.date,
         note: editing.note,
+        locationName: editing.locationName ?? "",
+        city: editing.city ?? "",
+        weatherEnabled: Boolean(editing.weatherEnabled),
+        weatherTone: editing.weatherTone ?? "SUNSHINE",
       }
     : prefillDate
       ? { idolId: "", title: "", type: "CONCERT", date: prefillDate, note: "" }
       : undefined;
 
   async function handleSubmit(draft: EventDraft) {
-    if (editing) await updateEvent(editing.id, draft);
-    else await addEvent(draft);
+    if (editing) {
+      const reminder = reminderFor({ type: "EVENT", eventId: editing.id });
+      await updateEvent(editing.id, draft);
+      if (reminder?.enabled) {
+        await scheduleEventNotifications(
+          { ...editing, ...draft },
+          reminder.daysBefore,
+        );
+      }
+    } else {
+      await addEvent(draft);
+    }
     setFormOpen(false);
     setEditing(null);
     setPrefillDate("");

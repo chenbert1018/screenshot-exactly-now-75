@@ -273,7 +273,7 @@ function EventsPage() {
         }}
         onRestore={async (date: string) => {
           if (!detail) return;
-          await updateEvent(detail.id, {
+          const restoredEvent = {
             idolId: detail.idolId,
             title: detail.title,
             type: detail.type,
@@ -283,7 +283,15 @@ function EventsPage() {
             city: detail.city ?? "",
             weatherEnabled: Boolean(detail.weatherEnabled),
             weatherTone: detail.weatherTone ?? "SUNSHINE",
-          });
+          };
+          const reminder = reminderFor({ type: "EVENT", eventId: detail.id });
+          await updateEvent(detail.id, restoredEvent);
+          if (reminder?.enabled) {
+            await scheduleEventNotifications(
+              { ...detail, ...restoredEvent },
+              reminder.daysBefore,
+            );
+          }
           setDetailId(null);
         }}
         onDelete={async () => {
