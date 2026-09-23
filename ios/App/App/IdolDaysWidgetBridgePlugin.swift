@@ -10,11 +10,37 @@ public class IdolDaysWidgetBridgePlugin: CAPPlugin, CAPBridgedPlugin {
     public let jsName = "IdolDaysWidgetBridge"
 
     public let pluginMethods: [CAPPluginMethod] = [
-        CAPPluginMethod(name: "updateWidget", returnType: CAPPluginReturnPromise)
+        CAPPluginMethod(name: "updateWidget", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setTheme", returnType: CAPPluginReturnPromise)
     ]
 
     private let appGroupID = "group.com.idoldays.app"
     private let widgetKind = "IdolDaysWidget"
+
+    @objc func setTheme(_ call: CAPPluginCall) {
+        let allowedThemes = ["system", "light", "dark", "sky"]
+        let requestedTheme = call.getString("theme") ?? "sky"
+        let theme = allowedThemes.contains(requestedTheme)
+            ? requestedTheme
+            : "sky"
+
+        guard let defaults = UserDefaults(
+            suiteName: appGroupID
+        ) else {
+            call.reject("Unable to access IdolDays App Group")
+            return
+        }
+
+        defaults.set(theme, forKey: "widgetTheme")
+
+        WidgetCenter.shared.reloadTimelines(
+            ofKind: widgetKind
+        )
+
+        call.resolve([
+            "success": true
+        ])
+    }
 
     @objc func updateWidget(_ call: CAPPluginCall) {
 
