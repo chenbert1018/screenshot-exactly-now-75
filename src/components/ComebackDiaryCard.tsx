@@ -163,28 +163,28 @@ export function ComebackDiaryCard({ event }: { event: IdolEvent }) {
   }
 
   return (
-    <section className="mt-8 rounded-[1.9rem] border border-primary/20 bg-primary/5 px-5 py-6 shadow-soft">
+    <section className="mt-6 rounded-[1.75rem] border border-border/70 bg-card/90 px-5 py-5 shadow-soft">
       <div className="flex items-start gap-3">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-primary/12 text-lg">
-          💿
+        <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+          <ComebackIcon className="size-[22px]" />
         </span>
 
-        <div>
-          <p className="text-xs font-medium tracking-[0.13em] text-primary">
-            回歸日記 ♡
+        <div className="min-w-0 flex-1 pt-0.5">
+          <p className="text-[11px] font-semibold tracking-[0.15em] text-primary uppercase">
+            COMEBACK DIARY
           </p>
 
-          <h3 className="mt-1 font-display text-[18px] font-semibold">
-            {event.title} ✨
+          <h3 className="mt-1 font-display text-[18px] font-semibold leading-tight">
+            {event.title}
           </h3>
 
-          <p className="mt-1 text-xs leading-5 text-muted-foreground">
+          <p className="mt-1.5 text-[13px] leading-5 text-muted-foreground">
             把第一次聽見的心情，和後來真正留下來的歌收在一起。
           </p>
         </div>
       </div>
 
-      <div className="mt-5 space-y-4">
+      <div className="mt-4 space-y-4">
         <div>
           <p className="text-xs text-muted-foreground">
             第一次聽的感覺

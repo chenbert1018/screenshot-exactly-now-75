@@ -42,7 +42,7 @@ import {
 import { RandomSongMemoryCard } from "@/components/RandomSongMemoryCard";
 import { daysSince, nextAnniversary } from "@/lib/dates";
 import { classifyFanWeather, type FanWeatherInput } from "@/lib/fan-weather";
-import { TodaySongIcon, DDayIcon } from "@/components/IdolDaysIcons";
+import { TodaySongIcon, DDayIcon, ComebackIcon, ConcertTicketIcon } from "@/components/IdolDaysIcons";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -568,11 +568,11 @@ function TodaySongCard({
           </button>
 
           <div className="min-w-0 flex-1 pt-1">
-            <p className="text-[10px] font-semibold tracking-[0.16em] text-primary">
-              {specialDayCopy?.label ?? "今日一曲 ♡"}
+            <p className="text-[11px] font-semibold tracking-[0.15em] text-primary uppercase">
+              {specialDayCopy?.label ?? "TODAY’S SONG"}
             </p>
 
-            <p className="mt-1.5 text-[15px] font-medium leading-snug">
+            <p className="mt-1.5 text-[17px] font-medium leading-snug">
               {specialDayCopy
                 ? selectedSong
                   ? specialDayCopy.selected

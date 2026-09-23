@@ -194,7 +194,7 @@ export function ConcertMusicMemoryCard({
     const selectedSong = selectedSongFor(field.key);
 
     return (
-      <div>
+      <div className="min-w-0 flex-1 pt-0.5">
         <p className="text-xs text-muted-foreground">
           {field.label}
         </p>
@@ -245,9 +245,21 @@ export function ConcertMusicMemoryCard({
   if (entry && !editing) {
     const remembered = SONG_FIELDS.map((field) => ({ field, song: selectedSongFor(field.key) })).filter((item) => item.song);
     return (
-      <section className="mt-5 rounded-[1.9rem] border border-primary/20 bg-primary/5 px-5 py-5 shadow-soft">
-        <div className="flex items-center gap-3"><span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-primary/12 text-lg">🎤</span><div><p className="text-[12px] font-semibold tracking-[0.13em] text-primary">MY CONCERT SOUNDTRACK</p><p className="mt-0.5 text-sm text-muted-foreground">這一場，只屬於你的歌。</p></div></div>
-        {remembered.length > 0 ? <div className="mt-4 flex flex-wrap gap-2">{remembered.map(({field,song})=><span key={field.key} className="max-w-full rounded-full bg-card px-3 py-2 text-xs"><span className="text-muted-foreground">{field.label.replace("演唱會前：","")}</span>　♪ {song?.title}</span>)}</div> : null}
+      <section className="mt-5 rounded-[1.75rem] border border-border/70 bg-card/90 px-5 py-5 shadow-soft">
+        <div className="flex items-start gap-3">
+          <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+            <ConcertTicketIcon className="size-[22px]" />
+          </span>
+          <div className="min-w-0 flex-1 pt-0.5">
+            <p className="text-[11px] font-semibold tracking-[0.15em] text-primary uppercase">
+              CONCERT MEMORY
+            </p>
+            <p className="mt-1 text-[17px] font-medium leading-snug">
+              這一場，只屬於你的歌。
+            </p>
+          </div>
+        </div>
+        {remembered.length > 0 ? <div className="mt-4 flex flex-wrap gap-2.5">{remembered.map(({field,song})=><span key={field.key} className="max-w-full rounded-xl border border-border/60 bg-surface/55 px-3 py-2 text-xs"><span className="text-muted-foreground">{field.label.replace("演唱會前：","")}</span>　♪ {song?.title}</span>)}</div> : null}
         {entry.note ? <p className="mt-4 text-[15px] leading-relaxed">「{entry.note}」</p> : null}
         <button type="button" onClick={()=>setEditing(true)} className="mt-4 min-h-11 text-sm font-medium text-primary">編輯這場的歌</button>
       </section>
@@ -255,28 +267,28 @@ export function ConcertMusicMemoryCard({
   }
 
   return (
-    <section className="mt-8 rounded-[1.9rem] border border-primary/20 bg-primary/5 px-5 py-6 shadow-soft">
+    <section className="mt-6 rounded-[1.75rem] border border-border/70 bg-card/90 px-5 py-5 shadow-soft">
       <div className="flex items-start gap-3">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-primary/12 text-lg">
-          🎤
+        <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+          <ConcertTicketIcon className="size-[22px]" />
         </span>
 
         <div>
-          <p className="text-xs font-medium tracking-[0.13em] text-primary">
-            CONCERT MUSIC MEMORY
+          <p className="text-[11px] font-semibold tracking-[0.15em] text-primary uppercase">
+            CONCERT MEMORY
           </p>
 
-          <h3 className="mt-1 font-display text-[18px] font-semibold">
+          <h3 className="mt-1 font-display text-[18px] font-semibold leading-tight">
             MY CONCERT SOUNDTRACK
           </h3>
 
-          <p className="mt-1 text-xs leading-5 text-muted-foreground">
+          <p className="mt-1.5 text-[13px] leading-5 text-muted-foreground">
             不是 Setlist，是這一場只屬於你的歌。
           </p>
         </div>
       </div>
 
-      <div className="mt-5 space-y-4">
+      <div className="mt-4 space-y-4">
         {visibleSongFields
           .filter((field) => field.section === "before")
           .map((field) => (
