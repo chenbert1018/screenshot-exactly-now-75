@@ -1,18 +1,18 @@
 import { Link } from "@tanstack/react-router";
 import {
-  House,
-  Star,
-  CalendarDays,
-  Images,
-  Search,
-} from "lucide-react";
+  TodayIcon,
+  IdolIcon,
+  DayIcon,
+  MemoryIcon,
+  ArchiveIcon,
+} from "./IdolDaysIcons";
 
 const items = [
-  { to: "/", label: "今天", Icon: House },
-  { to: "/idols", label: "偶像", Icon: Star },
-  { to: "/events", label: "日子", Icon: CalendarDays },
-  { to: "/memories", label: "回憶", Icon: Images },
-  { to: "/archaeology", label: "考古", Icon: Search },
+  { to: "/", label: "今天", Icon: TodayIcon },
+  { to: "/idols", label: "偶像", Icon: IdolIcon },
+  { to: "/events", label: "日子", Icon: DayIcon },
+  { to: "/memories", label: "回憶", Icon: MemoryIcon },
+  { to: "/archaeology", label: "考古", Icon: ArchiveIcon },
 ] as const;
 
 
@@ -38,7 +38,6 @@ export function BottomNav() {
                   className="size-[22px] transition-transform duration-300 group-active:scale-90"
                   strokeWidth={1.5}
                 />
-                <span aria-hidden className="absolute -right-0.5 -top-1 text-[8px] text-primary/70">✦</span>
               </span>
               <span className="text-[14px] font-medium tracking-[0.01em]">{label}</span>
 

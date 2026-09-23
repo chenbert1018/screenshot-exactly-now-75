@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { ArrowRight, Music2, Plus } from "lucide-react";
+import { ArrowRight, Plus } from "lucide-react";
+import { ConcertTicketIcon, MusicDiscIcon } from "./IdolDaysIcons";
 
 import { IdolSongFormSheet } from "@/components/IdolSongFormSheet";
 import {
@@ -397,10 +398,8 @@ export function ConcertMusicMemoryCard({
             </div>
           ) : (
             <div className="mt-5 rounded-2xl bg-surface/60 px-4 py-5 text-center">
-              <Music2
-                className="mx-auto size-6 text-primary"
-                strokeWidth={1.5}
-              />
+              <MusicDiscIcon
+                className="mx-auto size-6 text-primary" />
 
               <p className="mt-2 text-sm font-medium">
                 這場演唱會還沒有收藏歌曲 ♡

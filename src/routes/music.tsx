@@ -5,7 +5,6 @@ import {
   ChevronUp,
   ExternalLink,
   Library,
-  Music2,
   Plus,
   Share2,
   Sparkles,
@@ -46,6 +45,7 @@ import { buildMusicTimeline } from "@/lib/music-timeline";
 import { useEventSource } from "@/lib/events.source";
 import { useMemorySource } from "@/lib/memories.source";
 import { useListenAgainHistory } from "@/lib/listen-again.source";
+import { MusicDiscIcon } from "@/components/IdolDaysIcons";
 
 export const Route = createFileRoute("/music")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -284,7 +284,7 @@ function MusicPage() {
       ) : !activeIdol ? (
         <EmptyState
           icon={
-            <Music2 className="size-5" />
+            <MusicDiscIcon className="size-5" />
           }
           title="先選一位本命偶像"
           description="歌曲會和偶像、回憶一起保存。"
@@ -551,7 +551,7 @@ function MusicPage() {
                 ) : songs.length === 0 ? (
                   <EmptyState
                     icon={
-                      <Music2 className="size-5" />
+                      <MusicDiscIcon className="size-5" />
                     }
                     title="還沒有第一首歌"
                     description="把入坑曲、最愛或最近循環加進來。"
@@ -576,7 +576,7 @@ function MusicPage() {
                           className="p-4"
                         >
                           <div className="flex gap-3">
-                            <Music2 className="mt-0.5 size-5 shrink-0 text-primary" />
+                            <MusicDiscIcon className="mt-0.5 size-5 shrink-0 text-primary" />
 
                             <div className="min-w-0 flex-1">
                               <p className="truncate font-medium">
@@ -678,7 +678,7 @@ function MusicPage() {
             className="flex w-full items-center gap-3 rounded-[1.6rem] border border-border/60 bg-card/75 px-4 py-4 text-left shadow-soft"
           >
             <div className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-              <Music2 className="size-4" />
+              <MusicDiscIcon className="size-4" />
             </div>
 
             <div className="min-w-0 flex-1">

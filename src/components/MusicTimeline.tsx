@@ -1,4 +1,5 @@
-import { ArrowRight, ExternalLink, Music2 } from "lucide-react";
+import { ArrowRight, ExternalLink } from "lucide-react";
+import { MusicDiscIcon } from "./IdolDaysIcons";
 import { Link } from "@tanstack/react-router";
 import { streamingLink } from "@/lib/idol-music";
 import type { MusicTimelineItem } from "@/lib/music-timeline";
@@ -217,10 +218,8 @@ export function MusicTimeline({
 
       {items.length === 0 ? (
         <div className="rounded-[1.8rem] border border-border/60 bg-card/80 px-5 py-7 text-center shadow-soft">
-          <Music2
-            className="mx-auto size-5 text-primary"
-            strokeWidth={1.5}
-          />
+          <MusicDiscIcon
+            className="mx-auto size-5 text-primary" />
 
           <p className="mt-3 text-sm font-medium">
             你的音樂故事，會從第一首歌開始。

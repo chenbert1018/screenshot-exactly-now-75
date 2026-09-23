@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { ArrowRight, Music2, Plus, Share2 } from "lucide-react";
+import { ArrowRight, Plus, Share2 } from "lucide-react";
+import { ComebackIcon, MusicDiscIcon } from "./IdolDaysIcons";
 import { emptyComebackDiaryDraft, type ComebackDiaryDraft } from "@/lib/comeback-diary";
 import { useComebackDiary } from "@/lib/comeback-diary.source";
 import type { IdolEvent } from "@/lib/events";
@@ -425,10 +426,8 @@ export function ComebackDiaryCard({ event }: { event: IdolEvent }) {
             </div>
           ) : (
             <div className="mt-5 rounded-2xl bg-surface/60 px-4 py-5 text-center">
-              <Music2
-                className="mx-auto size-6 text-primary"
-                strokeWidth={1.5}
-              />
+              <MusicDiscIcon
+                className="mx-auto size-6 text-primary" />
 
               <p className="mt-2 text-sm font-medium">
                 這次回歸還沒有收藏歌曲 ♡

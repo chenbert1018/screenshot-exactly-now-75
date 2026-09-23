@@ -3,7 +3,6 @@ import { useMemo, useState } from "react";
 import {
   Bookmark,
   ExternalLink,
-  FolderHeart,
   Heart,
   MoreHorizontal,
   Pencil,
@@ -13,6 +12,7 @@ import {
 } from "lucide-react";
 
 import { AppShell, PageHeader, SoftCard } from "@/components/AppShell";
+import { ArchiveIcon } from "@/components/IdolDaysIcons";
 import { ArchaeologyFormSheet } from "@/components/ArchaeologyFormSheet";
 import { StoredImage } from "@/components/StoredImage";
 import { Input } from "@/components/ui/input";
@@ -194,7 +194,7 @@ function ArchaeologyPage() {
           <FilterButton
             active={view === "COLLECTIONS"}
             label="收藏集"
-            Icon={FolderHeart}
+            Icon={ArchiveIcon}
             onClick={() => selectView("COLLECTIONS")}
           />
         </div>
@@ -233,7 +233,7 @@ function ArchaeologyPage() {
                         : "border-border/60 bg-surface/50",
                     ].join(" ")}
                   >
-                    <FolderHeart className="mb-3 size-5 text-primary" strokeWidth={1.5} />
+                    <ArchiveIcon className="mb-3 size-5 text-primary" />
 
                     <p className="truncate text-base font-medium">{collection.name}</p>
 

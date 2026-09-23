@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ArrowRight, Music2 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { MusicDiscIcon } from "./IdolDaysIcons";
 import { Link } from "@tanstack/react-router";
 import {
   SONG_MOOD_OPTIONS,
@@ -184,7 +185,7 @@ export function RandomSongMemoryCard({ items, ready = true }: Props) {
     <section className="mt-3 rounded-[1.55rem] border border-border/70 bg-card/85 px-4 py-3.5 text-card-foreground shadow-soft">
       <div className="flex items-center gap-3">
         <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-          <Music2 className="size-5" strokeWidth={1.5} />
+          <MusicDiscIcon className="size-5" />
         </span>
         <div className="min-w-0 flex-1">
           <p className="text-[13px] font-semibold text-primary">

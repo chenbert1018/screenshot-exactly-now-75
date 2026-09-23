@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { User } from "lucide-react";
+import { ProfileIcon } from "./IdolDaysIcons";
 import { BottomNav } from "./BottomNav";
 
 
@@ -13,25 +13,7 @@ export function AppShell({
 }) {
   return (
     <div className="dreamy-bg paper-grain relative min-h-screen overflow-x-hidden bg-background">
-      {/* 極克制的手帳裝飾 */}
-      <span
-        aria-hidden
-        className="twinkle pointer-events-none absolute top-24 left-4 text-lg text-primary/40 select-none"
-      >
-        ✦
-      </span>
-      <span
-        aria-hidden
-        className="twinkle pointer-events-none absolute top-56 right-6 text-sm text-lavender select-none"
-      >
-        ☆
-      </span>
-      <span
-        aria-hidden
-        className="twinkle pointer-events-none absolute top-[38rem] left-8 text-sm text-accent select-none"
-      >
-        ♡
-      </span>
+
       <div className="relative mx-auto min-h-screen w-full max-w-md px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-[calc(7.25rem+env(safe-area-inset-bottom))]">
         {showProfileShortcut ? (
           <div className="mb-3 flex justify-end">
@@ -41,7 +23,7 @@ export function AppShell({
               className="flex size-11 items-center justify-center rounded-full border border-border/60 bg-card/70 text-muted-foreground backdrop-blur transition-transform duration-300 active:scale-95"
               activeProps={{ className: "text-primary" }}
             >
-              <User className="size-5" strokeWidth={1.6} />
+              <ProfileIcon className="size-5" />
             </Link>
           </div>
         ) : null}

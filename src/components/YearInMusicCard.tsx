@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { ExternalLink, Music2, Share2 } from "lucide-react";
+import { ExternalLink, Share2 } from "lucide-react";
+import { MusicDiscIcon } from "./IdolDaysIcons";
 
 import { streamingLink } from "@/lib/idol-music";
 import {
@@ -193,7 +194,7 @@ cutoutPhoto,
                   className="music-recap-mini-disc-hole"
                   aria-hidden="true"
                 />
-                <Music2 className="relative z-10 size-3.5" />
+                <MusicDiscIcon className="relative z-10 size-3.5" />
               </div>
 
               <div className="min-w-0 flex-1">

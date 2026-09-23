@@ -1,7 +1,8 @@
 import { StoredImage } from "@/components/StoredImage";
 import { useEffect, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { FolderHeart, Plus, Images, Package, ChevronRight } from "lucide-react";
+import { Plus, ChevronRight } from "lucide-react";
+import { MemoryFolderIcon, PhotocardStackIcon, CollectionIcon } from "@/components/IdolDaysIcons";
 import { AppShell, PageHeader, EmptyState, SoftCard } from "@/components/AppShell";
 import { MemoryFolderFormSheet } from "@/components/MemoryFolderFormSheet";
 import { type MemoryFolder } from "@/lib/memory-folders";
@@ -114,12 +115,15 @@ function MemoriesPage() {
   return (
     <AppShell>
       <PageHeader
-        title="我的回憶 📸"
+        title="我的回憶"
         subtitle="照片・日子・歌 ♡"
       />
 
       <div className="mb-5 flex items-baseline justify-between">
-        <h2 className="font-display text-[18px] font-semibold tracking-[0.08em]">📁 回憶資料夾</h2>
+        <h2 className="flex items-center gap-2 font-display text-[18px] font-semibold tracking-[0.08em]">
+          <MemoryFolderIcon className="size-5 text-primary" />
+          回憶資料夾
+        </h2>
         {folders.length > 0 ? (
           <button
             onClick={() => setOpen(true)}
@@ -141,7 +145,7 @@ function MemoriesPage() {
         <div className="h-40 rounded-3xl border border-border/60 bg-surface/40" aria-hidden />
       ) : folders.length === 0 ? (
         <EmptyState
-          icon={<FolderHeart className="size-5" strokeWidth={1.6} />}
+          icon={<MemoryFolderIcon className="size-5" />}
           title="還沒有回憶，先從第一張開始吧 ♡"
           description="建立第一個回憶資料夾，把那些日子放進來。"
           action={
@@ -172,7 +176,7 @@ function MemoriesPage() {
                     <StoredImage src={f.coverPhoto} alt={f.title} className="aspect-[4/3] w-full object-cover" />
                   ) : (
                     <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-accent/35 via-card to-lavender/30 text-primary/50">
-                      <Images className="size-7" strokeWidth={1.3} />
+                      <PhotocardStackIcon className="size-7" />
                       <span className="text-sm tracking-[0.1em]">我們的日子 ♡</span>
                     </div>
                   )}
@@ -205,10 +209,10 @@ function MemoriesPage() {
         className="mt-5 flex min-h-[56px] items-center gap-3 rounded-[1.35rem] border border-border/60 bg-surface/45 px-4 py-2.5 text-muted-foreground transition-transform active:scale-[0.98]"
       >
         <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-          <Package className="size-4" strokeWidth={1.6} />
+          <CollectionIcon className="size-4" />
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block text-sm font-medium text-foreground">💎 我的收藏</span>
+          <span className="block text-sm font-medium text-foreground">我的收藏</span>
           <span className="block truncate text-xs">專輯・小卡・票根・應援物</span>
         </span>
         <ChevronRight className="size-4 shrink-0" />

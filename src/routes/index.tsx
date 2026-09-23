@@ -12,12 +12,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight,
   Bell,
-  CalendarHeart,
   CloudSun,
   Heart,
   History,
   ImageIcon,
-  Music2,
   Plus,
   Repeat2,
   Search,
@@ -44,6 +42,7 @@ import {
 import { RandomSongMemoryCard } from "@/components/RandomSongMemoryCard";
 import { daysSince, nextAnniversary } from "@/lib/dates";
 import { classifyFanWeather, type FanWeatherInput } from "@/lib/fan-weather";
+import { TodaySongIcon, DDayIcon } from "@/components/IdolDaysIcons";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -134,7 +133,7 @@ function EventCard({ event }: { event: IdolEvent }) {
       className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground px-5 py-4 shadow-soft backdrop-blur-xl transition-transform active:scale-[0.99]"
     >
       <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-        <CalendarHeart className="size-6" strokeWidth={1.55} />
+        <DDayIcon className="size-6" />
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-[13px] font-medium tracking-[0.1em] text-primary uppercase">
@@ -782,10 +781,7 @@ function TodaySongCard({
             </div>
           ) : (
             <div className="mt-5 rounded-2xl bg-surface/60 px-4 py-5 text-center">
-              <Music2
-                className="mx-auto size-6 text-primary"
-                strokeWidth={1.5}
-              />
+              <TodaySongIcon className="mx-auto size-7 text-primary" />
               <p className="mt-2 text-sm font-medium">
                 我們的歌還是空的 ♡
               </p>
