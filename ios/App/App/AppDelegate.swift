@@ -53,8 +53,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 IdolDaysWidgetBridgePlugin()
             )
 
+            if #available(iOS 15.0, *) {
+                bridge.registerPluginInstance(
+                    IdolDaysStoreKitPlugin()
+                )
+            }
+
             print(
-                "✅ IdolDaysWidgetBridge native plugin registered"
+                "✅ IdolDays native plugins registered"
             )
         }
     }
