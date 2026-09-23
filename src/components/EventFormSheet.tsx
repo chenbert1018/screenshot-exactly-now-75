@@ -47,7 +47,9 @@ export function EventFormSheet({
       setDraft({
         ...base,
         idolId,
-        weatherTone: weatherToneForAnimal(selectedIdol?.representativeAnimal),
+        weatherTone:
+          initial?.weatherTone ??
+          weatherToneForAnimal(selectedIdol?.representativeAnimal),
       });
       setError("");
       setSaving(false);
