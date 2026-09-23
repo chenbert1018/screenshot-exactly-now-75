@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./auth";
 import type { IdolSong, IdolSongDraft, IdolSongRole, SongRole } from "./idol-music";
+import { requestWidgetSync } from "./widget-sync-event";
 
 type SongRow = {
   id: string; idol_id: string; title: string; artist: string; album: string;
@@ -75,6 +76,7 @@ export function useIdolMusicSource(idolId?: string) {
     ]);
 
     reload();
+    requestWidgetSync();
     return song;
   }, [user?.id, idolId, reload]);
 
@@ -83,7 +85,7 @@ export function useIdolMusicSource(idolId?: string) {
     const { error: clearError } = await supabase.from("idol_songs").update({ is_today_pick: false }).eq("idol_id", idolId).eq("user_id", user.id).eq("is_today_pick", true);
     if (clearError) throw clearError;
     const { error } = await supabase.from("idol_songs").update({ is_today_pick: true }).eq("id", songId).eq("user_id", user.id);
-    if (error) throw error; reload();
+    if (error) throw error; reload(); requestWidgetSync();
   }, [user?.id, idolId, reload]);
 
   const assignRole = useCallback(async (role: SongRole, songId: string) => {
@@ -95,7 +97,7 @@ export function useIdolMusicSource(idolId?: string) {
   const removeSong = useCallback(async (songId: string) => {
     if (!user) throw new Error("請先登入");
     const { error } = await supabase.from("idol_songs").delete().eq("id", songId).eq("user_id", user.id);
-    if (error) throw error; reload();
+    if (error) throw error; reload(); requestWidgetSync();
   }, [user?.id, reload]);
 
   return useMemo(() => ({ songs, roles, ready, error, reload, addSong, setTodayPick, assignRole, removeSong }), [songs, roles, ready, error, reload, addSong, setTodayPick, assignRole, removeSong]);
