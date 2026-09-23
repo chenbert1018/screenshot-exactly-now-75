@@ -76,7 +76,26 @@ export function useAuthActions() {
     return error?.message ?? null;
   }, []);
 
-  return { signUp, signIn, signOut, resetPassword, updatePassword };
+  const deleteAccount = useCallback(async () => {
+    const { data, error } = await supabase.functions.invoke("delete-account", {
+      method: "POST",
+    });
+
+    if (error) return error.message;
+    if (!data?.success) return data?.error ?? "帳號刪除失敗";
+
+    await supabase.auth.signOut({ scope: "local" });
+    return null;
+  }, []);
+
+  return {
+    signUp,
+    signIn,
+    signOut,
+    resetPassword,
+    updatePassword,
+    deleteAccount,
+  };
 }
 
 export type CloudProfile = {
