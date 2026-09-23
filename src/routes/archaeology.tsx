@@ -141,8 +141,8 @@ function ArchaeologyPage() {
   return (
     <AppShell>
       <PageHeader
-        title="考古 🔎"
-        subtitle="Threads・X・直拍・名場面 ♡"
+        title="粉絲考古"
+        subtitle="把散落在飯圈各處的寶藏收回來"
         action={
           <button
             type="button"
@@ -172,7 +172,7 @@ function ArchaeologyPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="搜貼文、直拍、名場面…"
-            className="h-12 rounded-full border-border/60 bg-card/70 pl-11 shadow-soft"
+            className="h-12 rounded-[1.15rem] border-border/60 bg-card/70 pl-11"
           />
         </div>
 
@@ -202,7 +202,7 @@ function ArchaeologyPage() {
         {view === "COLLECTIONS" ? (
           <section className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">我的收藏集</h2>
+              <div>\n                <p className="text-[10px] font-semibold tracking-[0.18em] text-primary">ARCHIVE COLLECTIONS</p>\n                <h2 className="mt-1 font-display text-[20px] font-semibold">我的收藏集</h2>\n              </div>
 
               {activeCollection ? (
                 <button
@@ -288,7 +288,7 @@ function ArchaeologyPage() {
               <p className="mt-4 text-[15px] font-medium">還沒開始考古</p>
 
               <p className="mx-auto mt-2 max-w-[250px] text-sm leading-relaxed text-muted-foreground">
-                刷到捨不得忘記的物料，就收進來 ♡
+                刷到捨不得忘記的物料，就收進來。
               </p>
 
               <button

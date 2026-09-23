@@ -61,7 +61,7 @@ function IdolsPage() {
   return (
     <AppShell>
       <PageHeader
-        title="我的本命 ♡"
+        title="我的本命"
         subtitle="照片・D-DAY・一起走過的日子"
         action={
           <button
@@ -86,7 +86,7 @@ function IdolsPage() {
           <div className="min-w-0">
             <p className="flex items-center gap-1.5 text-sm font-medium">
               <RefreshCw className="size-4 text-primary" />
-              ✦ 每天換一位陪你
+              每天換一位陪你
             </p>
 
           </div>
@@ -107,7 +107,7 @@ function IdolsPage() {
       {ready && idols.length === 0 ? (
         <EmptyState
           icon={<Heart className="size-5" strokeWidth={1.6} />}
-          title="先加入你的本命 ♡"
+          title="先加入你的本命"
           description="名字＋一張照片，就可以開始。"
           action={
             <button
@@ -138,7 +138,7 @@ function IdolsPage() {
 
       {isPlus ? (
         <p className="mt-6 text-center text-xs text-muted-foreground">
-          ♡ 可以收藏最多 6 位本命
+          可以收藏最多 6 位本命
         </p>
       ) : (
         <button
@@ -146,15 +146,15 @@ function IdolsPage() {
           onClick={() => setPaywall(true)}
           className="mt-5 min-h-11 w-full text-center text-xs text-muted-foreground"
         >
-          ♡ IdolDays+ 可以收藏更多本命
+          IdolDays+ 可以收藏更多本命
         </button>
       )}
 
       <IdolFormSheet
         open={open}
         onOpenChange={setOpen}
-        title="加入本命 ♡"
-        submitLabel="收好 ♡"
+        title="加入本命"
+        submitLabel="收好"
         onSubmit={handleCreate}
       />
 

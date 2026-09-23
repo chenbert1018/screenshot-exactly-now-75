@@ -111,18 +111,12 @@ function ProfilePage() {
 
   return (
     <AppShell>
-      <PageHeader title="我的" subtitle="只屬於你的 IdolDays ♡" />
+      <PageHeader title="設定" subtitle="帳號、提醒與 IdolDays 偏好" />
 
       <SoftCard className="relative mb-8 overflow-hidden px-5 py-6">
-        <span
-          aria-hidden
-          className="pointer-events-none absolute top-4 right-5 text-lg text-primary/25"
-        >
-          ✦
-        </span>
 
         <p className="mb-4 text-xs font-semibold tracking-[0.16em] text-primary">
-          MY IDOLDAYS ♡
+          MY IDOLDAYS
         </p>
 
         <div className="flex items-center gap-4">
@@ -244,7 +238,7 @@ function ProfilePage() {
         </SoftCard>
       </Section>
 
-      <Section title="IdolDays Plus ♡">
+      <Section title="IdolDays Plus">
         <SoftCard className="overflow-hidden px-0 py-0">
           <button
             type="button"

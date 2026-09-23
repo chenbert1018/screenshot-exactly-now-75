@@ -146,7 +146,7 @@ function MemoriesPage() {
       ) : folders.length === 0 ? (
         <EmptyState
           icon={<MemoryFolderIcon className="size-5" />}
-          title="還沒有回憶，先從第一張開始吧 ♡"
+          title="還沒有收藏，先從第一個日子開始吧"
           description="建立第一個回憶資料夾，把那些日子放進來。"
           action={
             <button
@@ -171,13 +171,13 @@ function MemoriesPage() {
                 params={{ folderId: f.id }}
                 className="block transition-transform duration-300 active:scale-[0.98]"
               >
-                <SoftCard className="overflow-hidden p-0">
+                <SoftCard className="overflow-hidden rounded-[1.9rem] p-0">
                   {f.coverPhoto ? (
                     <StoredImage src={f.coverPhoto} alt={f.title} className="aspect-[4/3] w-full object-cover" />
                   ) : (
                     <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-accent/35 via-card to-lavender/30 text-primary/50">
                       <PhotocardStackIcon className="size-7" />
-                      <span className="text-sm tracking-[0.1em]">我們的日子 ♡</span>
+                      <span className="text-sm tracking-[0.1em]">OUR DAYS</span>
                     </div>
                   )}
                   <div className="px-5 py-4">
@@ -192,7 +192,7 @@ function MemoriesPage() {
                       <span>· {count} 則回憶</span>
                       {idol ? (
                         <span className="rounded-full bg-accent/40 px-2.5 py-1 text-primary">
-                          ♡ {idol.name}
+                          {idol.name}
                         </span>
                       ) : null}
                     </div>

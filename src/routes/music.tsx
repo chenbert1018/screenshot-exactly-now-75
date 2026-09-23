@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect} from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ChevronDown,
@@ -6,14 +6,13 @@ import {
   ExternalLink,
   Library,
   Plus,
-  Share2,
-  Sparkles,
   Trash2,
 } from "lucide-react";
 
 import {
   AppShell,
   EmptyState,
+  PageHeader,
   SoftCard,
 } from "@/components/AppShell";
 import { IdolSongFormSheet } from "@/components/IdolSongFormSheet";
@@ -158,15 +157,6 @@ function MusicPage() {
   const [libraryOpen, setLibraryOpen] =
     useState(false);
 
-  const [soundtrackOpen, setSoundtrackOpen] =
-    useState(false);
-
-  const [memoriesOpen, setMemoriesOpen] =
-    useState(false);
-
-  const [recapOpen, setRecapOpen] =
-    useState(false);
-
   const [busy, setBusy] =
     useState("");
 
@@ -275,8 +265,8 @@ function MusicPage() {
   return (
     <AppShell>
       <PageHeader
-        title="我和他的歌 🎧"
-        subtitle="今日一曲・心情・回歸歌單 ♡"
+        title={`我和 ${activeIdol?.name || "他"} 的歌`}
+        subtitle="那些陪我們走過不同時刻的歌"
       />
 
       {!idolsReady ? (
@@ -301,17 +291,12 @@ function MusicPage() {
         <>
           {/* 今日 */}
           <section className="music-diary-now-playing relative overflow-hidden rounded-[2rem] border border-border/70 bg-card/90 p-4 shadow-soft">
-            <span
-              aria-hidden="true"
-              className="absolute right-5 top-4 text-[13px] text-primary/60"
-            >
-              ✦
-            </span>
+
 
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-[13px] font-semibold tracking-[0.14em] text-primary">
-                  今日一曲 ♡
+                  TODAY’S SONG
                 </p>
                 <p className="mt-1 text-sm text-muted-foreground">
                   {today ? "正在播放 ♪" : "選今天的歌 ♪"}
@@ -369,20 +354,10 @@ function MusicPage() {
                     </span>
                   )}
 
-                  <span
-                    aria-hidden="true"
-                    className="absolute bottom-1.5 right-2 z-20 text-[9px] text-primary"
-                  >
-                    ♡
-                  </span>
+
                 </span>
 
-                <span
-                  aria-hidden="true"
-                  className="absolute left-[71px] top-0 z-20 text-[11px] text-primary/70"
-                >
-                  ✦
-                </span>
+
               </button>
 
               <div className="min-w-0 flex-1">
@@ -502,9 +477,9 @@ function MusicPage() {
                   (value) => !value,
                 )
               }
-              className="flex w-full items-center gap-3 rounded-[1.5rem] bg-surface/55 px-4 py-3.5 text-left"
+              className="flex w-full items-center gap-3 border-y border-border/60 px-1 py-4 text-left"
             >
-              <div className="flex size-11 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <div className="flex size-9 items-center justify-center text-primary">
                 <Library className="size-4" />
               </div>
 
@@ -665,309 +640,159 @@ function MusicPage() {
             ) : null}
           </section>
 
-          {/* MEMORIES */}
-          <SectionDivider />
-
-          <button
-            type="button"
-            onClick={() =>
-              setMemoriesOpen(
-                (value) => !value,
-              )
-            }
-            className="flex w-full items-center gap-3 rounded-[1.6rem] border border-border/60 bg-card/75 px-4 py-4 text-left shadow-soft"
-          >
-            <div className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-              <MusicDiscIcon className="size-4" />
-            </div>
-
-            <div className="min-w-0 flex-1">
-              <p className="font-display text-[15px] font-medium">
-                我的追星音樂日記
-              </p>
-
-              <p className="mt-1 text-sm text-muted-foreground">
-                今日歌曲 · 回歸 · 演唱會 ·
-                音樂回憶
-              </p>
-            </div>
-
-            {memoriesOpen ? (
-              <ChevronUp className="size-4 text-muted-foreground" />
-            ) : (
-              <ChevronDown className="size-4 text-muted-foreground" />
-            )}
-          </button>
-
-          {memoriesOpen ? (
-            <div className="mt-3">
-              <div className="mb-3 flex items-center justify-between gap-3 rounded-[1.4rem] bg-primary/[0.06] px-4 py-3">
-                <div className="min-w-0">
-                  <p className="text-[13px] font-semibold tracking-[0.1em] text-primary">MEMORY × MUSIC ♡</p>
-                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                    回憶裡選過的歌，也會一起留在這條音樂時間線。
-                  </p>
-                </div>
-                <Link
-                  to="/memories"
-                  className="inline-flex min-h-11 shrink-0 items-center rounded-full border border-primary/15 bg-card px-3.5 text-sm font-medium text-primary transition-transform active:scale-95"
-                >
-                  看回憶
-                </Link>
+          {/* MUSIC MEMORIES — always visible, no accordion */}
+          <section className="mt-7">
+            <div className="mb-4 flex items-end justify-between gap-4 px-1">
+              <div>
+                <p className="text-[11px] font-semibold tracking-[0.18em] text-primary">
+                  MUSIC MEMORIES
+                </p>
+                <h2 className="mt-1 font-display text-[22px] font-semibold tracking-[-0.02em]">
+                  我的追星音樂日記
+                </h2>
+                <p className="mt-1 text-[13px] text-muted-foreground">
+                  那些歌，和喜歡他的日子一起留下來。
+                </p>
               </div>
-              <MusicTimeline
-                items={timelineItems}
-                ready={timelineReady}
-              />
-            </div>
-          ) : null}
-
-          {/* RECAP */}
-
-          <SectionDivider />
-
-          <section>
-
-            <button
-
-              type="button"
-
-              onClick={() =>
-                setRecapOpen(
-                  (value) => !value,
-                )
-              }
-
-              className="music-recap-toggle flex w-full items-center gap-3 rounded-[1.6rem] bg-surface/55 px-4 py-4 text-left"
-
-            >
-
-              <div
-                className="music-recap-toggle-mark"
-                aria-hidden="true"
+              <Link
+                to="/memories"
+                className="shrink-0 pb-0.5 text-[13px] font-medium text-primary"
               >
-                <span>REC</span>
-                <strong>♪</strong>
+                全部回憶 →
+              </Link>
+            </div>
+
+            <div className="relative overflow-hidden rounded-[2rem] border border-border/70 bg-card/90 px-4 pb-4 pt-5 shadow-soft">
+              <div className="mb-4 grid grid-cols-4 divide-x divide-border/60 border-b border-border/60 pb-4 text-center">
+                <div>
+                  <strong className="block font-display text-[20px] font-semibold">{songHistory.entries.length}</strong>
+                  <span className="mt-0.5 block text-[11px] text-muted-foreground">今日歌曲</span>
+                </div>
+                <div>
+                  <strong className="block font-display text-[20px] font-semibold">{comebackHistory.entries.length}</strong>
+                  <span className="mt-0.5 block text-[11px] text-muted-foreground">回歸</span>
+                </div>
+                <div>
+                  <strong className="block font-display text-[20px] font-semibold">{concertHistory.entries.length}</strong>
+                  <span className="mt-0.5 block text-[11px] text-muted-foreground">演唱會</span>
+                </div>
+                <div>
+                  <strong className="block font-display text-[20px] font-semibold">{timelineMemories.length}</strong>
+                  <span className="mt-0.5 block text-[11px] text-muted-foreground">音樂回憶</span>
+                </div>
               </div>
 
-              <div className="min-w-0 flex-1">
-
-                <p className="text-[13px] font-medium tracking-[0.1em] text-primary">
-
-                  RECAP ♡
-
-                </p>
-
-                <p className="mt-1 font-display text-[15px] font-medium">
-
-                  我們的音樂回顧
-
-                </p>
-
-                <p className="mt-1 text-sm text-muted-foreground">
-
-                  這個月與這一年的歌，都替你留在這裡。
-
-                </p>
-
-              </div>
-
-              {recapOpen ? (
-
-                <ChevronUp className="size-4 text-muted-foreground" />
-
-              ) : (
-
-                <ChevronDown className="size-4 text-muted-foreground" />
-
-              )}
-
-            </button>
-
-            {recapOpen ? (
-
-              <div className="mt-4">
-
-                <MonthlyMusicCard
-
-                  idolName={
-                    activeIdol.name || "他"
-                  }
-
-                  items={timelineItems}
-
-                  ready={timelineReady}
-                  photo={activeIdol.photo}
-                  cutoutPhoto={activeIdol.cutoutPhoto}
-
-                />
-
-                <YearInMusicCard
-
-                  idolName={
-                    activeIdol.name || "他"
-                  }
-
-                  items={timelineItems}
-
-                  ready={timelineReady}
-                  photo={activeIdol.photo}
-                  cutoutPhoto={activeIdol.cutoutPhoto}
-
-                />
-
-              </div>
-
-            ) : null}
-
+              <MusicTimeline items={timelineItems} ready={timelineReady} />
+            </div>
           </section>
 
-          {/* OUR SOUNDTRACK */}
-          {songs.length > 0 ? (
-            <>
-              <SectionDivider />
+          {/* MONTHLY / YEARLY — editorial recap, always visible */}
+          <section className="mt-8">
+            <div className="mb-4 px-1">
+              <p className="text-[11px] font-semibold tracking-[0.18em] text-primary">
+                MUSIC RECAP
+              </p>
+              <h2 className="mt-1 font-display text-[22px] font-semibold tracking-[-0.02em]">
+                我們的音樂回顧
+              </h2>
+              <p className="mt-1 text-[13px] text-muted-foreground">
+                回頭看看，最近哪些歌陪我們走過。
+              </p>
+            </div>
 
-              <section>
+            <div className="space-y-4">
+              <MonthlyMusicCard
+                idolName={activeIdol.name || "他"}
+                items={timelineItems}
+                ready={timelineReady}
+                photo={activeIdol.photo}
+                cutoutPhoto={activeIdol.cutoutPhoto}
+              />
+              <YearInMusicCard
+                idolName={activeIdol.name || "他"}
+                items={timelineItems}
+                ready={timelineReady}
+                photo={activeIdol.photo}
+                cutoutPhoto={activeIdol.cutoutPhoto}
+              />
+            </div>
+          </section>
+
+          {/* MY IDOL SOUNDTRACK — tracklist, not accordion */}
+          {songs.length > 0 ? (
+            <section className="mt-8">
+              <div className="mb-4 flex items-end justify-between gap-4 px-1">
+                <div>
+                  <p className="text-[11px] font-semibold tracking-[0.18em] text-primary">
+                    MY IDOL SOUNDTRACK
+                  </p>
+                  <h2 className="mt-1 font-display text-[22px] font-semibold tracking-[-0.02em]">
+                    六首只屬於我們的歌
+                  </h2>
+                  <p className="mt-1 text-[13px] text-muted-foreground">
+                    不是排行榜，是我喜歡他的方式。
+                  </p>
+                </div>
                 <button
                   type="button"
-                  onClick={() =>
-                    setSoundtrackOpen(
-                      (value) => !value,
-                    )
-                  }
-                  className="music-soundtrack-toggle flex w-full items-center gap-3 rounded-[1.6rem] bg-surface/55 px-4 py-4 text-left"
+                  disabled={sharing}
+                  onClick={() => void share()}
+                  className="min-h-10 shrink-0 rounded-full border border-border/70 bg-card px-3.5 text-[13px] font-medium text-primary disabled:opacity-60"
                 >
-                  <div
-                    className="music-soundtrack-cassette"
-                    aria-hidden="true"
-                  >
-                    <span className="music-soundtrack-reel" />
-                    <span className="music-soundtrack-reel" />
-                  </div>
-
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[13px] font-semibold tracking-[0.12em] text-primary">
-                      MY IDOL SOUNDTRACK ♡
-                    </p>
-                    <p className="mt-1 font-display text-[15px] font-medium">
-                      六首只屬於我們的歌
-                    </p>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      不是排行榜，是我喜歡你的方式。
-                    </p>
-                  </div>
-
-                  {soundtrackOpen ? (
-                    <ChevronUp className="size-4 text-muted-foreground" />
-                  ) : (
-                    <ChevronDown className="size-4 text-muted-foreground" />
-                  )}
+                  {sharing ? "建立中…" : "分享"}
                 </button>
+              </div>
 
-                {soundtrackOpen ? (
-                  <div className="mt-4">
-                    <div className="mb-3 flex justify-end">
-                      <button
-                        type="button"
-                        disabled={sharing}
-                        onClick={() =>
-                          void share()
-                        }
-                        className="inline-flex items-center gap-1 min-h-11 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
-                      >
-                        <Share2 className="size-3.5" />
-                        {sharing
-                          ? "建立中…"
-                          : "分享卡"}
-                      </button>
+              <div className="overflow-hidden rounded-[2rem] border border-border/70 bg-card/90 shadow-soft">
+                {SONG_ROLE_OPTIONS.map(([role, label], index) => {
+                  const song = roleSong(role);
+                  return (
+                    <div
+                      key={role}
+                      className={`grid grid-cols-[32px_1fr] gap-3 px-4 py-4 ${
+                        index > 0 ? "border-t border-border/60" : ""
+                      }`}
+                    >
+                      <span className="pt-0.5 font-display text-[13px] tabular-nums text-muted-foreground">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <div className="min-w-0">
+                        <label className="block text-[11px] font-semibold tracking-[0.08em] text-muted-foreground">
+                          {label}
+                        </label>
+                        <select
+                          value={song?.id || ""}
+                          disabled={Boolean(busy)}
+                          onChange={(event) =>
+                            event.target.value &&
+                            void run(`role-${role}`, () =>
+                              assignRole(role, event.target.value),
+                            )
+                          }
+                          className="mt-1.5 w-full appearance-none bg-transparent font-display text-[16px] font-medium outline-none"
+                        >
+                          <option value="">選一首歌</option>
+                          {songs.map((item) => (
+                            <option key={item.id} value={item.id}>
+                              {item.title}
+                            </option>
+                          ))}
+                        </select>
+                        {song?.artist ? (
+                          <p className="mt-1 truncate text-xs text-muted-foreground">
+                            {song.artist}
+                          </p>
+                        ) : null}
+                      </div>
                     </div>
+                  );
+                })}
+              </div>
 
-                    <div className="music-soundtrack-tracklist space-y-2">
-                      {SONG_ROLE_OPTIONS.map(
-                        ([role, label]) => {
-                          const song =
-                            roleSong(role);
-
-                          return (
-                            <div
-                              key={role}
-                              className="music-soundtrack-track rounded-2xl bg-surface/60 px-4 py-3"
-                            >
-                              <label className="block text-xs text-muted-foreground">
-                                {label}
-                              </label>
-
-                              <select
-                                value={
-                                  song?.id ||
-                                  ""
-                                }
-                                disabled={Boolean(
-                                  busy,
-                                )}
-                                onChange={(
-                                  event,
-                                ) =>
-                                  event.target
-                                    .value &&
-                                  void run(
-                                    `role-${role}`,
-                                    () =>
-                                      assignRole(
-                                        role,
-                                        event
-                                          .target
-                                          .value,
-                                      ),
-                                  )
-                                }
-                                className="mt-1 w-full bg-transparent text-sm outline-none"
-                              >
-                                <option value="">
-                                  選一首歌
-                                </option>
-
-                                {songs.map(
-                                  (item) => (
-                                    <option
-                                      key={
-                                        item.id
-                                      }
-                                      value={
-                                        item.id
-                                      }
-                                    >
-                                      {
-                                        item.title
-                                      }
-                                    </option>
-                                  ),
-                                )}
-                              </select>
-
-                              {song ? (
-                                <p className="mt-1 text-xs text-primary">
-                                  ♡{" "}
-                                  {
-                                    song.title
-                                  }
-                                </p>
-                              ) : null}
-                            </div>
-                          );
-                        },
-                      )}
-                    </div>
-
-                    <p className="mt-3 text-xs leading-5 text-muted-foreground">
-                      分享卡只使用你建立的文字與
-                      IdolDays
-                      配色，不含偶像官方照片或音樂封面。
-                    </p>
-                  </div>
-                ) : null}
-              </section>
-            </>
+              <p className="mt-3 px-1 text-xs leading-5 text-muted-foreground">
+                分享卡只使用你建立的文字與 IdolDays 配色，不含偶像官方照片或音樂封面。
+              </p>
+            </section>
           ) : null}
         </>
       )}
@@ -978,45 +803,5 @@ function MusicPage() {
         onSubmit={addSong}
       />
     </AppShell>
-  );
-}
-
-function SectionLabel({
-  eyebrow,
-  title,
-  description,
-}: {
-  eyebrow: string;
-  title: string;
-  description?: string;
-}) {
-  return (
-    <div className="mb-3">
-      <p className="text-[13px] font-medium tracking-[0.12em] text-primary">
-        {eyebrow}
-      </p>
-
-      <h2 className="mt-1.5 font-display text-[18px] font-semibold">
-        {title}
-      </h2>
-
-      {description ? (
-        <p className="mt-1 text-xs leading-5 text-muted-foreground">
-          {description}
-        </p>
-      ) : null}
-    </div>
-  );
-}
-
-function SectionDivider() {
-  return (
-    <div className="my-8 flex items-center gap-3">
-      <div className="h-px flex-1 bg-border/50" />
-      <span className="text-[13px] text-primary/60">
-        ♡
-      </span>
-      <div className="h-px flex-1 bg-border/50" />
-    </div>
   );
 }

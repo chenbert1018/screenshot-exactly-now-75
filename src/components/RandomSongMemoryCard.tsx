@@ -182,31 +182,48 @@ export function RandomSongMemoryCard({ items, ready = true }: Props) {
   }
 
   return (
-    <section className="mt-3 rounded-[1.55rem] border border-border/70 bg-card/85 px-4 py-3.5 text-card-foreground shadow-soft">
-      <div className="flex items-center gap-3">
-        <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-          <MusicDiscIcon className="size-5" />
-        </span>
-        <div className="min-w-0 flex-1">
-          <p className="text-[13px] font-semibold text-primary">
-            {onThisDay ? "去年的今天 ♡" : "♪ 又遇見這首歌 ♡"}
+    <section className="relative mt-4 overflow-hidden rounded-[1.9rem] border border-border/70 bg-card/90 p-4 text-card-foreground shadow-soft">
+      <div className="flex items-start gap-4">
+        <div className="relative h-[108px] w-[108px] shrink-0" aria-hidden="true">
+          <span className="absolute left-0 top-0 flex size-[94px] items-center justify-center rounded-full border border-primary/20 bg-surface shadow-[0_8px_22px_rgba(0,0,0,0.08)]">
+            <span className="absolute inset-[12%] rounded-full border border-primary/10" />
+            <span className="absolute inset-[27%] rounded-full border border-primary/10" />
+            <span className="absolute inset-[40%] rounded-full bg-card ring-1 ring-border/60" />
+            <span className="absolute inset-[47%] rounded-full bg-primary/65" />
+            <span className="absolute left-[18%] top-[13%] h-[2px] w-[42%] rotate-[-28deg] rounded-full bg-white/70" />
+          </span>
+          <span className="absolute bottom-0 right-0 flex size-10 rotate-[6deg] items-center justify-center rounded-[0.45rem] border border-border/60 bg-background shadow-soft">
+            <MusicDiscIcon className="size-5 text-primary" />
+          </span>
+        </div>
+
+        <div className="min-w-0 flex-1 pt-1">
+          <p className="text-[10px] font-semibold tracking-[0.18em] text-primary">
+            {onThisDay ? "ON THIS DAY" : "FOUND AGAIN"}
           </p>
-          <p className="mt-0.5 truncate text-[16px] font-medium">♪ {item.title}</p>
-          <p className="mt-0.5 truncate text-[14px] text-muted-foreground">
-            {item.artist ? `${item.artist}・` : ""}{formatMemoryDate(item.date)}
-            {item.mood ? `・${item.mood}` : ""}
+          <h3 className="mt-1.5 font-display text-[20px] font-semibold leading-tight">
+            {onThisDay ? "這天聽過的歌" : "又遇見這首歌"}
+          </h3>
+          <p className="mt-2 truncate text-[16px] font-medium">{item.title}</p>
+          <p className="mt-1 truncate text-[12px] text-muted-foreground">
+            {item.artist || "我們的歌"}
+          </p>
+          <p className="mt-2 text-[11px] tracking-[0.05em] text-muted-foreground">
+            {formatMemoryDate(item.date)}
+            {item.mood ? `  ·  ${item.mood}` : ""}
           </p>
         </div>
+
         <Link
           to="/music"
           aria-label="打開音樂日記"
-          className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/[0.08] text-primary transition-transform active:scale-90"
+          className="absolute right-4 top-4 flex size-9 items-center justify-center rounded-full border border-border/60 bg-background/80 text-primary transition-transform active:scale-90"
         >
-          <ArrowRight className="size-4" strokeWidth={1.8} />
+          <ArrowRight className="size-3.5" strokeWidth={1.7} />
         </Link>
       </div>
       {savedListenAgain ? (
-        <div className="mt-3 rounded-2xl bg-primary/[0.06] px-4 py-3">
+        <div className="mt-4 border-t border-border/60 pt-4">
           <div className="flex items-center gap-3 text-sm">
             {savedListenAgain.originalMood ? (
               <>
@@ -234,7 +251,7 @@ export function RandomSongMemoryCard({ items, ready = true }: Props) {
           </p>
         </div>
       ) : choosingMood ? (
-        <div className="mt-3 rounded-2xl bg-primary/[0.06] px-4 py-3">
+        <div className="mt-4 border-t border-border/60 pt-4">
           <p className="text-[13px] font-medium">
             現在聽，是什麼心情？
           </p>
@@ -261,7 +278,7 @@ export function RandomSongMemoryCard({ items, ready = true }: Props) {
           ) : null}
         </div>
       ) : (
-        <div className="mt-2.5 flex flex-wrap items-center gap-4">
+        <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-border/60 pt-3">
           {link ? (
             <a
               href={link}
@@ -270,7 +287,7 @@ export function RandomSongMemoryCard({ items, ready = true }: Props) {
               onClick={() => setChoosingMood(true)}
               className="inline-flex min-h-11 items-center gap-1.5 text-[14px] font-medium text-primary"
             >
-              ♪ 再聽一次
+              再聽一次
               <ArrowRight className="size-3.5" />
             </a>
           ) : (
@@ -279,7 +296,7 @@ export function RandomSongMemoryCard({ items, ready = true }: Props) {
               onClick={() => setChoosingMood(true)}
               className="inline-flex min-h-11 items-center gap-1.5 text-[14px] font-medium text-primary"
             >
-              ♪ 再聽一次
+              再聽一次
               <ArrowRight className="size-3.5" />
             </button>
           )}

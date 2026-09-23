@@ -67,9 +67,9 @@ function dotDate(value: string) {
 
 function timeGreeting() {
   const hour = new Date().getHours();
-  if (hour < 12) return "좋은 아침이에요 ♡";
-  if (hour < 18) return "좋은 오후예요 ♡";
-  return "좋은 밤이에요 ♡";
+  if (hour < 12) return "좋은 아침이에요";
+  if (hour < 18) return "좋은 오후예요";
+  return "좋은 밤이에요";
 }
 
 const ANIMAL_DAILY_LINES = {
@@ -102,11 +102,11 @@ function dayLabel(event: IdolEvent) {
 
 function TodayEventMomentCard({ event }: { event: IdolEvent }) {
   const meta = event.type === "COMEBACK"
-    ? { icon: "💿", eyebrow: "今天回歸 ♡", line: "第一個感覺，也值得替自己留下來。" }
+    ? { icon: "💿", eyebrow: "今天回歸", line: "第一個感覺，也值得替自己留下來。" }
     : event.type === "CONCERT"
-      ? { icon: "🎤", eyebrow: "今天見面了 ♡", line: "一張照片、一個瞬間，先替今天留住。" }
+      ? { icon: "🎤", eyebrow: "今天見面了", line: "一張照片、一個瞬間，先替今天留住。" }
       : event.type === "FAN_MEETING"
-        ? { icon: "💌", eyebrow: "今天見到他 ♡", line: "最想說的話、他的反應，都可以留在今天。" }
+        ? { icon: "💌", eyebrow: "今天見到他", line: "最想說的話、他的反應，都可以留在今天。" }
         : null;
   if (!meta) return null;
 
@@ -130,24 +130,21 @@ function EventCard({ event }: { event: IdolEvent }) {
   return (
     <Link
       to="/events"
-      className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground px-5 py-4 shadow-soft backdrop-blur-xl transition-transform active:scale-[0.99]"
+      className="mt-3 grid grid-cols-[48px_1fr_auto] items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 px-5 py-4 text-card-foreground shadow-soft transition-transform active:scale-[0.99]"
     >
       <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
         <DDayIcon className="size-6" />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-[13px] font-medium tracking-[0.1em] text-primary uppercase">
-          下一個 D-DAY
+        <p className="text-[10px] font-semibold tracking-[0.18em] text-primary uppercase">
+          NEXT D-DAY
         </p>
         <p className="mt-1 truncate text-[17px] font-medium">{event.title}</p>
-        <p className="mt-1 text-sm text-muted-foreground">{dotDate(event.date)}</p>
+        <p className="mt-1 text-[12px] tracking-[0.04em] text-muted-foreground">{dotDate(event.date)}</p>
       </div>
       <p className="shrink-0 font-display text-[35px] leading-none text-primary">
         {dayLabel(event)}
       </p>
-      <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
-        <ArrowRight className="size-4" strokeWidth={2} />
-      </span>
     </Link>
   );
 }
@@ -236,24 +233,36 @@ function ArchaeologyCard({
   return (
     <Link
       to="/archaeology"
-      className="mt-3 flex items-center gap-4 rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground p-3 shadow-soft backdrop-blur-xl transition-transform active:scale-[0.99]"
+      className="block overflow-hidden rounded-[1.9rem] border border-border/70 bg-card/90 p-4 text-card-foreground shadow-soft transition-transform active:scale-[0.99]"
     >
-      <div className="flex size-[5.2rem] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/10 text-primary">
-        {item.imageUrl ? (
-          <StoredImage src={item.imageUrl} alt="" className="size-full object-cover" />
-        ) : (
-          <Search className="size-7" strokeWidth={1.5} />
-        )}
+      <div className="flex items-start gap-4">
+        <div className="w-[104px] shrink-0 rotate-[-1.5deg] rounded-[0.35rem] bg-background p-2 pb-7 shadow-[0_8px_22px_rgba(0,0,0,0.09)] ring-1 ring-border/60">
+          <div className="aspect-[4/5] overflow-hidden rounded-[0.2rem] bg-primary/10 text-primary">
+            {item.imageUrl ? (
+              <StoredImage src={item.imageUrl} alt="" className="size-full object-cover" />
+            ) : (
+              <span className="flex size-full items-center justify-center">
+                <Search className="size-7" strokeWidth={1.4} />
+              </span>
+            )}
+          </div>
+          <p className="mt-2 truncate text-center font-display text-[9px] tracking-[0.08em] text-muted-foreground">
+            {dotDate(item.createdAt.slice(0, 10))}
+          </p>
+        </div>
+        <div className="min-w-0 flex-1 pt-2">
+          <p className="text-[10px] font-semibold tracking-[0.18em] text-primary">FROM THE ARCHIVE</p>
+          <h3 className="mt-2 font-display text-[20px] font-semibold leading-snug">那時候的我們</h3>
+          <p className="mt-2 line-clamp-2 text-[15px] leading-relaxed text-foreground/85">{item.title}</p>
+          <p className="mt-2 text-[12px] text-muted-foreground">
+            {item.collection || "收藏在我們的回憶裡"}
+          </p>
+          <span className="mt-4 inline-flex items-center gap-1 text-[13px] font-medium text-primary">
+            翻開這段回憶
+            <ArrowRight className="size-3.5" strokeWidth={1.7} />
+          </span>
+        </div>
       </div>
-      <div className="min-w-0 flex-1 py-1">
-        <p className="text-[14px] font-medium tracking-[0.06em] text-primary">那時候的我們 ♡</p>
-        <p className="mt-1 truncate text-[17px] font-medium">{item.title}</p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {dotDate(item.createdAt.slice(0, 10))}
-          {item.collection ? `・${item.collection}` : ""}
-        </p>
-      </div>
-      <ArrowRight className="mr-1 size-5 shrink-0 text-primary" strokeWidth={1.8} />
     </Link>
   );
 }
@@ -268,26 +277,37 @@ function MemoryCard({
   const text = memory.title.trim() || memory.note.trim() || "那天也好想你 ♡";
   const link = song ? streamingLink(song) : "";
   return (
-    <section className="mt-3 overflow-hidden rounded-[1.8rem] border border-border/70 bg-card/90 text-card-foreground shadow-soft backdrop-blur-xl">
+    <section className="overflow-hidden rounded-[1.9rem] border border-border/70 bg-card/90 text-card-foreground shadow-soft">
       <Link
         to="/memories"
-        className="flex items-center gap-4 p-3 transition-transform active:scale-[0.99]"
+        className="block p-4 transition-transform active:scale-[0.99]"
       >
-        <div className="flex size-[5.2rem] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary/10 text-primary">
-          {memory.photo ? (
-            <StoredImage src={memory.photo} alt="" className="size-full object-cover" />
-          ) : (
-            <History className="size-7" strokeWidth={1.45} />
-          )}
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-[10px] font-semibold tracking-[0.18em] text-primary">ONE YEAR AGO</p>
+            <h3 className="mt-1 font-display text-[20px] font-semibold">去年的今天</h3>
+          </div>
+          <p className="font-display text-[12px] tracking-[0.08em] text-muted-foreground">{dotDate(memory.date)}</p>
         </div>
-        <div className="min-w-0 flex-1 py-1">
-          <p className="text-[13px] font-medium text-primary">▣ 去年的今天</p>
-          <p className="mt-1 text-[17px] font-medium">
-            {song ? "一年前，你第一次在現場聽到這首歌。" : dotDate(memory.date)}
-          </p>
-          <p className="mt-1 truncate text-sm text-muted-foreground">{text}</p>
+        <div className="mt-4 flex gap-4">
+          <div className="flex h-[112px] w-[88px] shrink-0 rotate-[1.5deg] items-center justify-center overflow-hidden rounded-[0.45rem] border-[5px] border-background bg-primary/10 text-primary shadow-[0_7px_18px_rgba(0,0,0,0.08)]">
+            {memory.photo ? (
+              <StoredImage src={memory.photo} alt="" className="size-full object-cover" />
+            ) : (
+              <History className="size-7" strokeWidth={1.35} />
+            )}
+          </div>
+          <div className="min-w-0 flex-1 py-1">
+            <p className="text-[16px] font-medium leading-relaxed">
+              {song ? "一年前，你第一次在現場聽到這首歌。" : text}
+            </p>
+            <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-muted-foreground">{text}</p>
+            <span className="mt-3 inline-flex items-center gap-1 text-[13px] font-medium text-primary">
+              看這一天
+              <ArrowRight className="size-3.5" strokeWidth={1.7} />
+            </span>
+          </div>
         </div>
-        <ArrowRight className="mr-1 size-5 shrink-0 text-primary" strokeWidth={1.8} />
       </Link>
       {song ? (
         <div className="border-t border-border/60 px-4 py-3">
@@ -474,13 +494,6 @@ function TodaySongCard({
       ) : null}
 
       <div className="relative">
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-1 -top-1 text-[13px] text-primary/60"
-        >
-          ✦
-        </span>
-
         <div className="flex items-start gap-4">
           <button
             type="button"
@@ -536,13 +549,6 @@ function TodaySongCard({
                 </span>
               )}
 
-              <span
-                aria-hidden="true"
-                className="absolute bottom-1.5 right-2 z-20 text-[9px] text-primary/80"
-              >
-                ♡
-              </span>
-
               {specialDay === "birthday" ? (
                 <span
                   aria-hidden="true"
@@ -555,16 +561,14 @@ function TodaySongCard({
               ) : null}
             </span>
 
-            <span
-              aria-hidden="true"
-              className="absolute left-[65px] top-0 z-20 text-[11px] text-primary/70"
-            >
-              {specialDay === "birthday"
-                ? "♡"
-                : specialDay === "our-day"
-                  ? "♪"
-                  : "✦"}
-            </span>
+            {specialDay ? (
+              <span
+                aria-hidden="true"
+                className="absolute left-[65px] top-0 z-20 text-[11px] font-semibold tracking-[0.08em] text-primary/70"
+              >
+                {specialDay === "birthday" ? "HBD" : specialDay === "our-day" ? "OUR DAY" : "DEBUT"}
+              </span>
+            ) : null}
           </button>
 
           <div className="min-w-0 flex-1 pt-1">
@@ -693,10 +697,10 @@ function TodaySongCard({
               })}
             </div>
 
-            <div className="mt-4 flex items-center justify-between gap-3 rounded-[1.35rem] bg-primary/[0.055] px-4 py-3">
+            <div className="mt-4 flex items-center justify-between gap-3 border-t border-border/60 px-1 pt-3">
               <div className="min-w-0">
                 <p className="text-[13px] font-semibold tracking-[0.08em] text-primary">
-                  已經留下 {musicDays} 個音樂日子 ♡
+                  已經留下 {musicDays} 個音樂日子
                 </p>
                 <p className="mt-1 truncate text-[14px] text-muted-foreground">
                   {specialDayCopy?.companion ??
@@ -836,9 +840,6 @@ function Hero({
       ) : null}
       <div className="absolute -left-16 top-12 size-56 rounded-full bg-white/40 blur-3xl" />
       <div className="absolute -right-20 bottom-12 size-60 rounded-full bg-primary/20 blur-3xl" />
-      <span className="absolute left-5 top-24 text-xl text-primary/30">✧</span>
-      <span className="absolute right-6 top-36 text-2xl text-primary/30">✦</span>
-      <span className="absolute left-9 bottom-28 text-lg text-primary/35">♡</span>
       {canSwitch ? (
         <button
           type="button"
@@ -878,6 +879,9 @@ function Hero({
             {timeGreeting()}
           </p>
           <p className="mt-2 text-[16px] leading-relaxed text-white drop-shadow-md">
+            今天也是和 {idol.name} 一起走過的一天。
+          </p>
+          <p className="mt-1 text-[12px] leading-relaxed text-white/80 drop-shadow-md">
             {dailyAnimalLine(idol)}
           </p>
         </div>
@@ -1028,40 +1032,25 @@ function HomePage() {
             <Link
               to="/idols/$idolId"
               params={{ idolId: main.id }}
-              className="mt-3 flex min-h-[56px] items-center justify-between rounded-[1.35rem] border border-border/60 bg-card/75 px-4 py-2.5 shadow-soft backdrop-blur-xl transition-transform active:scale-[0.99]"
+              className="mt-3 flex min-h-[64px] items-center justify-between border-b border-border/60 px-2 py-3 transition-opacity active:opacity-70"
             >
               <div>
-                <p className="text-[13px] font-semibold tracking-[0.08em] text-primary">
-                  一起走過 ♡
+                <p className="text-[10px] font-semibold tracking-[0.18em] text-primary uppercase">
+                  TOGETHER DAYS
                 </p>
-                <p className="mt-0.5 text-sm text-muted-foreground">和 {main.name}</p>
+                <p className="mt-1 text-[15px] text-muted-foreground">
+                  和 {main.name} 一起走過
+                </p>
               </div>
 
-              <p className="font-display text-[27px] leading-none text-foreground">
-                {companionship.days}
-                <span className="ml-1 text-sm text-muted-foreground">天</span>
-              </p>
+              <div className="flex items-baseline gap-1">
+                <span className="font-display text-[34px] leading-none tracking-[-0.03em] text-foreground">
+                  {companionship.days}
+                </span>
+                <span className="text-[13px] text-muted-foreground">天</span>
+              </div>
             </Link>
           ) : null}
-
-          <Link
-            to="/memories"
-            className="mt-6 block rounded-[1.8rem] bg-gradient-to-br from-primary/[0.11] via-card/80 to-accent/45 px-5 py-4 shadow-soft transition-transform active:scale-[0.99]"
-          >
-            <p className="text-[14px] font-semibold tracking-[0.06em] text-primary">今天和他 ♡</p>
-            <h2 className="mt-1.5 font-display text-[21px] font-medium leading-snug tracking-[-0.02em] text-foreground">
-              今天，想留下什麼？
-            </h2>
-            <p className="mt-1.5 text-[15px] text-muted-foreground">和 {main.name} 的今天</p>
-            <div className="mt-3 flex items-center gap-2 text-[14px] font-medium text-primary">
-              <span>♪ 一首歌</span>
-              <span aria-hidden="true">·</span>
-              <span>♡ 一句話</span>
-              <span aria-hidden="true">·</span>
-              <span>▣ 一張照片</span>
-              <ArrowRight className="ml-auto size-4" strokeWidth={1.8} />
-            </div>
-          </Link>
 
           {nextMainEvent && eventCountdown(nextMainEvent.date)?.status === "TODAY" ? (
             <TodayEventMomentCard event={nextMainEvent} />
@@ -1070,6 +1059,27 @@ function HomePage() {
           {nextMainEvent && canUseFanWeather(nextMainEvent) ? (
             <FanWeatherCard event={nextMainEvent} />
           ) : null}
+
+          <Link
+            to="/memories"
+            className="mt-6 flex items-center justify-between gap-4 border-y border-border/60 px-2 py-4 transition-opacity active:opacity-70"
+          >
+            <div className="min-w-0">
+              <p className="text-[10px] font-semibold tracking-[0.18em] text-primary uppercase">
+                TODAY'S NOTE
+              </p>
+              <h2 className="mt-1 font-display text-[19px] font-semibold tracking-[-0.02em] text-foreground">
+                今天，想留下什麼？
+              </h2>
+              <p className="mt-1.5 text-[13px] text-muted-foreground">
+                一首歌 · 一句話 · 一張照片
+              </p>
+            </div>
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+              <Plus className="size-4" strokeWidth={2} />
+            </span>
+          </Link>
+
           <TodaySongCard
             idolName={main.name || "他"}
             idolPhoto={main.photo}
@@ -1082,24 +1092,43 @@ function HomePage() {
             addSong={addSong}
           />
 
-          {memoryFromToday ? (
-            <MemoryCard
-              memory={memoryFromToday}
-              song={songs.find((song) => song.id === memoryFromToday.songId)}
-            />
-          ) : null}
+          <section className="mt-8">
+            <div className="mb-3 flex items-end justify-between px-1">
+              <div>
+                <p className="text-[10px] font-semibold tracking-[0.18em] text-primary">
+                  IDOLDAYS ARCHIVE
+                </p>
+                <h2 className="mt-1 font-display text-[21px] font-semibold tracking-[-0.02em] text-foreground">
+                  我們收藏的日子
+                </h2>
+              </div>
+              <Link
+                to="/memories"
+                className="text-[12px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                全部回憶
+              </Link>
+            </div>
 
-          {latestArchaeology ? <ArchaeologyCard item={latestArchaeology} /> : null}
+            <div className="space-y-3">
+              {memoryFromToday ? (
+                <MemoryCard
+                  memory={memoryFromToday}
+                  song={songs.find((song) => song.id === memoryFromToday.songId)}
+                />
+              ) : null}
 
-          <div className="mt-3">
-            <RandomSongMemoryCard items={randomSongMemories} ready={songHistory.ready} />
+              {latestArchaeology ? <ArchaeologyCard item={latestArchaeology} /> : null}
+
+              <RandomSongMemoryCard items={randomSongMemories} ready={songHistory.ready} />
+            </div>
+          </section>
+
+          <div className="mt-5 flex items-center justify-center gap-2 pb-2 text-[10px] font-medium tracking-[0.16em] text-muted-foreground/70">
+            <span>IDOLDAYS</span>
+            <span aria-hidden="true">·</span>
+            <span>MEMORY COLLECTION</span>
           </div>
-
-          <p className="mt-6 px-8 pb-2 text-center font-display text-[15px] leading-relaxed text-muted-foreground/75">
-            一起走過的每一天，
-            <br />
-            都是珍貴的回憶 ♡
-          </p>
         </>
       ) : (
         <Section title="我的本命 ♡">

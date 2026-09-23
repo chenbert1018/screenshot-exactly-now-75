@@ -164,27 +164,53 @@ export function ComebackDiaryCard({ event }: { event: IdolEvent }) {
 
   return (
     <section className="mt-6 rounded-[1.75rem] border border-border/70 bg-card/90 px-5 py-5 shadow-soft">
-      <div className="flex items-start gap-3">
-        <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-          <ComebackIcon className="size-[22px]" />
-        </span>
-
-        <div className="min-w-0 flex-1 pt-0.5">
-          <p className="text-[11px] font-semibold tracking-[0.15em] text-primary uppercase">
+      <div className="relative overflow-hidden rounded-[1.45rem] border border-border/70 bg-background/75 px-5 pb-5 pt-4">
+        <div className="flex items-center justify-between">
+          <p className="text-[10px] font-semibold tracking-[0.22em] text-primary">
             COMEBACK DIARY
           </p>
 
-          <h3 className="mt-1 font-display text-[18px] font-semibold leading-tight">
-            {event.title}
-          </h3>
+          <span className="font-mono text-[9px] tracking-[0.18em] text-muted-foreground">
+            IDOLDAYS / ERA
+          </span>
+        </div>
 
-          <p className="mt-1.5 text-[13px] leading-5 text-muted-foreground">
-            把第一次聽見的心情，和後來真正留下來的歌收在一起。
-          </p>
+        <div className="mt-7 flex items-end gap-4">
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-medium tracking-[0.16em] text-muted-foreground">
+              THE ERA I REMEMBER
+            </p>
+
+            <h3 className="mt-2 font-display text-[25px] font-semibold leading-[1.05] tracking-[-0.025em]">
+              {event.title}
+            </h3>
+
+            <div className="mt-4 h-px w-14 bg-primary/60" />
+
+            <p className="mt-3 max-w-[15rem] text-[12px] leading-[1.55] text-muted-foreground">
+              第一次聽見的心情，和後來真正留下來的歌。
+            </p>
+          </div>
+
+          <div className="relative flex size-[76px] shrink-0 items-center justify-center">
+            <div className="absolute inset-0 rounded-full border border-primary/25" />
+            <div className="absolute inset-[9px] rounded-full border border-primary/20" />
+            <div className="absolute inset-[27px] rounded-full bg-primary/12" />
+            <ComebackIcon className="relative size-[25px] text-primary" />
+          </div>
+        </div>
+
+        <div className="mt-5 flex items-center justify-between border-t border-border/60 pt-3">
+          <span className="text-[9px] tracking-[0.17em] text-muted-foreground">
+            FIRST LISTEN
+          </span>
+          <span className="text-[9px] tracking-[0.17em] text-muted-foreground">
+            ARCHIVE 01
+          </span>
         </div>
       </div>
 
-      <div className="mt-4 space-y-4">
+      <div className="mt-5 space-y-4">
         <div>
           <p className="text-xs text-muted-foreground">
             第一次聽的感覺
