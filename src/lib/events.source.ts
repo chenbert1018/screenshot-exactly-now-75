@@ -21,6 +21,7 @@ import {
 import {
   refreshFanWeatherNotification,
 } from "./fan-weather-notifications";
+import { requestWidgetSync } from "./widget-sync-event";
 import { ensureIdolMigration } from "./idols.source";
 import {
   getMilestoneMigrationRecord,
@@ -311,9 +312,11 @@ export function useEventSource(): EventSource {
         );
 
         reload();
+        requestWidgetSync();
         return;
       }
       const created = local.addEvent(draft);
+      requestWidgetSync();
 
       void refreshFanWeatherNotification(created);
     },
@@ -346,9 +349,11 @@ export function useEventSource(): EventSource {
         );
 
         reload();
+        requestWidgetSync();
         return;
       }
       local.updateEvent(id, draft);
+      requestWidgetSync();
 
       const existing =
         local.events.find((event) => event.id === id);
@@ -378,10 +383,12 @@ export function useEventSource(): EventSource {
         await deleteCloudEvent(id);
         removeFanWeatherSettings(id);
         reload();
+        requestWidgetSync();
         return;
       }
       local.removeEvent(id);
       removeFanWeatherSettings(id);
+      requestWidgetSync();
     },
     [isCloud, userId, local, reload],
   );
