@@ -60,7 +60,23 @@ export function useAuthActions() {
     return error?.message ?? null;
   }, []);
 
-  return { signUp, signIn, signOut };
+  const resetPassword = useCallback(async (email: string) => {
+    const authUrl = new URL("/auth", window.location.origin);
+    authUrl.searchParams.set("recovery", "1");
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: authUrl.toString(),
+    });
+
+    return error?.message ?? null;
+  }, []);
+
+  const updatePassword = useCallback(async (password: string) => {
+    const { error } = await supabase.auth.updateUser({ password });
+    return error?.message ?? null;
+  }, []);
+
+  return { signUp, signIn, signOut, resetPassword, updatePassword };
 }
 
 export type CloudProfile = {

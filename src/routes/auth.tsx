@@ -15,9 +15,19 @@ import {
 import { emptyDraft, MAX_IDOLS, type Idol } from "@/lib/idols";
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: (search: Record<string, unknown>): { returnTo?: string } => {
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { returnTo?: string; recovery?: boolean } => {
     const value = typeof search.returnTo === "string" ? search.returnTo : undefined;
-    return value?.startsWith("/receive/") ? { returnTo: value } : {};
+    const recovery =
+      search.recovery === true ||
+      search.recovery === "1" ||
+      search.recovery === "true";
+
+    return {
+      ...(value?.startsWith("/receive/") ? { returnTo: value } : {}),
+      ...(recovery ? { recovery: true } : {}),
+    };
   },
   head: () => ({
     meta: [
@@ -40,7 +50,7 @@ function safeReceiveReturn(value: string | null | undefined) {
 
 function AuthPage() {
   const { user, loading } = useAuth();
-  const { returnTo } = Route.useSearch();
+  const { returnTo, recovery } = Route.useSearch();
   const [pendingReturnTo, setPendingReturnTo] = useState<string | undefined>(undefined);
 
   useEffect(() => {
@@ -70,6 +80,8 @@ function AuthPage() {
       />
       {loading ? (
         <SoftCard className="px-5 py-6 text-sm text-muted-foreground">讀取中…</SoftCard>
+      ) : recovery && user ? (
+        <PasswordRecovery email={user.email ?? ""} />
       ) : user ? (
         <SignedIn email={user.email ?? ""} userId={user.id} />
       ) : (
@@ -80,8 +92,8 @@ function AuthPage() {
 }
 
 function SignedOut({ returnTo }: { returnTo?: string }) {
-  const { signIn, signUp } = useAuthActions();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const { signIn, signUp, resetPassword } = useAuthActions();
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState<string | null>(null);
@@ -91,14 +103,31 @@ function SignedOut({ returnTo }: { returnTo?: string }) {
     e.preventDefault();
     setBusy(true);
     setMessage(null);
-    const error = mode === "signin" ? await signIn(email, password) : await signUp(email, password, returnTo);
+    if (mode === "forgot") {
+      const error = await resetPassword(email);
+      setBusy(false);
+      setMessage(
+        error ??
+          "重設密碼的信已寄出。請到信箱點開連結，再回來設定新密碼。",
+      );
+      return;
+    }
+
+    const error =
+      mode === "signin"
+        ? await signIn(email, password)
+        : await signUp(email, password, returnTo);
+
     setBusy(false);
+
     if (error) {
       setMessage(error);
     } else if (mode === "signup") {
-      setMessage(returnTo
-        ? "註冊完成。登入後會帶你回朋友送的收藏 ♡"
-        : "註冊完成，如果沒有自動登入，請直接用同一組帳密登入。");
+      setMessage(
+        returnTo
+          ? "註冊完成。登入後會帶你回朋友送的收藏 ♡"
+          : "註冊完成，如果沒有自動登入，請直接用同一組帳密登入。",
+      );
     } else if (returnTo) {
       window.location.assign(returnTo);
     }
@@ -118,33 +147,47 @@ function SignedOut({ returnTo }: { returnTo?: string }) {
           IDOLDAYS CLOUD ♡
         </p>
         <p className="mt-2 font-display text-[20px] font-semibold">
-          {mode === "signin" ? "歡迎回來" : "開始收藏我們的日子"}
+          {mode === "signin"
+            ? "歡迎回來"
+            : mode === "signup"
+              ? "開始收藏我們的日子"
+              : "找回你的帳號"}
         </p>
         <p className="mt-1 text-sm leading-6 text-muted-foreground">
           {mode === "signin"
             ? "你的收藏與設定，都在這裡等你。"
-            : "建立帳號，把重要的追星日子留在雲端。"}
+            : mode === "signup"
+              ? "建立帳號，把重要的追星日子留在雲端。"
+              : "輸入註冊 Email，我們會寄一封重設密碼信給你。"}
         </p>
       </div>
 
-      <div className="mb-5 grid grid-cols-2 rounded-full bg-surface/70 p-1">
-        <Button
-          type="button"
-          variant="ghost"
-          className={`rounded-full ${mode === "signin" ? "bg-card text-primary shadow-soft hover:bg-card" : "text-muted-foreground"}`}
-          onClick={() => setMode("signin")}
-        >
-          登入
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          className={`rounded-full ${mode === "signup" ? "bg-card text-primary shadow-soft hover:bg-card" : "text-muted-foreground"}`}
-          onClick={() => setMode("signup")}
-        >
-          註冊
-        </Button>
-      </div>
+      {mode !== "forgot" ? (
+        <div className="mb-5 grid grid-cols-2 rounded-full bg-surface/70 p-1">
+          <Button
+            type="button"
+            variant="ghost"
+            className={`rounded-full ${mode === "signin" ? "bg-card text-primary shadow-soft hover:bg-card" : "text-muted-foreground"}`}
+            onClick={() => {
+              setMode("signin");
+              setMessage(null);
+            }}
+          >
+            登入
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            className={`rounded-full ${mode === "signup" ? "bg-card text-primary shadow-soft hover:bg-card" : "text-muted-foreground"}`}
+            onClick={() => {
+              setMode("signup");
+              setMessage(null);
+            }}
+          >
+            註冊
+          </Button>
+        </div>
+      ) : null}
       <form onSubmit={submit} className="space-y-4">
         <div className="space-y-1.5">
           <Label htmlFor="auth-email">Email</Label>
@@ -158,27 +201,61 @@ function SignedOut({ returnTo }: { returnTo?: string }) {
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="auth-password">密碼</Label>
-          <Input
-            id="auth-password"
-            className="min-h-12 rounded-2xl border-border/70 bg-card/70 px-4 shadow-none"
-            type="password"
-            autoComplete={mode === "signin" ? "current-password" : "new-password"}
-            required
-            minLength={6}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
+        {mode !== "forgot" ? (
+          <div className="space-y-1.5">
+            <Label htmlFor="auth-password">密碼</Label>
+            <Input
+              id="auth-password"
+              className="min-h-12 rounded-2xl border-border/70 bg-card/70 px-4 shadow-none"
+              type="password"
+              autoComplete={mode === "signin" ? "current-password" : "new-password"}
+              required
+              minLength={6}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+        ) : null}
         <Button
           type="submit"
           className="min-h-12 w-full rounded-full shadow-soft"
           disabled={busy}
         >
-          {busy ? "處理中…" : mode === "signin" ? "登入" : "建立帳號"}
+          {busy
+            ? "處理中…"
+            : mode === "signin"
+              ? "登入"
+              : mode === "signup"
+                ? "建立帳號"
+                : "寄出重設密碼信"}
         </Button>
       </form>
+
+      {mode === "signin" ? (
+        <button
+          type="button"
+          className="mt-4 w-full text-center text-sm text-primary"
+          onClick={() => {
+            setMode("forgot");
+            setMessage(null);
+            setPassword("");
+          }}
+        >
+          忘記密碼？
+        </button>
+      ) : mode === "forgot" ? (
+        <button
+          type="button"
+          className="mt-4 w-full text-center text-sm text-primary"
+          onClick={() => {
+            setMode("signin");
+            setMessage(null);
+          }}
+        >
+          返回登入
+        </button>
+      ) : null}
+
       {message ? (
         <p className="mt-4 rounded-2xl bg-surface/60 px-4 py-3 text-sm text-muted-foreground">
           {message}
@@ -187,6 +264,110 @@ function SignedOut({ returnTo }: { returnTo?: string }) {
       <p className="mt-4 text-sm text-muted-foreground">
         登入不會刪除這台 iPhone 上原本保存的內容。
       </p>
+    </SoftCard>
+  );
+}
+
+function PasswordRecovery({ email }: { email: string }) {
+  const { updatePassword } = useAuthActions();
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [message, setMessage] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [complete, setComplete] = useState(false);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMessage(null);
+
+    if (password.length < 6) {
+      setMessage("密碼至少需要 6 個字元。");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setMessage("兩次輸入的密碼不一致。");
+      return;
+    }
+
+    setBusy(true);
+    const error = await updatePassword(password);
+    setBusy(false);
+
+    if (error) {
+      setMessage(error);
+      return;
+    }
+
+    setComplete(true);
+    setMessage("密碼已更新完成。");
+  };
+
+  return (
+    <SoftCard className="relative overflow-hidden px-5 py-6">
+      <p className="text-xs font-semibold tracking-[0.16em] text-primary">
+        IDOLDAYS CLOUD
+      </p>
+      <p className="mt-2 font-display text-[20px] font-semibold">
+        設定新的密碼
+      </p>
+      <p className="mt-1 text-sm leading-6 text-muted-foreground">
+        {email ? `正在更新 ${email} 的登入密碼。` : "請設定新的登入密碼。"}
+      </p>
+
+      {!complete ? (
+        <form onSubmit={submit} className="mt-6 space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="recovery-password">新密碼</Label>
+            <Input
+              id="recovery-password"
+              className="min-h-12 rounded-2xl border-border/70 bg-card/70 px-4 shadow-none"
+              type="password"
+              autoComplete="new-password"
+              required
+              minLength={6}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="recovery-password-confirm">再次輸入新密碼</Label>
+            <Input
+              id="recovery-password-confirm"
+              className="min-h-12 rounded-2xl border-border/70 bg-card/70 px-4 shadow-none"
+              type="password"
+              autoComplete="new-password"
+              required
+              minLength={6}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          </div>
+
+          <Button
+            type="submit"
+            className="min-h-12 w-full rounded-full shadow-soft"
+            disabled={busy}
+          >
+            {busy ? "更新中…" : "更新密碼"}
+          </Button>
+        </form>
+      ) : (
+        <Button
+          type="button"
+          className="mt-6 min-h-12 w-full rounded-full shadow-soft"
+          onClick={() => window.location.assign("/auth")}
+        >
+          回到我的帳號
+        </Button>
+      )}
+
+      {message ? (
+        <p className="mt-4 rounded-2xl bg-surface/60 px-4 py-3 text-sm text-muted-foreground">
+          {message}
+        </p>
+      ) : null}
     </SoftCard>
   );
 }
