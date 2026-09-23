@@ -5,6 +5,7 @@ import { useSubscription } from "./subscription";
 import { MAX_IDOLS, useIdols, type Idol, type IdolDraft, type RepresentativeAnimal } from "./idols";
 import { ensureStorageMigration } from "./storage-migration";
 import { isDataUrl, uploadImage } from "./storage";
+import { requestWidgetSync } from "./widget-sync-event";
 import {
   createCloudIdol,
   deleteCloudIdol,
@@ -395,12 +396,14 @@ export function useIdolSource(): IdolSource {
           updateCloudIdol(created.id, { ...draft, photo }),
         );
         reload();
+        requestWidgetSync();
         return;
       }
       if (local.idols.length >= idolLimit) {
         throw new Error(`目前方案最多只能收藏 ${idolLimit} 位偶像`);
       }
       local.addIdol(draft);
+      requestWidgetSync();
     },
     [isCloud, userId, local, reload, idolLimit],
   );
@@ -416,9 +419,11 @@ export function useIdolSource(): IdolSource {
           );
         }
         reload();
+        requestWidgetSync();
         return;
       }
       local.updateIdol(id, draft);
+      requestWidgetSync();
     },
     [isCloud, userId, local, reload],
   );
@@ -428,9 +433,11 @@ export function useIdolSource(): IdolSource {
       if (isCloud) {
         await deleteCloudIdol(id);
         reload();
+        requestWidgetSync();
         return;
       }
       local.removeIdol(id);
+      requestWidgetSync();
     },
     [isCloud, local, reload],
   );
