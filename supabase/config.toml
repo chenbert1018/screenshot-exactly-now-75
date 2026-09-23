@@ -2,3 +2,6 @@ project_id = "fdlhgokmyyflmfatxjbd"
 
 [functions.shared-album]
 verify_jwt = false
+
+[functions.delete-account]
+verify_jwt = false
