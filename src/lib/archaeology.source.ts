@@ -16,7 +16,7 @@ import {
   updateCloudArchaeologyImage,
 } from "./archaeology.cloud";
 import { ensureIdolMigration } from "./idols.source";
-import { isDataUrl, uploadImage } from "./storage";
+import { isDataUrl, removeImage, uploadImage } from "./storage";
 
 const MIGRATION_KEY = "idoldays.cloudMigration.archaeology.v1";
 
@@ -47,6 +47,11 @@ function writeMigration(
   } catch {
     /* Migration metadata failure must not delete local data. */
   }
+}
+
+async function cleanupArchaeologyImage(ref?: string) {
+  if (!ref || isDataUrl(ref)) return;
+  try { await removeImage(ref); } catch {}
 }
 
 async function storeCover(
@@ -193,8 +198,10 @@ export function useArchaeologySource() {
         local.updateItem(id, draft);
         return;
       }
+      const previous = cloudItems.find((item) => item.id === id);
       await updateCloudArchaeology(id, draft);
       await storeCover(userId, id, draft.imageUrl);
+      if (previous?.imageUrl && previous.imageUrl !== draft.imageUrl) await cleanupArchaeologyImage(previous.imageUrl);
       reload();
     },
     [isCloud, userId, local, reload],
@@ -226,10 +233,12 @@ export function useArchaeologySource() {
         local.removeItem(id);
         return;
       }
+      const item = cloudItems.find((entry) => entry.id === id);
       await deleteCloudArchaeology(id);
-      setCloudItems((items) => items.filter((item) => item.id !== id));
+      await cleanupArchaeologyImage(item?.imageUrl);
+      setCloudItems((items) => items.filter((entry) => entry.id !== id));
     },
-    [isCloud, local],
+    [isCloud, local, cloudItems],
   );
 
   return {

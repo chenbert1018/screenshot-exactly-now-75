@@ -100,6 +100,10 @@ export function deleteMemoriesForFolder(folderId: string) {
   emit(read().filter((m) => m.folderId !== folderId));
 }
 
+export function deleteMemoriesForIdol(idolId: string) {
+  emit(read().filter((m) => m.idolId !== idolId));
+}
+
 export function useMemories(folderId?: string) {
   const [all, setAll] = useState<Memory[]>([]);
   const [ready, setReady] = useState(false);

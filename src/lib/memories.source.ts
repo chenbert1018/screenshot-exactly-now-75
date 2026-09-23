@@ -9,9 +9,14 @@ import {
 } from "./memories.cloud";
 import { ensureFolderMigration, mapIdolId } from "./memory-folders.source";
 import { ensureStorageMigration } from "./storage-migration";
-import { isDataUrl, uploadImage } from "./storage";
+import { isDataUrl, removeImage, uploadImage } from "./storage";
 
 /** 新增／修改雲端回憶時，把 dataURL 照片改存到 Storage（失敗時保留原本的照片） */
+async function cleanupStoredImage(ref?: string) {
+  if (!ref || isDataUrl(ref)) return;
+  try { await removeImage(ref); } catch { /* best effort */ }
+}
+
 async function storeMemoryPhoto(
   userId: string,
   cloudId: string,
@@ -285,6 +290,7 @@ export function useMemorySource(folderId?: string): MemorySource {
   const update = useCallback(
     async (id: string, draft: MemoryDraft) => {
       if (isCloud) {
+        const previous = cloudMemories.find((memory) => memory.id === id);
         await updateCloudMemory(id, draft);
         if (userId) {
           await storeMemoryPhoto(userId, id, draft.photo, (photo) =>
@@ -296,19 +302,21 @@ export function useMemorySource(folderId?: string): MemorySource {
       }
       local.updateMemory(id, draft);
     },
-    [isCloud, userId, local, reload],
+    [isCloud, userId, local, reload, cloudMemories],
   );
 
   const removeMemory = useCallback(
     async (id: string) => {
       if (isCloud) {
+        const previous = cloudMemories.find((memory) => memory.id === id);
         await deleteMemory(id);
+        await cleanupStoredImage(previous?.photo);
         reload();
         return;
       }
       local.removeMemory(id);
     },
-    [isCloud, local, reload],
+    [isCloud, local, reload, cloudMemories],
   );
 
   return {

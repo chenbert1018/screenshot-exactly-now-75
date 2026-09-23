@@ -73,6 +73,10 @@ export function sortFolders(list: MemoryFolder[]) {
   });
 }
 
+export function deleteMemoryFoldersForIdol(idolId: string) {
+  emit(read().filter((f) => f.idolId !== idolId));
+}
+
 export function useMemoryFolders() {
   const [folders, setFolders] = useState<MemoryFolder[]>([]);
   const [ready, setReady] = useState(false);

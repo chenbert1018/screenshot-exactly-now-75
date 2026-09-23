@@ -21,12 +21,12 @@ import type { Idol } from "@/lib/idols";
 import { useIdolSource } from "@/lib/idols.source";
 import { useEventSource } from "@/lib/events.source";
 import { parseLocalDate, today } from "@/lib/dates";
-import { deleteReminders, formatDaysBefore } from "@/lib/reminders";
+import { formatDaysBefore } from "@/lib/reminders";
 import { useReminderSource } from "@/lib/reminders.source";
 import { ReminderSheet } from "@/components/ReminderSheet";
 import { deleteMilestonesForEvent } from "@/lib/milestones";
 import { toast } from "sonner";
-import { scheduleEventNotifications } from "@/lib/event-notifications";
+import { scheduleAnniversaryNotification, scheduleEventNotifications } from "@/lib/event-notifications";
 
 export const Route = createFileRoute("/calendar")({
   head: () => ({
@@ -105,7 +105,7 @@ function CalendarPage() {
   const [editing, setEditing] = useState<IdolEvent | null>(null);
   const [prefillDate, setPrefillDate] = useState("");
   const [reminderOpen, setReminderOpen] = useState(false);
-  const { reminderFor, setReminderFor } = useReminderSource();
+  const { reminderFor, setReminderFor, removeRemindersForEvent } = useReminderSource();
 
   const byDate = useMemo(() => {
     const map = new Map<string, IdolEvent[]>();
@@ -593,9 +593,9 @@ function CalendarPage() {
                         if (deletingEvent) return;
                         setDeletingEvent(true);
                         try {
-                          await removeEvent(detail.id);
-                          deleteReminders(detail.id);
+                          await removeRemindersForEvent(detail.id);
                           deleteMilestonesForEvent(detail.id);
+                          await removeEvent(detail.id);
                           setConfirmDelete(false);
                           setDetailId(null);
                         } catch {
@@ -705,7 +705,19 @@ function CalendarPage() {
           initialDaysBefore={currentReminder?.enabled ? currentReminder.daysBefore : null}
           onSave={async (daysBefore) => {
             await setReminderFor(reminderTarget, daysBefore);
-            if (detail) await scheduleEventNotifications(detail, daysBefore);
+            if (detail) {
+              await scheduleEventNotifications(detail, daysBefore);
+            } else if (annDetail) {
+              await scheduleAnniversaryNotification({
+                idolId: annDetail.idol.id,
+                idolName: annDetail.idol.name,
+                kind: annDetail.kind === "birthday" ? "BIRTHDAY" : "ANNIVERSARY",
+                date: annDetail.kind === "birthday"
+                  ? annDetail.idol.birthday
+                  : annDetail.idol.debutDate,
+                daysBefore,
+              });
+            }
             setReminderOpen(false);
           }}
         />

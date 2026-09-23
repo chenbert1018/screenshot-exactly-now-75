@@ -131,8 +131,18 @@ function EventsPage() {
   }
 
   async function handleSubmit(draft: EventDraft) {
-    if (editing) await updateEvent(editing.id, draft);
-    else await addEvent(draft);
+    if (editing) {
+      const reminder = reminderFor({ type: "EVENT", eventId: editing.id });
+      await updateEvent(editing.id, draft);
+      if (reminder?.enabled) {
+        await scheduleEventNotifications(
+          { ...editing, ...draft },
+          reminder.daysBefore,
+        );
+      }
+    } else {
+      await addEvent(draft);
+    }
     setFormOpen(false);
     setEditing(null);
   }
@@ -269,14 +279,18 @@ function EventsPage() {
             type: detail.type,
             date,
             note: detail.note,
+            locationName: detail.locationName ?? "",
+            city: detail.city ?? "",
+            weatherEnabled: Boolean(detail.weatherEnabled),
+            weatherTone: detail.weatherTone ?? "SUNSHINE",
           });
           setDetailId(null);
         }}
         onDelete={async () => {
           if (!detail) return;
-          await removeEvent(detail.id);
           await removeRemindersForEvent(detail.id);
           deleteMilestonesForEvent(detail.id);
+          await removeEvent(detail.id);
           setDetailId(null);
         }}
         reminderSummary={detail ? formatReminderSummary(remindersFor(detail.id)) : ""}

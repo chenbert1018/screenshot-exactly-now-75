@@ -5,6 +5,7 @@ import { unlinkComebackEraByEvent } from "./comeback-era.source";
 
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "./auth";
+import { supabase } from "@/integrations/supabase/client";
 import { useEvents, type EventDraft, type IdolEvent } from "./events";
 import {
   createCloudEvent,
@@ -222,6 +223,15 @@ async function runEventMigration(userId: string) {
 
 /* --------------------------- data source hook --------------------------- */
 
+async function deleteMusicMemoriesForEvent(eventId: string, userId: string) {
+  const [comebackResult, concertResult] = await Promise.all([
+    supabase.from("comeback_diaries").delete().eq("event_id", eventId).eq("user_id", userId),
+    supabase.from("concert_music_memories").delete().eq("event_id", eventId).eq("user_id", userId),
+  ]);
+  const error = comebackResult.error ?? concertResult.error;
+  if (error) throw error;
+}
+
 export type EventSource = {
   events: IdolEvent[];
   ready: boolean;
@@ -362,8 +372,8 @@ export function useEventSource(): EventSource {
     async (id: string) => {
       await cancelEventNotifications(id);
 
-      if (isCloud) {
-        // Comeback Era 使用明確 unlink → delete，避免資料庫 cascade 偷刪個人回憶。
+      if (isCloud && userId) {
+        await deleteMusicMemoriesForEvent(id, userId);
         await unlinkComebackEraByEvent(id);
         await deleteCloudEvent(id);
         removeFanWeatherSettings(id);
@@ -371,8 +381,9 @@ export function useEventSource(): EventSource {
         return;
       }
       local.removeEvent(id);
+      removeFanWeatherSettings(id);
     },
-    [isCloud, local, reload],
+    [isCloud, userId, local, reload],
   );
 
   return {

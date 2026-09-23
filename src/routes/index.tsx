@@ -25,6 +25,7 @@ import type { Idol } from "@/lib/idols";
 import { useIdolSource } from "@/lib/idols.source";
 import { canUseFanWeather, eventCountdown, nextEvent, type IdolEvent } from "@/lib/events";
 import { useEventSource } from "@/lib/events.source";
+import { useReminderSource } from "@/lib/reminders.source";
 import { useArchaeologySource } from "@/lib/archaeology.source";
 import { useMemorySource } from "@/lib/memories.source";
 import { useIdolMusicSource } from "@/lib/idol-music.source";
@@ -893,9 +894,11 @@ function Hero({
 function HomePage() {
   const { idols, homeIdol, ready, coverRotation, setMainIdol, setCoverRotation } = useIdolSource();
   const { events } = useEventSource();
+  const { reminders } = useReminderSource();
   const { items: archaeology } = useArchaeologySource();
   const { all: memories } = useMemorySource();
   const main = homeIdol;
+  const activeReminderCount = reminders.filter((reminder) => reminder.enabled).length;
   const { songs, addSong } = useIdolMusicSource(main?.id);
   const todayJournal = useTodaySongJournal(main?.id);
   const songHistory = useSongJournalHistory(main?.id);
@@ -1000,7 +1003,14 @@ function HomePage() {
           className="relative flex size-10 items-center justify-center rounded-full border border-border/75 bg-card/85 text-card-foreground shadow-soft backdrop-blur-md transition-transform active:scale-95"
         >
           <Bell className="size-5" strokeWidth={1.55} />
-          <span className="absolute right-0.5 top-0.5 size-2.5 rounded-full border-2 border-card bg-primary" />
+          {activeReminderCount > 0 ? (
+            <span
+              className="absolute -right-1 -top-1 flex min-w-5 items-center justify-center rounded-full border-2 border-card bg-primary px-1 text-[10px] font-semibold leading-4 text-primary-foreground"
+              aria-label={`${activeReminderCount} 個提醒`}
+            >
+              {activeReminderCount > 99 ? "99+" : activeReminderCount}
+            </span>
+          ) : null}
         </Link>
       </header>
 

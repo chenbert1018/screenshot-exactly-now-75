@@ -178,6 +178,10 @@ function emit(items: ArchaeologyItem[]) {
   }
 }
 
+export function deleteArchaeologyForIdol(idolId: string) {
+  emit(loadArchaeologyItems().filter((item) => item.idolId !== idolId));
+}
+
 export function sortArchaeologyItems(
   items: ArchaeologyItem[],
 ) {

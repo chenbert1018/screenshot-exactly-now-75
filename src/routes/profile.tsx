@@ -14,6 +14,7 @@ import { useReminderSource } from "@/lib/reminders.source";
 import { useIdolSource } from "@/lib/idols.source";
 import { eventTypeMeta } from "@/lib/events";
 import { useEventSource } from "@/lib/events.source";
+import { scheduleEventNotifications } from "@/lib/event-notifications";
 import { Paywall } from "@/components/Paywall";
 import { PLUS_NAME, PLUS_PRICE_LABEL, useSubscription } from "@/lib/subscription";
 import { fetchMyProfile, type CloudProfile, useAuth } from "@/lib/auth";
@@ -191,7 +192,18 @@ function ProfilePage() {
                   <Switch
                     checked={row.enabled}
                     aria-label={`${row.title} 提醒開關`}
-                    onCheckedChange={(v) => void updateReminder(row.id, { enabled: v })}
+                    onCheckedChange={(v) => {
+                      void (async () => {
+                        await updateReminder(row.id, { enabled: v });
+                        const reminder = reminders.find((item) => item.id === row.id);
+                        const event = reminder?.eventId
+                          ? events.find((item) => item.id === reminder.eventId)
+                          : undefined;
+                        if (event && reminder) {
+                          await scheduleEventNotifications(event, v ? reminder.daysBefore : null);
+                        }
+                      })();
+                    }}
                   />
                   <button
                     type="button"

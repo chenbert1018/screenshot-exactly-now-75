@@ -13,8 +13,18 @@ import {
   updateMemoryFolder,
 } from "./memory-folders.cloud";
 import { getMigrationRecord, migrateLocalIdols } from "./idols.source";
-import { isDataUrl, uploadImage } from "./storage";
+import { isDataUrl, removeImage, uploadImage } from "./storage";
 import { unlinkComebackEraByFolder } from "./comeback-era.source";
+import { deleteMemory, listMemories } from "./memories.cloud";
+
+async function cleanupFolderMedia(folderId: string, coverPhoto?: string) {
+  const memories = await listMemories(folderId);
+  for (const memory of memories) {
+    await deleteMemory(memory.id);
+    if (memory.photo && !isDataUrl(memory.photo)) { try { await removeImage(memory.photo); } catch {} }
+  }
+  if (coverPhoto && !isDataUrl(coverPhoto)) { try { await removeImage(coverPhoto); } catch {} }
+}
 
 async function storeFolderCover(
   userId: string,
@@ -321,14 +331,16 @@ export function useMemoryFolderSource(): MemoryFolderSource {
     async (id: string) => {
       if (isCloud) {
         // Era folder 先解除活動關聯，再刪除資料夾本身。
+        const folder = cloudFolders.find((item) => item.id === id);
         await unlinkComebackEraByFolder(id);
+        await cleanupFolderMedia(id, folder?.coverPhoto);
         await deleteMemoryFolder(id);
         reload();
         return;
       }
       local.removeFolder(id);
     },
-    [isCloud, local, reload],
+    [isCloud, local, reload, cloudFolders],
   );
 
   return {

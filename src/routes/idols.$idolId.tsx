@@ -19,8 +19,14 @@ import { useIdolSource } from "@/lib/idols.source";
 import { ReminderSheet } from "@/components/ReminderSheet";
 import { DEFAULT_DAYS_BEFORE, formatDaysBefore, type ReminderType } from "@/lib/reminders";
 import { useReminderSource } from "@/lib/reminders.source";
+import { useEventSource } from "@/lib/events.source";
+import { deleteMilestonesForEvent } from "@/lib/milestones";
 import { Bell } from "lucide-react";
 import { daysSince, primaryDay, nextAnniversary } from "@/lib/dates";
+import { scheduleAnniversaryNotification } from "@/lib/event-notifications";
+import { deleteMemoriesForIdol } from "@/lib/memories";
+import { deleteMemoryFoldersForIdol } from "@/lib/memory-folders";
+import { deleteArchaeologyForIdol } from "@/lib/archaeology";
 
 export const Route = createFileRoute("/idols/$idolId")({
   head: () => ({
@@ -50,7 +56,8 @@ function IdolDetailPage() {
   const [editing, setEditing] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [reminderKind, setReminderKind] = useState<ReminderType | null>(null);
-  const { reminderFor, setReminderFor, removeRemindersForIdol } = useReminderSource();
+  const { reminderFor, setReminderFor, removeRemindersForIdol, removeRemindersForEvent } = useReminderSource();
+  const { events, removeEvent } = useEventSource();
 
   const idol = findIdol(idolId);
 
@@ -86,7 +93,19 @@ function IdolDetailPage() {
 
   async function handleDelete() {
     if (!idol) return;
+
+    // Explicitly clean linked days first so deleting an idol cannot leave orphan events.
+    const linkedEvents = events.filter((event) => event.idolId === idol.id);
+    for (const event of linkedEvents) {
+      await removeRemindersForEvent(event.id);
+      deleteMilestonesForEvent(event.id);
+      await removeEvent(event.id);
+    }
+
     await removeRemindersForIdol(idolId);
+    deleteMemoriesForIdol(idol.id);
+    deleteMemoryFoldersForIdol(idol.id);
+    deleteArchaeologyForIdol(idol.id);
     await removeIdol(idol.id);
     setConfirming(false);
     setEditing(false);
@@ -256,9 +275,16 @@ function IdolDetailPage() {
             ? (debutReminder?.daysBefore ?? DEFAULT_DAYS_BEFORE)
             : (birthdayReminder?.daysBefore ?? DEFAULT_DAYS_BEFORE)
         }
-        onSave={(daysBefore) => {
+        onSave={async (daysBefore) => {
           if (!reminderKind) return;
-          void setReminderFor({ type: reminderKind, idolId }, daysBefore);
+          await setReminderFor({ type: reminderKind, idolId }, daysBefore);
+          await scheduleAnniversaryNotification({
+            idolId,
+            idolName: idol.name,
+            kind: reminderKind,
+            date: reminderKind === "ANNIVERSARY" ? idol.debutDate : idol.birthday,
+            daysBefore,
+          });
           setReminderKind(null);
         }}
       />

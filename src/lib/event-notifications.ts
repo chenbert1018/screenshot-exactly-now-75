@@ -273,6 +273,79 @@ export async function scheduleEventNotifications(
     return 0;
   }
 }
+
+
+export type AnniversaryNotificationKind = "BIRTHDAY" | "ANNIVERSARY";
+
+function anniversaryNotificationId(idolId: string, kind: AnniversaryNotificationKind): number {
+  const suffix = kind === "BIRTHDAY" ? 91 : 92;
+  return (hashString(`idoldays:ann:${idolId}:${kind}`) % 20_000_000) * 100 + suffix;
+}
+
+async function cancelAnniversaryNotification(
+  idolId: string,
+  kind: AnniversaryNotificationKind,
+): Promise<void> {
+  if (!isIOSNative()) return;
+  try {
+    await LocalNotifications.cancel({
+      notifications: [{ id: anniversaryNotificationId(idolId, kind) }],
+    });
+  } catch (error) {
+    console.error("[IdolDays Anniversary] Cancel failed:", error);
+  }
+}
+
+function nextAnnualDate(date: string, daysBefore: number): Date | null {
+  const match = /^(?:\d{4}-)?(\d{2})-(\d{2})$/.exec(date);
+  if (!match) return null;
+  const month = Number(match[1]);
+  const day = Number(match[2]);
+  const now = new Date();
+  for (const year of [now.getFullYear(), now.getFullYear() + 1]) {
+    const at = new Date(year, month - 1, day, NOTIFICATION_HOUR, 0, 0, 0);
+    if (at.getMonth() !== month - 1 || at.getDate() !== day) continue;
+    at.setDate(at.getDate() - daysBefore);
+    if (at.getTime() > now.getTime()) return at;
+  }
+  return null;
+}
+
+export async function scheduleAnniversaryNotification(input: {
+  idolId: string;
+  idolName: string;
+  kind: AnniversaryNotificationKind;
+  date: string;
+  daysBefore: number | null;
+}): Promise<number> {
+  if (!isIOSNative()) return 0;
+  await cancelAnniversaryNotification(input.idolId, input.kind);
+  if (input.daysBefore === null) return 0;
+  const granted = await ensureNotificationPermission();
+  if (!granted) return 0;
+  const at = nextAnnualDate(input.date, input.daysBefore);
+  if (!at) return 0;
+  const label = input.kind === "BIRTHDAY" ? "生日" : "出道紀念日";
+  const body = input.daysBefore === 0
+    ? `今天是 ${input.idolName} 的${label}`
+    : `再 ${input.daysBefore} 天就是 ${input.idolName} 的${label}`;
+  try {
+    await LocalNotifications.schedule({
+      notifications: [{
+        id: anniversaryNotificationId(input.idolId, input.kind),
+        title: input.kind === "BIRTHDAY" ? "🎂 IdolDays 生日提醒" : "✨ IdolDays 紀念日提醒",
+        body,
+        schedule: { at, allowWhileIdle: true },
+        extra: { idolId: input.idolId, reminderType: input.kind, reminderDays: input.daysBefore },
+      }],
+    });
+    return 1;
+  } catch (error) {
+    console.error("[IdolDays Anniversary] Schedule failed:", error);
+    return 0;
+  }
+}
+
 /* ----------------------- Fan Weather notifications ----------------------- */
 
 const FAN_WEATHER_NOTIFICATION_HOUR = 21;
