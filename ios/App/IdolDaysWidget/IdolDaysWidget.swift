@@ -127,7 +127,7 @@ struct IdolDaysProvider: TimelineProvider {
 
 
     func placeholder(in context: Context) -> IdolDaysEntry {
-        mockEntry
+        emptyEntry
     }
 
     func getSnapshot(
@@ -135,9 +135,9 @@ struct IdolDaysProvider: TimelineProvider {
         completion: @escaping (IdolDaysEntry) -> Void
     ) {
         if context.isPreview {
-            completion(mockEntry)
+            completion(emptyEntry)
         } else {
-            completion(loadSharedEntry() ?? mockEntry)
+            completion(loadSharedEntry() ?? emptyEntry)
         }
     }
 
@@ -145,7 +145,7 @@ struct IdolDaysProvider: TimelineProvider {
         in context: Context,
         completion: @escaping (Timeline<IdolDaysEntry>) -> Void
     ) {
-        let entry = loadSharedEntry() ?? mockEntry
+        let entry = loadSharedEntry() ?? emptyEntry
 
         let nextUpdate =
             Calendar.current.nextDate(
@@ -243,28 +243,27 @@ struct IdolDaysProvider: TimelineProvider {
         )
     }
 
-    private var mockEntry: IdolDaysEntry {
+    private var emptyEntry: IdolDaysEntry {
         IdolDaysEntry(
             date: Date(),
-            idolName: "JENNIE",
-            eventTitle: "DEADLINE WORLD TOUR",
-            dDay: "D-12",
-            eventDate: "SEP 21 · 19:30",
-            location: "Taipei Arena",
-            quote: "今天也離見面的那一天更近了一點 ♡",
-            moodEmoji: "♡",
-            moodLabel: "今天值得開心",
-            decorationEmoji: "✦",
-            decorationLabel: "平常的一天，也很好",
-            songTitle: "You & Me",
-            songArtist: "JENNIE",
+            idolName: "",
+            eventTitle: "",
+            dDay: "",
+            eventDate: "",
+            location: "",
+            quote: "",
+            moodEmoji: "",
+            moodLabel: "",
+            decorationEmoji: "",
+            decorationLabel: "",
+            songTitle: "",
+            songArtist: "",
             enabledContents: [
                 "IDOL",
                 "MESSAGE",
                 "DECORATION",
                 "MOOD",
-                "COUNTDOWN",
-                "SONG"
+                "COUNTDOWN"
             ]
         )
     }
@@ -349,118 +348,121 @@ struct IdolDaysWidgetEntryView: View {
     // 名字 / 活動 / D-Day 在右下
     //
 
+
+
+
     private var smallWidget: some View {
         ZStack {
             if entry.enabled("IDOL") {
-                fullBleedPhoto(
-                    alignment: .top
-                )
+                fullBleedPhoto(alignment: .top)
             } else {
-                blush
+                LinearGradient(
+                    colors: mediumBackgroundColors,
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
             }
 
             LinearGradient(
                 colors: [
                     .clear,
                     .clear,
-                    Color.black.opacity(0.08),
-                    Color.black.opacity(0.72)
+                    Color.black.opacity(0.10),
+                    Color.black.opacity(0.78)
                 ],
                 startPoint: .top,
                 endPoint: .bottom
             )
 
-            VStack {
-                if entry.enabled("DECORATION") {
-                    HStack {
-                        Spacer()
+            VStack(alignment: .leading, spacing: 0) {
+                HStack {
+                    Text("IDOLDAYS")
+                        .font(
+                            .system(
+                                size: 10,
+                                weight: .bold,
+                                design: .rounded
+                            )
+                        )
+                        .tracking(1.6)
+                        .foregroundStyle(.white.opacity(0.82))
 
-                        Text(
-                            entry.decorationEmoji.trimmed.isEmpty
-                                ? "♡"
-                                : entry.decorationEmoji
-                        )
-                        .font(.system(size: 22))
-                        .foregroundStyle(.white)
-                        .shadow(
-                            color: .black.opacity(0.25),
-                            radius: 3
-                        )
+                    Spacer()
+
+                    if entry.enabled("DECORATION"),
+                       !entry.decorationEmoji.trimmed.isEmpty {
+                        Text(prettyDecorationEmoji)
+                            .font(.system(size: 15))
                     }
-                }
-
-                if hasSongOfDay {
-                    songOfDayLine(compact: true)
-                        .padding(.top, 4)
                 }
 
                 Spacer()
 
-                HStack(
-                    alignment: .bottom,
-                    spacing: 5
-                ) {
-                    Spacer(minLength: 0)
+                VStack(alignment: .leading, spacing: 3) {
+                    if entry.enabled("IDOL"),
+                       !entry.idolName.trimmed.isEmpty {
+                        Text(entry.idolName.uppercased())
+                            .font(
+                                .system(
+                                    size: 20,
+                                    weight: .bold,
+                                    design: .rounded
+                                )
+                            )
+                            .tracking(-0.3)
+                            .foregroundStyle(.white)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.65)
+                    }
 
-                    VStack(
-                        alignment: .trailing,
-                        spacing: 1
-                    ) {
-                        if entry.enabled("IDOL"),
-                           !entry.idolName.trimmed.isEmpty {
-                            Text(entry.idolName.uppercased())
-                                .font(
-                                    .system(
-                                        size: 19,
-                                        weight: .bold,
-                                        design: .rounded
-                                    )
+                    if entry.enabled("COUNTDOWN"),
+                       !entry.dDay.trimmed.isEmpty {
+                        Text(entry.dDay)
+                            .font(
+                                .system(
+                                    size: 32,
+                                    weight: .heavy,
+                                    design: .rounded
                                 )
-                                .foregroundStyle(.white)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.6)
-                        }
+                            )
+                            .foregroundStyle(.white)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
+                    }
 
-                        if hasSongOfDay {
-                            songOfDayLine(compact: true)
-                        }
+                    if entry.enabled("COUNTDOWN"),
+                       !entry.eventTitle.trimmed.isEmpty {
+                        Text(entry.eventTitle.uppercased())
+                            .font(
+                                .system(
+                                    size: 8,
+                                    weight: .semibold,
+                                    design: .rounded
+                                )
+                            )
+                            .tracking(0.5)
+                            .foregroundStyle(.white.opacity(0.78))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.65)
+                    }
 
-                        if entry.enabled("COUNTDOWN"),
-                           !entry.eventTitle.trimmed.isEmpty {
-                            Text(entry.eventTitle.uppercased())
-                                .font(
-                                    .system(
-                                        size: 10,
-                                        weight: .semibold,
-                                        design: .rounded
-                                    )
-                                )
-                                .foregroundStyle(
-                                    .white.opacity(0.92)
-                                )
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.6)
-                        }
+                    if hasSongOfDay {
+                        HStack(spacing: 4) {
+                            Image(systemName: "music.note")
+                                .font(.system(size: 8, weight: .bold))
 
-                        if entry.enabled("COUNTDOWN"),
-                           !entry.dDay.trimmed.isEmpty {
-                            Text(entry.dDay)
-                                .font(
-                                    .system(
-                                        size: 26,
-                                        weight: .bold,
-                                        design: .rounded
-                                    )
-                                )
-                                .foregroundStyle(
-                                    Color(
-                                        red: 1.0,
-                                        green: 0.68,
-                                        blue: 0.77
-                                    )
-                                )
+                            Text(entry.songTitle)
                                 .lineLimit(1)
                         }
+                        .font(
+                            .system(
+                                size: 10,
+                                weight: .medium,
+                                design: .rounded
+                            )
+                        )
+                        .foregroundStyle(.white.opacity(0.88))
+                        .padding(.top, 3)
                     }
                 }
             }
@@ -476,52 +478,105 @@ struct IdolDaysWidgetEntryView: View {
     // 右邊粉色資訊區
     //
 
+
+
+
     private var mediumWidget: some View {
         GeometryReader { geo in
-            HStack(spacing: 0) {
-                ZStack {
-                    if entry.enabled("IDOL") {
-                        photo(
-                            width: geo.size.width * 0.52,
-                            height: geo.size.height,
-                            alignment: .top
-                        )
-                    } else {
-                        blush.opacity(0.55)
-                    }
-                }
-                .frame(
-                    width: geo.size.width * 0.52,
-                    height: geo.size.height
+            ZStack {
+                LinearGradient(
+                    colors: mediumBackgroundColors,
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
                 )
-                .clipped()
 
-                ZStack {
-                    LinearGradient(
-                        colors: mediumBackgroundColors,
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
+                HStack(spacing: 0) {
+                    ZStack(alignment: .bottomLeading) {
+                        if entry.enabled("IDOL") {
+                            photo(
+                                width: geo.size.width * 0.58,
+                                height: geo.size.height,
+                                alignment: .top
+                            )
+                        } else {
+                            Color.white.opacity(0.18)
+                        }
 
-                    VStack(
-                        alignment: .leading,
-                        spacing: 5
-                    ) {
-                        Spacer(minLength: 0)
+                        LinearGradient(
+                            colors: [
+                                .clear,
+                                Color.black.opacity(0.08),
+                                Color.black.opacity(0.50)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
 
                         if entry.enabled("IDOL"),
                            !entry.idolName.trimmed.isEmpty {
                             Text(entry.idolName.uppercased())
                                 .font(
                                     .system(
-                                        size: 16,
+                                        size: 17,
                                         weight: .bold,
+                                        design: .rounded
+                                    )
+                                )
+                                .tracking(0.2)
+                                .foregroundStyle(.white)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.65)
+                                .padding(12)
+                        }
+                    }
+                    .frame(
+                        width: geo.size.width * 0.58,
+                        height: geo.size.height
+                    )
+                    .clipped()
+
+                    VStack(alignment: .leading, spacing: 0) {
+                        HStack {
+                            Text("IDOLDAYS")
+                                .font(
+                                    .system(
+                                        size: 10,
+                                        weight: .bold,
+                                        design: .rounded
+                                    )
+                                )
+                                .tracking(1.5)
+                                .foregroundStyle(ink.opacity(0.55))
+
+                            Spacer()
+
+                            Text("OUR DAYS")
+                                .font(
+                                    .system(
+                                        size: 9,
+                                        weight: .semibold,
+                                        design: .rounded
+                                    )
+                                )
+                                .tracking(0.8)
+                                .foregroundStyle(ink.opacity(0.38))
+                        }
+
+                        Spacer(minLength: 3)
+
+                        if entry.enabled("COUNTDOWN"),
+                           !entry.dDay.trimmed.isEmpty {
+                            Text(entry.dDay)
+                                .font(
+                                    .system(
+                                        size: 30,
+                                        weight: .heavy,
                                         design: .rounded
                                     )
                                 )
                                 .foregroundStyle(ink)
                                 .lineLimit(1)
-                                .minimumScaleFactor(0.6)
+                                .minimumScaleFactor(0.7)
                         }
 
                         if entry.enabled("COUNTDOWN"),
@@ -530,166 +585,66 @@ struct IdolDaysWidgetEntryView: View {
                                 .font(
                                     .system(
                                         size: 12,
-                                        weight: .medium,
-                                        design: .rounded
-                                    )
-                                )
-                                .foregroundStyle(ink)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.6)
-                        }
-
-                        if entry.enabled("COUNTDOWN"),
-                           !entry.dDay.trimmed.isEmpty {
-                            Text(entry.dDay)
-                                .font(
-                                    .system(
-                                        size: 26,
-                                        weight: .bold,
-                                        design: .rounded
-                                    )
-                                )
-                                .foregroundStyle(
-                                    Color(
-                                        red: 0.72,
-                                        green: 0.36,
-                                        blue: 0.46
-                                    )
-                                )
-                                .lineLimit(1)
-                        }
-
-                        if entry.eventTitle.trimmed.isEmpty,
-                           entry.dDay.trimmed.isEmpty {
-                            Text("OUR DAYS ♡")
-                                .font(
-                                    .system(
-                                        size: 11,
                                         weight: .semibold,
                                         design: .rounded
                                     )
                                 )
-                                .tracking(1.2)
-                                .foregroundStyle(
-                                    ink.opacity(0.58)
+                                .foregroundStyle(ink.opacity(0.80))
+                                .lineLimit(2)
+                                .minimumScaleFactor(0.7)
+                                .padding(.top, 1)
+                        }
+
+                        Spacer(minLength: 4)
+
+                        Rectangle()
+                            .fill(ink.opacity(0.12))
+                            .frame(height: 1)
+
+                        VStack(alignment: .leading, spacing: 3) {
+                            if entry.enabled("COUNTDOWN"),
+                               !entry.eventDate.trimmed.isEmpty {
+                                Label(
+                                    entry.eventDate,
+                                    systemImage: "calendar"
                                 )
+                            }
+
+                            if entry.enabled("COUNTDOWN"),
+                               !entry.location.trimmed.isEmpty {
+                                Label(
+                                    entry.location,
+                                    systemImage: "mappin.and.ellipse"
+                                )
+                            }
 
                             if hasSongOfDay {
-                                VStack(
-                                    alignment: .leading,
-                                    spacing: 2
-                                ) {
-                                    Text("♪ \(entry.songTitle)")
-                                        .font(
-                                            .system(
-                                                size: 13,
-                                                weight: .semibold,
-                                                design: .rounded
-                                            )
-                                        )
-                                        .foregroundStyle(ink)
-                                        .lineLimit(1)
-                                        .minimumScaleFactor(0.7)
-
-                                    if !entry.songArtist.trimmed.isEmpty {
-                                        Text(entry.songArtist)
-                                            .font(
-                                                .system(
-                                                    size: 10,
-                                                    weight: .medium,
-                                                    design: .rounded
-                                                )
-                                            )
-                                            .foregroundStyle(
-                                                ink.opacity(0.62)
-                                            )
-                                            .lineLimit(1)
-                                            .minimumScaleFactor(0.7)
-                                    }
-                                }
-                                .padding(.top, 2)
+                                Label(
+                                    entry.songTitle,
+                                    systemImage: "music.note"
+                                )
                             }
                         }
-
-                        Spacer(minLength: 2)
-
-                        if entry.enabled("COUNTDOWN"),
-                           !entry.eventDate.trimmed.isEmpty {
-                            HStack(spacing: 5) {
-                                Text("🗓️")
-                                    .font(.system(size: 14))
-                                Text(entry.eventDate)
-                            }
-                            .font(
-                                .system(
-                                    size: 10,
-                                    weight: .medium
-                                )
+                        .font(
+                            .system(
+                                size: 10,
+                                weight: .medium,
+                                design: .rounded
                             )
-                            .foregroundStyle(ink)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.6)
-                        }
-
-                        if entry.enabled("COUNTDOWN"),
-                           !entry.location.trimmed.isEmpty {
-                            HStack(spacing: 5) {
-                                Text("📍")
-                                    .font(.system(size: 14))
-                                Text(entry.location)
-                            }
-                            .font(
-                                .system(
-                                    size: 10,
-                                    weight: .medium
-                                )
-                            )
-                            .foregroundStyle(ink)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.6)
-                        }
-
-                        if entry.enabled("DECORATION"),
-                           (
-                               !entry.decorationEmoji.trimmed.isEmpty
-                               || !entry.decorationLabel.trimmed.isEmpty
-                           ) {
-                            HStack(spacing: 3) {
-                                Text(entry.decorationEmoji)
-
-                                Text(entry.decorationLabel)
-                                    .lineLimit(1)
-                            }
-                            .font(
-                                .system(
-                                    size: 9,
-                                    weight: .medium,
-                                    design: .rounded
-                                )
-                            )
-                            .foregroundStyle(
-                                Color(
-                                    red: 0.76,
-                                    green: 0.42,
-                                    blue: 0.54
-                                )
-                            )
-                        }
-
-                        Spacer(minLength: 0)
+                        )
+                        .foregroundStyle(ink.opacity(0.67))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.65)
+                        .padding(.top, 5)
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 11)
                     .frame(
-                        maxWidth: .infinity,
-                        maxHeight: .infinity,
+                        width: geo.size.width * 0.42,
+                        height: geo.size.height,
                         alignment: .leading
                     )
                 }
-                .frame(
-                    width: geo.size.width * 0.48,
-                    height: geo.size.height
-                )
             }
         }
         .clipped()
@@ -705,97 +660,83 @@ struct IdolDaysWidgetEntryView: View {
     // 最底日期地點 + 每日一句
     //
 
+
+
+
     private var largeWidget: some View {
         ZStack {
             if entry.enabled("IDOL") {
-                fullBleedPhoto(
-                    alignment: .top
-                )
+                fullBleedPhoto(alignment: .top)
             } else {
-                blush
+                LinearGradient(
+                    colors: mediumBackgroundColors,
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
             }
 
             LinearGradient(
                 colors: [
+                    Color.black.opacity(0.08),
                     .clear,
                     .clear,
-                    Color.black.opacity(0.10),
-                    Color.black.opacity(0.70)
+                    Color.black.opacity(0.82)
                 ],
                 startPoint: .top,
                 endPoint: .bottom
             )
 
-            VStack(spacing: 0) {
-                if entry.enabled("DECORATION"),
-                   (
-                       !entry.decorationEmoji.trimmed.isEmpty
-                       || !entry.decorationLabel.trimmed.isEmpty
-                   ) {
-                    HStack(spacing: 8) {
-                        if !entry.decorationEmoji.trimmed.isEmpty {
-                            Text(prettyDecorationEmoji)
-                                .font(.system(size: 22))
-                                .shadow(
-                                    color: Color(
-                                        red: 0.38,
-                                        green: 0.62,
-                                        blue: 0.80
-                                    ).opacity(0.35),
-                                    radius: 5,
-                                    x: 0,
-                                    y: 2
+            VStack(alignment: .leading, spacing: 0) {
+                HStack(alignment: .top) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("IDOLDAYS")
+                            .font(
+                                .system(
+                                    size: 12,
+                                    weight: .bold,
+                                    design: .rounded
                                 )
-                        }
+                            )
+                            .tracking(2)
+                            .foregroundStyle(.white)
 
-                        if !entry.decorationLabel.trimmed.isEmpty {
-                            Text(entry.decorationLabel)
-                                .font(
-                                    .system(
-                                        size: 11,
-                                        weight: .semibold,
-                                        design: .rounded
-                                    )
+                        Text("FAN ARCHIVE")
+                            .font(
+                                .system(
+                                    size: 9,
+                                    weight: .semibold,
+                                    design: .rounded
                                 )
-                                .foregroundStyle(.white)
-                                .shadow(
-                                    color: .black.opacity(0.28),
-                                    radius: 3,
-                                    x: 0,
-                                    y: 1
-                                )
-                                .lineLimit(1)
-                        }
-
-                        Spacer()
+                            )
+                            .tracking(1.4)
+                            .foregroundStyle(.white.opacity(0.62))
                     }
-                    .padding(.top, 17)
-                    .padding(.horizontal, 18)
+
+                    Spacer()
+
+                    if entry.enabled("DECORATION"),
+                       !entry.decorationEmoji.trimmed.isEmpty {
+                        Text(prettyDecorationEmoji)
+                            .font(.system(size: 19))
+                    }
                 }
 
                 Spacer()
 
-                VStack(
-                    alignment: .leading,
-                    spacing: 8
-                ) {
-                    HStack(
-                        alignment: .bottom
-                    ) {
-                        VStack(
-                            alignment: .leading,
-                            spacing: 2
-                        ) {
+                VStack(alignment: .leading, spacing: 7) {
+                    HStack(alignment: .bottom, spacing: 10) {
+                        VStack(alignment: .leading, spacing: 2) {
                             if entry.enabled("IDOL"),
                                !entry.idolName.trimmed.isEmpty {
                                 Text(entry.idolName.uppercased())
                                     .font(
                                         .system(
-                                            size: 22,
+                                            size: 28,
                                             weight: .bold,
                                             design: .rounded
                                         )
                                     )
+                                    .tracking(-0.4)
                                     .foregroundStyle(.white)
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.65)
@@ -806,14 +747,13 @@ struct IdolDaysWidgetEntryView: View {
                                 Text(entry.eventTitle.uppercased())
                                     .font(
                                         .system(
-                                            size: 12,
-                                            weight: .medium,
+                                            size: 13,
+                                            weight: .semibold,
                                             design: .rounded
                                         )
                                     )
-                                    .foregroundStyle(
-                                        .white.opacity(0.94)
-                                    )
+                                    .tracking(0.3)
+                                    .foregroundStyle(.white.opacity(0.78))
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.65)
                             }
@@ -826,8 +766,8 @@ struct IdolDaysWidgetEntryView: View {
                             Text(entry.dDay)
                                 .font(
                                     .system(
-                                        size: 34,
-                                        weight: .bold,
+                                        size: 38,
+                                        weight: .heavy,
                                         design: .rounded
                                     )
                                 )
@@ -837,101 +777,83 @@ struct IdolDaysWidgetEntryView: View {
                         }
                     }
 
-                    if entry.enabled("COUNTDOWN"),
-                       (
-                           !entry.eventDate.trimmed.isEmpty
-                           || !entry.location.trimmed.isEmpty
-                       ) {
-                        HStack(spacing: 12) {
-                            if !entry.eventDate.trimmed.isEmpty {
-                                Label(
-                                    entry.eventDate,
-                                    systemImage: "calendar"
-                                )
-                            }
+                    Rectangle()
+                        .fill(.white.opacity(0.28))
+                        .frame(height: 1)
 
-                            if !entry.location.trimmed.isEmpty {
-                                Label(
-                                    entry.location,
-                                    systemImage: "mappin"
-                                )
+                    HStack(spacing: 13) {
+                        if entry.enabled("COUNTDOWN"),
+                           !entry.eventDate.trimmed.isEmpty {
+                            Label(
+                                entry.eventDate,
+                                systemImage: "calendar"
+                            )
+                        }
+
+                        if entry.enabled("COUNTDOWN"),
+                           !entry.location.trimmed.isEmpty {
+                            Label(
+                                entry.location,
+                                systemImage: "mappin.and.ellipse"
+                            )
+                        }
+                    }
+                    .font(
+                        .system(
+                            size: 12,
+                            weight: .medium,
+                            design: .rounded
+                        )
+                    )
+                    .foregroundStyle(.white.opacity(0.78))
+                    .lineLimit(1)
+
+                    HStack(spacing: 8) {
+                        if hasSongOfDay {
+                            HStack(spacing: 4) {
+                                Image(systemName: "music.note")
+                                Text(entry.songTitle)
+                                    .lineLimit(1)
                             }
                         }
-                        .font(
-                            .system(
-                                size: 12,
-                                weight: .medium
-                            )
-                        )
-                        .foregroundStyle(
-                            .white.opacity(0.92)
-                        )
-                        .lineLimit(1)
-                    }
 
-                    if entry.enabled("MOOD"),
-                       (
-                           !entry.moodEmoji.trimmed.isEmpty
-                           || !entry.moodLabel.trimmed.isEmpty
-                       ) {
-                        HStack(spacing: 4) {
+                        if entry.enabled("MOOD"),
+                           !entry.moodLabel.trimmed.isEmpty {
+                            Text("·")
+                                .opacity(0.45)
+
                             Text(entry.moodEmoji)
-                            Text(entry.moodLabel)
-                        }
-                        .font(
-                            .system(
-                                size: 12,
-                                weight: .medium,
-                                design: .rounded
-                            )
-                        )
-                        .foregroundStyle(
-                            .white.opacity(0.90)
-                        )
-                    }
 
-                    if hasSongOfDay {
-                        songOfDayLine(compact: false)
+                            Text(entry.moodLabel)
+                                .lineLimit(1)
+                        }
                     }
+                    .font(
+                        .system(
+                            size: 12,
+                            weight: .medium,
+                            design: .rounded
+                        )
+                    )
+                    .foregroundStyle(.white.opacity(0.86))
 
                     if entry.enabled("MESSAGE"),
                        !entry.quote.trimmed.isEmpty {
-                        HStack(spacing: 7) {
-                            Text("💌")
-                                .font(.system(size: 14))
-
-                            Text("「\(entry.quote)」")
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.68)
-                        }
+                        Text("「\(entry.quote)」")
                             .font(
                                 .system(
-                                    size: 11,
+                                    size: 12,
                                     weight: .medium,
                                     design: .rounded
                                 )
                             )
-                            .foregroundStyle(.white)
-                            .frame(
-                                maxWidth: .infinity,
-                                alignment: .leading
-                            )
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 7)
-                            .background(
-                                .ultraThinMaterial.opacity(0.78)
-                            )
-                            .clipShape(
-                                RoundedRectangle(
-                                    cornerRadius: 13,
-                                    style: .continuous
-                                )
-                            )
+                            .foregroundStyle(.white.opacity(0.72))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
                     }
                 }
-                .padding(.horizontal, 18)
-                .padding(.bottom, 14)
             }
+            .padding(17)
         }
         .clipped()
     }
@@ -1041,29 +963,42 @@ struct IdolDaysWidgetEntryView: View {
                 LinearGradient(
                     colors: [
                         Color(
-                            red: 0.98,
-                            green: 0.82,
-                            blue: 0.87
+                            red: 0.96,
+                            green: 0.91,
+                            blue: 0.95
                         ),
                         Color(
-                            red: 0.90,
-                            green: 0.79,
-                            blue: 0.95
+                            red: 0.88,
+                            green: 0.91,
+                            blue: 0.98
                         )
                     ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
 
-                Image(systemName: "person.fill")
-                    .font(
-                        .system(
-                            size: min(width, height) * 0.38
+                VStack(spacing: 6) {
+                    Text("IDOLDAYS")
+                        .font(
+                            .system(
+                                size: 12,
+                                weight: .bold,
+                                design: .rounded
+                            )
                         )
-                    )
-                    .foregroundStyle(
-                        .white.opacity(0.75)
-                    )
+                        .tracking(1.8)
+
+                    Text("在 App 選擇偶像與照片")
+                        .font(
+                            .system(
+                                size: 10,
+                                weight: .medium,
+                                design: .rounded
+                            )
+                        )
+                        .opacity(0.65)
+                }
+                .foregroundStyle(.white)
             }
             .frame(
                 width: width,
