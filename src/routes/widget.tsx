@@ -103,16 +103,14 @@ function WidgetNativeSync({
     }
 
     void (async () => {
-      let imageData: string | undefined;
+      let imageData = "";
 
       if (idolImage) {
         try {
           const resolvedImageUrl = await resolveImageUrl(idolImage);
           const converted = await imageUrlToDataUrl(resolvedImageUrl);
 
-          if (converted) {
-            imageData = converted;
-          }
+          imageData = converted;
         } catch (error) {
           console.error(
             "[IdolDays Widget] Photo sync failed:",
