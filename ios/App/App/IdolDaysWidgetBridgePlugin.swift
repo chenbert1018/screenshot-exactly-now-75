@@ -104,11 +104,27 @@ public class IdolDaysWidgetBridgePlugin: CAPPlugin, CAPBridgedPlugin {
                 options: .atomic
             )
 
-            if let imageDataString = call.getString("imageData"),
-               !imageDataString.isEmpty {
-                try writeImage(
-                    imageDataString,
-                    containerURL: containerURL
+            let imageURL = containerURL
+                .appendingPathComponent("idol-photo.jpg")
+
+            if let imageDataString = call.getString("imageData") {
+                if imageDataString.isEmpty {
+                    if FileManager.default.fileExists(atPath: imageURL.path) {
+                        try FileManager.default.removeItem(at: imageURL)
+                    }
+                } else {
+                    try writeImage(
+                        imageDataString,
+                        containerURL: containerURL
+                    )
+                }
+            }
+
+            if let defaults = UserDefaults(suiteName: appGroupID) {
+                let allowedThemes = ["system", "light", "dark", "sky"]
+                defaults.set(
+                    allowedThemes.contains(theme) ? theme : "sky",
+                    forKey: "widgetTheme"
                 )
             }
 
