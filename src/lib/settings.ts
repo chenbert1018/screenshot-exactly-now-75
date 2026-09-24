@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./auth";
 import { getMigrationRecord } from "./idols.source";
@@ -104,7 +104,29 @@ function cloudPatch(settings: AppSettings) {
   };
 }
 
+let settingsSnapshot: AppSettings = defaultSettings;
+let snapshotInitialized = false;
 const listeners = new Set<(s: AppSettings) => void>();
+
+function currentSnapshot() {
+  if (!snapshotInitialized && typeof window !== "undefined") {
+    settingsSnapshot = migrateLegacySystemTheme(normalize(read()));
+    snapshotInitialized = true;
+  }
+  return settingsSnapshot;
+}
+
+function publish(next: AppSettings) {
+  settingsSnapshot = next;
+  snapshotInitialized = true;
+  listeners.forEach((fn) => fn(next));
+}
+
+function subscribe(listener: () => void) {
+  const fn = () => listener();
+  listeners.add(fn);
+  return () => listeners.delete(fn);
+}
 
 export function applyTheme(theme: ThemeMode) {
   if (typeof document === "undefined") return;
@@ -122,21 +144,22 @@ export function applyTheme(theme: ThemeMode) {
 
 export function useSettings() {
   const { user, loading: authLoading } = useAuth();
-  const [settings, setSettings] = useState<AppSettings>(defaultSettings);
-  const [ready, setReady] = useState(false);
+  const settings = useSyncExternalStore(
+    subscribe,
+    currentSnapshot,
+    () => defaultSettings,
+  );
+  const ready = !authLoading;
 
   useEffect(() => {
     let active = true;
-    const local = migrateLegacySystemTheme(normalize(read()));
+    const local = currentSnapshot();
     write(local);
-    setSettings(local);
     applyTheme(local.theme);
     void setNativeWidgetTheme(local.theme);
+    publish(local);
 
-    if (!user?.id) {
-      setReady(!authLoading);
-      return () => { active = false; };
-    }
+    if (!user?.id) return () => { active = false; };
 
     void (async () => {
       const { data, error } = await supabase
@@ -144,12 +167,7 @@ export function useSettings() {
         .select("main_idol_id, date_format, language, theme")
         .eq("user_id", user.id)
         .maybeSingle();
-      if (!active) return;
-
-      if (error) {
-        setReady(true);
-        return;
-      }
+      if (!active || error) return;
 
       const localMap = getMigrationRecord(user.id).map;
       const migratedPrimary = local.primaryIdolId
@@ -171,36 +189,24 @@ export function useSettings() {
       write(next);
       applyTheme(next.theme);
       void setNativeWidgetTheme(next.theme);
-      setSettings(next);
-      listeners.forEach((fn) => fn(next));
+      publish(next);
 
-      // First signed-in use preserves the existing device preference in the profile.
       if (!hasCloudSettings) {
         void supabase.from("profiles").update(cloudPatch(next)).eq("user_id", user.id);
       } else if (data?.theme === "system") {
-        // `system` was IdolDays' old default, not a separate visual identity.
-        // Promote it once so the blue default stays consistent across devices.
         void supabase.from("profiles").update({ theme: "sky" }).eq("user_id", user.id);
       }
-      setReady(true);
     })();
 
-    const fn = (s: AppSettings) => setSettings(s);
-    listeners.add(fn);
-    return () => {
-      active = false;
-      listeners.delete(fn);
-    };
-  }, [user?.id, authLoading]);
+    return () => { active = false; };
+  }, [user?.id]);
 
   const update = useCallback((patch: Partial<AppSettings>) => {
-    const next = normalize({ ...read(), ...patch });
+    const next = normalize({ ...currentSnapshot(), ...patch });
     write(next);
-    if (patch.theme) {
-      applyTheme(next.theme);
-      void setNativeWidgetTheme(next.theme);
-    }
-    listeners.forEach((fn) => fn(next));
+    applyTheme(next.theme);
+    if (patch.theme) void setNativeWidgetTheme(next.theme);
+    publish(next);
     if (user?.id) {
       void supabase.from("profiles").update(cloudPatch(next)).eq("user_id", user.id);
     }
