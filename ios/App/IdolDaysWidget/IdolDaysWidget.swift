@@ -494,7 +494,7 @@ struct IdolDaysWidgetEntryView: View {
                     ZStack(alignment: .bottomLeading) {
                         if entry.enabled("IDOL") {
                             photo(
-                                width: geo.size.width * 0.58,
+                                width: geo.size.width * 0.52,
                                 height: geo.size.height,
                                 alignment: .top
                             )
@@ -530,7 +530,7 @@ struct IdolDaysWidgetEntryView: View {
                         }
                     }
                     .frame(
-                        width: geo.size.width * 0.58,
+                        width: geo.size.width * 0.52,
                         height: geo.size.height
                     )
                     .clipped()
@@ -546,7 +546,7 @@ struct IdolDaysWidgetEntryView: View {
                                     )
                                 )
                                 .tracking(1.5)
-                                .foregroundStyle(ink.opacity(0.55))
+                                .foregroundStyle(ink.opacity(0.78))
 
                             Spacer()
 
@@ -559,7 +559,7 @@ struct IdolDaysWidgetEntryView: View {
                                     )
                                 )
                                 .tracking(0.8)
-                                .foregroundStyle(ink.opacity(0.38))
+                                .foregroundStyle(ink.opacity(0.62))
                         }
 
                         Spacer(minLength: 3)
@@ -589,7 +589,7 @@ struct IdolDaysWidgetEntryView: View {
                                         design: .rounded
                                     )
                                 )
-                                .foregroundStyle(ink.opacity(0.80))
+                                .foregroundStyle(ink.opacity(0.92))
                                 .lineLimit(2)
                                 .minimumScaleFactor(0.7)
                                 .padding(.top, 1)
@@ -627,20 +627,20 @@ struct IdolDaysWidgetEntryView: View {
                         }
                         .font(
                             .system(
-                                size: 10,
-                                weight: .medium,
+                                size: 11,
+                                weight: .semibold,
                                 design: .rounded
                             )
                         )
-                        .foregroundStyle(ink.opacity(0.67))
+                        .foregroundStyle(ink.opacity(0.84))
                         .lineLimit(1)
                         .minimumScaleFactor(0.65)
                         .padding(.top, 5)
                     }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 11)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 10)
                     .frame(
-                        width: geo.size.width * 0.42,
+                        width: geo.size.width * 0.48,
                         height: geo.size.height,
                         alignment: .leading
                     )
