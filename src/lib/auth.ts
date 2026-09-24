@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { deleteMyAccount } from "@/lib/account.functions";
 
 export type AuthState = {
   user: User | null;
@@ -77,15 +78,25 @@ export function useAuthActions() {
   }, []);
 
   const deleteAccount = useCallback(async () => {
-    const { data, error } = await supabase.functions.invoke("delete-account", {
-      method: "POST",
-    });
+    const { data } = await supabase.auth.getSession();
+    const accessToken = data.session?.access_token;
 
-    if (error) return error.message;
-    if (!data?.success) return data?.error ?? "帳號刪除失敗";
+    if (!accessToken) return "登入狀態已失效，請重新登入後再試。";
 
-    await supabase.auth.signOut({ scope: "local" });
-    return null;
+    try {
+      const result = await deleteMyAccount({
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (!result?.ok) return "帳號刪除失敗";
+
+      await supabase.auth.signOut({ scope: "local" });
+      return null;
+    } catch (error) {
+      return error instanceof Error ? error.message : "帳號刪除失敗";
+    }
   }, []);
 
   return {
