@@ -14,6 +14,91 @@ export type Database = {
   }
   public: {
     Tables: {
+      album_share_claim_memories: {
+        Row: {
+          claim_id: string
+          created_at: string
+          id: string
+          imported_memory_id: string
+          source_memory_id: string
+        }
+        Insert: {
+          claim_id: string
+          created_at?: string
+          id?: string
+          imported_memory_id: string
+          source_memory_id: string
+        }
+        Update: {
+          claim_id?: string
+          created_at?: string
+          id?: string
+          imported_memory_id?: string
+          source_memory_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "album_share_claim_memories_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "album_share_claims"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "album_share_claim_memories_imported_memory_id_fkey"
+            columns: ["imported_memory_id"]
+            isOneToOne: false
+            referencedRelation: "memories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "album_share_claim_memories_source_memory_id_fkey"
+            columns: ["source_memory_id"]
+            isOneToOne: false
+            referencedRelation: "memories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      album_share_claims: {
+        Row: {
+          claimed_at: string
+          id: string
+          imported_folder_id: string | null
+          recipient_user_id: string
+          share_id: string
+        }
+        Insert: {
+          claimed_at?: string
+          id?: string
+          imported_folder_id?: string | null
+          recipient_user_id: string
+          share_id: string
+        }
+        Update: {
+          claimed_at?: string
+          id?: string
+          imported_folder_id?: string | null
+          recipient_user_id?: string
+          share_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "album_share_claims_imported_folder_id_fkey"
+            columns: ["imported_folder_id"]
+            isOneToOne: false
+            referencedRelation: "memory_folders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "album_share_claims_share_id_fkey"
+            columns: ["share_id"]
+            isOneToOne: false
+            referencedRelation: "album_shares"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       album_share_recipients: {
         Row: {
           created_at: string
@@ -46,28 +131,46 @@ export type Database = {
       album_shares: {
         Row: {
           created_at: string
+          expires_at: string | null
           folder_id: string
           id: string
+          is_redeemable: boolean
           mode: string
           public_token: string | null
+          revoked_at: string | null
+          share_code: string | null
+          share_message: string | null
+          share_title: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           created_at?: string
+          expires_at?: string | null
           folder_id: string
           id?: string
+          is_redeemable?: boolean
           mode?: string
           public_token?: string | null
+          revoked_at?: string | null
+          share_code?: string | null
+          share_message?: string | null
+          share_title?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           created_at?: string
+          expires_at?: string | null
           folder_id?: string
           id?: string
+          is_redeemable?: boolean
           mode?: string
           public_token?: string | null
+          revoked_at?: string | null
+          share_code?: string | null
+          share_message?: string | null
+          share_title?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -75,49 +178,692 @@ export type Database = {
           {
             foreignKeyName: "album_shares_folder_id_fkey"
             columns: ["folder_id"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "memory_folders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      archaeology_items: {
+        Row: {
+          collection: string
+          created_at: string
+          favorite: boolean
+          id: string
+          idol_id: string | null
+          image_position: number
+          image_url: string
+          is_manual_cover: boolean
+          note: string
+          source: string
+          tags: string[]
+          title: string
+          updated_at: string
+          url: string
+          user_id: string
+        }
+        Insert: {
+          collection?: string
+          created_at?: string
+          favorite?: boolean
+          id?: string
+          idol_id?: string | null
+          image_position?: number
+          image_url?: string
+          is_manual_cover?: boolean
+          note?: string
+          source?: string
+          tags?: string[]
+          title?: string
+          updated_at?: string
+          url: string
+          user_id: string
+        }
+        Update: {
+          collection?: string
+          created_at?: string
+          favorite?: boolean
+          id?: string
+          idol_id?: string | null
+          image_position?: number
+          image_url?: string
+          is_manual_cover?: boolean
+          note?: string
+          source?: string
+          tags?: string[]
+          title?: string
+          updated_at?: string
+          url?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "archaeology_items_idol_id_fkey"
+            columns: ["idol_id"]
+            isOneToOne: false
+            referencedRelation: "idols"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collection_items: {
+        Row: {
+          acquired_date: string | null
+          campaign_id: string | null
+          category: string
+          created_at: string
+          event_id: string | null
+          external_url: string | null
+          favorite: boolean
+          id: string
+          idol_id: string | null
+          note: string | null
+          origin: string
+          partner_id: string | null
+          photo: string | null
+          provenance: string
+          source: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          acquired_date?: string | null
+          campaign_id?: string | null
+          category: string
+          created_at?: string
+          event_id?: string | null
+          external_url?: string | null
+          favorite?: boolean
+          id?: string
+          idol_id?: string | null
+          note?: string | null
+          origin?: string
+          partner_id?: string | null
+          photo?: string | null
+          provenance?: string
+          source?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          acquired_date?: string | null
+          campaign_id?: string | null
+          category?: string
+          created_at?: string
+          event_id?: string | null
+          external_url?: string | null
+          favorite?: boolean
+          id?: string
+          idol_id?: string | null
+          note?: string | null
+          origin?: string
+          partner_id?: string | null
+          photo?: string | null
+          provenance?: string
+          source?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_items_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collection_items_idol_id_fkey"
+            columns: ["idol_id"]
+            isOneToOne: false
+            referencedRelation: "idols"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      comeback_diaries: {
+        Row: {
+          created_at: string
+          event_id: string
+          first_favorite_song_id: string | null
+          first_listen_rating: number | null
+          id: string
+          idol_id: string
+          later_favorite_song_id: string | null
+          note: string
+          updated_at: string
+          user_id: string
+          want_to_hear_live_song_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          first_favorite_song_id?: string | null
+          first_listen_rating?: number | null
+          id?: string
+          idol_id: string
+          later_favorite_song_id?: string | null
+          note?: string
+          updated_at?: string
+          user_id: string
+          want_to_hear_live_song_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          first_favorite_song_id?: string | null
+          first_listen_rating?: number | null
+          id?: string
+          idol_id?: string
+          later_favorite_song_id?: string | null
+          note?: string
+          updated_at?: string
+          user_id?: string
+          want_to_hear_live_song_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comeback_diaries_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comeback_diaries_first_favorite_song_id_fkey"
+            columns: ["first_favorite_song_id"]
+            isOneToOne: false
+            referencedRelation: "idol_songs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comeback_diaries_idol_id_fkey"
+            columns: ["idol_id"]
+            isOneToOne: false
+            referencedRelation: "idols"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comeback_diaries_later_favorite_song_id_fkey"
+            columns: ["later_favorite_song_id"]
+            isOneToOne: false
+            referencedRelation: "idol_songs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comeback_diaries_want_to_hear_live_song_id_fkey"
+            columns: ["want_to_hear_live_song_id"]
+            isOneToOne: false
+            referencedRelation: "idol_songs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      comeback_era_memory_folders: {
+        Row: {
+          created_at: string
+          event_id: string
+          folder_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          folder_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          folder_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comeback_era_memory_folders_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comeback_era_memory_folders_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: true
+            referencedRelation: "memory_folders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      concert_music_memories: {
+        Row: {
+          anticipated_song_id: string | null
+          created_at: string
+          event_id: string
+          finally_heard_song_id: string | null
+          hype_song_id: string | null
+          id: string
+          idol_id: string
+          most_emotional_song_id: string | null
+          note: string
+          opening_song_id: string | null
+          tearjerker_song_id: string | null
+          unforgettable_song_id: string | null
+          updated_at: string
+          user_id: string
+          want_to_hear_song_id: string | null
+        }
+        Insert: {
+          anticipated_song_id?: string | null
+          created_at?: string
+          event_id: string
+          finally_heard_song_id?: string | null
+          hype_song_id?: string | null
+          id?: string
+          idol_id: string
+          most_emotional_song_id?: string | null
+          note?: string
+          opening_song_id?: string | null
+          tearjerker_song_id?: string | null
+          unforgettable_song_id?: string | null
+          updated_at?: string
+          user_id: string
+          want_to_hear_song_id?: string | null
+        }
+        Update: {
+          anticipated_song_id?: string | null
+          created_at?: string
+          event_id?: string
+          finally_heard_song_id?: string | null
+          hype_song_id?: string | null
+          id?: string
+          idol_id?: string
+          most_emotional_song_id?: string | null
+          note?: string
+          opening_song_id?: string | null
+          tearjerker_song_id?: string | null
+          unforgettable_song_id?: string | null
+          updated_at?: string
+          user_id?: string
+          want_to_hear_song_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "concert_music_memories_anticipated_song_id_fkey"
+            columns: ["anticipated_song_id"]
+            isOneToOne: false
+            referencedRelation: "idol_songs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concert_music_memories_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concert_music_memories_finally_heard_song_id_fkey"
+            columns: ["finally_heard_song_id"]
+            isOneToOne: false
+            referencedRelation: "idol_songs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concert_music_memories_hype_song_id_fkey"
+            columns: ["hype_song_id"]
+            isOneToOne: false
+            referencedRelation: "idol_songs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concert_music_memories_idol_id_fkey"
+            columns: ["idol_id"]
+            isOneToOne: false
+            referencedRelation: "idols"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concert_music_memories_most_emotional_song_id_fkey"
+            columns: ["most_emotional_song_id"]
+            isOneToOne: false
+            referencedRelation: "idol_songs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concert_music_memories_opening_song_id_fkey"
+            columns: ["opening_song_id"]
+            isOneToOne: false
+            referencedRelation: "idol_songs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concert_music_memories_tearjerker_song_id_fkey"
+            columns: ["tearjerker_song_id"]
+            isOneToOne: false
+            referencedRelation: "idol_songs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concert_music_memories_unforgettable_song_id_fkey"
+            columns: ["unforgettable_song_id"]
+            isOneToOne: false
+            referencedRelation: "idol_songs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concert_music_memories_want_to_hear_song_id_fkey"
+            columns: ["want_to_hear_song_id"]
+            isOneToOne: false
+            referencedRelation: "idol_songs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      concert_personal_memories: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          idol_id: string | null
+          photo: string | null
+          seat: string | null
+          unforgettable_moment: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          idol_id?: string | null
+          photo?: string | null
+          seat?: string | null
+          unforgettable_moment?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          idol_id?: string | null
+          photo?: string | null
+          seat?: string | null
+          unforgettable_moment?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "concert_personal_memories_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concert_personal_memories_idol_id_fkey"
+            columns: ["idol_id"]
+            isOneToOne: false
+            referencedRelation: "idols"
             referencedColumns: ["id"]
           },
         ]
       }
       events: {
         Row: {
+          city: string
           created_at: string
           date: string
           id: string
           idol_id: string
+          location_name: string
           note: string
           title: string
           type: string
           updated_at: string
           user_id: string
+          weather_enabled: boolean
+          weather_tone: string
         }
         Insert: {
+          city?: string
           created_at?: string
           date: string
           id?: string
           idol_id: string
+          location_name?: string
           note?: string
           title: string
           type?: string
           updated_at?: string
           user_id: string
+          weather_enabled?: boolean
+          weather_tone?: string
         }
         Update: {
+          city?: string
           created_at?: string
           date?: string
           id?: string
           idol_id?: string
+          location_name?: string
           note?: string
           title?: string
           type?: string
           updated_at?: string
           user_id?: string
+          weather_enabled?: boolean
+          weather_tone?: string
         }
         Relationships: [
           {
             foreignKeyName: "events_idol_id_fkey"
+            columns: ["idol_id"]
+            isOneToOne: false
+            referencedRelation: "idols"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      idol_song_journal_entries: {
+        Row: {
+          created_at: string
+          entry_date: string
+          id: string
+          idol_id: string
+          mood: string | null
+          song_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          entry_date: string
+          id?: string
+          idol_id: string
+          mood?: string | null
+          song_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          entry_date?: string
+          id?: string
+          idol_id?: string
+          mood?: string | null
+          song_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "idol_song_journal_entries_idol_id_fkey"
+            columns: ["idol_id"]
+            isOneToOne: false
+            referencedRelation: "idols"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "idol_song_journal_entries_song_id_fkey"
+            columns: ["song_id"]
+            isOneToOne: false
+            referencedRelation: "idol_songs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      idol_song_listen_again_entries: {
+        Row: {
+          created_at: string
+          current_mood: string
+          id: string
+          idol_id: string
+          listen_again_date: string
+          original_date: string
+          original_mood: string | null
+          song_id: string
+          source_journal_entry_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_mood: string
+          id?: string
+          idol_id: string
+          listen_again_date: string
+          original_date: string
+          original_mood?: string | null
+          song_id: string
+          source_journal_entry_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_mood?: string
+          id?: string
+          idol_id?: string
+          listen_again_date?: string
+          original_date?: string
+          original_mood?: string | null
+          song_id?: string
+          source_journal_entry_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "idol_song_listen_again_entries_idol_id_fkey"
+            columns: ["idol_id"]
+            isOneToOne: false
+            referencedRelation: "idols"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "idol_song_listen_again_entries_song_id_fkey"
+            columns: ["song_id"]
+            isOneToOne: false
+            referencedRelation: "idol_songs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "idol_song_listen_again_entries_source_journal_entry_id_fkey"
+            columns: ["source_journal_entry_id"]
+            isOneToOne: false
+            referencedRelation: "idol_song_journal_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      idol_song_roles: {
+        Row: {
+          created_at: string
+          id: string
+          idol_id: string
+          role: string
+          song_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          idol_id: string
+          role: string
+          song_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          idol_id?: string
+          role?: string
+          song_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "idol_song_roles_idol_id_fkey"
+            columns: ["idol_id"]
+            isOneToOne: false
+            referencedRelation: "idols"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "idol_song_roles_song_id_fkey"
+            columns: ["song_id"]
+            isOneToOne: false
+            referencedRelation: "idol_songs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      idol_songs: {
+        Row: {
+          album: string
+          apple_music_url: string
+          artist: string
+          created_at: string
+          id: string
+          idol_id: string
+          is_today_pick: boolean
+          spotify_url: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          album?: string
+          apple_music_url?: string
+          artist?: string
+          created_at?: string
+          id?: string
+          idol_id: string
+          is_today_pick?: boolean
+          spotify_url?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          album?: string
+          apple_music_url?: string
+          artist?: string
+          created_at?: string
+          id?: string
+          idol_id?: string
+          is_today_pick?: boolean
+          spotify_url?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "idol_songs_idol_id_fkey"
             columns: ["idol_id"]
             isOneToOne: false
             referencedRelation: "idols"
@@ -136,6 +882,8 @@ export type Database = {
           id: string
           name: string
           photo: string
+          photo_position: number
+          representative_animal: string
           since_date: string | null
           updated_at: string
           user_id: string
@@ -150,6 +898,8 @@ export type Database = {
           id?: string
           name: string
           photo?: string
+          photo_position?: number
+          representative_animal?: string
           since_date?: string | null
           updated_at?: string
           user_id: string
@@ -164,11 +914,70 @@ export type Database = {
           id?: string
           name?: string
           photo?: string
+          photo_position?: number
+          representative_animal?: string
           since_date?: string | null
           updated_at?: string
           user_id?: string
         }
         Relationships: []
+      }
+      meet_memories: {
+        Row: {
+          actually_said: string | null
+          afterthought: string | null
+          created_at: string
+          event_id: string
+          id: string
+          idol_id: string | null
+          idol_moment: string | null
+          photo: string | null
+          updated_at: string
+          user_id: string
+          wanted_to_say: string | null
+        }
+        Insert: {
+          actually_said?: string | null
+          afterthought?: string | null
+          created_at?: string
+          event_id: string
+          id?: string
+          idol_id?: string | null
+          idol_moment?: string | null
+          photo?: string | null
+          updated_at?: string
+          user_id: string
+          wanted_to_say?: string | null
+        }
+        Update: {
+          actually_said?: string | null
+          afterthought?: string | null
+          created_at?: string
+          event_id?: string
+          id?: string
+          idol_id?: string | null
+          idol_moment?: string | null
+          photo?: string | null
+          updated_at?: string
+          user_id?: string
+          wanted_to_say?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meet_memories_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meet_memories_idol_id_fkey"
+            columns: ["idol_id"]
+            isOneToOne: false
+            referencedRelation: "idols"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       memories: {
         Row: {
@@ -179,6 +988,8 @@ export type Database = {
           idol_id: string | null
           note: string
           photo: string
+          photo_position: number
+          song_id: string | null
           title: string
           updated_at: string
           user_id: string
@@ -191,6 +1002,8 @@ export type Database = {
           idol_id?: string | null
           note?: string
           photo?: string
+          photo_position?: number
+          song_id?: string | null
           title?: string
           updated_at?: string
           user_id: string
@@ -203,6 +1016,8 @@ export type Database = {
           idol_id?: string | null
           note?: string
           photo?: string
+          photo_position?: number
+          song_id?: string | null
           title?: string
           updated_at?: string
           user_id?: string
@@ -222,11 +1037,19 @@ export type Database = {
             referencedRelation: "idols"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "memories_song_id_fkey"
+            columns: ["song_id"]
+            isOneToOne: false
+            referencedRelation: "idol_songs"
+            referencedColumns: ["id"]
+          },
         ]
       }
       memory_folders: {
         Row: {
           cover_photo: string
+          cover_photo_position: number
           created_at: string
           description: string
           end_date: string | null
@@ -239,6 +1062,7 @@ export type Database = {
         }
         Insert: {
           cover_photo?: string
+          cover_photo_position?: number
           created_at?: string
           description?: string
           end_date?: string | null
@@ -251,6 +1075,7 @@ export type Database = {
         }
         Update: {
           cover_photo?: string
+          cover_photo_position?: number
           created_at?: string
           description?: string
           end_date?: string | null
@@ -317,6 +1142,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          cover_rotation: boolean
           created_at: string
           date_format: string
           display_name: string
@@ -328,6 +1154,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          cover_rotation?: boolean
           created_at?: string
           date_format?: string
           display_name?: string
@@ -339,6 +1166,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          cover_rotation?: boolean
           created_at?: string
           date_format?: string
           display_name?: string
@@ -518,12 +1346,54 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_read_claimed_album_media: {
+        Args: { object_name: string }
+        Returns: boolean
+      }
+      claim_album_share_code: {
+        Args: { p_code: string }
+        Returns: {
+          folder_id: string
+          imported_memory_count: number
+          share_id: string
+          share_message: string
+          share_title: string
+        }[]
+      }
+      enable_album_share_code: {
+        Args: { p_folder_id: string; p_message?: string; p_title?: string }
+        Returns: {
+          share_code: string
+          share_id: string
+        }[]
+      }
+      generate_album_share_code: { Args: never; Returns: string }
+      get_claimed_album_source: {
+        Args: { p_folder_id: string }
+        Returns: {
+          claimed_at: string
+          sender_name: string
+          share_message: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      is_admin: { Args: never; Returns: boolean }
+      preview_album_share_code: {
+        Args: { p_code: string }
+        Returns: {
+          folder_title: string
+          memory_count: number
+          sender_name: string
+          share_id: string
+          share_message: string
+          share_title: string
+        }[]
       }
     }
     Enums: {
