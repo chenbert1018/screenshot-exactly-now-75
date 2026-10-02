@@ -181,7 +181,7 @@ export function EventDetailSheet({
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent
           side="bottom"
-          className="mx-auto h-[94vh] w-full max-w-md overflow-y-auto rounded-t-[2rem] border-border/60 bg-background px-6 pb-[max(2rem,env(safe-area-inset-bottom))]"
+          className="mx-auto h-[94dvh] w-full max-w-md overflow-y-auto rounded-t-[2rem] border-border/60 bg-background px-6 pb-[max(2rem,env(safe-area-inset-bottom))]"
         >
           <SheetHeader className="sr-only">
             <SheetTitle>{event.title}</SheetTitle>
