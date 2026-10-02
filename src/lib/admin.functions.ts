@@ -13,7 +13,15 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 type Counts = Record<string, number>;
 
-async function getAdminClient(userId: string) {
+async function getAdminClient(userId: string, userClient?: any) {
+  // 先以使用者本身的身分（RLS）確認 admin，再取用 service role。
+  if (userClient) {
+    const { data: ok, error } = await userClient.rpc("has_role", {
+      _user_id: userId,
+      _role: "admin",
+    });
+    if (error || !ok) throw new Error("Unauthorized: admin only");
+  }
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
     .from("user_roles")
@@ -52,7 +60,7 @@ export const checkAdmin = createServerFn({ method: "GET" })
 export const adminDashboard = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const db = await getAdminClient(context.userId);
+    const db = await getAdminClient(context.userId, context.supabase);
 
     const head = async (table: string, filter?: (q: any) => any) => {
       let q = db.from(table as never).select("*", { count: "exact", head: true });
@@ -80,7 +88,7 @@ export const adminDashboard = createServerFn({ method: "GET" })
 export const adminUsers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const db = await getAdminClient(context.userId);
+    const db = await getAdminClient(context.userId, context.supabase);
 
     const list = await db.auth.admin.listUsers({ page: 1, perPage: 1000 });
     if (list.error) throw new Error(list.error.message);
@@ -118,7 +126,7 @@ export const adminUsers = createServerFn({ method: "GET" })
 export const adminIdols = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const db = await getAdminClient(context.userId);
+    const db = await getAdminClient(context.userId, context.supabase);
 
     const [rows, profiles, users] = await Promise.all([
       db.from("idols").select("*").order("created_at", { ascending: false }).limit(500),
@@ -152,7 +160,7 @@ export const adminIdols = createServerFn({ method: "GET" })
 export const adminEvents = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const db = await getAdminClient(context.userId);
+    const db = await getAdminClient(context.userId, context.supabase);
 
     const [rows, idols, milestones, users] = await Promise.all([
       db.from("events").select("*").order("date", { ascending: false }).limit(500),
@@ -187,7 +195,7 @@ export const adminEvents = createServerFn({ method: "GET" })
 export const adminMemories = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const db = await getAdminClient(context.userId);
+    const db = await getAdminClient(context.userId, context.supabase);
 
     const [rows, folders, idols, users] = await Promise.all([
       db.from("memories").select("*").order("date", { ascending: false }).limit(500),
@@ -219,7 +227,7 @@ export const adminMemories = createServerFn({ method: "GET" })
 export const adminSugar = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const db = await getAdminClient(context.userId);
+    const db = await getAdminClient(context.userId, context.supabase);
 
     const [rows, idols, users] = await Promise.all([
       db.from("sugar_items").select("*").order("date", { ascending: false }).limit(500),
@@ -250,7 +258,7 @@ export const adminSugar = createServerFn({ method: "GET" })
 export const adminReminders = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const db = await getAdminClient(context.userId);
+    const db = await getAdminClient(context.userId, context.supabase);
 
     const [rows, idols, events, users] = await Promise.all([
       db.from("reminders").select("*").order("created_at", { ascending: false }).limit(500),
@@ -284,7 +292,7 @@ export const adminReminders = createServerFn({ method: "GET" })
 export const adminWidget = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const db = await getAdminClient(context.userId);
+    const db = await getAdminClient(context.userId, context.supabase);
 
     const [rows, idols, users] = await Promise.all([
       db.from("widget_preferences").select("*"),

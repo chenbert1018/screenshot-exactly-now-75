@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { AppShell, PageHeader, SoftCard } from "@/components/AppShell";
 import { EventFormSheet } from "@/components/EventFormSheet";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import {
   Dialog,
   DialogContent,
@@ -549,55 +550,39 @@ function CalendarPage() {
                 {reminderLabel}
               </button>
 
-              {confirmDelete ? (
-                <div className="mt-3">
-                  <p className="text-sm">確定要刪除這個日子嗎？</p>
-                  <div className="mt-4 flex gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setConfirmDelete(false)}
-                      className="flex-1 rounded-full border border-border/70 py-2.5 text-sm"
-                    >
-                      取消
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        deleteReminders(detail.id);
-                        deleteMilestonesForEvent(detail.id);
-                        void removeEvent(detail.id);
-                        setConfirmDelete(false);
-                        setDetailId(null);
-                      }}
-                      className="flex-1 rounded-full bg-destructive py-2.5 text-sm text-destructive-foreground"
-                    >
-                      刪除
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="mt-3 flex gap-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEditing(detail);
-                      setDetailId(null);
-                      setPrefillDate("");
-                      setFormOpen(true);
-                    }}
-                    className="flex-1 rounded-full border border-border/70 py-2.5 text-sm transition-transform duration-300 active:scale-95"
-                  >
-                    編輯
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setConfirmDelete(true)}
-                    className="flex-1 rounded-full border border-border/70 py-2.5 text-sm text-destructive transition-transform duration-300 active:scale-95"
-                  >
-                    刪除
-                  </button>
-                </div>
-              )}
+              <ConfirmDialog
+                open={confirmDelete}
+                onOpenChange={setConfirmDelete}
+                title="確定要刪除這個日子嗎？"
+                onConfirm={() => {
+                  deleteReminders(detail.id);
+                  deleteMilestonesForEvent(detail.id);
+                  void removeEvent(detail.id);
+                  setConfirmDelete(false);
+                  setDetailId(null);
+                }}
+              />
+              <div className="mt-3 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditing(detail);
+                    setDetailId(null);
+                    setPrefillDate("");
+                    setFormOpen(true);
+                  }}
+                  className="flex-1 rounded-full border border-border/70 py-2.5 text-sm transition-transform duration-300 active:scale-95"
+                >
+                  編輯
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmDelete(true)}
+                  className="flex-1 rounded-full border border-border/70 py-2.5 text-sm text-destructive transition-transform duration-300 active:scale-95"
+                >
+                  刪除
+                </button>
+              </div>
             </>
           ) : null}
         </DialogContent>

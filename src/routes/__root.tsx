@@ -15,21 +15,17 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
-        </p>
-        <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Go home
-          </Link>
-        </div>
+    <div className="flex min-h-screen items-center justify-center bg-background px-6 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
+      <div className="w-full max-w-sm rounded-3xl border border-dashed border-border bg-card/70 px-6 py-10 text-center">
+        <p className="text-[13px] tracking-[0.2em] text-muted-foreground">NO TICKET · 404</p>
+        <h1 className="mt-3 text-[22px] font-bold text-foreground">這一頁找不到了</h1>
+        <p className="mt-2 text-sm text-muted-foreground">可能已經搬家，或連結輸入錯誤。</p>
+        <Link
+          to="/"
+          className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-primary px-6 text-sm font-medium text-primary-foreground transition-transform active:scale-95"
+        >
+          回到首頁
+        </Link>
       </div>
     </div>
   );
@@ -132,7 +128,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
-      <Toaster position="top-center" />
+      <Toaster position="top-center" offset="max(1rem, env(safe-area-inset-top))" mobileOffset="max(1rem, env(safe-area-inset-top))" />
     </QueryClientProvider>
   );
 }

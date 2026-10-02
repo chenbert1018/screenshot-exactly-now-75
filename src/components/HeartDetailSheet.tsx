@@ -84,9 +84,9 @@ export function HeartDetailSheet({
               </p>
             ) : null}
 
-            {item.link ? (
+            {item.link && /^https?:\/\//i.test(item.link.trim()) ? (
               <a
-                href={item.link}
+                href={item.link.trim()}
                 target="_blank"
                 rel="noreferrer"
                 className="mt-4 flex items-center gap-2 rounded-2xl border border-border/60 px-4 py-3 text-sm break-all text-primary"
