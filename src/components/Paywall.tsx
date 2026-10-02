@@ -92,7 +92,7 @@ export function Paywall({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="max-h-[88vh] overflow-y-auto">
+      <SheetContent side="bottom" className="max-h-[88dvh] overflow-y-auto pb-[env(safe-area-inset-bottom)]">
         <SheetHeader className="text-left">
           <SheetTitle className="flex items-center gap-2 font-display text-[20px]">
             <Sparkles className="size-5 text-primary" strokeWidth={1.6} />
