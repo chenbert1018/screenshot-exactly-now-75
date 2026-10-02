@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import { AppShell, PageHeader, SoftCard } from "@/components/AppShell";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { ArchiveIcon } from "@/components/IdolDaysIcons";
 import { ArchaeologyFormSheet } from "@/components/ArchaeologyFormSheet";
 import { StoredImage } from "@/components/StoredImage";
@@ -334,51 +335,30 @@ function ArchaeologyPage() {
         }}
       />
 
-      {pendingDelete ? (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/30 px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
-          <div className="w-full max-w-md rounded-3xl bg-card p-5 shadow-xl">
-            <div className="flex size-11 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-              <Trash2 className="size-5" strokeWidth={1.7} />
-            </div>
-
-            <h2 className="mt-4 text-lg font-medium">刪除這篇考古？</h2>
-
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              「{pendingDelete.title}」會從你的考古收藏中移除。 原始貼文不會受到影響。
-            </p>
-
-            <div className="mt-5 flex gap-3">
-              <button
-                type="button"
-                onClick={() => setPendingDelete(null)}
-                className="flex-1 rounded-full border border-border/70 min-h-[50px] py-3 text-base"
-              >
-                取消
-              </button>
-
-              <button
-                type="button"
-                disabled={deleting}
-                onClick={async () => {
-                  if (deleting) return;
-                  setDeleting(true);
-                  try {
-                    await removeItem(pendingDelete.id);
-                    setPendingDelete(null);
-                  } catch {
-                    toast.error("考古沒有刪除成功，請確認網路後再試一次");
-                  } finally {
-                    setDeleting(false);
-                  }
-                }}
-                className="flex-1 rounded-full bg-destructive min-h-[50px] py-3 text-base font-medium text-destructive-foreground disabled:opacity-60"
-              >
-                {deleting ? "刪除中…" : "刪除"}
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <ConfirmDialog
+        open={Boolean(pendingDelete)}
+        onOpenChange={(open) => {
+          if (!open && !deleting) setPendingDelete(null);
+        }}
+        title="刪除這篇考古？"
+        description={pendingDelete ? `「${pendingDelete.title}」會從你的考古收藏中移除。原始貼文不會受到影響。` : ""}
+        confirmLabel="刪除"
+        cancelLabel="取消"
+        destructive
+        loading={deleting}
+        onConfirm={async () => {
+          if (!pendingDelete || deleting) return;
+          setDeleting(true);
+          try {
+            await removeItem(pendingDelete.id);
+            setPendingDelete(null);
+          } catch {
+            toast.error("考古沒有刪除成功，請確認網路後再試一次");
+          } finally {
+            setDeleting(false);
+          }
+        }}
+      />
     </AppShell>
   );
 }
