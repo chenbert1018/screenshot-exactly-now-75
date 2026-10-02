@@ -14,16 +14,16 @@ export function useNotificationNavigation(router: AnyRouter): void {
 
         const route = action.notification.extra?.route;
 
-        if (
-          typeof route !== "string" ||
-          !route.startsWith("/weather/")
-        ) {
-          return;
-        }
+        if (typeof route !== "string") return;
 
-        void router.navigate({
-          to: route,
-        });
+        const allowed =
+          /^\/weather\/[^/?#]+$/.test(route) ||
+          /^\/receive\/[A-Z0-9-]+$/.test(route) ||
+          /^\/shared\/[a-f0-9]{48}$/.test(route);
+
+        if (!allowed) return;
+
+        void router.navigate({ to: route });
       },
     ).then((handle) => {
       if (disposed) {
