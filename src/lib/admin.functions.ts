@@ -13,7 +13,15 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 type Counts = Record<string, number>;
 
-async function getAdminClient(userId: string) {
+async function getAdminClient(userId: string, userClient?: any) {
+  // 先以使用者本身的身分（RLS）確認 admin，再取用 service role。
+  if (userClient) {
+    const { data: ok, error } = await userClient.rpc("has_role", {
+      _user_id: userId,
+      _role: "admin",
+    });
+    if (error || !ok) throw new Error("Unauthorized: admin only");
+  }
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
     .from("user_roles")

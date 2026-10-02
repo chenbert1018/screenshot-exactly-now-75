@@ -26,7 +26,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       >
         ♡
       </span>
-      <div className="relative mx-auto min-h-screen w-full max-w-md px-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-32">
+      <div className="relative mx-auto min-h-screen w-full max-w-md px-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[calc(6.5rem+env(safe-area-inset-bottom))]">
         <div className="mb-3 flex justify-end">
           <Link
             to="/profile"

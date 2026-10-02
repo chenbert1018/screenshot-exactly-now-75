@@ -69,7 +69,7 @@ export function AlbumShareSheet({
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent side="bottom" className="max-h-[88vh] overflow-y-auto">
+        <SheetContent side="bottom" className="max-h-[88dvh] overflow-y-auto pb-[max(1.5rem,env(safe-area-inset-bottom))]">
           <SheetHeader className="text-left">
             <SheetTitle className="font-display text-[20px]">分享這本回憶</SheetTitle>
             <SheetDescription>

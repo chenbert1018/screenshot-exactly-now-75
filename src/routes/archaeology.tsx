@@ -42,7 +42,7 @@ function ArchaeologyPage() {
         ))}
       </div>
 
-      <p className="mt-8 text-center text-xs text-muted-foreground">Coming Soon</p>
+      <p className="mt-8 text-center text-[13px] text-muted-foreground">敬請期待</p>
     </AppShell>
   );
 }

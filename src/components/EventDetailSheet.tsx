@@ -1,4 +1,5 @@
 import { StoredImage } from "@/components/StoredImage";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { useState } from "react";
 import { MoreHorizontal, Plus } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
@@ -158,7 +159,7 @@ export function EventDetailSheet({
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent
           side="bottom"
-          className="mx-auto h-[94vh] w-full max-w-md overflow-y-auto rounded-t-3xl border-border/60 bg-background px-6 pb-[max(2rem,env(safe-area-inset-bottom))]"
+          className="mx-auto h-[94dvh] w-full max-w-md overflow-y-auto rounded-t-3xl border-border/60 bg-background px-6 pb-[max(2rem,env(safe-area-inset-bottom))]"
         >
           <SheetHeader className="sr-only">
             <SheetTitle>{event.title}</SheetTitle>
@@ -365,30 +366,15 @@ export function EventDetailSheet({
             </div>
           ) : null}
 
-          {confirmDelete ? (
-            <div className="mt-10 rounded-2xl bg-surface/60 px-5 py-5 text-center">
-              <p className="text-sm">確定要刪除這個日子嗎？</p>
-              <div className="mt-4 flex gap-3">
-                <button
-                  type="button"
-                  onClick={() => setConfirmDelete(false)}
-                  className="flex-1 rounded-full border border-border/70 py-2.5 text-sm"
-                >
-                  取消
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setConfirmDelete(false);
-                    onDelete();
-                  }}
-                  className="flex-1 rounded-full bg-destructive py-2.5 text-sm text-destructive-foreground"
-                >
-                  刪除
-                </button>
-              </div>
-            </div>
-          ) : null}
+          <ConfirmDialog
+            open={confirmDelete}
+            onOpenChange={setConfirmDelete}
+            title="確定要刪除這個日子嗎？"
+            onConfirm={() => {
+              setConfirmDelete(false);
+              onDelete();
+            }}
+          />
         </SheetContent>
       </Sheet>
 
