@@ -134,11 +134,7 @@ struct IdolDaysProvider: TimelineProvider {
         in context: Context,
         completion: @escaping (IdolDaysEntry) -> Void
     ) {
-        if context.isPreview {
-            completion(emptyEntry)
-        } else {
-            completion(loadSharedEntry() ?? emptyEntry)
-        }
+        completion(loadSharedEntry() ?? emptyEntry)
     }
 
     func getTimeline(
@@ -312,6 +308,12 @@ struct IdolDaysWidgetEntryView: View {
                 Color(red: 0.76, green: 0.88, blue: 0.98)
             ]
 
+        case "pink":
+            return [
+                Color(red: 1.00, green: 0.94, blue: 0.96),
+                Color(red: 0.98, green: 0.82, blue: 0.88)
+            ]
+
         default:
             return [
                 Color(red: 0.91, green: 0.96, blue: 1.00),
@@ -352,7 +354,11 @@ struct IdolDaysWidgetEntryView: View {
 
 
     private var smallWidget: some View {
-        ZStack {
+        Group {
+            if entry.idolName.trimmed.isEmpty {
+                widgetEmptyState
+            } else {
+                ZStack {
             if entry.enabled("IDOL") {
                 fullBleedPhoto(alignment: .top)
             } else {
@@ -468,7 +474,9 @@ struct IdolDaysWidgetEntryView: View {
             }
             .padding(12)
         }
-        .clipped()
+                .clipped()
+            }
+        }
     }
 
     // MARK: - Medium
@@ -482,7 +490,11 @@ struct IdolDaysWidgetEntryView: View {
 
 
     private var mediumWidget: some View {
-        GeometryReader { geo in
+        Group {
+            if entry.idolName.trimmed.isEmpty {
+                widgetEmptyState
+            } else {
+                GeometryReader { geo in
             ZStack {
                 LinearGradient(
                     colors: mediumBackgroundColors,
@@ -546,7 +558,7 @@ struct IdolDaysWidgetEntryView: View {
                                     )
                                 )
                                 .tracking(1.5)
-                                .foregroundStyle(ink.opacity(0.78))
+                                .foregroundStyle(ink.opacity(0.96))
 
                             Spacer()
 
@@ -559,7 +571,7 @@ struct IdolDaysWidgetEntryView: View {
                                     )
                                 )
                                 .tracking(0.8)
-                                .foregroundStyle(ink.opacity(0.62))
+                                .foregroundStyle(ink.opacity(0.78))
                         }
 
                         Spacer(minLength: 3)
@@ -589,7 +601,7 @@ struct IdolDaysWidgetEntryView: View {
                                         design: .rounded
                                     )
                                 )
-                                .foregroundStyle(ink.opacity(0.92))
+                                .foregroundStyle(ink.opacity(0.96))
                                 .lineLimit(2)
                                 .minimumScaleFactor(0.7)
                                 .padding(.top, 1)
@@ -598,7 +610,7 @@ struct IdolDaysWidgetEntryView: View {
                         Spacer(minLength: 4)
 
                         Rectangle()
-                            .fill(ink.opacity(0.12))
+                            .fill(ink.opacity(0.20))
                             .frame(height: 1)
 
                         VStack(alignment: .leading, spacing: 3) {
@@ -632,7 +644,7 @@ struct IdolDaysWidgetEntryView: View {
                                 design: .rounded
                             )
                         )
-                        .foregroundStyle(ink.opacity(0.84))
+                        .foregroundStyle(ink.opacity(0.92))
                         .lineLimit(1)
                         .minimumScaleFactor(0.65)
                         .padding(.top, 5)
@@ -644,10 +656,21 @@ struct IdolDaysWidgetEntryView: View {
                         height: geo.size.height,
                         alignment: .leading
                     )
+                    .background(
+                        LinearGradient(
+                            colors: mediumBackgroundColors,
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .environment(\.colorScheme, .light)
                 }
             }
         }
-        .clipped()
+                    .clipped()
+                }
+            }
+        }
     }
 
     // MARK: - Large
@@ -856,6 +879,27 @@ struct IdolDaysWidgetEntryView: View {
             .padding(17)
         }
         .clipped()
+    }
+
+    private var widgetEmptyState: some View {
+        ZStack {
+            LinearGradient(
+                colors: mediumBackgroundColors,
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+
+            VStack(spacing: 5) {
+                Text("IDOLDAYS")
+                    .font(.system(size: 13, weight: .bold, design: .rounded))
+                    .tracking(1.8)
+
+                Text("打開 App 同步小工具")
+                    .font(.system(size: 11, weight: .medium, design: .rounded))
+                    .opacity(0.72)
+            }
+            .foregroundStyle(ink)
+        }
     }
 
     // MARK: - Pretty Decoration
