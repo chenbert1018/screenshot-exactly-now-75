@@ -29,7 +29,7 @@ function AppThemeSynchronizer() {
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-[100dvh] items-center justify-center bg-background px-4 pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)]">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
         <h2 className="mt-4 text-xl font-semibold text-foreground">找不到這個頁面</h2>
@@ -158,7 +158,7 @@ function RootComponent() {
       <WidgetNativeSynchronizer />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
-      <Toaster position="top-center" />
+      <Toaster position="top-center" offset={{ top: "max(1rem, env(safe-area-inset-top))", left: "1rem", right: "1rem" }} />
     </QueryClientProvider>
   );
 }
