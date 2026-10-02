@@ -671,7 +671,6 @@ struct IdolDaysWidgetEntryView: View {
                 }
             }
         }
-    }
 
     // MARK: - Large
     //
