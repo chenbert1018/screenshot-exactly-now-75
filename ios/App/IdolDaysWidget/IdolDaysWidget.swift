@@ -143,13 +143,9 @@ struct IdolDaysProvider: TimelineProvider {
     ) {
         let entry = loadSharedEntry() ?? emptyEntry
 
-        let nextUpdate =
-            Calendar.current.nextDate(
-                after: Date(),
-                matching: DateComponents(hour: 0, minute: 2),
-                matchingPolicy: .nextTime
-            )
-            ?? Date().addingTimeInterval(86400)
+        // Refresh frequently enough to recover after an app-side sync.
+        // WidgetKit may defer the requested reload to save battery.
+        let nextUpdate = Date().addingTimeInterval(30 * 60)
 
         completion(
             Timeline(
