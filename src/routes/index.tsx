@@ -830,17 +830,17 @@ function Hero({
 }) {
   const backdrop = idol.photo || idol.cutoutPhoto;
   return (
-    <section className="relative mt-0 overflow-hidden rounded-[1.7rem] bg-gradient-to-b from-accent/80 via-surface to-card shadow-soft">
+    <section className="relative -mx-4 mt-0 overflow-hidden rounded-none bg-gradient-to-b from-accent/80 via-surface to-card sm:mx-0">
       {backdrop ? (
         <StoredImage
           src={backdrop}
           alt=""
           aria-hidden
-          className="absolute inset-0 size-full scale-110 object-cover opacity-20 blur-3xl"
+          className="absolute inset-0 size-full object-cover opacity-100"
         />
       ) : null}
-      <div className="absolute -left-16 top-12 size-56 rounded-full bg-white/40 blur-3xl" />
-      <div className="absolute -right-20 bottom-12 size-60 rounded-full bg-primary/20 blur-3xl" />
+
+
       {canSwitch ? (
         <button
           type="button"
@@ -854,19 +854,19 @@ function Hero({
       <Link
         to="/idols/$idolId"
         params={{ idolId: idol.id }}
-        className="relative block h-[300px] overflow-hidden"
+        className="relative block min-h-[62dvh] overflow-hidden"
       >
         {idol.cutoutPhoto ? (
           <StoredImage
             src={idol.cutoutPhoto}
             alt={`${idol.name} 的去背照片`}
-            className="absolute inset-x-0 bottom-0 z-10 mx-auto h-[94%] w-full object-contain object-bottom"
+            className="absolute inset-0 z-10 size-full object-cover object-center"
           />
         ) : idol.photo ? (
           <StoredImage
             src={idol.photo}
             alt={`${idol.name} 的照片`}
-            className="absolute inset-0 z-10 size-full object-cover object-[72%_center]"
+            className="absolute inset-0 z-10 size-full object-cover object-center"
           />
         ) : (
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 text-muted-foreground">
@@ -874,8 +874,8 @@ function Hero({
             <span className="text-sm">放一張你喜歡的照片 ♡</span>
           </div>
         )}
-        <div className="absolute inset-x-0 bottom-0 z-20 h-48 bg-gradient-to-t from-black/65 via-black/20 to-transparent" />
-        <div className="absolute bottom-5 left-5 z-30">
+        <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/80 via-black/15 to-black/15" />
+        <div className="absolute bottom-8 left-6 right-6 z-30">
           <p className="font-display text-[28px] leading-tight text-accent drop-shadow-md">
             {timeGreeting()}
           </p>
