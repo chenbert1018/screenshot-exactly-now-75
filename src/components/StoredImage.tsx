@@ -11,5 +11,5 @@ type StoredImageProps = Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src"> &
  */
 export function StoredImage({ src, ...props }: StoredImageProps) {
   const resolved = useImageSrc(src);
-  return <img {...props} src={resolved || undefined} />;
+  return <img {...props} className={[props.className, "rounded-none"].filter(Boolean).join(" ")} src={resolved || undefined} />;
 }
