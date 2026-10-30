@@ -438,6 +438,7 @@ function ArchaeologyCover({
   const [retry, setRetry] = useState(false);
   const recoveryAttempted = useRef(false);
   const [recovering, setRecovering] = useState(false);
+
   const showPlay = isVideoPreviewSource(source);
 
   useEffect(() => {
@@ -475,7 +476,7 @@ function ArchaeologyCover({
         }
       });
     return () => controller.abort();
-  }, [retry, url, previewUrl]);
+  }, [retry, url]);
 
   if (!previewUrl && recovering) {
     return <div className="mb-3 flex aspect-[16/9] items-center justify-center bg-surface/70 text-sm text-muted-foreground">正在讀取貼文封面…</div>;
