@@ -436,16 +436,19 @@ function ArchaeologyCover({
   const [previewUrl, setPreviewUrl] = useState(imageUrl);
   const [failed, setFailed] = useState(false);
   const [retry, setRetry] = useState(false);
+  const [recoveryAttempted, setRecoveryAttempted] = useState(false);
   const showPlay = isVideoPreviewSource(source);
 
   useEffect(() => {
     setPreviewUrl(imageUrl);
     setFailed(false);
     setRetry(false);
+    setRecoveryAttempted(false);
   }, [imageUrl, url]);
 
   useEffect(() => {
-    if (!retry && previewUrl) return;
+    if ((!retry && previewUrl) || recoveryAttempted) return;
+    setRecoveryAttempted(true);
     const controller = new AbortController();
     void fetch(`/api/link-preview?url=${encodeURIComponent(url)}`, {
       signal: controller.signal,
@@ -465,7 +468,7 @@ function ArchaeologyCover({
         if (!controller.signal.aborted) setFailed(true);
       });
     return () => controller.abort();
-  }, [retry, url]);
+  }, [retry, url, previewUrl, recoveryAttempted]);
 
   if (failed || !previewUrl) {
     return showPlay ? <VideoFallback source={source} url={url} /> : null;
