@@ -407,7 +407,7 @@ function threadsEmbedUrl(value: string): string | null {
   try {
     const parsed = new URL(value);
     if (!["threads.net", "www.threads.net", "threads.com", "www.threads.com"].includes(parsed.hostname.toLowerCase())) return null;
-    const match = parsed.pathname.match(/^\/(?:@[^/]+\/post|t)\/([A-Za-z0-9_-]+)\/?$/);
+    const match = parsed.pathname.match(/^\/(?:@[A-Za-z0-9._]+\/post|t)\/([A-Za-z0-9_-]+)\/?$/);
     return match ? `https://www.threads.com/t/${match[1]}/embed` : null;
   } catch {
     return null;
