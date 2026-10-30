@@ -238,7 +238,7 @@ function ArchaeologyCard({
     >
       <div className="flex items-start gap-4">
         <div className="w-[104px] shrink-0 rotate-[-1.5deg] rounded-[0.35rem] bg-background p-2 pb-7 shadow-[0_8px_22px_rgba(0,0,0,0.09)] ring-1 ring-border/60">
-          <div className="aspect-[4/5] overflow-hidden rounded-[0.2rem] bg-primary/10 text-primary">
+          <div className="aspect-[4/5] overflow-hidden rounded-none bg-primary/10 text-primary">
             {item.imageUrl ? (
               <StoredImage src={item.imageUrl} alt="" className="size-full object-cover" />
             ) : (
@@ -291,7 +291,7 @@ function MemoryCard({
           <p className="font-display text-[12px] tracking-[0.08em] text-muted-foreground">{dotDate(memory.date)}</p>
         </div>
         <div className="mt-4 flex gap-4">
-          <div className="flex h-[112px] w-[88px] shrink-0 rotate-[1.5deg] items-center justify-center overflow-hidden rounded-[0.45rem] border-[5px] border-background bg-primary/10 text-primary shadow-[0_7px_18px_rgba(0,0,0,0.08)]">
+          <div className="flex h-[112px] w-[88px] shrink-0 rotate-[1.5deg] items-center justify-center overflow-hidden rounded-none border-[5px] border-background bg-primary/10 text-primary shadow-[0_7px_18px_rgba(0,0,0,0.08)]">
             {memory.photo ? (
               <StoredImage src={memory.photo} alt="" className="size-full object-cover" />
             ) : (
@@ -854,7 +854,7 @@ function Hero({
       <Link
         to="/idols/$idolId"
         params={{ idolId: idol.id }}
-        className="relative block min-h-[62dvh] overflow-hidden"
+        className="relative block h-[62dvh] min-h-[420px] overflow-hidden"
       >
         {idol.cutoutPhoto ? (
           <StoredImage
