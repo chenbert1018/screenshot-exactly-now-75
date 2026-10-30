@@ -2284,3 +2284,19 @@
     transition: none;
   }
 }
+
+
+/* IdolDays photography rule — square corners across every screen.
+   Target only image surfaces and their immediate clipping frames;
+   buttons, sheets, pills and unrelated cards retain their own shapes. */
+img,
+picture,
+picture > img,
+video[poster] {
+  border-radius: 0 !important;
+}
+
+:where(div, figure, a, button, span):has(> img),
+:where(div, figure, a, button, span):has(> picture > img) {
+  border-radius: 0 !important;
+}
