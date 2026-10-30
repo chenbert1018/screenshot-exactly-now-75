@@ -610,10 +610,20 @@ struct IdolDaysWidgetEntryView: View {
                                 .padding(.top, 1)
                         }
 
+                        if entry.enabled("MESSAGE"),
+                           !entry.quote.trimmed.isEmpty {
+                            Text(entry.quote)
+                                .font(.system(size: 11, weight: .medium, design: .rounded))
+                                .foregroundStyle(widgetTheme == "dark" ? .white.opacity(0.95) : ink)
+                                .lineLimit(2)
+                                .minimumScaleFactor(0.75)
+                                .padding(.top, 3)
+                        }
+
                         Spacer(minLength: 4)
 
                         Rectangle()
-                            .fill(ink.opacity(0.20))
+                            .fill(widgetTheme == "dark" ? .white.opacity(0.25) : ink.opacity(0.20))
                             .frame(height: 1)
 
                         VStack(alignment: .leading, spacing: 3) {
@@ -647,7 +657,7 @@ struct IdolDaysWidgetEntryView: View {
                                 design: .rounded
                             )
                         )
-                        .foregroundStyle(ink.opacity(0.92))
+                        .foregroundStyle(widgetTheme == "dark" ? .white.opacity(0.92) : ink.opacity(0.92))
                         .lineLimit(1)
                         .minimumScaleFactor(0.65)
                         .padding(.top, 5)
@@ -666,7 +676,6 @@ struct IdolDaysWidgetEntryView: View {
                             endPoint: .bottomTrailing
                         )
                     )
-                    .environment(\.colorScheme, .light)
                 }
             }
         }
