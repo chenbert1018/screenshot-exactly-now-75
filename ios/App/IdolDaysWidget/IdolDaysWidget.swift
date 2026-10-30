@@ -401,8 +401,7 @@ struct IdolDaysWidgetEntryView: View {
                 Spacer()
 
                 VStack(alignment: .leading, spacing: 3) {
-                    if entry.enabled("IDOL"),
-                       !entry.idolName.trimmed.isEmpty {
+                    if !entry.idolName.trimmed.isEmpty {
                         Text(entry.idolName.uppercased())
                             .font(
                                 .system(
@@ -417,8 +416,7 @@ struct IdolDaysWidgetEntryView: View {
                             .minimumScaleFactor(0.65)
                     }
 
-                    if entry.enabled("COUNTDOWN"),
-                       !entry.dDay.trimmed.isEmpty {
+                    if !entry.dDay.trimmed.isEmpty {
                         Text(entry.dDay)
                             .font(
                                 .system(
@@ -432,8 +430,7 @@ struct IdolDaysWidgetEntryView: View {
                             .minimumScaleFactor(0.7)
                     }
 
-                    if entry.enabled("COUNTDOWN"),
-                       !entry.eventTitle.trimmed.isEmpty {
+                    if !entry.eventTitle.trimmed.isEmpty {
                         Text(entry.eventTitle.uppercased())
                             .font(
                                 .system(
@@ -554,7 +551,7 @@ struct IdolDaysWidgetEntryView: View {
                                     )
                                 )
                                 .tracking(1.5)
-                                .foregroundStyle(ink.opacity(0.96))
+                                .foregroundStyle(widgetTheme == "dark" ? .white : ink.opacity(0.96))
 
                             Spacer()
 
@@ -567,7 +564,7 @@ struct IdolDaysWidgetEntryView: View {
                                     )
                                 )
                                 .tracking(0.8)
-                                .foregroundStyle(ink.opacity(0.78))
+                                .foregroundStyle(widgetTheme == "dark" ? .white.opacity(0.85) : ink.opacity(0.78))
                         }
 
                         Spacer(minLength: 3)
@@ -582,7 +579,7 @@ struct IdolDaysWidgetEntryView: View {
                                         design: .rounded
                                     )
                                 )
-                                .foregroundStyle(ink)
+                                .foregroundStyle(widgetTheme == "dark" ? .white : ink)
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.7)
                         }
@@ -597,7 +594,7 @@ struct IdolDaysWidgetEntryView: View {
                                         design: .rounded
                                     )
                                 )
-                                .foregroundStyle(ink.opacity(0.96))
+                                .foregroundStyle(widgetTheme == "dark" ? .white : ink.opacity(0.96))
                                 .lineLimit(2)
                                 .minimumScaleFactor(0.7)
                                 .padding(.top, 1)
