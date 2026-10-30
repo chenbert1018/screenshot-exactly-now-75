@@ -170,7 +170,9 @@ function toPreviewImageUrl(value: string, baseUrl: string) {
 
     if (
       hostname === "cdninstagram.com" ||
-      hostname.endsWith(".cdninstagram.com")
+      hostname.endsWith(".cdninstagram.com") ||
+      hostname === "fbcdn.net" ||
+      hostname.endsWith(".fbcdn.net")
     ) {
       return `/api/link-preview-image?url=${encodeURIComponent(absolute)}`;
     }
