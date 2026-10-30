@@ -11,7 +11,9 @@ function validateImageUrl(value: string) {
 
   if (
     hostname !== "cdninstagram.com" &&
-    !hostname.endsWith(".cdninstagram.com")
+    !hostname.endsWith(".cdninstagram.com") &&
+    hostname !== "fbcdn.net" &&
+    !hostname.endsWith(".fbcdn.net")
   ) {
     throw new Error("UNSUPPORTED_HOST");
   }
