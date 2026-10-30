@@ -433,10 +433,41 @@ function ArchaeologyCover({
   source: ArchaeologySource;
   url: string;
 }) {
+  const [previewUrl, setPreviewUrl] = useState(imageUrl);
   const [failed, setFailed] = useState(false);
+  const [retry, setRetry] = useState(false);
   const showPlay = isVideoPreviewSource(source);
 
-  if (failed) {
+  useEffect(() => {
+    setPreviewUrl(imageUrl);
+    setFailed(false);
+    setRetry(false);
+  }, [imageUrl, url]);
+
+  useEffect(() => {
+    if (!retry && previewUrl) return;
+    const controller = new AbortController();
+    void fetch(`/api/link-preview?url=${encodeURIComponent(url)}`, {
+      signal: controller.signal,
+    })
+      .then((response) => response.ok ? response.json() : null)
+      .then((data: { imageUrl?: string } | null) => {
+        if (controller.signal.aborted) return;
+        const fresh = data?.imageUrl?.trim();
+        if (fresh && fresh !== previewUrl) {
+          setPreviewUrl(fresh);
+          setFailed(false);
+        } else {
+          setFailed(true);
+        }
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setFailed(true);
+      });
+    return () => controller.abort();
+  }, [retry, url]);
+
+  if (failed || !previewUrl) {
     return showPlay ? <VideoFallback source={source} url={url} /> : null;
   }
 
@@ -445,15 +476,17 @@ function ArchaeologyCover({
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="relative mb-3 block overflow-hidden rounded-2xl bg-surface"
+      className="relative mb-3 block overflow-hidden rounded-none bg-surface"
     >
       <StoredImage
-        src={imageUrl}
+        src={previewUrl}
         alt={title}
         className="aspect-[16/9] w-full object-cover"
-        onError={() => setFailed(true)}
+        onError={() => {
+          if (!retry) setRetry(true);
+          else setFailed(true);
+        }}
       />
-
       {showPlay ? (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="flex size-11 items-center justify-center rounded-full bg-background/90 text-primary shadow-sm">
@@ -488,7 +521,7 @@ function ArchaeologyCard({
           url={item.url}
         />
       ) : isVideoPreviewSource(item.source) ? (
-        <VideoFallback source={item.source} url={item.url} />
+        <ArchaeologyCover imageUrl="" title={item.title} source={item.source} url={item.url} />
       ) : null}
 
       <div className="flex items-start gap-3">
