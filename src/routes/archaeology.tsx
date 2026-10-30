@@ -403,6 +403,38 @@ function isVideoPreviewSource(source: ArchaeologySource) {
   return PREVIEW_VIDEO_SOURCES.includes(source);
 }
 
+function threadsEmbedUrl(value: string): string | null {
+  try {
+    const parsed = new URL(value);
+    if (!["threads.net", "www.threads.net", "threads.com", "www.threads.com"].includes(parsed.hostname.toLowerCase())) return null;
+    const match = parsed.pathname.match(/^\/(?:@[^/]+\/post|t)\/([A-Za-z0-9_-]+)\/?$/);
+    return match ? `https://www.threads.com/t/${match[1]}/embed` : null;
+  } catch {
+    return null;
+  }
+}
+
+function ThreadsPlayer({ url }: { url: string }) {
+  const embed = threadsEmbedUrl(url);
+  const [playing, setPlaying] = useState(false);
+  useEffect(() => setPlaying(false), [url]);
+  if (!embed) return null;
+  return (
+    <div className="mb-3 overflow-hidden bg-surface/70">
+      {playing ? (
+        <>
+          <iframe src={embed} title="Threads 貼文播放器" className="min-h-[420px] w-full border-0" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" referrerPolicy="strict-origin-when-cross-origin" />
+          <a href={url} target="_blank" rel="noopener noreferrer" className="block px-3 py-3 text-sm text-primary underline">無法播放？前往 Threads 原文</a>
+        </>
+      ) : (
+        <button type="button" onClick={() => setPlaying(true)} className="flex min-h-12 w-full items-center justify-center gap-2 text-sm font-medium text-primary">
+          <span aria-hidden="true">▶</span> 在此開啟 Threads 貼文與影片
+        </button>
+      )}
+    </div>
+  );
+}
+
 function VideoFallback({ source, url }: { source: ArchaeologySource; url: string }) {
   return (
     <a
@@ -538,6 +570,8 @@ function ArchaeologyCard({
       ) : isVideoPreviewSource(item.source) ? (
         <ArchaeologyCover imageUrl="" title={item.title} source={item.source} url={item.url} />
       ) : null}
+
+      {threadsEmbedUrl(item.url) ? <ThreadsPlayer url={item.url} /> : null}
 
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
