@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useEventSource } from "@/lib/events.source";
 import { useIdolMusicSource } from "@/lib/idol-music.source";
 import { useIdolSource } from "@/lib/idols.source";
@@ -31,6 +31,7 @@ async function imageUrlToDataUrl(url: string): Promise<string> {
 
 export function WidgetNativeSynchronizer() {
   const { settings } = useSettings();
+  const syncVersion = useRef(0);
   const idolSource = useIdolSource();
   const eventSource = useEventSource();
   const preferenceSource = useWidgetPreferenceSource();
@@ -74,10 +75,12 @@ export function WidgetNativeSynchronizer() {
       preferences: preferenceSource.prefs,
     });
 
+    const version = ++syncVersion.current;
     void (async () => {
       const idolName = content.idol?.name ?? "";
       const idolImage = content.idol?.image ?? "";
-      let imageData: string | undefined = idolImage ? undefined : "";
+      // Never keep the previous idol photo if the new image cannot be loaded.
+      let imageData = "";
 
       if (idolImage) {
         try {
@@ -89,6 +92,8 @@ export function WidgetNativeSynchronizer() {
         }
       }
 
+      // A slow photo download must not overwrite a newer idol/event selection.
+      if (version !== syncVersion.current) return;
       await updateNativeWidget({
         idolName,
         eventTitle: content.importantDate?.title ?? "",
@@ -107,6 +112,9 @@ export function WidgetNativeSynchronizer() {
         imageData,
       });
     })();
+    return () => {
+      syncVersion.current += 1;
+    };
   }, [
     idolSource.ready,
     idolSource.idols,
