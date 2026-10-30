@@ -118,11 +118,8 @@ public class IdolDaysWidgetBridgePlugin: CAPPlugin, CAPBridgedPlugin {
             let snapshotURL = containerURL
                 .appendingPathComponent("widget-snapshot.json")
 
-            try data.write(
-                to: snapshotURL,
-                options: .atomic
-            )
-
+            // Write the photo first; only publish the new snapshot once it succeeds.
+            // This avoids showing a new idol name with the previous idol photo.
             let imageURL = containerURL
                 .appendingPathComponent("idol-photo.jpg")
 
@@ -138,6 +135,11 @@ public class IdolDaysWidgetBridgePlugin: CAPPlugin, CAPBridgedPlugin {
                     )
                 }
             }
+
+            try data.write(
+                to: snapshotURL,
+                options: .atomic
+            )
 
             if let defaults = UserDefaults(suiteName: appGroupID) {
                 let allowedThemes = ["system", "light", "dark", "sky"]
