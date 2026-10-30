@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useEventSource } from "@/lib/events.source";
 import { useIdolMusicSource } from "@/lib/idol-music.source";
 import { useIdolSource } from "@/lib/idols.source";
@@ -32,6 +32,19 @@ async function imageUrlToDataUrl(url: string): Promise<string> {
 export function WidgetNativeSynchronizer() {
   const { settings } = useSettings();
   const syncVersion = useRef(0);
+  const [dayKey, setDayKey] = useState(() => new Date().toDateString());
+
+  useEffect(() => {
+    const refreshDay = () => setDayKey(new Date().toDateString());
+    const timer = window.setInterval(refreshDay, 60_000);
+    document.addEventListener("visibilitychange", refreshDay);
+    window.addEventListener("focus", refreshDay);
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", refreshDay);
+      window.removeEventListener("focus", refreshDay);
+    };
+  }, []);
   const idolSource = useIdolSource();
   const eventSource = useEventSource();
   const preferenceSource = useWidgetPreferenceSource();
@@ -125,6 +138,7 @@ export function WidgetNativeSynchronizer() {
     musicSource.ready,
     musicSource.songs,
     settings.theme,
+    dayKey,
   ]);
 
   return null;
