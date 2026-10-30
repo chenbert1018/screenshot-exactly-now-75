@@ -445,6 +445,16 @@ struct IdolDaysWidgetEntryView: View {
                             .minimumScaleFactor(0.65)
                     }
 
+                    if entry.enabled("MESSAGE"),
+                       !entry.quote.trimmed.isEmpty {
+                        Text(entry.quote)
+                            .font(.system(size: 11, weight: .medium, design: .rounded))
+                            .foregroundStyle(.white.opacity(0.95))
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.8)
+                            .padding(.top, 4)
+                    }
+
                     if hasSongOfDay {
                         HStack(spacing: 4) {
                             Image(systemName: "music.note")
