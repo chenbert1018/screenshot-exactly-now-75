@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Bookmark,
   ExternalLink,
@@ -436,19 +436,22 @@ function ArchaeologyCover({
   const [previewUrl, setPreviewUrl] = useState(imageUrl);
   const [failed, setFailed] = useState(false);
   const [retry, setRetry] = useState(false);
-  const [recoveryAttempted, setRecoveryAttempted] = useState(false);
+  const recoveryAttempted = useRef(false);
+  const [recovering, setRecovering] = useState(false);
   const showPlay = isVideoPreviewSource(source);
 
   useEffect(() => {
     setPreviewUrl(imageUrl);
     setFailed(false);
     setRetry(false);
-    setRecoveryAttempted(false);
+    recoveryAttempted.current = false;
+    setRecovering(false);
   }, [imageUrl, url]);
 
   useEffect(() => {
-    if ((!retry && previewUrl) || recoveryAttempted) return;
-    setRecoveryAttempted(true);
+    if ((!retry && previewUrl) || recoveryAttempted.current) return;
+    recoveryAttempted.current = true;
+    setRecovering(true);
     const controller = new AbortController();
     void fetch(`/api/link-preview?url=${encodeURIComponent(url)}`, {
       signal: controller.signal,
@@ -456,6 +459,7 @@ function ArchaeologyCover({
       .then((response) => response.ok ? response.json() : null)
       .then((data: { imageUrl?: string } | null) => {
         if (controller.signal.aborted) return;
+        setRecovering(false);
         const fresh = data?.imageUrl?.trim();
         if (fresh && fresh !== previewUrl) {
           setPreviewUrl(fresh);
@@ -465,10 +469,17 @@ function ArchaeologyCover({
         }
       })
       .catch(() => {
-        if (!controller.signal.aborted) setFailed(true);
+        if (!controller.signal.aborted) {
+          setRecovering(false);
+          setFailed(true);
+        }
       });
     return () => controller.abort();
-  }, [retry, url, previewUrl, recoveryAttempted]);
+  }, [retry, url, previewUrl]);
+
+  if (!previewUrl && recovering) {
+    return <div className="mb-3 flex aspect-[16/9] items-center justify-center bg-surface/70 text-sm text-muted-foreground">正在讀取貼文封面…</div>;
+  }
 
   if (failed || !previewUrl) {
     return showPlay ? <VideoFallback source={source} url={url} /> : null;
@@ -486,7 +497,7 @@ function ArchaeologyCover({
         alt={title}
         className="aspect-[16/9] w-full object-cover"
         onError={() => {
-          if (!retry) setRetry(true);
+          if (!recoveryAttempted.current) setRetry(true);
           else setFailed(true);
         }}
       />
